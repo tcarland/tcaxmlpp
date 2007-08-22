@@ -1,0 +1,54 @@
+TCA_PORT_OS         := $(shell uname)
+TCA_PORT_MACHINE    := $(shell uname -m)
+TCA_PORT_IDENTIFIER := "$(TCA_PORT_OS)_$(TCA_PORT_MACHINE)"
+
+LIB_SOCKET=
+LIB_NSL=
+LIB_PTHREAD=
+LIB_DL=
+PTHREAD_CFLAGS=
+
+ifeq ($(TCA_PORT_IDENTIFIER), "SunOS_sun4u")
+  # set defaults for solaris sparc
+  CFLAGS_ADD = -DTCA_PORT_SOLARIS_SPARC
+  EMANATE_OS = -DSOLARIS
+  EMANATE_os = solaris_sun4
+  LIB_SOCKET = -lsocket
+  LIB_NSL = -lnsl
+  LIB_PTHREAD = -lpthread
+  LIB_DL = -ldl
+endif
+
+ifeq ($(TCA_PORT_IDENTIFIER), "Linux_i686")
+  # set defaults for linux intel
+  CFLAGS_ADD = -DTCA_PORT_LINUX_INTEL
+  EMANATE_OS = -DLINUX
+  EMANATE_os = linux
+  LIB_PTHREAD = -lpthread
+  LIB_DL = -ldl
+  PTHREAD_CFLAGS = -pthread
+endif
+
+ifeq ($(TCA_PORT_IDENTIFIER), "Linux_x86_64")
+  # set defaults for linux intel
+  CFLAGS_ADD = -DTCA_PORT_LINUX_INTEL64
+  EMANATE_OS = -DLINUX
+  EMANATE_os = linux
+  LIB_PTHREAD = -lpthread
+  LIB_DL = -ldl
+  PTHREAD_CFLAGS = -pthread
+endif
+
+ifeq ($(TCA_PORT_IDENTIFIER), "FreeBSD_i386")
+  CFLAGS_ADD = -DTCA_PORT_FREEBSD_INTEL
+  PTHREAD_CFLAGS = -pthread
+endif
+
+ifndef CFLAGS_ADD
+  # error out. 
+  # we don't know how to port to anything but those ones listed here.
+  $(error "cannot support unknown os/machine: $(TCA_PORT_IDENTIFIER)")
+endif
+
+CFLAGS          += $(CFLAGS_ADD)
+

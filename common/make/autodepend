@@ -1,0 +1,395 @@
+#
+# Definitions provided by Makefile before including this file.
+#
+# NOTE: *** The 'all' target should be defined before including this file.
+#
+#   L_TARGET:    A library target
+#   L_OBJS:      Objects that make up L_TARGET
+#   T_TARGETS:   C programs that use L_TARGET
+#   TXX_TARGETS: C++ programs that use L_TARGET
+#   OPT_FLAGS:   Optimization settings (-g, -g -O2, -O, ...)
+#   INCLUDES:    Include flags
+#   MACROS:      Definitions
+#   LFLAGS:      Link flags
+#   LIBS:        Link libraries
+#   ALL_OBJS:    All object files (*.o) outside of the L_OBJS files and
+#                the *_TARGETS.o files.  These are defined to know what
+#                dependency files should be read.
+#   ALL_BINS:    All binary targets outside of T_TARGETS and TXX_TARGETS
+#                that dependencies should be read for.
+#
+# Macros the Makefile should use when defining custom rules:
+#
+#   makebindep-cmd: Use after a link rule.  Expects $(LFLAGS) and $(LIBS)
+#                   to include all the libraries that go into the build.
+#                   The library dependencies will be written out to a
+#                   <target>.bd.
+#   makedep-prefix:
+#   makedep-precmd: These two are used in combination when building a .o
+#                   file.  See the '%.o: %.c' definition for how to use.
+#                   The header file dependencies will be written out to
+#                   <target>.d.  The only trouble that occurs is if you
+#                   delete a header file entirely.  You'll need to remove
+#                   the affected .d files to rebuild.
+#
+
+
+#------------------------------------------------------------------------------
+#  Global defines and compile options
+#------------------------------------------------------------------------------
+
+RM = rm -rf
+CP = cp
+MKDIR = mkdir -p
+RSYNC = rsync -av
+
+CXX = g++
+CC = gcc
+
+ifndef OPT_FLAGS
+OPT_FLAGS = -O2
+endif
+
+ifndef CPPFLAGS
+CPPFLAGS = -Wall ${INCLUDES} ${MACROS}
+endif
+
+ifndef CPPFLAGS_THR
+CPPFLAGS_THR	= -DUSE_PTHREADS
+endif
+
+ifndef CFLAGS
+CFLAGS = $(OPT_FLAGS)
+else
+CFLAGS += $(OPT_FLAGS)
+endif
+
+ifdef L_OBJS
+ALL_OBJS += $(L_OBJS)
+ifdef L_TARGET
+LIBS += $(L_TARGET)
+endif
+endif
+
+ifdef T_TARGETS
+ALL_OBJS += $(T_TARGETS:=.o)
+ALL_BINS += $(T_TARGETS)
+endif
+
+ifdef TXX_TARGETS
+ALL_OBJS += $(TXX_TARGETS:=.o)
+ALL_BINS += $(TXX_TARGETS)
+endif
+
+#------------------------------------------------------------------------------
+#   Define requirements below
+#------------------------------------------------------------------------------
+
+ifdef NEED_LIBDNET
+INCLUDES += -I$(TOPDIR)/common/libdnet/include
+LFLAGS   += -L$(TOPDIR)/common/libdnet/src
+LIBS     += -ldnet
+endif
+
+ifdef NEED_LIBNET
+INCLUDES += -I$(TOPDIR)/common/libnet/include
+LFLAGS   += -L$(TOPDIR)/common/libnet/src
+LIBS     += -lnet
+endif
+
+ifdef NEED_LIBPCAP
+INCLUDES += -I$(TOPDIR)/common/pcap
+LFLAGS   += -L$(TOPDIR)/common/pcap
+LIBS     += -lpcap
+endif
+
+ifdef NEED_ZLIB_INCLUDE
+ZLIB_HOME = $(TOPDIR)/common/ext/zlib
+INCLUDES += -I$(ZLIB_HOME)
+endif
+
+ifdef NEED_LIBXML2_INCLUDE
+LIBXML2_HOME = $(TOPDIR)/common/ext/libxml2
+INCLUDES    += -I$(LIBXML2_HOME)/include
+endif
+
+ifdef NEED_OPENSSL
+OPENSSL_HOME = $(TOPDIR)/common/ext/openssl
+INCLUDES    += -I$(OPENSSL_HOME)/include
+LFLAGS      += -L$(OPENSSL_HOME)
+CFLAGS      += -DWITH_OPENSSL
+LIBS        += -lssl -lcrypto
+endif
+
+ifdef NEED_TCAXMLPLUS
+TCAXMLPLUS_HOME = $(TOPDIR)/common/tcaxmlplus
+INCLUDES   += -I$(TCAXMLPLUS_HOME)
+LFLAGS     += -L$(TCAXMLPLUS_HOME)/lib
+LIBS       += -ltcaxmlplus
+endif
+
+ifdef NEED_LIBTCANET
+TCANET_HOME = $(TOPDIR)/common/libtcanet
+INCLUDES   += -I$(TCANET_HOME)/include
+LFLAGS     += -L$(TCANET_HOME)/lib
+LIBS       += -ltcanet
+endif
+
+ifdef NEED_TCASQLPLUS
+TCASQL_HOME = $(TOPDIR)/common/tcasqlplus
+INCLUDES   += -I$(TCASQL_HOME)
+LFLAGS     += -L$(TCASQL_HOME)/lib
+LIBS       += -ltcasqlplus
+endif
+
+ifdef NEED_TCASNMP
+TCASNMP_HOME = $(TOPDIR)/common/tcasnmp
+INCLUDES  += -I$(TCASNMP_HOME)/include
+LFLAGS    += -L$(TCASNMP_HOME)/lib
+LIBS      += -ltcasnmp
+endif
+
+ifdef NEED_SOEMONAPI3
+SOEMONAPI  = $(TOPDIR)/monapi
+INCLUDES  += -I$(SOEMONAPI) -I$(TOPDIR)/common/SoeMonCore -I$(TOPDIR)/common/libtcanet/include -I$(TOPDIR)/common/tcaxmlplus
+LFLAGS    += -L$(SOEMONAPI)/lib
+LIBS      += -lSoeMonApi3 
+endif
+
+ifdef NEED_SOEMONCORE
+SOEMONCORE  = $(TOPDIR)/common/SoeMonCore
+INCLUDES   += -I$(SOEMONCORE) -I$(TOPDIR)/common/libtcanet/include \
+              -I$(TOPDIR)/common/tcaxmlplus
+LFLAGS     += -L$(SOEMONCORE)/lib
+LIBS       += -lsoemoncore
+endif
+
+ifdef NEED_TICKETD
+TICKETD     = $(TOPDIR)/security/ticketd
+INCLUDES   += -I$(TICKETD)/include
+LFLAGS     += -L$(TICKETD)/lib
+LIBS       += -lticketd
+endif
+
+ifdef NEED_GSOAP
+GSOAP_DIR = $(TOPDIR)/common/ext/gsoap/gsoap-linux
+INCLUDES += -I${GSOAP_DIR}
+endif
+
+ifdef NEED_LIBPQXX
+LIBS     += -lpqxx -lpq
+CFLAGS   += -DUSE_POSTGRESQL
+endif
+
+ifdef NEED_MYSQL
+MYSQL_HOME = /usr
+INCLUDES  += -I$(MYSQL_HOME)/include/mysql
+LFLAGS    += -L$(MYSQL_HOME)/lib
+CFLAGS    += -DUSE_MYSQL
+LIBS      += -lmysqlclient
+# -lmystrings
+endif
+
+ifdef NEED_MYSQLPP
+SQLPLUS_HOME  = $(TOPDIR)/common/ext/mysql++-1.7.40
+INCLUDES     += -I$(SQLPLUS_HOME)/lib
+LFLAGS       += -L$(SQLPLUS_HOME)/lib/.libs
+CFLAGS       += -DUSE_MYSQLPP
+LIBS         += -lmysqlpp
+endif
+
+ifdef NEED_P4API
+P4API_HOME = $(TOPDIR)/common/external/p4api
+INCLUDES  += -I$(P4API_HOME)
+LFLAGS    += -L$(P4API_HOME)
+LIBS	  += -lclient -lrpc -lsupp
+endif
+
+ifdef NEED_NET_SNMP
+#NETSNMP_HOME = $(TOPDIR)/common/ext/snmp/net-snmp-5.2.3
+#INCLUDES += -I$(NETSNMP_HOME)/include
+#LFLAGS   += -L$(NETSNMP_HOME)/snmplib/.libs
+NETSNMP_HOME = /usr
+INCLUDES += -I$(NETSNMP_HOME)/include/net-snmp
+LIBS     += -lnetsnmp -lcrypto
+endif
+
+ifdef NEED_SLEEPYCAT
+INCLUDES += -I${SLEEPYHOME}/include
+LFLAGS   += -L${SLEEPYHOME}/lib
+LIBS	  += -ldb
+endif
+
+ifdef NEED_RRDTOOL
+RRDHOME   = /usr/local/rrdtool
+INCLUDES += -I${RRDHOME}/include
+LFLAGS   += -L${RRDHOME}/lib
+LIBS     += -lrrd
+endif
+
+ifdef NEED_PYTHON
+INCLUDES += -I/usr/include/python2.2
+MACROS   += -DHAVE_CONFIG_H
+endif
+
+ifdef NEED_PTHREADS
+LIB_PTHREAD ?= -lpthread
+LFLAGS += -L/usr/lib
+LIBS   +=   $(LIB_PTHREAD)
+CFLAGS += $(PTHREAD_CFLAGS)
+MACROS += -D_THREAD_SAFE -D_REENTRANT -D_PTHREADS -D_GNU_SOURCE -DPTHREADS
+endif
+
+ifdef NEED_LIBDL
+LIB_DL ?= -ldl
+LIBS   += $(LIB_DL)
+endif
+
+ifdef NEED_SOCKET
+LIBS   += $(LIB_SOCKET) $(LIB_NSL)
+endif
+
+ifdef NEED_BOOST_REGEXP
+BOOST_HOME  = $(TOPDIR)/common/ext/boost_1_33_1
+LFLAGS     += -L$(BOOST_HOME)/stage/lib
+INCLUDES   += -I$(BOOST_HOME)
+LIBS       += -lboost_regex-gcc-mt-1_33_1
+endif
+
+ifdef NEED_LIBXML2
+LIBXML2_HOME = $(TOPDIR)/common/ext/libxml2
+INCLUDES    += -I$(LIBXML2_HOME)/include
+LFLAGS      += -L$(LIBXML2_HOME)/.libs
+LIBS        += -lxml2
+endif
+
+ifdef NEED_ZLIB
+ZLIB_HOME = $(TOPDIR)/common/ext/zlib
+INCLUDES += -I$(ZLIB_HOME) -I$(TOPDIR)/common/ext/zipstream
+LFLAGS   += -L$(ZLIB_HOME)
+LIBS     += -lz
+endif
+
+ifdef NEED_ZIPSTREAM
+INCLUDES += -I$(TOPDIR)/common/ext/zipstream
+endif
+
+#------------------------------------------------------------------------------
+#  Don't edit below this line unless prepared to deal with the breakage.
+#------------------------------------------------------------------------------
+
+DEPFILES = $(ALL_OBJS:.o=.d) $(ALL_BINS:=.bd)
+
+# We could just do an -include *.d, but if the .d files are in different
+# directories, that wouldn't work.  This requires more info to be provided,
+# however, so that is a different issue.  We include *.d *.bd
+-include $(DEPFILES) *.d *.bd /dev/null
+
+#
+# How to make .o's from src files.
+#
+# SUNPRO_DEPENDENCIES is an undocumented environment var consulted
+# by GNU and Sun compilers to generate a file containing file dependencies.
+# It is of the form "OUTPUTFILE DEPFILE(S)" where OUTPUTFILE is where to
+# write the deps, and DEPFILE(S) is what to put before the colon.
+# We include the .d files below.
+#
+# It is IMPORTANT to remove the .d files first otherwise they get appended to
+# (to support a single "depend" file).
+#
+# These should specify SUNPRO_DEPENDENCIES='$*.d $*.o $*.po'
+# but newer gcc quotes the space between the .o and .po and makes gmake
+# 3.78 crash.  So we have to postprocess the .d file instead.
+#
+# To speed make up, we strip out dependencies for /usr/include and
+# other system dirs.  This is less fragile than using gcc's -MM option since
+# we do <tcl.h> in places, for example, and use lots of -I directives.
+#
+makedep-prefix = \
+	$(RM) $@ $*.d; $(MKDIR) $(@D); SUNPRO_DEPENDENCIES='$*.D @TARGET@'
+makedep-postcmd = \
+	@sed 's,@TARGET@,$*.o $*.po,g;s,/usr/include/[^ ]* ,,g;s,/usr/lib/gcc-lib/[^ ]* ,,g;/^ \\$$/d' $*.D > $*.d && $(RM) $*.D
+%.o: %.cc
+	$(makedep-prefix) \
+	$(CXX) -o $@ -c $(CPPFLAGS) $(CFLAGS) $<
+	$(makedep-postcmd)
+%.o: %.cpp
+	$(makedep-prefix) \
+	$(CXX) -o $@ -c $(CPPFLAGS) $(CFLAGS) $<
+	$(makedep-postcmd)
+%.o: %.c
+	$(makedep-prefix) \
+	$(CC) -o $@ -c $(CPPFLAGS) $(CFLAGS) $<
+	$(makedep-postcmd)
+%.o: %.S
+	$(makedep-prefix) \
+	$(CC) -o $@ -c $(CPPFLAGS) $(CFLAGS) $<
+	$(makedep-postcmd)
+
+# .to objects are thread safe versions of objects in libraries that suppport
+# both threaded and non-threaded versions.
+%.to: %.cc
+	$(makedep-prefix) \
+	$(CXX) -o $@ -c $(CPPFLAGS) $(CPPFLAGS_THR) $(CFLAGS) $<
+	$(makedep-postcmd)
+%.to: %.cpp
+	$(makedep-prefix) \
+	$(CXX) -o $@ -c $(CPPFLAGS) $(CPPFLAGS_THR) $(CFLAGS) $<
+	$(makedep-postcmd)
+%.to: %.c
+	$(makedep-prefix) \
+	$(CC) -o $@ -c $(CPPFLAGS) $(CPPFLAGS_THR) $(CFLAGS) $<
+	$(makedep-postcmd)
+%.to: %.S
+	$(makedep-prefix) \
+	$(CC) -o $@ -c $(CPPFLAGS) $(CPPFLAGS_THR) $(CFLAGS) $<
+	$(makedep-postcmd)
+
+#
+# This rule generates a binary dependency file that represents the *.a
+# files that go into the binary.  It writes these out to a <binary>.bd
+# file.  The *.bd files should then be picked up to get the dependencies.
+# It currently strips out libraries from /usr/lib, /usr/local/lib, and
+# /usr/X11R6/lib so we won't have trouble when building on different
+# machines.
+#
+makebindep-cmd = \
+	tmpldirs=`echo $(LFLAGS) $(LIBS) | sed 's/-l[^ ]*//g;s/-L//g'`; \
+	tmplibs=`echo $(LFLAGS) $(LIBS) | sed 's/-L[^ ]*//g;s/-l//g'`; \
+	DEPS=""; \
+	for lib in $$tmplibs; do \
+	  found=0; \
+	  if [ -f $$lib ] && test $@ != $$lib ; then \
+	    found=1; DEPS="$$DEPS $$lib"; \
+	  fi; \
+	  for dir in $$tmpldirs ; do \
+	    if test $$found = 0 && [ -f $$dir/lib$$lib.a ] ; then \
+	      found=1; DEPS="$$DEPS $$dir/lib$$lib.a"; \
+	    fi; \
+	  done; \
+	done; \
+	echo $@: $$DEPS | sed 's,/usr/lib/[^ ]* ,,g;s,/usr/local/lib/[^ ]* ,,g;s,/usr/X11R6/lib/[^ ]* ,,g' > $@.bd
+
+make-cbin-rule = $(CC) -o $@ $(CFLAGS) $^ $(LFLAGS) $(LIBS)
+
+make-cxxbin-rule = $(CXX) -o $@ $(CFLAGS) $^ $(LFLAGS) $(LIBS)
+
+make-so-rule = $(CC) -shared -o $@ $(CCSHARED) $(CFLAGS) $^ $(LFLAGS) $(LIBS); $(makebindep-cmd)
+make-lib-rule = ld -r -o $@ $^; $(makebindep-cmd)
+
+ifdef L_TARGET
+$(L_TARGET): $(L_OBJS)
+	ar cr $@ $(L_OBJS)
+endif
+
+ifdef T_TARGETS
+$(T_TARGETS): $(T_TARGETS:=.o) $(L_TARGET)
+	$(CC) $(CFLAGS) -o $@ $(@:=.o) $(L_TARGET) $(LFLAGS) $(LIBS)
+	@$(makebindep-cmd)
+endif
+
+ifdef TXX_TARGETS
+$(TXX_TARGETS): $(TXX_TARGETS:=.o) $(L_TARGET)
+	$(CXX) $(CFLAGS) -o $@ $(@:=.o) $(L_TARGET) $(LFLAGS) $(LIBS)
+	@$(makebindep-cmd)
+endif
