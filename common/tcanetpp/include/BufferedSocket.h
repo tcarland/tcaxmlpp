@@ -22,10 +22,10 @@ class BufferedSocket : public Socket {
       public:
         virtual ~BufferedSocketFactory() {}
 
-	    virtual Socket* operator() ( sockfd_t & fd, struct sockaddr_in & csock )
-	    {
-	    	return( (Socket*) new BufferedSocket(fd, csock) );
-	    }
+        virtual Socket* operator() ( sockfd_t & fd, struct sockaddr_in & csock )
+        {
+            return( (Socket*) new BufferedSocket(fd, csock) );
+        }
     };
 
     static BufferedSocketFactory   factory;
@@ -91,5 +91,5 @@ class BufferedSocket : public Socket {
 }  // namespace
 
 
+#endif // BUFFEREDSOCKET_H_
 
-#endif /*BUFFEREDSOCKET_H_*/

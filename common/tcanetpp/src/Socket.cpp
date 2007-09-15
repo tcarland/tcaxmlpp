@@ -1,7 +1,8 @@
-#define _SOURCE_SOCKET_CPP_
-/** Socket class
+/**   The base Socket class.
  * 
  **/
+#define _TCANETPP_SOCKET_CPP_
+
 #include "Socket.h"
 
 #ifndef WIN32
@@ -16,8 +17,7 @@
 namespace tcanetpp {
 
 
-#define SOCK_STRERR_LEN 256
-
+// ----------------------------------------------------------------------
 
 Socket::Socket()
     : _socktype(SOCKET_NONE),
@@ -27,78 +27,80 @@ Socket::Socket()
       _connected(false),
       _block(false)
 {
-	Socket::ResetDescriptor(this->_fd);
+    Socket::ResetDescriptor(this->_fd);
 }
 
+
 Socket::Socket ( ipv4addr_t ipaddr, uint16_t port, SocketType type, int protocol )
-	throw ( SocketException )
-	: _socktype(type),
-	  _proto(protocol),
-	  _port(port),
-	  _bound(false),
-	  _connected(false),
-	  _block(false)
+    throw ( SocketException )
+    : _socktype(type),
+      _proto(protocol),
+      _port(port),
+      _bound(false),
+      _connected(false),
+      _block(false)
 {
-	char ipstr[INET_ADDRSTRLEN];
-	
-	Socket::ResetDescriptor(this->_fd);
-	
-	if ( _socktype <= SOCKET_NONE || _socktype > SOCKET_RAW )
-		throw SocketException("Socket error: Invalid Socket type");
-	
-	if ( _proto < 0 || _proto > 255 )
-		throw SocketException("Socket error: Invalid protocol");
-	
-	::memset(&_sock, 0, sizeof(struct sockaddr_in));
-	_sock.sin_family = AF_INET;
-	_sock.sin_port   = htons(_port);
-	
-	if ( _socktype == SOCKET_SERVER && ipaddr == 0 ) {
-		_sock.sin_addr.s_addr = htonl(INADDR_ANY);
-	} else {
-		if ( ipaddr == 0 )
-			throw SocketException("Socket error: Invalid IP addr");
-		
-		_sock.sin_addr.s_addr = ipaddr;
+    char ipstr[INET_ADDRSTRLEN];
+    
+    Socket::ResetDescriptor(this->_fd);
+    
+    if ( _socktype <= SOCKET_NONE || _socktype > SOCKET_RAW )
+        throw SocketException("Socket error: Invalid Socket type");
+    
+    if ( _proto < 0 || _proto > 255 )
+        throw SocketException("Socket error: Invalid protocol");
+    
+    memset(&_sock, 0, sizeof(struct sockaddr_in));
+    _sock.sin_family = AF_INET;
+    _sock.sin_port   = htons(_port);
+    
+    if ( _socktype == SOCKET_SERVER && ipaddr == 0 ) {
+        _sock.sin_addr.s_addr = htonl(INADDR_ANY);
+    } else {
+        if ( ipaddr == 0 )
+            throw SocketException("Socket error: Invalid IP addr");
+            
+        _sock.sin_addr.s_addr = ipaddr;
+
 #       ifdef WIN32
-		strncpy(ipstr, inet_ntoa(_sock.sin_addr), INET_ADDRSTRLEN);
+        strncpy(ipstr, inet_ntoa(_sock.sin_addr), INET_ADDRSTRLEN);
 #       else
-		inet_ntop(AF_INET, &_sock.sin_addr, ipstr, sizeof(ipstr));
-#		endif
-		
-		_addrstr = ipstr;
-	}
-	
-	if ( this->_proto == IPPROTO_UDP )
-		this->init(false);
+        inet_ntop(AF_INET, &_sock.sin_addr, ipstr, sizeof(ipstr));
+#       endif
+            
+        _addrstr = ipstr;
+    }
+    
+    if ( this->_proto == IPPROTO_UDP )
+        this->init(false);
 }
 
 
 Socket::Socket ( sockfd_t & fd, struct sockaddr_in & csock )
-	: _fd(fd),
-	  _sock(csock),
-	  _socktype(SOCKET_SERVER_CLIENT),
-	  _proto(IPPROTO_TCP),
-	  _block(false)
+    : _fd(fd),
+      _sock(csock),
+      _socktype(SOCKET_SERVER_CLIENT),
+      _proto(IPPROTO_TCP),
+      _block(false)
 {
-	char ipstr[INET_ADDRSTRLEN];
-	
-	if ( Socket::IsValidDescriptor(this->_fd) ) {
-		_connected = true;
-		_bound     = true;
-	} else {
-		_connected = false;
-		_bound     = false;
-	}
-	
+    char ipstr[INET_ADDRSTRLEN];
+    
+    if ( Socket::IsValidDescriptor(this->_fd) ) {
+        _connected = true;
+        _bound     = true;
+    } else {
+        _connected = false;
+        _bound     = false;
+    }
+    
 #   ifdef WIN32
-	strncpy(ipstr, inet_ntoa(_sock.sin_addr), INET_ADDRSTRLEN);
+    strncpy(ipstr, inet_ntoa(_sock.sin_addr), INET_ADDRSTRLEN);
 #   else
-	inet_ntop(AF_INET, &csock.sin_addr, ipstr, sizeof(ipstr));
+    inet_ntop(AF_INET, &csock.sin_addr, ipstr, sizeof(ipstr));
 #   endif
-	
-	_port    = ntohs(csock.sin_port);
-	_addrstr = ipstr;
+    
+    _port    = ntohs(csock.sin_port);
+    _addrstr = ipstr;
 }
 
 Socket::~Socket()
@@ -106,6 +108,7 @@ Socket::~Socket()
 	this->close();
 }
 
+// ----------------------------------------------------------------------
 
 int
 Socket::init ( bool block )
@@ -120,7 +123,6 @@ Socket::init ( bool block )
     }
       
     if ( _socktype == SOCKET_SERVER ) {
-        //this->setReuseAddr();
     	this->setSocketOption(SocketOption::SetReuseAddr(1));
         
         if ( ! this->bind() )
@@ -140,11 +142,12 @@ Socket::init ( bool block )
     return 1;
 }
 
+// ----------------------------------------------------------------------
 
 int
 Socket::bind()
 {
-    char  serr[SOCK_STRERR_LEN];
+    char  serr[ERRORSTRLEN];
     int   r = 0;
 
     if ( _socktype != SOCKET_SERVER || _bound || ! Socket::IsValidDescriptor(_fd) ) {
@@ -158,7 +161,7 @@ Socket::bind()
 	_errstr = "Socket::bind() Failed to bind";
 	
 #       ifndef WIN32
-	if ( ::strerror_r(errno, serr, SOCK_STRERR_LEN) == 0 )
+	if ( strerror_r(errno, serr, ERRORSTRLEN) == 0 )
             _errstr = serr;
 #       endif
 	
@@ -170,7 +173,7 @@ Socket::bind()
     return 1;
 }
 
-
+// ----------------------------------------------------------------------
 
 int
 Socket::listen()
@@ -188,11 +191,12 @@ Socket::listen()
     return 1;
 }
 
+// ----------------------------------------------------------------------
 
 int
 Socket::connect()
 {
-    char  serr[SOCK_STRERR_LEN];
+    char  serr[ERRORSTRLEN];
 
     if ( _socktype != SOCKET_CLIENT )
 	return -1;
@@ -225,7 +229,7 @@ Socket::connect()
         else 
             _errstr = " Error in connect attempt";
 
-        if ( ::strerror_r(errno, serr, SOCK_STRERR_LEN) == 0 )
+        if ( strerror_r(errno, serr, ERRORSTRLEN) == 0 )
             _errstr = serr;
         
 #     endif
@@ -238,6 +242,7 @@ Socket::connect()
     return 1;
 }
 
+// ----------------------------------------------------------------------
 
 void
 Socket::close()
@@ -258,7 +263,14 @@ Socket::close()
    return;
 }
 
+// ----------------------------------------------------------------------
 
+/**  Shutdowns half or the full connection.
+  *
+  *  @param shut  is the integer value representing which halves of 
+  *  the connection to shut. '0' shuts the receive, '1' shuts the send,
+  *  and 2 shuts both the send and the receive.
+ **/ 
 void
 Socket::shutdown ( int shut )
 {
@@ -282,16 +294,12 @@ Socket::shutdown ( int shut )
     return;
 }
 
-
+// ----------------------------------------------------------------------
 
 Socket*
 Socket::accept()
 {
-    Socket  *client = NULL;
-
-    client = this->accept(Socket::factory);
-
-    return client;
+    return this->accept(Socket::factory);
 }
 
 
@@ -307,7 +315,7 @@ Socket::accept ( SocketFactory & factory )
     	return NULL;
 
     len = sizeof(csock);
-    ::memset(&csock, 0, len);
+    memset(&csock, 0, len);
 
     if ( (cfd = ::accept(_fd, (struct sockaddr*) &csock, &len)) < 0 )
     	return NULL;
@@ -320,6 +328,7 @@ Socket::accept ( SocketFactory & factory )
     return client;
 }
 
+// ----------------------------------------------------------------------
 
 const sockfd_t&
 Socket::getDescriptor() const
@@ -327,11 +336,15 @@ Socket::getDescriptor() const
     return _fd;
 }
 
+// ----------------------------------------------------------------------
+
 const SocketType&
 Socket::getSocketType() const
 {
     return this->_socktype;
 }
+
+// ----------------------------------------------------------------------
 
 const uint16_t&
 Socket::getPort() const
@@ -339,11 +352,15 @@ Socket::getPort() const
     return this->_port;
 }
 
+// ----------------------------------------------------------------------
+
 const int&
 Socket::getSocketProtocol() const
 {
     return _proto;
 }
+
+// ----------------------------------------------------------------------
 
 std::string
 Socket::getAddressString()
@@ -351,17 +368,19 @@ Socket::getAddressString()
     return _addrstr;
 }
 
+// ----------------------------------------------------------------------
+
 ipv4addr_t
 Socket::getAddress()
 {
-    return((ipv4addr_t) _sock.sin_addr.s_addr);
+    return( (ipv4addr_t) _sock.sin_addr.s_addr );
 }
 
+// ----------------------------------------------------------------------
 
 bool
 Socket::isConnected()
 {
-
 #   ifdef WIN32
     
     if ( ! Socket::IsValidDescriptor(_fd) )
@@ -374,19 +393,18 @@ Socket::isConnected()
     if ( !_connected || _proto == IPPROTO_UDP )
     	return _connected;
 
-
     pollfd  wset;
-    char    serr[SOCK_STRERR_LEN];
+    char    serr[ERRORSTRLEN];
 
     wset.fd     = this->getDescriptor();
     wset.events = POLLOUT | POLLERR;
 
-    if ( ::poll(&wset, 1, 0) < 0 ) {
+    if ( poll(&wset, 1, 0) < 0 ) {
 
 	if ( errno == EINTR )
 	    return true;
 
-        if ( ::strerror_r(errno, serr, SOCK_STRERR_LEN) == 0 )
+        if ( strerror_r(errno, serr, ERRORSTRLEN) == 0 )
             _errstr = serr;
 	
 	return false;
@@ -396,6 +414,7 @@ Socket::isConnected()
 #   endif
 }
 
+// ----------------------------------------------------------------------
 
 ssize_t
 Socket::write ( const void * vptr, size_t n )
@@ -413,6 +432,7 @@ Socket::write ( const void * vptr, size_t n )
     return st;
 }
 
+// ----------------------------------------------------------------------
 
 ssize_t
 Socket::read ( void * vptr, size_t n )
@@ -443,6 +463,7 @@ Socket::read ( void * vptr, size_t n )
     return rd;
 }
 
+// ----------------------------------------------------------------------
 
 void
 Socket::setBlocking()
@@ -466,26 +487,29 @@ Socket::isBlocking()
     return this->_block;
 }
 
+// ----------------------------------------------------------------------
 
 int
 Socket::setSocketOption ( int optname, int optval )
 {
-    char       serr[SOCK_STRERR_LEN];
+    char       serr[ERRORSTRLEN];
     socklen_t  len;
 
     len = (socklen_t) sizeof(int);
 
     if ( ! Socket::IsValidDescriptor(_fd) )
-		return -1;
+        return -1;
 
     if ( setsockopt(_fd, SOL_SOCKET, optname, (const char*) &optval, len) < 0 ) {
+
 #       ifdef WIN32
-	    _errstr = "Error in call to setsockopt";
+        _errstr = "Error in call to setsockopt";
 #       else
-        if ( strerror_r(errno, serr, SOCK_STRERR_LEN) == 0 )
+        if ( strerror_r(errno, serr, ERRORSTRLEN) == 0 )
             _errstr = serr;
 #       endif
-	    return -1;
+
+        return -1;
     }
 
     return 1;
@@ -495,9 +519,10 @@ Socket::setSocketOption ( int optname, int optval )
 int 
 Socket::setSocketOption ( SocketOption option )
 {
-	return this->setSocketOption(option.getOptionName(), option.getOptionValue());
+    return this->setSocketOption(option.getOptionName(), option.getOptionValue());
 }
 
+// ----------------------------------------------------------------------
 
 const std::string&
 Socket::getErrorString() const
@@ -505,6 +530,7 @@ Socket::getErrorString() const
     return _errstr;
 }
 
+// ----------------------------------------------------------------------
 
 void
 Socket::Unblock ( Socket * s )
@@ -515,12 +541,12 @@ Socket::Unblock ( Socket * s )
 #   ifdef WIN32
     
     unsigned long  on = 1;
-    ::ioctlsocket(s->getFD(), FIONBIO, &on);
+    ioctlsocket(s->getFD(), FIONBIO, &on);
     
 #   else
     
-    int flags = ::fcntl(s->getDescriptor(), F_GETFL, 0);
-    ::fcntl(s->getDescriptor(), F_SETFL, flags | O_NONBLOCK);
+    int flags = fcntl(s->getDescriptor(), F_GETFL, 0);
+    fcntl(s->getDescriptor(), F_SETFL, flags | O_NONBLOCK);
 
 #   endif
 
@@ -537,18 +563,19 @@ Socket::Block ( Socket * s )
 #   ifdef WIN32
     
     unsigned long  on = 0;
-    ::ioctlsocket(s->getFD(), FIONBIO, &on);
+    ioctlsocket(s->getFD(), FIONBIO, &on);
     
 #   else 
     
-    int  flags  = ::fcntl(s->getDescriptor(), F_GETFL, 0);
-    ::fcntl(s->getDescriptor(), F_SETFD, flags & ~O_NONBLOCK);
+    int  flags  = fcntl(s->getDescriptor(), F_GETFL, 0);
+    fcntl(s->getDescriptor(), F_SETFD, flags & ~O_NONBLOCK);
 
 #   endif
 
     return;
 }
 
+// ----------------------------------------------------------------------
 
 bool
 Socket::IsValidDescriptor ( const sockfd_t & fd )
@@ -573,9 +600,7 @@ Socket::ResetDescriptor ( sockfd_t & fd )
 #   endif
 }
 
-
-/*  Protected methods  */
-
+// ----------------------------------------------------------------------
 
 ssize_t
 Socket::nwriten ( const void * vptr, size_t n )
@@ -589,7 +614,8 @@ Socket::nwriten ( const void * vptr, size_t n )
     while ( nleft > 0 ) {
         if ( (nwritten = ::send(_fd, ptr, nleft, 0)) <= 0 ) {
 
-#         ifdef WIN32
+#           ifdef WIN32
+
 	    int err = WSAGetLastError();
             if ( err == WSAEINTR )
                 nwritten = 0;
@@ -599,6 +625,7 @@ Socket::nwriten ( const void * vptr, size_t n )
                 return -1;
 		
 #         else
+
             if ( errno == EINTR )
                 nwritten = 0;
             else if ( errno == EWOULDBLOCK || errno == EAGAIN || errno == EINPROGRESS )
@@ -609,13 +636,13 @@ Socket::nwriten ( const void * vptr, size_t n )
 #         endif
         }
         nleft -= nwritten;
-        ptr += nwritten;
+        ptr   += nwritten;
     }
 
     return n;
-
 }
 
+// ----------------------------------------------------------------------
 
 ssize_t
 Socket::nreadn ( void * vptr, size_t n )
@@ -662,11 +689,12 @@ Socket::nreadn ( void * vptr, size_t n )
     
 }
 
+// ----------------------------------------------------------------------
 
 void
 Socket::InitializeSocket ( sockfd_t & fd, int & proto ) throw ( SocketException )
 {
-    char   serr[SOCK_STRERR_LEN];
+    char   serr[ERRORSTRLEN];
     std::string errstr = "Socket::initSocket() Fatal Error ";
 
     if ( proto == IPPROTO_TCP ) {
@@ -679,18 +707,21 @@ Socket::InitializeSocket ( sockfd_t & fd, int & proto ) throw ( SocketException 
     }
 
     if ( ! Socket::IsValidDescriptor(fd) ) {
+
 #       ifdef WIN32
     	errstr.append(": Failed to initialize socket");
 #       else	
-    	::strerror_r(errno, serr, SOCK_STRERR_LEN);
+    	strerror_r(errno, serr, ERRORSTRLEN);
     	errstr.append(serr);
 #     	endif
+
     	throw SocketException(errstr);
     }
 
     return;
 }
 
+// ----------------------------------------------------------------------
 
 ipv4addr_t
 Socket::pton ( const std::string & ipstr )
@@ -725,7 +756,9 @@ Socket::ntop ( ipv4addr_t addr )
     return((std::string) ip);
 }
 
+// ----------------------------------------------------------------------
 
 } // namespace
 
-/*  _SOURCE_SOCKET_CPP_  */
+//  _TCANETPP_SOCKET_CPP_ 
+

@@ -3,7 +3,7 @@
   *  @Author   tcarland@gmail.com
   *  @Version  0.1
  **/
-#define _BUFFEREDSOCKET_CPP_
+#define _TCANETPP_BUFFEREDSOCKET_CPP_
 
 
 #include "BufferedSocket.h"
@@ -21,6 +21,7 @@ char rcsid[] = "$Id: BufferedSocket.cpp,v 0.3 2004/02/03 13:02:00 tca Exp $";
 BufferedSocket::BufferedSocketFactory  BufferedSocket::factory;
 
 
+// ----------------------------------------------------------------------
 
 BufferedSocket::BufferedSocket() 
     : Socket(),
@@ -28,7 +29,6 @@ BufferedSocket::BufferedSocket()
       _wbuffer(NULL),
       _wbx(false) 
 {}
-
 
 BufferedSocket::BufferedSocket ( ipv4addr_t ip, uint16_t port, SocketType socktype, int proto )
     : Socket(ip, port, socktype, proto),
@@ -39,7 +39,6 @@ BufferedSocket::BufferedSocket ( ipv4addr_t ip, uint16_t port, SocketType sockty
     this->init(false);
 }
 
-
 BufferedSocket::BufferedSocket ( sockfd_t & fd, struct sockaddr_in & csock )
     : Socket(fd, csock),
       _rbuffer(new CircularBuffer()),
@@ -49,8 +48,6 @@ BufferedSocket::BufferedSocket ( sockfd_t & fd, struct sockaddr_in & csock )
     this->init(false);
 }
 
-
-
 BufferedSocket::~BufferedSocket()
 {
     if ( _rbuffer )
@@ -59,10 +56,7 @@ BufferedSocket::~BufferedSocket()
     	delete _wbuffer;
 }
 
-
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//  BufferedSocket methods
-
+// ----------------------------------------------------------------------
 
 int
 BufferedSocket::init ( bool block )
@@ -72,6 +66,7 @@ BufferedSocket::init ( bool block )
 	return i;
 }
 
+// ----------------------------------------------------------------------
 
 ssize_t
 BufferedSocket::read ( void * vptr, size_t n )
@@ -84,6 +79,7 @@ BufferedSocket::read ( void * vptr, size_t n )
     return _rbuffer->read(vptr, n);
 }
 
+// ----------------------------------------------------------------------
 
 ssize_t
 BufferedSocket::write ( const void * vptr, size_t n )
@@ -91,6 +87,7 @@ BufferedSocket::write ( const void * vptr, size_t n )
     return this->bufferedWrite(vptr, n);
 }
 
+// ----------------------------------------------------------------------
 
 void
 BufferedSocket::clear()
@@ -100,6 +97,7 @@ BufferedSocket::clear()
     _rbuffer->clear();
 }
 
+// ----------------------------------------------------------------------
 
 void
 BufferedSocket::close()
@@ -108,6 +106,7 @@ BufferedSocket::close()
     this->clear();
 }
 
+// ----------------------------------------------------------------------
 
 ssize_t
 BufferedSocket::flush()
@@ -137,6 +136,7 @@ BufferedSocket::flush()
     return r;
 }
 
+// ----------------------------------------------------------------------
 
 size_t
 BufferedSocket::dataAvailable()
@@ -144,6 +144,7 @@ BufferedSocket::dataAvailable()
     return _rbuffer->fullDataAvailable();
 }
 
+// ----------------------------------------------------------------------
 
 size_t
 BufferedSocket::flushAvailable()
@@ -153,6 +154,7 @@ BufferedSocket::flushAvailable()
     return 0;
 }
 
+// ----------------------------------------------------------------------
 
 size_t
 BufferedSocket::reverse ( size_t offset )
@@ -160,6 +162,7 @@ BufferedSocket::reverse ( size_t offset )
     return _rbuffer->reverse(offset);
 }
 
+// ----------------------------------------------------------------------
 
 size_t
 BufferedSocket::skip ( size_t offset )
@@ -167,6 +170,7 @@ BufferedSocket::skip ( size_t offset )
     return _rbuffer->skip(offset);
 }
 
+// ----------------------------------------------------------------------
 
 void
 BufferedSocket::rxBufferSize ( size_t sz )
@@ -183,6 +187,7 @@ BufferedSocket::rxBufferSize()
     return _rbuffer->size();
 }
 
+// ----------------------------------------------------------------------
 
 void
 BufferedSocket::txBufferSize ( size_t sz )
@@ -211,6 +216,7 @@ BufferedSocket::disableTxBuffer()
     _wbx     = false;
 }
 
+// ----------------------------------------------------------------------
 
 ssize_t
 BufferedSocket::bufferedWrite ( const void *vptr, size_t n )
@@ -258,7 +264,7 @@ BufferedSocket::bufferedWrite ( const void *vptr, size_t n )
     return wt;
 }
 
-
+// ----------------------------------------------------------------------
 
 ssize_t
 BufferedSocket::bufferData()
@@ -294,9 +300,9 @@ BufferedSocket::bufferData()
     return rd;
 }
 
-
+// ----------------------------------------------------------------------
 
 } // namespace
 
 
-//  _BUFFEREDSOCKET_CPP_
+//  _TCANETPP_BUFFEREDSOCKET_CPP_

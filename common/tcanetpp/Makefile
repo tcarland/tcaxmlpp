@@ -7,11 +7,11 @@ OPT_FLAGS =	-g
 endif
 
 LIBS =
-INCLUDES =	-Iinclude
+INCLUDES =	    -Iinclude
 
 
-OBJS =		src/SocketOption.o src/Socket.o src/BufferedSocket.o \
-                src/Cidr.o src/CircularBuffer.o src/StringUtils.o
+OBJS =		    src/SocketOption.o src/Socket.o src/BufferedSocket.o \
+                    src/CidrUtils.o src/CircularBuffer.o src/StringUtils.o
                 
                 #src/ConfigOpts.o src/FileUtils.o \
                 #src/EventManager.o src/Thread.o src/ThreadLock.o \
@@ -19,13 +19,14 @@ OBJS =		src/SocketOption.o src/Socket.o src/BufferedSocket.o \
                 #src/Socket.o src/BufferedSocket.o \
                 #src/StringUtils.o src/Logger.o
 
+
 PT_OBJS =       src/patricia.o
 TEST_OBJS =     src/pttest.o
 PFX_OBJS =      src/pfxtest.o
 
-BIN =		ptest pfxtest
-ALL_OBJS =	$(OBJS) $(TEST_OBJS) $(PFX_OBJS) $(PT_OBJS)
-ALL_BINS = 	$(BIN)
+BIN =		    ptest pfxtest
+ALL_OBJS =	    $(OBJS) $(TEST_OBJS) $(PFX_OBJS) $(PT_OBJS)
+ALL_BINS = 	    $(BIN)
 
 
 all: lib

@@ -1,8 +1,8 @@
 /**
   *  A circular buffer implementation.
   *
-  *   @Author  tca@ratnest.org
-  *   @Version 1.9
+  *   @Author  tcarland@gmail.com
+  *   @Version 5.0
  **/
 #ifndef CIRCULARBUFFER_H_
 #define CIRCULARBUFFER_H_
@@ -19,7 +19,6 @@ extern "C" {
 
 #include <string>
 
-
 #include "Exception.hpp"
 
 
@@ -28,12 +27,12 @@ namespace tcanetpp {
 
 /*  Default size limitations. */
 #define MINBUFFSIZE        1
-#define MAXBUFFSIZE		   2^31
-//#define MAXBUFFSIZE        2147483647
+#define MAXBUFFSIZE	   2^31
 #define DEFAULT_BUFFSIZE   256000
 #define BUFFER_MULTIPLIER  1000
 
 
+// ----------------------------------------------------------------------
 
 /**  Buffer Exception class
   *   Thrown in 'set' methods if buffer overwrite or overread
@@ -44,7 +43,7 @@ class BufferException : public Exception {
     BufferException ( const std::string & s_err ) : Exception(s_err) {}
 };
 
-
+// ----------------------------------------------------------------------
 
 class CircularBuffer {
 
@@ -140,8 +139,6 @@ class CircularBuffer {
     inline  void   reset() { return clear(); }
     /*@}*/
     
-
-    void           setDebug ( bool d ) { _debug = d; }
     inline size_t  size()              { return _buffsize; }
 
 
@@ -151,10 +148,11 @@ class CircularBuffer {
      *  direct use is allowed to provide for faster reads/writes by 
      *  eliminating an extra memcpy. The standard read/write() methods 
      *  above accept a user provided buffer to write to or read from
-     *  by performing a memcpy for each operation. These methods will
+     *  by performing a memcpy for each operation. The following methods 
      *  allow access to the internal buffer pointers essentially providing 
-     *  direct access to the buffer. The methods are pretty straightforward
-     *  and safe as long as the user doesn't lie about any pointer operations. 
+     *  direct access to the underlying buffer. The methods are reasonably
+     *  straightforward, but are only safe as long as the sizes provided 
+     *  are accurate. The methods are definately not thread-safe.
      */
 
   public:
@@ -219,7 +217,7 @@ class CircularBuffer {
     char*            _wrapPtr;   
 
     size_t           _buffsize;
-    bool             _debug;
+    std::string      _errstr;
 };
 
 
@@ -227,6 +225,4 @@ class CircularBuffer {
 
 
 
-
-
-#endif /*CIRCULARBUFFER_H_*/
+#endif //  _TCANETPP_CIRCULARBUFFER_H_

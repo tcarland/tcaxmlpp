@@ -1,4 +1,4 @@
-#define _SOURCE_CIRCULARBUFFER_CPP_
+#define _TCANETPP_CIRCULARBUFFER_CPP_
 
 extern "C" {
 # include <errno.h>
@@ -12,29 +12,24 @@ extern "C" {
 
 namespace tcanetpp {
 
-
 static const
-char rcsid[] = "$Id: CircularBuffer.cpp,v 2.0 2003/09/29 04:40:57 tca Exp $";
+char rcsid[] = "$Id: CircularBuffer.cpp,v 3.0 2007/09/16 04:40:57 tca Exp $";
 
-
+// ----------------------------------------------------------------------
 
 CircularBuffer::CircularBuffer() throw ( BufferException )
     : _buffer(NULL),
-      _buffsize(DEFAULT_BUFFSIZE),
-      _debug(false)
+      _buffsize(DEFAULT_BUFFSIZE)
 {
     this->init();
 }
-
 
 CircularBuffer::CircularBuffer ( size_t totalsize ) throw ( BufferException )
     : _buffer(NULL),
-      _buffsize(totalsize),
-      _debug(false)
+      _buffsize(totalsize)
 {
     this->init();
 }
-
 
 CircularBuffer::CircularBuffer ( const CircularBuffer & buffer ) throw ( BufferException )
 {
@@ -53,13 +48,13 @@ CircularBuffer::CircularBuffer ( const CircularBuffer & buffer ) throw ( BufferE
     _writePtr += (buffer._writePtr - buffer._buffer);
 }
 
-
 CircularBuffer::~CircularBuffer()
 {
     if ( _buffer )
         ::free(_buffer);
 }
 
+// ----------------------------------------------------------------------
 
 void
 CircularBuffer::init() throw ( BufferException )
@@ -83,7 +78,7 @@ CircularBuffer::init() throw ( BufferException )
     return;
 }
 
-
+// ----------------------------------------------------------------------
 
 size_t
 CircularBuffer::read ( void *buff, size_t n )
@@ -114,6 +109,7 @@ CircularBuffer::read ( void *buff, size_t n )
     return(n - rd);
 }
 
+// ----------------------------------------------------------------------
 
 size_t
 CircularBuffer::write ( const void *buff, size_t n )
@@ -145,6 +141,7 @@ CircularBuffer::write ( const void *buff, size_t n )
     return(n - wd);
 }
 
+// ----------------------------------------------------------------------
 
 size_t
 CircularBuffer::reverse ( size_t offset )
@@ -156,9 +153,10 @@ CircularBuffer::reverse ( size_t offset )
         rpos  = (_readPtr - _buffer);
         wrap  = (this->spaceAvailable() - (_buffsize - (_wrapPtr - _buffer)));
 
-        if ( _debug )
-            printf("CB::reverse() pos wrap front: %u, wrap: %u\n", 
-                rpos, wrap);
+#       ifdef CB_DEBUG
+        printf("CB::reverse() pos wrap front: %u, wrap: %u\n", 
+               rpos, wrap);
+#       endif
 
         rpos += wrap;
     } else if ( _endPtr == NULL ) {  // first time thru
@@ -166,18 +164,17 @@ CircularBuffer::reverse ( size_t offset )
     } else {
         rpos = _readPtr - _writePtr;
     }
-
-    if ( _debug )
-        printf("CB::reverse possible = %u offset = %u\n", rpos, offset);
+    
 
     if ( offset > rpos ) {
 	offset = 0;
     } else if ( _endPtr == NULL && offset > (size_t)(_readPtr - _buffer) ) {
         wrap = offset - (_readPtr - _buffer);
 
-        if ( _debug )
-            printf("CB::reverse frontrev: %u unwrap rev: %u\n", 
-                (_readPtr - _buffer), wrap);
+#       ifdef CB_DEBUG
+        printf("CB::reverse frontrev: %u unwrap rev: %u\n", 
+            (_readPtr - _buffer), wrap);
+#       endif
 
         _endPtr   = _wrapPtr;
         _wrapPtr  = NULL;
@@ -190,6 +187,7 @@ CircularBuffer::reverse ( size_t offset )
     return offset;
 }
 
+// ----------------------------------------------------------------------
 
 size_t
 CircularBuffer::skip ( size_t offset )
@@ -209,6 +207,7 @@ CircularBuffer::skip ( size_t offset )
     return offset;
 }
 
+// ----------------------------------------------------------------------
 
 size_t
 CircularBuffer::dataAvailable()
@@ -236,6 +235,7 @@ CircularBuffer::fullDataAvailable()
     return size;
 }
 
+// ----------------------------------------------------------------------
 
 size_t
 CircularBuffer::spaceAvailable()
@@ -250,7 +250,6 @@ CircularBuffer::spaceAvailable()
     return size;
 }
 
-
 size_t
 CircularBuffer::fullSpaceAvailable()
 {
@@ -264,6 +263,7 @@ CircularBuffer::fullSpaceAvailable()
     return size;
 }
 
+// ----------------------------------------------------------------------
 
 bool
 CircularBuffer::isWrapped()
@@ -274,6 +274,7 @@ CircularBuffer::isWrapped()
     return true;
 }
 
+// ----------------------------------------------------------------------
 
 void
 CircularBuffer::clear()
@@ -286,6 +287,7 @@ CircularBuffer::clear()
     return;
 }
 
+// ----------------------------------------------------------------------
 
 bool
 CircularBuffer::resize ( size_t buffsize ) throw ( BufferException )
@@ -364,6 +366,7 @@ CircularBuffer::resize ( size_t buffsize ) throw ( BufferException )
     return true;
 }
 
+// ----------------------------------------------------------------------
 
 char*
 CircularBuffer::getWritePtr ( size_t *size )
@@ -376,58 +379,62 @@ CircularBuffer::getWritePtr ( size_t *size )
 
     offset = this->spaceAvailable();
 
-    if ( _debug )
-        printf("CB::getWritePtr() space: %d size: %d\n", offset, *size);
+#   ifdef CB_DEBUG
+    printf("CB::getWritePtr() space: %d size: %d\n", offset, *size);
+#   endif
     
     if ( _endPtr == NULL && offset < *size ) {
         offset = _readPtr - _buffer;
 
         if ( offset < *size ) {
-            if ( _debug )
-                printf("CB::getWritePtr() Insufficient space\n");
-                
-            *size = 0;
+            _errstr = "CB::getWritePtr() Insufficient space";
+            *size   = 0;
             return NULL;
         }
 
-        if ( _debug )
-            printf(" getWritePtr() WRITE WRAP\n");
+#       ifdef CB_DEBUG
+        printf(" getWritePtr() WRITE WRAP\n");
+#       endif
         
         _endPtr   = _writePtr;
         _writePtr = _buffer;
         _wrapPtr  = NULL;
 
     } else if ( (size_t) offset < *size ) {
-	if ( _debug )
-            printf("CB::getWritePtr() Insufficient space\n");
-	*size = 0;
+	_errstr = "CB::getWritePtr() Insufficient space";
+	*size   = 0;
 	return NULL;
     }
 
     ptr   = _writePtr;
     *size = offset;
 
-    if ( _debug && _writePtr == _buffer )
+#   ifdef CB_DEBUG
+    if ( _writePtr == _buffer )
         printf(" CB writing at start of buffer\n");
+#   endif
 
     return ptr;
 }
 
+// ----------------------------------------------------------------------
 
 void
 CircularBuffer::setWritePtr ( size_t offset ) throw ( BufferException )
 {
-    if ( _debug )
-        printf("CB::setWritePtr() offset of %u\n", offset);
-
     if ( offset > this->spaceAvailable() )
         throw BufferException("Buffer overwrite attempted");
 
     _writePtr += offset;
+    
+#   ifdef CB_DEBUG
+    printf("CB::setWritePtr() offset of %u\n", offset);
+#   endif
 
     if ( (size_t)(_writePtr - _buffer) == _buffsize ) {
-        if ( _debug )
-            printf("  setWritePtr() WRITE WRAP\n");
+#       ifdef CB_DEBUG
+        printf("  setWritePtr() WRITE WRAP\n");
+#       endif
 
         _endPtr   = _writePtr;
         _writePtr = _buffer;
@@ -437,6 +444,7 @@ CircularBuffer::setWritePtr ( size_t offset ) throw ( BufferException )
     return;
 }
 
+// ----------------------------------------------------------------------
 
 char*
 CircularBuffer::getReadPtr ( size_t *size )
@@ -451,9 +459,10 @@ CircularBuffer::getReadPtr ( size_t *size )
     *size = rd;
 
     if ( rd == 0 && _endPtr != NULL ) {
-        if ( _debug )
-            printf("CB::setReadPtr() READ WRAP\n");
-
+#       ifdef CB_DEBUG
+        printf("CB::setReadPtr() READ WRAP\n");
+#       endif
+        
         _readPtr = _buffer;
         _wrapPtr = _endPtr;
         _endPtr  = NULL;
@@ -465,30 +474,33 @@ CircularBuffer::getReadPtr ( size_t *size )
     if ( rd > 0 )
         ptr = _readPtr;
 
-    if ( _debug && _readPtr == _buffer )
+#   ifdef CB_DEBUG
+    if ( _readPtr == _buffer )
 	printf("CB: reading at start of buffer\n");
-
-    if ( _debug )
-        printf("CB::getReadPtr() %u\n", rd);
+    printf("CB::getReadPtr() %u\n", rd);
+#   endif
 
     return ptr;
 }
 
+// ----------------------------------------------------------------------
 
 void
 CircularBuffer::setReadPtr ( size_t offset ) throw ( BufferException )
 {
-    if ( _debug )
-	printf("CB::setReadPtr() offset of %d\n", offset);
-
     if ( offset > this->dataAvailable() )
         throw BufferException("Buffer overread attempted!");
 
     _readPtr += offset;
-
+    
+#   ifdef CB_DEBUG
+    printf("CB::setReadPtr() offset of %d\n", offset);
+#   endif
+    
     if ( _endPtr != NULL && _readPtr == _endPtr ) {
-        if ( _debug )
-            printf("CB::setReadPtr() READ WRAP\n");
+#       ifdef CB_DEBUG
+        printf("CB::setReadPtr() READ WRAP\n");
+#       endif
 
         _readPtr = _buffer;
         _wrapPtr = _endPtr;
@@ -498,6 +510,8 @@ CircularBuffer::setReadPtr ( size_t offset ) throw ( BufferException )
     return;
 }
 
+// ----------------------------------------------------------------------
+
 } // namespace
 
-/*   _SOURCE_CIRCULARBUFFER_CPP_  */
+//   _TCANETPP_CIRCULARBUFFER_CPP_

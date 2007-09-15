@@ -4,12 +4,12 @@
   *  @Author   tcarland@gmail.com
   *  @Version  0.1
  **/
-#define _STRINGUTILS_CPP_
+#define _TCANETPP_STRINGUTILS_CPP_
 
 #include <cctype>
 
 #include "StringUtils.h"
-#include "net_types.h"
+#include "tcanetpp_types.h"
 
 
 namespace tcanetpp {
@@ -65,6 +65,7 @@ StringUtils::endsWith ( const std::string & str, const std::string & suffix )
 
 // ----------------------------------------------------------------------
 /**  Returns a string representing the character at the provided index. */
+
 std::string
 StringUtils::charAt ( const std::string & str, size_t index )
 {
@@ -72,8 +73,8 @@ StringUtils::charAt ( const std::string & str, size_t index )
 }
 
 // ----------------------------------------------------------------------
-
 /**@{   Indicates string equality with or without considering case */
+
 bool
 StringUtils::equals ( const std::string & strA, const std::string & strB )
 {
@@ -94,8 +95,8 @@ StringUtils::equalsIgnoreCase ( const std::string & strA, const std::string & st
 /*@}*/
 
 // ----------------------------------------------------------------------
-
 /**@{  Returns the first (or last) index of @param match in the given string. */
+
 int
 StringUtils::indexOf ( const std::string & str, const std::string & match )
 {
@@ -146,8 +147,8 @@ StringUtils::lastIndexOf ( const std::string & str, const std::string & match, s
 /*@}*/
 
 // ----------------------------------------------------------------------
-
 /**@{  Transforms the provided string.  */
+
 std::string
 StringUtils::toLowerCase ( const std::string & str )
 {
@@ -188,8 +189,8 @@ StringUtils::toUpperCase ( std::string & str )
 
 
 // ----------------------------------------------------------------------
-
 /**@{  Trims the whitespace at the front and back of the string. */
+
 std::string
 StringUtils::trim ( const std::string & str )
 {
@@ -209,6 +210,7 @@ StringUtils::trim ( std::string & str )
 }
 /*@}*/
 
+
 /**  Strips all occurances of @param rem from the provided string. */
 void
 StringUtils::trim ( std::string & str, const std::string & rem )
@@ -223,14 +225,17 @@ StringUtils::trim ( std::string & str, const std::string & rem )
 
 
 // ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 //   Widechar support for the same methods including conversion from 
 //   wide to narrow/ascii and back.
 
-#ifdef TCANET_WIDECHAR
+
+#ifdef TCANETPP_WIDECHAR
 
 extern "C" {
 # include <wchar.h>
 }
+
 
 // ----------------------------------------------------------------------
 
@@ -415,8 +420,8 @@ StringUtils::trim ( std::wstring & str, const std::wstring & rem )
 }
 
 // ----------------------------------------------------------------------
-
 /**@{  Provides conversion between ascii and wide strings  */
+
 std::wstring
 StringUtils::ctowstr ( const std::string & str )
 {
@@ -463,10 +468,10 @@ StringUtils::wtocstr ( const std::wstring & wstr )
 
 // ----------------------------------------------------------------------
 
-#endif  // TCANET_WIDECHAR
+#endif  // TCANETPP_WIDECHAR
 
 
 } // namespace
 
-// _STRINGUTILS_CPP_
 
+// _TCANETPP_STRINGUTILS_CPP_

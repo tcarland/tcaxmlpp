@@ -1,16 +1,19 @@
 /**
-  *  A Prefix class
+  *  Prefix - Represents a network CIDR address or a network IP Address 
+  *     in the standard CIDR notation of x.x.x.x/yy.
   *
-  *  @Author   tca@soe.sony.com
-  *  @Version  0.4
+  *  @Author   tcarland@gmail.com
+  *  @Version  0.1
  **/
-#ifndef _TCANET_PREFIX_HPP_
-#define _TCANET_PREFIX_HPP_
+#ifndef _TCANETPP_PREFIX_HPP_
+#define _TCANETPP_PREFIX_HPP_
 
-#include "net_types.h"
+#include <vector>
 
-namespace tca {
-namespace net {
+#include "tcanetpp_types.h"
+
+
+namespace tcanetpp {
 
 
 typedef struct cidr {
@@ -21,17 +24,14 @@ typedef struct cidr {
         : addr(0), addrlen(0) 
     {}
 
-    cidr ( ipv4addr_t addr_, uint16_t addrlen_ )
-        : addr(addr_, addrlen_)
+    cidr ( ipv4addr_t address_, uint16_t address_len )
+        : addr(address_), addrlen(address_len)
     {}
 
 } cidr_t;
 
 
-/**   An object representing a CIDR prefix of the standard
-  *  notation x.x.x.x/yy or in the context of this 
-  *  class: uint32_t/uint8_t.
- **/
+
 class Prefix {
 
   public:
@@ -39,7 +39,7 @@ class Prefix {
     Prefix() {}
 
     Prefix ( ipv4addr_t addr, uint8_t len )
-        _pfx(addr, addrlen)
+        : _pfx(addr, len)
     {}
 
     Prefix ( const cidr_t & cidr ) 
@@ -83,16 +83,18 @@ class Prefix {
     }
     
 
-  private:
+  protected:
 
     cidr_t	_pfx;
 
 };
 
 
-}  // namespace
+typedef std::vector<Prefix>  PrefixList;
+
+
 }  // namespace
 
 
-#endif  //  PREFIX_HPP_
+#endif  //  _TCANETPP_PREFIX_HPP_
 
