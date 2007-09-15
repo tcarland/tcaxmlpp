@@ -13,7 +13,7 @@ INCLUDES =	    -Iinclude
 OBJS =		    src/SocketOption.o src/Socket.o src/BufferedSocket.o \
                     src/CidrUtils.o src/CircularBuffer.o src/StringUtils.o \
                     src/EventManager.o src/Thread.o src/ThreadLock.o \
-                    src/ThreadMutexPool.o
+                    src/ThreadMutexPool.o src/Logger.o src/RandomPrefix.o
                     
                     
                 #src/ConfigOpts.o src/FileUtils.o \
@@ -46,7 +46,7 @@ solib: lib/libtcanet.so.0.0.1
 
 libtcapt: lib/libtcapt.a
 
-lib/libtcapt.a: ${PTOBJS}
+lib/libtcapt.a: ${PT_OBJS}
 	( $(MKDIR) lib )
 	$(make-lib-rule)
 	@echo
@@ -63,13 +63,6 @@ lib/libtcanet.so.0.0.1: ${OBJS}
 	( cd lib; ln -s $@ libtcanet.so )
 	@echo
 
-ptest: ${OBJS} ${TOBJS}
-	$(make-cxxbin-rule)
-
-pfxtest: ${OBJS} ${POBJS}
-	$(make-cxxbin-rule)
-
-
 documentation:
 	(cd docs; ${MAKE} ${MFLAGS} ${MVARS} all )
 	@echo
@@ -79,19 +72,23 @@ libclean:
 	@echo
 
 doc-clean:
-	(cd docs; $(MAKE) clean )
+	( cd docs; $(MAKE) clean )
 	@echo
 
 clean:
 	$(RM) $(OBJS) \
 	src/*.d src/*.D src/*.bd src/*.o lib/*.bd *.bd
+	
+test-clean:
+	( cd test; $(MAKE) distclean )
+	@echo
 
-distclean: clean libclean doc-clean
+distclean: clean libclean doc-clean test-clean
 	$(RM) $(BIN)
 
 install:
 ifdef SOEMON3_PREFIX
 	@echo "Installing libtcanet to $(SOEMON3_PREFIX)/lib"
-	$(RSYNC) --delete include/ $(SOEMON3_PREFIX)/include/tcanet/
+	$(RSYNC) --delete include/ $(SOEMON3_PREFIX)/include/tcanetpp/
 	$(RSYNC) lib/ $(SOEMON3_PREFIX)/lib/
 endif

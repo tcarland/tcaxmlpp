@@ -128,11 +128,11 @@ LFLAGS     += -L$(TCAXMLPLUS_HOME)/lib
 LIBS       += -ltcaxmlplus
 endif
 
-ifdef NEED_LIBTCANET
-TCANET_HOME = $(TOPDIR)/common/libtcanet
-INCLUDES   += -I$(TCANET_HOME)/include
-LFLAGS     += -L$(TCANET_HOME)/lib
-LIBS       += -ltcanet
+ifdef NEED_TCANETPP
+TCANETPP_HOME = $(TOPDIR)/common/tcanetpp
+INCLUDES     += -I$(TCANETPP_HOME)/include
+LFLAGS       += -L$(TCANETPP_HOME)/lib
+LIBS         += -ltcanetpp
 endif
 
 ifdef NEED_TCASQLPLUS

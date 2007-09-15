@@ -23,8 +23,10 @@ class Prefix {
     Prefix() {}
 
     Prefix ( ipv4addr_t addr, uint8_t len )
-        : _pfx(addr, len)
-    {}
+    {
+        _pfx.addr     = addr;
+        _pfx.addrlen  = len;
+    }
 
     Prefix ( const cidr_t & cidr ) 
         : _pfx(cidr) 
@@ -32,8 +34,8 @@ class Prefix {
       
     Prefix ( const Prefix & p ) 
     {
-	_pfx.addr    = p._pfx.addr;
-	_pfx.addrlen = p._pfx.addrlen;
+	_pfx.addr    = p.getPrefix();
+	_pfx.addrlen = p.getPrefixLen();
     }
 
     virtual ~Prefix() {}
