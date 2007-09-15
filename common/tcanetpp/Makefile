@@ -11,8 +11,11 @@ INCLUDES =	    -Iinclude
 
 
 OBJS =		    src/SocketOption.o src/Socket.o src/BufferedSocket.o \
-                    src/CidrUtils.o src/CircularBuffer.o src/StringUtils.o
-                
+                    src/CidrUtils.o src/CircularBuffer.o src/StringUtils.o \
+                    src/EventManager.o src/Thread.o src/ThreadLock.o \
+                    src/ThreadMutexPool.o
+                    
+                    
                 #src/ConfigOpts.o src/FileUtils.o \
                 #src/EventManager.o src/Thread.o src/ThreadLock.o \
                 #src/ThreadMutexPool.o src/CirBuffer.o \

@@ -16,6 +16,7 @@ extern "C" {
 # include <inttypes.h>
 # include <unistd.h>
 # include <netinet/in.h>
+# include <errno.h>
 #endif
 
 
@@ -56,6 +57,21 @@ extern "C" {
 
 
 typedef struct in_addr    inaddr_t;
+
+
+typedef struct cidr {
+    ipv4addr_t  addr;
+    uint16_t    addrlen;
+
+    cidr() 
+        : addr(0), addrlen(0) 
+    {}
+
+    cidr ( ipv4addr_t address_, uint16_t address_len )
+        : addr(address_), addrlen(address_len)
+    {}
+
+} cidr_t;
 
 
 

@@ -1,0 +1,491 @@
+/**  EventManager
+  * 
+  *   Class for handling multiplexing data I/O and timer events.
+  *
+  *   @Author  tcarland@gmail.com
+  *   @Version 0.6
+ **/
+#define _TCANETPP_EVENTMANAGER_CPP_
+
+
+extern "C" {
+#ifndef WIN32
+# include <sys/select.h>
+# include <unistd.h>
+#endif
+}
+
+#include <algorithm>
+
+#include "EventManager.h"
+
+namespace tcanetpp {
+
+
+#ifdef WIN32
+int EventManager::_maxfdp = 0;
+#else
+int EventManager::_maxfdp = MAX_FDVAL;
+#endif
+
+
+
+/**  @param dieoff  boolean indicating whether to terminate when
+  *  there are no subscribed clients or timers */
+EventManager::EventManager ( bool dieoff )
+    : _evid(0),
+      _minevu(DEFAULT_EVU),
+      _dieoff(dieoff),
+      _alarm(false), 
+      _debug(false)
+{}
+
+
+EventManager::~EventManager() 
+{}
+
+
+evid_t
+EventManager::addTimerEvent ( TimerHandler * handler, 
+			      uint32_t sec, uint32_t msec, int count )
+{
+    EventTimer  timer;
+
+    if ( (handler == NULL) || (sec == 0 && msec == 0) )
+	return 0;
+
+    if ( _debug )
+	printf("EventManager::addTimerEvent(): ");
+
+    timer.evid    = ++_evid;
+    if ( timer.evid == 0 )
+        return 0;
+
+    timer.evmgr   = this;
+    timer.handler = handler;
+    timer.count   = count;
+    timer.enabled = true;
+
+    if ( sec > 0 ) {
+	timer.evsec  = sec;
+	timer.abstime.tv_sec  = (long)(time(NULL) + timer.evsec);
+	timer.abstime.tv_usec = 0;
+    } else {
+	timer.evusec = msectoevu(msec);
+	timer.abstime.tv_sec  = 0;
+	timer.abstime.tv_usec = timer.evusec;
+    }
+    this->checkMinTimer(timer);
+
+    _timers[timer.evid] = timer;
+
+    if ( _debug )
+	printf("id %d:  %u sec - %u msec - %d count\n", timer.evid, sec, msec, count);
+ 
+    return timer.evid;
+}
+
+
+evid_t
+EventManager::addTimerEvent ( TimerHandler * handler, time_t abstime )
+{
+    EventTimer  timer;
+
+    if ( handler == NULL || abstime < time(NULL) )
+	return 0;
+
+    if ( _debug )
+        printf("EventManager::addTimerEvent()\n");
+
+    timer.evid      = this->getNewEventId();
+    if ( timer.evid == 0 )
+        return 0;
+
+    timer.evmgr     = this;
+    timer.handler   = handler;
+    timer.count     = 1;
+    timer.evsec     = (long) abstime;
+    timer.absolute  = true;
+    timer.enabled   = true;
+
+    timer.abstime.tv_sec  = 0;
+    timer.abstime.tv_usec = 0;
+
+    _timers[timer.evid] = timer;
+
+    return timer.evid;
+}
+
+
+
+evid_t
+EventManager::addIOEvent ( IOHandler * handler, const sockfd_t & sfd, 
+                           void * rock, bool isServer )
+{
+    EventIO  io;
+
+    if ( handler == NULL ) {
+        _errstr = "Invalid event handler";
+	return 0;
+    }
+
+    if ( ! Socket::IsValidDescriptor(sfd) ) {
+        _errstr = "Invalid IO Descriptor";
+        return 0;
+    }
+
+    io.evid     = this->getNewEventId();
+    if ( io.evid == 0 )
+        return 0;
+
+    io.evmgr    = this;
+    io.handler  = handler;
+    io.sfd      = sfd;
+    io.rock     = rock;
+    io.isServer = isServer;
+    io.enabled  = true;
+
+    if ( _debug ) {
+	printf("EventManager::addIOEvent() adding ");
+	if ( io.isServer )
+	    printf("server ");
+	printf("socket %d id: %d\n", sfd, io.evid);
+    }
+
+    _clients[io.evid] = io;
+
+    return io.evid;
+}
+
+
+bool
+EventManager::validEvent ( const evid_t & id )
+{
+    EventIOMap::iterator     cIter;
+    EventTimerMap::iterator  tIter;
+
+    if ( (cIter = _clients.find(id)) != _clients.end() )
+        if ( (cIter->second).enabled )
+            return true;
+
+    if ( (tIter = _timers.find(id)) != _timers.end() )
+        if ( (tIter->second).enabled )
+            return true;
+
+    return false;
+}
+
+
+bool
+EventManager::removeEvent ( const evid_t & id )
+{
+    EventTimerMap::iterator   tIter;
+    EventIOMap::iterator      cIter;
+   
+    if( _debug )
+	printf("EventManager::removeEvent() %u\n", id);	
+
+    if ( (tIter = _timers.find(id)) != _timers.end() ) {
+        this->destroyEvent(tIter->second);
+        _timers.erase(tIter);
+	return true;
+    }
+
+    if ( (cIter = _clients.find(id)) != _clients.end() ) {
+        FD_CLR(cIter->second.sfd, &_rset);
+        FD_CLR(cIter->second.sfd, &_wset);
+        FD_CLR(cIter->second.sfd, &_xset);
+        this->destroyEvent(cIter->second);
+        _clients.erase(cIter);
+    	return true;
+    }
+
+    return false;
+}
+
+
+
+void
+EventManager::eventLoop()
+{
+    timeval to, now;
+    int	    rdy;
+
+    EventIOMap::iterator   cIter;
+
+    if( _debug )
+	printf("EventManager::eventLoop()\n");
+
+    while ( ! _alarm ) {
+
+	FD_ZERO(&_rset);
+	FD_ZERO(&_wset);
+	FD_ZERO(&_xset);
+
+	// set IO events
+	for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter ) {
+	    EventIO & io = cIter->second;
+
+	    if ( io.handler->readable(&io) )
+		FD_SET(io.sfd, &_rset);
+
+	    if ( io.handler->writeable(&io) )
+		FD_SET(io.sfd, &_wset);
+	}
+
+	this->verifyTimers();
+
+	::memset(&to, 0, sizeof(struct timeval));
+	to.tv_usec = _minevu;
+
+#       ifdef WIN32
+	if ( this->activeClients() == 0 ) {
+	    Sleep(evutomsec(_minevu));
+	}
+#       endif
+
+        EventManager::GetTimeOfDay(now);
+	
+	if ( (rdy = select(_maxfdp, &_rset, &_wset, &_xset, &to)) < 0 ) {
+#           ifdef WIN32
+            int err = WSAGetLastError();
+            if ( err == WSAEINTR )
+                continue;
+#           else
+	    if ( errno == EINTR )
+		continue;
+#           endif
+	}
+
+	for ( cIter = _clients.begin(); cIter != _clients.end(); cIter++ ) {
+	    EventIO & io = cIter->second;
+
+	    if ( FD_ISSET(io.sfd, &_rset) ) {
+                io.abstime = now;
+
+		if ( io.isServer ) {
+		    io.handler->handle_accept(&io);
+		} else {
+		    io.handler->handle_read(&io);
+		}
+	    }
+
+	    if ( FD_ISSET(io.sfd, &_wset) ) {
+                io.abstime = now;
+		io.handler->handle_write(&io);
+	    }
+	}
+
+	this->checkTimers(now);
+
+	if ( this->activeRegistrations() == 0 && _dieoff )
+	    break;
+    }
+
+    // cleanup clients
+    for ( cIter = _clients.begin(); cIter != _clients.end(); cIter++ )
+	this->destroyEvent(cIter->second);
+    _clients.clear();
+
+    // cleanup timers
+    this->clearTimers();
+
+    if ( _debug )
+        printf("EventManager::eventLoop() finished\n");
+
+    return;
+}
+
+
+void
+EventManager::verifyTimers()
+{
+    EventTimerMap::iterator  tIter;
+
+    this->_minevu = DEFAULT_EVU;
+
+    for ( tIter = _timers.begin(); tIter != _timers.end(); ) {
+	EventTimer & timer = tIter->second;
+
+	if ( timer.evid == 0 || ! timer.enabled ) {
+	    _timers.erase(tIter++);
+	} else {
+	    if ( timer.evusec > 0 && timer.evusec < this->_minevu )
+		this->_minevu = timer.evusec;
+	    tIter++;
+	}
+    }
+
+    return;
+}
+
+
+void
+EventManager::checkTimers ( const timeval & now )
+{
+    EventTimerMap::iterator  tIter;
+
+    for ( tIter = _timers.begin(); tIter != _timers.end(); tIter++ ) {
+	EventTimer & timer = tIter->second;
+
+	if ( ! timer.enabled )
+	    continue;
+
+	if ( timer.abstime.tv_usec > 0 ) {
+
+	    if ( timer.abstime.tv_usec <= _minevu ) {
+		timer.abstime.tv_usec = timer.evusec;
+		timer.fired++;
+		timer.handler->timeout(&timer);
+
+		if ( timer.count > 0 && timer.fired == timer.count )
+		    timer.enabled = false;
+
+	    } else {
+		timer.abstime.tv_usec -=  _minevu;
+	    }
+
+	} else if ( timer.abstime.tv_sec > 0 && timer.abstime.tv_sec <= now.tv_sec ) {
+	    timer.fired++;
+	    timer.handler->timeout(&timer);
+
+	    if ( timer.absolute ) {
+		timer.enabled = false;
+	    } else if ( timer.count > 0 && timer.fired == timer.count ) {
+		timer.enabled = false;
+	    } else {
+		timer.abstime.tv_sec = now.tv_sec + timer.evsec;
+	    }
+
+	}
+    }
+
+    return;
+}
+
+
+void
+EventManager::clearTimers()
+{
+    EventTimerMap::iterator  tIter;
+
+    for ( tIter = _timers.begin(); tIter != _timers.end(); ++tIter ) {
+	EventTimer & timer = tIter->second;
+	this->destroyEvent(timer);
+    }
+    _timers.clear();
+
+    return;
+}
+
+
+void
+EventManager::checkMinTimer ( const EventTimer & timer )
+{
+    if ( timer.evusec < _minevu )
+	_minevu = timer.evusec;
+
+    return;
+}
+
+
+void
+EventManager::destroyEvent ( EventIO & io )
+{
+    if ( io.handler )
+	io.handler->handle_destroy(&io);
+    io.enabled = false;
+    return;
+}
+  
+
+void
+EventManager::destroyEvent ( EventTimer & timer )
+{
+    if ( timer.enabled )
+	timer.handler->finished(&timer);
+    timer.enabled = false;
+}
+    
+
+void
+EventManager::setDebug ( bool d )
+{
+    _debug = d;
+}
+
+
+void
+EventManager::setAlarm()
+{
+    _alarm = true;
+}
+
+
+evid_t
+EventManager::getNewEventId()
+{
+    evid_t id = 0;
+
+    if ( (evid_t) this->activeRegistrations() == (--id) ) // max events
+        return 0;
+
+    EventTimerMap::iterator tIter;
+    EventIOMap::iterator    cIter;
+    bool avail = false;
+
+    while ( ! avail ) {
+        avail = true;
+        id    = ++_evid;
+
+        if ( (tIter = _timers.find(id)) != _timers.end() )
+            avail = false;
+
+        if ( (cIter = _clients.find(id)) != _clients.end() )
+            avail = false;
+    }
+
+    return id;
+}
+
+
+void
+EventManager::GetTimeOfDay ( timeval & t )
+{
+#   ifdef WIN32
+    t.tv_sec = (long) ::time(NULL);
+#   else
+    ::gettimeofday(&t, 0);
+#   endif
+    return;
+}
+
+
+bool
+EventTimer::operator== ( const EventTimer & timer )
+{
+    if ( this->evsec > 0 )
+	return(evsec == timer.evsec);
+    return(this->evusec == timer.evusec);
+}
+
+
+bool
+EventTimer::operator< ( const EventTimer & timer )
+{
+    if ( this->evsec > 0 )
+	return(this->evsec < timer.evsec);
+    return(this->evusec < timer.evusec);
+}
+
+
+bool
+EventIO::operator== ( const EventIO & io )
+{
+    return(this->evid == io.evid);
+}
+
+
+} // namespace 
+
+//  _TCANETPP_EVENTMANAGER_CPP_
