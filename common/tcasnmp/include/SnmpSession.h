@@ -4,11 +4,17 @@
 #ifndef _TCASNMP_SNMPSESSION_H_
 #define _TCASNMP_SNMPSESSION_H_
 
-
-#include <net-snmp/net-snmp-config.h>
-#include <net-snmp/net-snmp-includes.h>
+#include <string>
 
 
+#include "NetworkDevice.h"
+using namespace tcanetpp;
+
+#include "SnmpOid.h"
+#include "SnmpPdu.h"
+
+
+namespace tcasnmp {
 
 
 class SnmpSession {
@@ -17,24 +23,25 @@ public:
     
     SnmpSession();
     SnmpSession ( const std::string & host, const std::string & community );
-    SnmpSession ( NetworkDevice * device );
+    SnmpSession ( const NetworkDevice & device );
     
     virtual ~SnmpSession();
     
     
     virtual bool                 openSession   ( const std::string & host,
-                                                          const std::string & community );
-    virtual bool                 openSession   ( NetworkDevice    * device );
+                                                 const std::string & community );
+    virtual bool                 openSession   ( const NetworkDevice & device,
+                                                 bool write = false );
     
     virtual void                 closeSession();
     
-    virtual SnmpPdu*             snmpGet       ( const std::string & oidstr );
-    virtual SnmpPdu*             snmpGet       ( SnmpOid   & oid );
+    virtual SnmpPdu*             get       ( const std::string & oidstr );
+    virtual SnmpPdu*             get       ( SnmpOid   & oid );
     
-    virtual SnmpPdu*             snmpGetNext   ( const std::string & oidstr );
-    virtual SnmpPdu*             snmpGetNext   ( SnmpOid  & oid );
+    virtual SnmpPdu*             getNext   ( const std::string & oidstr );
+    virtual SnmpPdu*             getNext   ( SnmpOid  & oid );
     
-    virtual SnmpPdu*             snmpGetNext   ( SnmpPdu  * response );
+    virtual SnmpPdu*             getNext   ( SnmpPdu  * response );
     
     
     /**  Performs the snmpset operation for the provided OID, type
@@ -51,10 +58,11 @@ public:
       *      a  IP Address, and
       *      b  Bits
      **/
-    virtual bool                 snmpSet       ( const char * soid, char type,
-                                                 const char * value );
+    virtual bool                 set       ( const std::string & soid, char type,
+                                             const std::string & value );
     
-    virtual const std::string &  getErrorStr()
+    virtual const std::string &  getErrorStr();
+    virtual void                         setErrorStr ( const std::string & errstr ) { _errStr = errstr; }
     
     /*  Some common mib-2 snmp device queries  */
     virtual std::string          getSysDescr();
@@ -101,6 +109,6 @@ private:
 };
 
 
-} // namespace
+}  // namespace
 
 #endif /*_TCASNMP_NETSNMPSESSION_H_*/

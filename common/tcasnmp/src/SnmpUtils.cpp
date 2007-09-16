@@ -5,6 +5,8 @@
 #define _TCASNMP_SNMPUTILS_CPP_
 
 #include "SnmpUtils.h"
+#include "oids.h"
+
 
 #include "StringUtils.h"
 #include "CidrUtils.h"
@@ -15,15 +17,15 @@ namespace tcasnmp {
 
 
 void
-SnmpUtils::MapInterfaces ( SnmpSession * session, std::map<int, std::string> & ifmap )
+SnmpUtils::MapInterfaces ( SnmpSession * session, InterfaceMap & ifmap )
 {
     SnmpPdu *    response;
     std::string  desc;
     int          indx;
     
-    std::map<int, std::string>  ifMap;
+    InterfaceMap  ifMap;
 
-    response = session->snmpGetNext(IFINDEX_OID);
+    response = session->getNext(IFINDEX_OID);
 
     while ( response ) {
 
@@ -33,7 +35,7 @@ SnmpUtils::MapInterfaces ( SnmpSession * session, std::map<int, std::string> & i
 	desc = SnmpUtils::QueryIfDescr(session, indx);
 	ifmap[indx] = desc;
 
-	response = session->snmpGetNext(response);
+	response = session->getNext(response);
     }
 
     if ( response )
@@ -46,12 +48,12 @@ SnmpUtils::MapInterfaces ( SnmpSession * session, std::map<int, std::string> & i
 void
 SnmpUtils::MapInterfaces ( SnmpSession * session, NetworkDevice & device )
 {
-    std::map<int, std::string>      ifmap;
-    std::map<int, ipv4addr_t>       ipmap;
+    InterfaceMap      ifmap;
+    IPIndxMap          ipmap;
     IfList                          ifv;
 
-    std::map<int, std::string>::iterator  fIter;
-    std::map<int, ipv4addr_t>::iterator   pIter;
+    InterfaceMap::iterator  fIter;
+    IPIndxMap::iterator   pIter;
 
     SnmpUtils::MapInterfaces(session, ifmap);
     SnmpUtils::QueryIpTable(session, ipmap);
@@ -80,7 +82,7 @@ SnmpUtils::MapInterfaces ( SnmpSession * session, NetworkDevice & device )
 
 
 void
-SnmpUtils::QueryIpTable ( SnmpSession * session, std::map<int, ipv4addr_t> & ipmap )
+SnmpUtils::QueryIpTable ( SnmpSession * session, IPIndxMap & ipmap )
 {
     SnmpPdu *               response;
     std::vector<ipv4addr_t> ipv;
@@ -89,7 +91,7 @@ SnmpUtils::QueryIpTable ( SnmpSession * session, std::map<int, ipv4addr_t> & ipm
 
     std::string toid = IP_ADDRENTRY_OID;
 
-    response = session->snmpGetNext(toid.c_str());
+    response = session->getNext(toid.c_str());
 
     while ( response ) {
 
@@ -99,11 +101,11 @@ SnmpUtils::QueryIpTable ( SnmpSession * session, std::map<int, ipv4addr_t> & ipm
 	} else {
             errstr = "Invalid type: ";
             errstr.append(StringUtils::toString(response->pdu->variables->type));
-            session->errorStr(errstr);
+            session->setErrorStr(errstr);
 	    break;
 	}
 
-	response = session->snmpGetNext(response);
+	response = session->getNext(response);
     }
 
     if ( response )
@@ -117,9 +119,9 @@ SnmpUtils::QueryIpTable ( SnmpSession * session, std::map<int, ipv4addr_t> & ipm
 	
         addr = (ipv4addr_t) *vIter;
 	toid = IP_INDXENTRY_OID;
-	toid.append(".").append(Cidr::ntop(addr));
+	toid.append(".").append(CidrUtils::ntop(addr));
 
-	response = session->snmpGet(toid.c_str());
+	response = session->get(toid.c_str());
 
 	if ( response == NULL )
 	    continue;
@@ -145,7 +147,7 @@ SnmpUtils::QueryIfDescr ( SnmpSession * session, long indx )
     toid.append(".");
     toid.append(StringUtils::toString(indx));
 
-    response = session->snmpGet(toid.c_str());
+    response = session->get(toid.c_str());
 
     if ( response == NULL )
 	return ifDescr;
@@ -170,7 +172,7 @@ SnmpUtils::QueryIfAlias ( SnmpSession * session, long indx )
     toid.append(".");
     toid.append(StringUtils::toString(indx));
 
-    response = session->snmpGet(toid.c_str());
+    response = session->get(toid.c_str());
 
     if ( ! response )
 	return ifAlias;
@@ -191,7 +193,7 @@ SnmpUtils::GetCDPNeighbors ( SnmpSession * session, DeviceSet & devlist )
     std::string  rsp;
     int          total  = 0;
 
-    response = session->snmpGetNext(CDP_DEVICEID_OID);
+    response = session->getNext(CDP_DEVICEID_OID);
 
     while ( response ) {
         NetworkDevice device;
@@ -205,7 +207,7 @@ SnmpUtils::GetCDPNeighbors ( SnmpSession * session, DeviceSet & devlist )
             total++;
         }
 
-	response = session->snmpGetNext(response);
+	response = session->getNext(response);
     }
 
     if ( response )

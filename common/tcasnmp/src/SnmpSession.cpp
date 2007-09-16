@@ -8,6 +8,8 @@
 #include <stdio.h>
 
 #include "SnmpSession.h"
+#include "oids.h"
+
 
 #include "StringUtils.h"
 using namespace tcanetpp;
@@ -44,7 +46,7 @@ SnmpSession::SnmpSession ( const NetworkDevice & device )
       _baseOid(NULL)
 {
     this->init();
-    this->openSession(device.deviceName(), device.community());
+    this->openSession(device, false);
 }
 
 
@@ -82,7 +84,7 @@ SnmpSession::openSession ( const std::string & host, const std::string & communi
 
     if ( _sptr == NULL ) {
 	snmp_error(&_session, &liberr, &syserr, &errstr);
-	_errStr = "openSession() ";
+	_errStr = "SnmpSession::openSession() ";
 	_errStr.append(errstr);
 	::free(errstr);
 	return false;
@@ -118,7 +120,7 @@ SnmpSession::closeSession()
 
 
 SnmpPdu*
-SnmpSession::snmpGet ( const char * toid )
+SnmpSession::get ( const std::string & toid )
 {
     size_t   oid_len = MAX_OID_LEN;
     oid      anOID[oid_len];
@@ -132,7 +134,7 @@ SnmpSession::snmpGet ( const char * toid )
 
     pdu = snmp_pdu_create(SNMP_MSG_GET);
 
-    snmp_parse_oid(toid, anOID, &oid_len);
+    snmp_parse_oid(toid.c_str(), anOID, &oid_len);
     snmp_add_null_var(pdu, anOID, oid_len);
 
     status = snmp_sess_synch_response(_sptr, pdu, &response);
@@ -142,7 +144,7 @@ SnmpSession::snmpGet ( const char * toid )
 	return(new SnmpPdu(response));
     } else {
 	snmp_sess_error(_sptr, &liberr, &syserr, &errstr);
-	_errStr = "snmpGet(): ";
+	_errStr = "SnmpSession::get(): ";
 	_errStr.append(errstr);
 	::free(errstr);
     }
@@ -152,7 +154,7 @@ SnmpSession::snmpGet ( const char * toid )
 
 
 SnmpPdu*
-SnmpSession::snmpGetNext ( const char * toid )
+SnmpSession::getNext ( const std::string & toid )
 {
     size_t   oid_len = MAX_OID_LEN;
     oid      anOID[oid_len];
@@ -164,7 +166,7 @@ SnmpSession::snmpGetNext ( const char * toid )
 
     pdu = snmp_pdu_create(SNMP_MSG_GETNEXT);
 
-    snmp_parse_oid(toid, anOID, &oid_len);
+    snmp_parse_oid(toid.c_str(), anOID, &oid_len);
     snmp_add_null_var(pdu, anOID, oid_len);
 
     if ( _baseOid )
@@ -173,12 +175,17 @@ SnmpSession::snmpGetNext ( const char * toid )
     _baseOid = snmp_duplicate_objid(anOID, oid_len);
     _baseLen = oid_len;
 
-    return this->snmpGetNext(new SnmpPdu(pdu));
+    return this->getNext(new SnmpPdu(pdu));
 }
 
+SnmpPdu*
+SnmpSession::getNext ( SnmpOid & oid )
+{
+    return NULL;
+}
     
 SnmpPdu*
-SnmpSession::snmpGetNext ( SnmpPdu * spdu )
+SnmpSession::getNext ( SnmpPdu * spdu )
 {
     char* errstr;
     int   status, liberr, syserr;
@@ -207,7 +214,7 @@ SnmpSession::snmpGetNext ( SnmpPdu * spdu )
 	return spdu;
     } else {
 	snmp_sess_error(_sptr, &liberr, &syserr, &errstr);
-	_errStr = "snmpGetNext(): ";
+	_errStr = "SnmpSession::getNext(): ";
 	_errStr.append(errstr);
 	::free(errstr);
     }
@@ -217,7 +224,7 @@ SnmpSession::snmpGetNext ( SnmpPdu * spdu )
 
 
 bool
-SnmpSession::snmpSet ( const char * toid, char type, const char * value )
+SnmpSession::set ( const std::string & toid, char type, const std::string & value )
 {
     size_t   oid_len = MAX_OID_LEN;
     oid      anOID[oid_len];
@@ -232,8 +239,8 @@ SnmpSession::snmpSet ( const char * toid, char type, const char * value )
 
     pdu = snmp_pdu_create(SNMP_MSG_SET);
 
-    snmp_parse_oid(toid, anOID, &oid_len);
-    snmp_add_var(pdu, anOID, oid_len, type, value);
+    snmp_parse_oid(toid.c_str(), anOID, &oid_len);
+    snmp_add_var(pdu, anOID, oid_len, type, value.c_str());
 
     status = snmp_sess_synch_response(_sptr, pdu, &response);
 
@@ -242,7 +249,7 @@ SnmpSession::snmpSet ( const char * toid, char type, const char * value )
 	result  = true;
     } else {
 	snmp_sess_error(_sptr, &liberr, &syserr, &errstr);
-	_errStr = "snmpSet(): ";
+	_errStr = "SnmpSession::set(): ";
 	_errStr.append(errstr);
 	::free(errstr);
     }
@@ -285,7 +292,7 @@ SnmpSession::getSysDescr()
 
     SnmpPdu  * response = NULL;
 
-    response = this->snmpGet(toid.c_str());
+    response = this->get(toid.c_str());
 
     if ( response ) {
         response->getString(desc);
@@ -304,7 +311,7 @@ SnmpSession::getSysName()
 
     SnmpPdu  * response = NULL;
 
-    response = this->snmpGet(toid.c_str());
+    response = this->get(toid.c_str());
 
     if ( response ) {
         response->getString(name);
@@ -323,7 +330,7 @@ SnmpSession::getSysUpTime()
     
     SnmpPdu  * response = NULL;
 
-    response = this->snmpGet(toid.c_str());
+    response = this->get(toid.c_str());
 
     if ( response ) {
         response->getTimestamp(uptime);
@@ -341,19 +348,19 @@ SnmpSession::community()
 }
 
 
-std::string
-SnmpSession::errorStr()
+const std::string&
+SnmpSession::getErrorStr()
 {
     return _errStr;
 }
 
-
+/*
 void
 SnmpSession::errorStr ( const std::string & errstr )
 {
     _errStr = errstr;
 }
-
+*/
 
 void
 SnmpSession::LibInit()

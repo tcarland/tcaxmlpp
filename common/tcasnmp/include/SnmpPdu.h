@@ -3,12 +3,14 @@
 
 #include <string>
 
+
+
 #include "tcanetpp_types.h"
+
+#include "SnmpOid.h"
 
 
 namespace tcasnmp {
-
-class SnmpOid;
 
 
 class SnmpPdu {

@@ -1,8 +1,10 @@
 #define _TCASNMP_SNMPOID_CC_
 
 #include <sstream>
+#include <vector>
 
 #include "SnmpOid.h"
+#include "SnmpSession.h"
 
 #include "StringUtils.h"
 using namespace tcanetpp;
@@ -146,7 +148,7 @@ SnmpOid::StringFromBitString ( const std::string & bitstr )
     std::vector<std::string>  v;
     std::vector<std::string>::iterator vIter;
 
-    StringUtils:split(bitstr, '.', std::back_inserter(v));
+    StringUtils::split(bitstr, '.', std::back_inserter(v));
 
     if ( v.size() == 0 )
         return str;
