@@ -7,8 +7,10 @@
 #ifndef _TCANETPP_DEVICEMAP_H_
 #define _TCANETPP_DEVICEMAP_H_
 
-
+#include <string>
 #include <map>
+
+#include "tcanetpp_types.h"
 
 
 namespace tcanetpp {

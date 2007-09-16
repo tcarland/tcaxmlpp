@@ -10,6 +10,7 @@ extern "C" {
 # include <unistd.h>
 # include <sys/socket.h>
 }
+#include <vector>
 
 #include "NetworkDevice.h"
 
@@ -210,8 +211,6 @@ void
 NetworkDevice::model ( const std::string & model )
 {
     _model = model;
-    if ( StringUtils::indexOf(model, "3548") >= 0 )
-        _crippled = true;
 }
 
 const std::string&
@@ -420,16 +419,16 @@ std::string
 NetworkDevice::SetDeviceVersion ( NetworkDevice & dev, const std::string & desc )
 {
     std::string  ver, vs;
-    std::vector  stok;
+    std::vector<std::string>  stok;
     
-    StringUtils::split(desc, "\n", std::back_inserter(stok));
+    StringUtils::split(desc, '\n', std::back_inserter(stok));
     
 
     if ( stok.size() >= 2 ) {
 	vs   = stok[1];
 	stok.clear();
 	
-	StringUtils::split(vs, ",", std::back_inserter(stok));
+	StringUtils::split(vs, ',', std::back_inserter(stok));
 	vs = "";
 	if ( stok.size() >= 2 ) {
 	    vs   = stok[0];
