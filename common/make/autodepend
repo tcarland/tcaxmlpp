@@ -109,8 +109,9 @@ INCLUDES += -I$(ZLIB_HOME)
 endif
 
 ifdef NEED_LIBXML2_INCLUDE
-LIBXML2_HOME = $(TOPDIR)/common/ext/libxml2
-INCLUDES    += -I$(LIBXML2_HOME)/include
+#LIBXML2_HOME = $(TOPDIR)/common/ext/libxml2
+#INCLUDES    += -I$(LIBXML2_HOME)/include
+INCLUDES    += -I/usr/include/libxml2
 endif
 
 ifdef NEED_OPENSSL
@@ -121,10 +122,10 @@ CFLAGS      += -DWITH_OPENSSL
 LIBS        += -lssl -lcrypto
 endif
 
-ifdef NEED_TCAXMLPLUS
-TCAXMLPLUS_HOME = $(TOPDIR)/common/tcaxmlplus
-INCLUDES   += -I$(TCAXMLPLUS_HOME)
-LFLAGS     += -L$(TCAXMLPLUS_HOME)/lib
+ifdef NEED_TCAXML
+TCAXML_HOME = $(TOPDIR)/common/tcaxml++
+INCLUDES   += -I$(TCAXML_HOME)
+LFLAGS     += -L$(TCAXML_HOME)/lib
 LIBS       += -ltcaxmlplus
 endif
 
