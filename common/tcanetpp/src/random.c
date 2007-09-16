@@ -19,12 +19,12 @@ static int _seeded = 0;
 static void
 Seed()
 {
-    long   x, y;
-    int    s;
-    time_t t;
-    ldiv_t ld;
+    long    x, y;
+    int     s;
+    time_t  t;
+    ldiv_t  ld;
 
-    x = (long) ::time(&t);
+    x = (long) time(&t);
     y = ( x / 5555 );
 
     ld = ldiv(x, y);

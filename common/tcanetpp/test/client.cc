@@ -45,15 +45,15 @@ int main ( int argc, char **argv )
 
     port = atoi(argv[1]);
 
-    sock = new BufferedSocket(addr, port, SOCKET_CLIENT, TCP);
-    sock->setDebug(true);
+    sock = new BufferedSocket(addr, port, SOCKET_CLIENT, IPPROTO_TCP);
+    //sock->setDebug(true);
 
     if ( sock->connect() < 0 ) {
         printf("Error connecting to server: %s\n", sock->errorStr().c_str());
         return -1;
     }
 
-    sock->unblock();
+    sock->setNonBlocking();
 
     signal(SIGINT, &sigHandler);
     signal(SIGTERM, &sigHandler);

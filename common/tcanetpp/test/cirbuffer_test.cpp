@@ -16,9 +16,9 @@ int main ( int argc, char ** argv )
     if ( argc == 2 )
         buffsize = StringUtils::fromString<size_t>(argv[1]);
 
-    CirBuffer * buff  = new CirBuffer(buffsize);
-    std::string bstr  = "0123456789";
-    int         count = buffsize / bstr.length();
+    CircularBuffer * buff  = new CircularBuffer(buffsize);
+    std::string      bstr  = "0123456789";
+    int              count = buffsize / bstr.length();
 
     std::cout << " buffer capacity = " << buff->size() 
         << ", max is " << maxsize

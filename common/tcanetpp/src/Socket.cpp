@@ -17,6 +17,9 @@
 namespace tcanetpp {
 
 
+Socket::SocketFactory Socket::factory;
+
+
 // ----------------------------------------------------------------------
 
 Socket::Socket()

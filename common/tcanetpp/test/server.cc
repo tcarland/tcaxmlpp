@@ -93,7 +93,7 @@ int main ( int argc, char **argv )
 	    if ( (client = (BufferedSocket*) server->accept(BufferedSocket::factory)) != NULL ) {
 		clist.push_back(client);
 		printf("Client connection accepted from %s\n",
-		    client->getAddrStr().c_str());
+		    client->getAddrString().c_str());
 	    }
 	}
 
@@ -101,7 +101,7 @@ int main ( int argc, char **argv )
 	    BufferedSocket *c = (BufferedSocket*) clist[i];
 	    if ( FD_ISSET(c->getFD(), &rset) ) {
 		if ( recvClientData(c, buffer) < 0 ) {
-		    printf("Closing client %s\n", c->getAddrStr().c_str());
+		    printf("Closing client %s\n", c->getAddrString().c_str());
 		    FD_CLR(c->getFD(), &rset);
 		    delete c;
 		    clist.erase(clist.begin() + i);
@@ -122,7 +122,7 @@ int main ( int argc, char **argv )
 
 
 int
-recvClientData ( BufferedSocket *client, char* buffer )
+recvClientData ( BufferedSocket * client, char * buffer )
 {
     foo_t       *head;
     int          rd;
@@ -172,12 +172,12 @@ createServer ( int port )
     while ( retry < 4 ) {
 
 	try {
-	    server = new BufferedSocket(0, port, SOCKET_SERVER, TCP);
+	    server = new BufferedSocket(0, port, SOCKET_SERVER, IPPROTO_TCP);
 	    if ( ! server->init(true) ) {
 		printf("Socket error: %s\n", server->errorStr().c_str());
 	    } else {
-		server->unblock();
-		server->setSockOpt(SO_RCVBUF, 65535);
+		server->setNonBlocking();
+		server->setSocketOption(SocketOption::SetRcvBuf(65535));
 		return server;
 	    }
 	} catch ( SocketException err ) {
