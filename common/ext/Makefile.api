@@ -1,0 +1,38 @@
+
+TOPDIR = ../..
+include ${TOPDIR}/common/make/soe
+
+
+all:  zlib libxml2
+
+
+help:
+	@echo "Make targets are required to build external libs as needed. "
+	@echo "Available make targets: net-snmp mysqlpp udplibrary zlib libxml2"
+
+
+.PHONY: zlib
+zlib:
+	( cd zlib; sh ./configure; make )
+	@echo
+
+.PHONY: libxml2
+libxml2:
+	( cd libxml2; chmod u+w aclocal.m4; chmod u+w configure; \
+	libtoolize --copy --force; sh ./configure; \
+	chmod u+w python/libxml2-py.c; make )
+	@echo
+
+
+clean:
+	@echo
+
+distclean:
+	( cd zlib; make distclean )
+	if [ -f libxml2/Makefile ]; then\
+		( cd libxml2; make distclean ) \
+	fi
+	@echo
+
+install:
+
