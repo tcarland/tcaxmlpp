@@ -1,10 +1,10 @@
 /**  CmdBuf.h
   *
-  *  @Author   tca@soe.sony.com
-  *  @Version  0.4
+  *  @Author   tarland@gmail.com
+  *  @Version  0.5
  **/
-#ifndef _TCANET_CMDBUF_H_
-#define _TCANET_CMDBUF_H_
+#ifndef _TCANETPP_CMDBUF_H_
+#define _TCANETPP_CMDBUF_H_
 
 #include <iostream>
 #include <string>
@@ -16,8 +16,7 @@ using __gnu_cxx::stdio_filebuf;
 #endif
 
 
-namespace tca {
-namespace net {
+namespace tcanetpp {
 
 
 #define DEFAULT_CMDBUF_SIZE  64
@@ -40,18 +39,17 @@ class CmdBuf {
 
     virtual ~CmdBuf();
 
-    bool   Open ( const char * cmdstr );
-    void   Close();
+    bool        Open        ( const char * cmdstr );
+    void        Close();
 
-    bool   isOpen();
-    bool   haveData();
-    bool   hasData() { return this->haveData(); }
+    bool        isOpen();
+    bool        haveData();
+    bool        hasData()   { return this->haveData(); }
 
-    void   getAllLines ( std::vector<std::string> & lines );
-    
+    bool        putLine     ( const std::string & line );
     std::string getLine();
+    void        getAllLines ( std::vector<std::string> & lines );
 
-    bool   putLine ( const std::string & line );
 
   private:
 
@@ -65,7 +63,6 @@ class CmdBuf {
 
 
 } // namespace
-} // namespace
 
 
-#endif // _TCANET_CMDBUF_H_
+#endif // _TCANETPP_CMDBUF_H_

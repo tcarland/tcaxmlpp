@@ -41,14 +41,14 @@ class BufferedSocket : public Socket {
     BufferedSocket ( ipv4addr_t ip, uint16_t port, SocketType socktype, int proto );
     virtual ~BufferedSocket();
 
-
-    /*  BufferedSocket methods  */
-
-    virtual int      init  ( bool block = false );
+    /*  from Socket */
     
+    virtual int      init  ( bool block = false );
     virtual ssize_t  read  ( void * vptr, size_t n );
     virtual ssize_t  write ( const void * vptr, size_t n );
     
+    /*  BufferedSocket methods  */
+
     virtual ssize_t  flush(); 
     virtual void     clear();
     virtual void     close();
@@ -66,7 +66,7 @@ class BufferedSocket : public Socket {
     void             txBufferSize ( size_t sz );
     size_t           txBufferSize();
 
-    void             disableTxBuffer();
+    void             enableTxBuffer();
 
     CircularBuffer*  getRxBuffer() { return _rbuffer; }
     CircularBuffer*  getTxBuffer() { return _wbuffer; }

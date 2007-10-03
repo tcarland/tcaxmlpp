@@ -89,7 +89,7 @@ distclean: clean libclean doc-clean test-clean
 	$(RM) $(BIN)
 
 install:
-ifdef SOEMON3_PREFIX
+ifdef TCANMS_PREFIX
 	@echo "Installing libtcanetpp to $(SOEMON3_PREFIX)/lib"
 	$(RSYNC) --delete include/ $(SOEMON3_PREFIX)/include/tcanetpp/
 	$(RSYNC) lib/ $(SOEMON3_PREFIX)/lib/

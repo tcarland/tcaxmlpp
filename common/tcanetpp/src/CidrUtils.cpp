@@ -24,9 +24,7 @@ namespace tcanetpp {
 
 
 //-------------------------------------------------------------------//
-/**  Determines the validity of a the given cidr prefix by
-  *  verifying that address itself is a base prefix.
- **/ 
+ 
 bool
 CidrUtils::isBasePrefix ( ipv4addr_t addr, uint8_t mb )
 {
@@ -35,9 +33,7 @@ CidrUtils::isBasePrefix ( ipv4addr_t addr, uint8_t mb )
 
 
 //-------------------------------------------------------------------//
-/**  Converts the provided address to a prefix.
-  *  Eg. 172.16.6.1/16 converts to 172.16.0.0
- **/
+
 ipv4addr_t
 CidrUtils::toBasePrefix ( ipv4addr_t addr, uint8_t mb )
 {
@@ -54,11 +50,8 @@ CidrUtils::toBasePrefix ( ipv4addr_t addr, uint8_t mb )
     return addr;
 }
 
-
 //-------------------------------------------------------------------//
-/**  Converts the provided address to the dotted-quad string
-  *  representation excluding any mask or CIDR style notation.
- **/
+
 std::string
 CidrUtils::toString ( ipv4addr_t addr )
 {
@@ -66,12 +59,6 @@ CidrUtils::toString ( ipv4addr_t addr )
 }
 
 
-//-------------------------------------------------------------------//
-/**@{
-  *  Converts the provided address and masklen to a CIDR 
-  *  style address string.
-  *  Eg. aaa.bbb.ccc.ddd/yy
- **/
 std::string
 CidrUtils::toCidrString ( ipv4addr_t addr, uint8_t mb )
 {
@@ -89,15 +76,9 @@ CidrUtils::toCidrString ( const Prefix & p )
 {
     return CidrUtils::toCidrString(p.getPrefix(), p.getPrefixLen());
 }
-/*@}*/
-
 
 //-------------------------------------------------------------------//
-/**
-  *  Converts the provided string to a network-ordered, unsigned long.
-  *  Essentially a wrapper for inet_pton, the method returns 1 on a
-  *  successful conversion and 0 on error.
- **/
+
 int
 CidrUtils::StringToAddr ( const std::string & addrStr, ipv4addr_t & addr )
 {
@@ -113,7 +94,6 @@ CidrUtils::StringToAddr ( const std::string & addrStr, ipv4addr_t & addr )
 
     return rs;
 }
-
 
 //-------------------------------------------------------------------//
 
@@ -146,9 +126,6 @@ CidrUtils::StringToCidr ( const std::string & cidrStr )
 
 //-------------------------------------------------------------------//
 
-/**  Converts a subnet maskbit count to the equivelent IP Address
-  *  (ie. 255.255.252.0).
- **/
 ipv4addr_t
 CidrUtils::bitsToMask ( uint8_t mb )
 {
@@ -159,13 +136,8 @@ CidrUtils::bitsToMask ( uint8_t mb )
 
 //-------------------------------------------------------------------//
 
-/**@{
-  *  Determines the range of addresses (block size) for a given mask,
-  *  and if provided, the starting octet position of the host portion
-  *  of the address.
- **/
 int
-CidrUtils::getCidrRange ( uint8_t mb, uint8_t* subnet_pos )
+CidrUtils::getCidrRange ( uint8_t mb, uint8_t * subnet_pos )
 {
     uint8_t  pos = 1;
 
@@ -188,11 +160,6 @@ CidrUtils::getCidrRange ( uint8_t mb )
 
 //-------------------------------------------------------------------//
 
-/**  Returns the value of the requested octet in the provided address.
-  *  
-  *  @param  addr  is the address from which the octet is extracted.
-  *  @param subnet_pos  represents the subnet position requested.
- **/
 uint8_t
 CidrUtils::subnetValue ( ipv4addr_t addr, uint8_t subnet_pos )
 {
@@ -212,16 +179,6 @@ CidrUtils::subnetValue ( ipv4addr_t addr, uint8_t subnet_pos )
 
 //-------------------------------------------------------------------//
 
-/**  De-aggregates the provided CidrUtils address to the requested masklen
-  *  level, populating the provided vector with appropriate cidr's.
-  *  For example, a CidrUtils of 172.16.0.0/19 converted to /24's would 
-  *  result in 8 CidrUtils's being pushed onto the provided vector.
-  *  Not very pretty, but functional for now.
-  *  
-  *  @param p  is the given CIDR prefix to deagg.
-  *  @param mb is the desired masklen to deagg to
-  *  @param v  is the vector where results will be put.
- **/
 bool
 CidrUtils::deAggregate ( Prefix & p, uint8_t mb, std::vector<Prefix> &v )
 {
@@ -230,16 +187,12 @@ CidrUtils::deAggregate ( Prefix & p, uint8_t mb, std::vector<Prefix> &v )
     int      indxA, indxB, num;
     bool     big = false;
 
-    // you would think we could trust the masklen, but
-    // we check anyways, and we validate the prefix 
     if ( p.getPrefixLen() > mb || 
 	! CidrUtils::isBasePrefix(p.getPrefix(), p.getPrefixLen()) )
 	return false;
 
     num = (int) pow(2, (mb - p.getPrefixLen()));
 
-    // get just two indexes, which could break when
-    // expanding nets less than a /8.
     indxA = ( 3 - ((32 - p.getPrefixLen()) / 8) );
     indxB = ( 3 - ((32 - mb) / 8) );
 
@@ -247,7 +200,6 @@ CidrUtils::deAggregate ( Prefix & p, uint8_t mb, std::vector<Prefix> &v )
         indxA = 1;
         big = true;
     }
-    //printf("indxA %d, indxB %d\n", indxA, indxB);
     
     base = p.getPrefix();
     ptr  = (uint8_t*) &base;
@@ -258,7 +210,6 @@ CidrUtils::deAggregate ( Prefix & p, uint8_t mb, std::vector<Prefix> &v )
 
     while ( num != 0 ) {
         Prefix p = Prefix( (*(ipv4addr_t*)ptr), mb );
-	//printf("adding %s\n", CidrUtils::toCidrString(p).c_str());
 	v.push_back(p);
 	octets[indxB] = octets[indxB]++;
 	if ( octets[indxB] == 0 ) {
@@ -274,9 +225,6 @@ CidrUtils::deAggregate ( Prefix & p, uint8_t mb, std::vector<Prefix> &v )
 
 //-------------------------------------------------------------------//
 
-/**  Determines whether the provided uint32_t address falls within
-  *  the provided Prefix's address scope.
- **/
 bool
 CidrUtils::matchCidr ( Prefix & p, ipv4addr_t addr )
 {
@@ -285,7 +233,7 @@ CidrUtils::matchCidr ( Prefix & p, ipv4addr_t addr )
 
 
 //-------------------------------------------------------------------//
-/**  Simple wrapper for inet_ntop() or inet_pton */
+
 std::string
 CidrUtils::ntop ( ipv4addr_t addr )
 {
@@ -320,7 +268,6 @@ CidrUtils::pton ( const std::string & ipstr )
 
 //-------------------------------------------------------------------//
 
-/**  Returns the localhosts configured hostname */
 std::string
 CidrUtils::getHostName()
 {
@@ -335,7 +282,6 @@ CidrUtils::getHostName()
     return hostname;
 }
 
-/**  Returns the hostname associated with a given address */
 std::string
 CidrUtils::getHostName ( ipv4addr_t addr )
 {
@@ -350,14 +296,7 @@ CidrUtils::getHostName ( ipv4addr_t addr )
     return hostname;
 }
 
-//-------------------------------------------------------------------//
 
-/**  Returns the localhost's ip address as determined from a lookup
-  *  from the resolved hostname obtained from a call to 'gethostname'.
-  *  It is not uncommon for a system's '/etc/hosts' file to have a
-  *  hostname entry mapped to the loopback address, so results should 
-  *  be checked if this method is used to obtain a public ip.
- **/
 ipv4addr_t
 CidrUtils::getHostAddr()
 {
@@ -381,9 +320,7 @@ CidrUtils::getHostAddr()
     return addr;
 }
 
-//-------------------------------------------------------------------//
 
-/**  Returns the first or primary ip address of the the given host */
 ipv4addr_t
 CidrUtils::getHostAddr ( const std::string & host )
 {
@@ -403,9 +340,7 @@ CidrUtils::getHostAddr ( const std::string & host )
     return addr;
 }
 
-//-------------------------------------------------------------------//
 
-/**  Returns the list of addresses that a hostname resolves too */
 void
 CidrUtils::getHostAddrList ( const std::string & host, AddrList & addrlist )
 {
@@ -416,14 +351,14 @@ CidrUtils::getHostAddrList ( const std::string & host, AddrList & addrlist )
         return;
 
     switch ( hp->h_addrtype ) {
-//#ifdef AF_INET6
-        //case AF_INET6:
-//#endif
          case AF_INET:
              pptr = hp->h_addr_list;
              for ( ; *pptr != NULL; pptr++ )
                  addrlist.push_back(*((ipv4addr_t*) *pptr));
              break;
+//#ifdef AF_INET6
+        //case AF_INET6:
+//#endif
           default:
              return;
     }
@@ -433,15 +368,13 @@ CidrUtils::getHostAddrList ( const std::string & host, AddrList & addrlist )
 
 //-------------------------------------------------------------------//
 
-/**  Convenience method to simply return true if the provided address
-  *  equals the loopback address of '127.0.0.1'.
- **/
 bool
 CidrUtils::isLoopback ( ipv4addr_t addr )
 {
     return(addr == (CidrUtils::pton(std::string("127.0.0.1"))));
 }
 
+//-------------------------------------------------------------------//
 
 } //namespace
 

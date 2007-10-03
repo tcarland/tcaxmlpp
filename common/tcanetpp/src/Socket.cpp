@@ -228,9 +228,9 @@ Socket::connect()
         if ( errno == EINPROGRESS )
             return 0;
         else if ( errno == ECONNREFUSED )
-            _errstr = " Connection Refused";
+            _errstr = "Socket::connect() Connection Refused";
         else 
-            _errstr = " Error in connect attempt";
+            _errstr = "Socket::connect() Error in connect attempt";
 
         if ( strerror_r(errno, serr, ERRORSTRLEN) == 0 )
             _errstr = serr;
@@ -250,8 +250,7 @@ Socket::connect()
 void
 Socket::close()
 {
-    if ( Socket::IsValidDescriptor(_fd) ) { // close socket
-       //this->shutdown(3);
+    if ( Socket::IsValidDescriptor(_fd) ) {
        _connected = false;
      
 #      ifdef WIN32
@@ -305,7 +304,11 @@ Socket::accept()
     return this->accept(Socket::factory);
 }
 
-
+/**  The SocketFactory provides a mechanism for instantiating derived Socket 
+  *  objects while properly maintaining this interface. A derived implementation 
+  *  would also derive the SocketFactory class in order to instantiate the 
+  *  derived type prior to casting back to the base Socket* type.
+ **/
 Socket*
 Socket::accept ( SocketFactory & factory )
 {
@@ -506,7 +509,7 @@ Socket::setSocketOption ( int optname, int optval )
     if ( setsockopt(_fd, SOL_SOCKET, optname, (const char*) &optval, len) < 0 ) {
 
 #       ifdef WIN32
-        _errstr = "Error in call to setsockopt";
+        _errstr = "Socket: Error in call to setsockopt()";
 #       else
         if ( strerror_r(errno, serr, ERRORSTRLEN) == 0 )
             _errstr = serr;
@@ -698,14 +701,14 @@ void
 Socket::InitializeSocket ( sockfd_t & fd, int & proto ) throw ( SocketException )
 {
     char   serr[ERRORSTRLEN];
-    std::string errstr = "Socket::initSocket() Fatal Error ";
+    std::string errstr = "Socket::initSocket() Fatal Error";
 
     if ( proto == IPPROTO_TCP ) {
     	fd = socket(AF_INET, SOCK_STREAM, 0);
     } else if ( proto == IPPROTO_UDP ) {
     	fd = socket(AF_INET, SOCK_DGRAM, 0);
     } else {
-        errstr.append("Unsupported protocol");
+        errstr.append(": Unsupported protocol");
         throw SocketException(errstr);
     }
 

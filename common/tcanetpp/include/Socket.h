@@ -1,3 +1,10 @@
+/**
+  *  Socket.h -  The base Socket class providing an object-oriented
+  *   interface to sockets for both Unix and Win32 platforms.
+  *
+  *   @Author   tcarland@gmail.com
+  *   @Version  0.5
+ **/
 #ifndef _TCANETPP_SOCKET_H_
 #define _TCANETPP_SOCKET_H_
 
@@ -23,9 +30,7 @@
 namespace tcanetpp {
 
 
-/**
-  *   Socket types for Socket constructor
- **/
+/**  Socket types for Socket constructor  */
 enum SocketType
 {
     SOCKET_NONE,
@@ -37,6 +42,7 @@ enum SocketType
 
 
 
+/**  SocketException class for fatal Socket class errors */
 class SocketException : public Exception {
 public:
     SocketException ( const std::string & errstr ) 

@@ -164,7 +164,7 @@ CircularBuffer::reverse ( size_t offset )
     } else {
         rpos = _readPtr - _writePtr;
     }
-    
+
 
     if ( offset > rpos ) {
 	offset = 0;
@@ -179,7 +179,7 @@ CircularBuffer::reverse ( size_t offset )
         _endPtr   = _wrapPtr;
         _wrapPtr  = NULL;
         _readPtr  = _endPtr;
-	_readPtr -= wrap;
+        _readPtr -= wrap;
     } else {
         _readPtr -= offset;
     }

@@ -118,10 +118,22 @@ NetworkDevice::deviceName() const
     return _deviceName;
 }
 
+const std::string&
+NetworkDevice::name() const
+{
+    return this->deviceName();
+}
+
 const ipv4addr_t&
 NetworkDevice::deviceAddr() const
 {
     return _deviceAddr;
+}
+
+const ipv4addr_t&
+NetworkDevice::addr() const
+{
+    return this->deviceAddr();
 }
 /*@}*/
 

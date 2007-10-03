@@ -1,9 +1,4 @@
-/**  Patricia Trie implementation from Sedgewick
-  *
-  *  @Author   tcarland@gmail.com
-  *  @Version  1.1
- **/
-#define PATRICIA_C
+#define _TCANETPP_PATRICIA_C
 
 #include <stdlib.h>
 #include <string.h>
@@ -12,14 +7,9 @@
 
 
 static const
-char rcsid[] = "$Id: patricia.c,v 1.9 2003/10/03 21:27:19 tca Exp $";
+char version[] = "$Id: patricia.c,v 1.9 2007/10/03 21:27:19 tca Exp $";
 
 
-
-/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- *  internal static methods for recursively operating on trie
- *
- */
 
 static cidr_t searchCidr;
 static cidr_t resultCidr;
@@ -56,7 +46,7 @@ PT_new ( cidr_t cidr, int bit, ptNode_t* llink, ptNode_t* rlink, void* rock )
 
 //  Visits all nodes and children of the trie.
 static void
-PT_visitR ( ptNode_t* node, int bit, nodeHandler_t handler )
+PT_visitR ( ptNode_t * node, int bit, nodeHandler_t handler )
 {
     int i;
 
@@ -230,12 +220,8 @@ PT_countRocksHandler ( ipv4addr_t addr, uint8_t mb, void * rock )
     return;
 }
 
+//--------------------------------------------------------------------
 
-
-/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- 
- *  public functions for working with the trie
- *
- */
 
 //  create and initialize a new trie
 ptNode_t*
@@ -274,7 +260,9 @@ pt_insert ( ptNode_t * head, cidr_t cidr, void* rock )
 
     if ( cidr.addr != node->key ) {
 	result = 1;
+	
 	for ( bit = 0; GETBIT(cidr.addr,bit) == GETBIT(node->key, bit); bit++ );
+	
 	head->llink = PT_insertR(head->llink, cidr, bit, head, rock);
     } else if ( ! node->rocks[cidr.addrlen] ) {
 	result = 1;
@@ -391,6 +379,5 @@ pt_free ( ptNode_t * head, nodeHandler_t handler )
 }
 
 
-
-//  PATRICIA_C
+//  _TCANETPP_PATRICIA_C
 

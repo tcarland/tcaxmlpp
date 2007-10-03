@@ -30,8 +30,8 @@ int EventManager::_maxfdp = MAX_FDVAL;
 
 
 
-/**  @param dieoff  boolean indicating whether to terminate when
-  *  there are no subscribed clients or timers */
+/**  @param dieoff  boolean indicates whether to terminate when
+  *  there are no subscribed clients or timers left to execute */
 EventManager::EventManager ( bool dieoff )
     : _evid(0),
       _minevu(DEFAULT_EVU),
@@ -54,9 +54,10 @@ EventManager::addTimerEvent ( TimerHandler * handler,
     if ( (handler == NULL) || (sec == 0 && msec == 0) )
 	return 0;
 
-    if ( _debug )
-	printf("EventManager::addTimerEvent(): ");
-
+#   ifdef EV_DEBUG
+    printf("EventManager::addTimerEvent(): ");
+#   endif 
+    
     timer.evid    = ++_evid;
     if ( timer.evid == 0 )
         return 0;
@@ -79,9 +80,10 @@ EventManager::addTimerEvent ( TimerHandler * handler,
 
     _timers[timer.evid] = timer;
 
-    if ( _debug )
-	printf("id %d:  %u sec - %u msec - %d count\n", timer.evid, sec, msec, count);
- 
+#   ifdef EV_DEBUG
+    printf("id %d:  %u sec - %u msec - %d count\n", timer.evid, sec, msec, count);
+#   endif 
+    
     return timer.evid;
 }
 
@@ -94,9 +96,10 @@ EventManager::addTimerEvent ( TimerHandler * handler, time_t abstime )
     if ( handler == NULL || abstime < time(NULL) )
 	return 0;
 
-    if ( _debug )
-        printf("EventManager::addTimerEvent()\n");
-
+#   ifdef EV_DEBUG
+    printf("EventManager::addTimerEvent()\n");
+#   endif
+    
     timer.evid      = this->getNewEventId();
     if ( timer.evid == 0 )
         return 0;
@@ -145,12 +148,12 @@ EventManager::addIOEvent ( IOHandler * handler, const sockfd_t & sfd,
     io.isServer = isServer;
     io.enabled  = true;
 
-    if ( _debug ) {
-	printf("EventManager::addIOEvent() adding ");
-	if ( io.isServer )
-	    printf("server ");
-	printf("socket %d id: %d\n", sfd, io.evid);
-    }
+#   if EV_DEBUG
+    printf("EventManager::addIOEvent() adding ");
+    if ( io.isServer )
+        printf("server ");
+    printf("socket %d id: %d\n", sfd, io.evid);
+#   endif 
 
     _clients[io.evid] = io;
 
@@ -182,8 +185,9 @@ EventManager::removeEvent ( const evid_t & id )
     EventTimerMap::iterator   tIter;
     EventIOMap::iterator      cIter;
    
-    if( _debug )
-	printf("EventManager::removeEvent() %u\n", id);	
+#   ifdef EV_DEBUG
+    printf("EventManager::removeEvent() %u\n", id);	
+#   endif
 
     if ( (tIter = _timers.find(id)) != _timers.end() ) {
         this->destroyEvent(tIter->second);
@@ -213,9 +217,10 @@ EventManager::eventLoop()
 
     EventIOMap::iterator   cIter;
 
-    if( _debug )
-	printf("EventManager::eventLoop()\n");
-
+#   ifdef EV_DEBUG
+    printf("EventManager::eventLoop()\n");
+#   endif
+    
     while ( ! _alarm ) {
 
 	FD_ZERO(&_rset);
@@ -290,9 +295,10 @@ EventManager::eventLoop()
     // cleanup timers
     this->clearTimers();
 
-    if ( _debug )
-        printf("EventManager::eventLoop() finished\n");
-
+#   ifdef EV_DEBUG 
+    printf("EventManager::eventLoop() finished\n");
+#   endif
+    
     return;
 }
 

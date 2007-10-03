@@ -1,5 +1,5 @@
-#ifndef EXCEPTION_HPP_
-#define EXCEPTION_HPP_
+#ifndef _TCANETPP_EXCEPTION_HPP_
+#define _TCANETPP_EXCEPTION_HPP_
 
 extern "C" {
 # include <stdio.h>
@@ -37,4 +37,4 @@ public:
 } // namespace
 
 
-#endif /*EXCEPTION_HPP_*/
+#endif /*_TCANETPP_EXCEPTION_HPP_*/

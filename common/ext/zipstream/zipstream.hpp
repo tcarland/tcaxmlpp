@@ -16,13 +16,11 @@ Permission is granted to anyone to use this software for any purpose, including 
 
 Author: Jonathan de Halleux, dehalleux@pelikhan.com, 2003
 */
-
-/*  Altered 2007, by Timothy C. Arland (tca@tcarland@gmail.com)
+/*  Altered 2007, by Timothy C. Arland (tcarland@gmail.com)
  *
  *  - destructors made virtual
  *  - properly qualified std:: namespace
  *  - added missing typename's for char_type and int_type
- *
  */
 #ifndef ZIPSTREAM_HPP
 #define ZIPSTREAM_HPP
@@ -38,7 +36,6 @@ Author: Jonathan de Halleux, dehalleux@pelikhan.com, 2003
 #ifdef WIN32
 #pragma warning (disable:4355)
 #endif
-
 
 
 namespace zlib_stream {

@@ -3,7 +3,7 @@
   *  of both ascii and wide char strings.
   *
   *  @Author   tcarland@gmail.com
-  *  @Version  0.1
+  *  @Version  0.5
  **/
 #ifndef _TCANETPP_STRINGUTILS_H_
 #define _TCANETPP_STRINGUTILS_H_
@@ -18,15 +18,13 @@
 namespace tcanetpp {
 
 
-#define SMLSTRLINE 256
-#define MEDSTRLINE 512
-#define BIGSTRLINE 1024
-#define MAXSTRLINE 2048
+#define SMLSTRLINE  256
+#define MEDSTRLINE  1024
+#define BIGSTRLINE  2048
+#define MAXSTRLINE  4096
 
 
-/**   A utility class of static methods that provide some convenient
-  *   string manipulation functions. 
- **/
+/**   A class of static methods for convenient string manipulation functions. */
 class StringUtils {
 
   public:
@@ -110,49 +108,48 @@ class StringUtils {
 // ----------------------------------------------------------------------
 //  The same interface is provided for wide chars and is enabled by the
 //  following compile-time definition.
-
 #ifdef TCANET_WIDECHAR
 
-    static bool          equals           ( const std::wstring & strA, 
-                                            const std::wstring & strB );
+    static bool          equals           ( const std::wstring & wstrA, 
+                                            const std::wstring & wstrB );
 
-    static bool          equalsIgnoreCase ( const std::wstring & strA, 
-                                            const std::wstring & strB );
+    static bool          equalsIgnoreCase ( const std::wstring & wstrA, 
+                                            const std::wstring & wstrB );
 
-    static bool          startsWith       ( const std::wstring & str,  
+    static bool          startsWith       ( const std::wstring & wstr,  
                                             const std::wstring & prefix );
 
-    static bool          endsWith         ( const std::wstring & str,  
+    static bool          endsWith         ( const std::wstring & wstr,  
                                             const std::wstring & suffix );
 
-    static int           indexOf          ( const std::wstring & str,  
+    static int           indexOf          ( const std::wstring & wstr,  
                                             const std::wstring & match );
 
-    static int           indexOf          ( const std::wstring & str,  
+    static int           indexOf          ( const std::wstring & wstr,  
                                             const std::wstring & match, 
                                             size_t from );
 
-    static int           lastIndexOf      ( const std::wstring & str,  
+    static int           lastIndexOf      ( const std::wstring & wstr,  
                                             const std::wstring & match );
 
-    static int           lastIndexOf      ( const std::wstring & str,  
+    static int           lastIndexOf      ( const std::wstring & wstr,  
                                             const std::wstring & match, 
                                             size_t from );
 
-    static std::wstring  charAt           ( const std::wstring & str, size_t index );
-    static std::wstring  toLowerCase      ( const std::wstring & str );
-    static void          toLowerCase      ( std::wstring & str );
-    static std::wstring  toUpperCase      ( const std::wstring & str );
-    static void          toUpperCase      ( std::wstring & str );
-    static std::wstring  trim             ( const std::wstring & str );
-    static void          trim             ( std::wstring & str );
-    static void          trim             ( std::wstring & str, const std::wstring & rem );
+    static std::wstring  charAt           ( const std::wstring & wstr, size_t index );
+    static std::wstring  toLowerCase      ( const std::wstring & wstr );
+    static void          toLowerCase      ( std::wstring & wstr );
+    static std::wstring  toUpperCase      ( const std::wstring & wstr );
+    static void          toUpperCase      ( std::wstring & wstr );
+    static std::wstring  trim             ( const std::wstring & wstr );
+    static void          trim             ( std::wstring & wstr );
+    static void          trim             ( std::wstring & wstr, const std::wstring & rem );
     
-    static std::wstring  ctowstr          ( const std::string  & str );
-    static std::string   wtocstr          ( const std::wstring & str );
+    static std::wstring  ctowstr          ( const std::string  & wstr );
+    static std::string   wtocstr          ( const std::wstring & wstr );
 
     template< typename OutputIterator_ >
-    static inline void   split            ( const std::wstring  & str, 
+    static inline void   split            ( const std::wstring  & wstr, 
                                             char                  delimiter,
                                             OutputIterator_       outI )
     {
@@ -160,7 +157,7 @@ class StringUtils {
 
         while ( (begin = str.find_first_not_of(delimiter, begin)) != std::string::npos )
         {
-            end = str.find_first_of(delimiter, begin);
+            end     = str.find_first_of(delimiter, begin);
             *outI++ = str.substr(begin, end - begin);
             begin   = end;
         }

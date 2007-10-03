@@ -5,35 +5,38 @@
  **/
 #define _TCANETPP_LOGGER_CPP_
 
+#include <list>
 #include <memory>
 #include <iostream>
 #include <fstream>
-#include <list>
 
 #include "Logger.h"
+
 
 namespace tcanetpp {
 
 
-/*  Static initialization  */
-Logger::StreamMap     Logger::strmMap = StreamMap();
+// ----------------------------------------------------------------------
+//  Initialization
+
+Logger::StreamMap  Logger::_StreamMap  = StreamMap();
 
 #ifndef WIN32
-tcanetpp::ThreadLock  Logger::lock    = tcanetpp::ThreadLock();
+tcanetpp::ThreadLock  Logger::_Lock    = tcanetpp::ThreadLock();
 #endif
 
 
-time_t             Logger::logTime    = 0;
-bool               Logger::init       = false;
-bool               Logger::initlock   = false;
-bool               Logger::trylock    = false;
-bool               Logger::syslog     = false;
-bool               Logger::enabled    = false;
-bool               Logger::debug      = false;
-std::ostream*      Logger::logStream  = NULL;
-std::string        Logger::fileName   = "";
-std::string        Logger::logPrefix  = "tcanetpp::Logger";
-std::string        Logger::logTimeStr = "";
+time_t             Logger::_LogTime    = 0;
+bool               Logger::_Init       = false;
+bool               Logger::_InitLock   = false;
+bool               Logger::_TryLock    = false;
+bool               Logger::_Syslog     = false;
+bool               Logger::_Enabled    = false;
+bool               Logger::_Debug      = false;
+std::ostream*      Logger::_LogStream  = NULL;
+std::string        Logger::_FileName   = "";
+std::string        Logger::_LogPrefix  = "tcanetpp::Logger";
+std::string        Logger::_LogTimeStr = "";
 
 
 // ----------------------------------------------------------------------
@@ -45,8 +48,8 @@ Logger::InitThreaded ( bool trylock )
 #   ifdef WIN32
     return false;
 #   else
-    Logger::trylock  = trylock;
-    Logger::initlock = true;
+    Logger::_TryLock  = trylock;
+    Logger::_InitLock = true;
 #   endif
     return true;
 }
@@ -60,20 +63,19 @@ Logger::OpenLogFile ( const std::string & prefix,
     std::ofstream       * fstrm = NULL;
     StreamMap::iterator   sIter;
 
-    sIter = Logger::strmMap.find(Logger::fileName);
+    sIter = Logger::_StreamMap.find(Logger::_FileName);
     
-    if ( sIter == Logger::strmMap.end() ) {
+    if ( sIter == Logger::_StreamMap.end() ) {
         fstrm  = new std::ofstream;
 
         if ( append )
-            fstrm->open( filename.c_str(), std::ios::out | std::ios::app );
+            fstrm->open(filename.c_str(), std::ios::out | std::ios::app);
         else
-            fstrm->open( filename.c_str(), std::ios::out | std::ios::trunc );
+            fstrm->open(filename.c_str(), std::ios::out | std::ios::trunc);
 
     } else {
         Logger::CloseFilelog();
-
-        std::auto_ptr< std::ofstream >  newfstrm( new std::ofstream() );
+        std::auto_ptr<std::ofstream>  newfstrm(new std::ofstream());
 
         if ( append )
             newfstrm->open( filename.c_str(), std::ios::out | std::ios::app );
@@ -86,13 +88,13 @@ Logger::OpenLogFile ( const std::string & prefix,
         fstrm  = newfstrm.release();
     }
 
-    Logger::fileName  = filename;
-    Logger::logPrefix = prefix;
-    Logger::logStream = (std::ostream*) fstrm;
-    Logger::enabled   = true;
+    Logger::_LogPrefix = prefix;
+    Logger::_LogStream = (std::ostream*) fstrm;
+    Logger::_FileName  = filename;
+    Logger::_Enabled   = true;
     
-    Logger::AddStream(Logger::logPrefix, Logger::logStream);
-    Logger::InitLogMsg();
+    Logger::AddStream(Logger::_LogPrefix, Logger::_LogStream);
+    Logger::InitLogMessage();
 
     return fstrm->is_open();
 }
@@ -103,14 +105,14 @@ bool
 Logger::OpenSyslog ( const std::string & prefix, int facility )
 {
 #   ifndef WIN32
-    if ( Logger::syslog )
+    if ( Logger::_Syslog )
         Logger::CloseSyslog();
 
-    ::openlog(logPrefix.c_str(), LOG_PID, facility);
-    syslog   = true;
-    enabled  = true;
+    ::openlog(prefix.c_str(), LOG_PID, facility);
+    Logger::_Syslog   = true;
+    Logger::_Enabled  = true;
 
-    Logger::InitLogMsg();
+    Logger::InitLogMessage();
 
     return true;
 #endif
@@ -123,8 +125,10 @@ bool
 Logger::OpenLogStream ( const std::string & prefix, std::ostream * stream )
 {
      bool r = Logger::AddStream(prefix, stream);
+     
      if ( r )
-         Logger::enabled = true;
+         Logger::_Enabled = true;
+     
      return r;
 }
 
@@ -138,12 +142,12 @@ Logger::AddStream ( const std::string & name, std::ostream * stream )
     if ( stream == NULL )
         return false;
 
-    sIter = strmMap.find(name);
+    sIter = Logger::_StreamMap.find(name);
 
-    if ( sIter != strmMap.end() )
+    if ( sIter != Logger::_StreamMap.end() )
         return false;
 
-    strmMap[name] = stream;
+    Logger::_StreamMap[name] = stream;
 
     return true;
 }
@@ -154,15 +158,15 @@ Logger::RemoveStream ( const std::string & name )
     std::ostream        *ptr = NULL;
     StreamMap::iterator  sIter;
 
-    sIter = strmMap.find(name);
+    sIter = Logger::_StreamMap.find(name);
 
-    if ( sIter == strmMap.end() )
+    if ( sIter == Logger::_StreamMap.end() )
         return ptr;
 
     if ( sIter->second != NULL )
         ptr = sIter->second;
 
-    strmMap.erase(sIter);
+    Logger::_StreamMap.erase(sIter);
 
     return ptr;
 }
@@ -172,33 +176,33 @@ Logger::RemoveStream ( const std::string & name )
 std::string
 Logger::GetFileName()
 {
-    return fileName;
+    return Logger::_FileName;
 }
 
 
 void
 Logger::SetEnabled( bool enabled )
 {
-    enabled = enabled;
+    Logger::_Enabled = enabled;
 }
 
 bool
 Logger::GetEnabled()
 {
-    return enabled;
+    return Logger::_Enabled;
 }
 
 
 void
 Logger::SetDebug ( bool d )
 {
-    debug = d;
+    Logger::_Debug = d;
 }
 
 bool
-Logger::Debug()
+Logger::GetDebug()
 {
-    return debug;
+    return Logger::_Debug;
 }
 
 bool
@@ -206,12 +210,12 @@ Logger::IsOpen()
 {
     std::ofstream *  fstrm = NULL;
   
-    if ( logStream != NULL ) {
-        fstrm = (std::ofstream*) logStream;
+    if ( Logger::_LogStream != NULL ) {
+        fstrm = (std::ofstream*) Logger::_LogStream;
         return fstrm->is_open();
     }
 
-    if ( strmMap.size() == 0 )
+    if ( Logger::_StreamMap.size() == 0 )
         return false;
 
     return true;
@@ -222,7 +226,7 @@ Logger::IsOpen()
 void
 Logger::LogMessage ( const std::string & entry, int level )
 {
-    return Logger::LogMessage(logPrefix, entry, level);
+    return Logger::LogMessage(Logger::_LogPrefix, entry, level);
 }
 
 
@@ -231,17 +235,17 @@ Logger::LogMessage ( const std::string & prefix,
                      const std::string & entry, 
                      int level )
 {
-    if ( ! enabled )
+    if ( ! Logger::_Enabled )
         return;
 
 #   ifndef WIN32
-    if ( syslog && Logger::Lock() ) {
+    if ( Logger::_Syslog && Logger::Lock() ) {
         ::syslog(level, "%s:%s", prefix.c_str(), entry.c_str());
-        Logger::lock.unlock();
+        Logger::_Lock.unlock();
     }
 #   endif
 
-    Logger::LogToStream(Logger::fileName, prefix, entry);
+    Logger::LogToStream(Logger::_FileName, prefix, entry);
 
     return;
 }
@@ -259,21 +263,21 @@ Logger::LogToAllStreams ( const std::string & prefix, const std::string & entry 
         return;
 
     // log to all secondary streams
-    for ( sIter = strmMap.begin(); sIter != strmMap.end(); ++sIter ) {
+    for ( sIter = _StreamMap.begin(); sIter != _StreamMap.end(); ++sIter ) {
         if ( sIter->second == NULL ) {
             dead.push_back(sIter->first);
             continue;
         }
         *(sIter->second) << prefix << ": ";
-        if ( Logger::logTime > 0 )
-            *(sIter->second) << Logger::logTimeStr << " : ";
+        if ( Logger::_LogTime > 0 )
+            *(sIter->second) << Logger::_LogTimeStr << " : ";
         *(sIter->second) << entry << std::endl;
         sIter->second->flush();
     }
 
     // clear out dead streams
     for ( dIter = dead.begin(); dIter != dead.end(); ++dIter )
-        strmMap.erase(*dIter);
+        _StreamMap.erase(*dIter);
     dead.clear();
 
     Logger::Unlock();
@@ -292,8 +296,8 @@ Logger::LogToStream ( const std::string & streamName,
 
 
 void
-Logger::LogToStream ( const std::string & streamName, 
-                      const std::string & prefix,
+Logger::LogToStream ( const std::string & prefix, 
+                      const std::string & streamName, 
                       const std::string & entry )
 {
     StreamMap::iterator  sIter;
@@ -301,13 +305,13 @@ Logger::LogToStream ( const std::string & streamName,
     if ( ! Logger::Lock() )
         return;
 
-    sIter = strmMap.find(streamName);
-    if ( sIter == strmMap.end() )
+    sIter = Logger::_StreamMap.find(streamName);
+    if ( sIter == Logger::_StreamMap.end() )
         return;
 
     *(sIter->second) << prefix << ": ";
-    if ( Logger::logTime > 0 )
-        *(sIter->second) << Logger::logTimeStr << " : ";
+    if ( Logger::_LogTime > 0 )
+        *(sIter->second) << Logger::_LogTimeStr << " : ";
     *(sIter->second) << entry << std::endl;
     sIter->second->flush();
 
@@ -324,9 +328,10 @@ Logger::CloseLogger()
     Logger::CloseSyslog();
     Logger::CloseFilelog();
 
-    Logger::enabled = false;
+    Logger::_Enabled = false;
+    Logger::_Syslog  = false;
 
-    strmMap.clear();
+    Logger::_StreamMap.clear();
 
     return;
 }
@@ -336,15 +341,15 @@ void
 Logger::CloseSyslog()
 {
 #   ifndef WIN32
-    if ( syslog ) {
+    if ( Logger::_Syslog ) {
         ::syslog(LOGGER_NOTICE, "==== Logger Closing ====");
         ::closelog();
-        syslog = false;
+        Logger::_Syslog = false;
     }
 #   endif
 
-    if ( logStream == NULL )
-        enabled = false;
+    if ( Logger::_LogStream == NULL )
+        Logger::_Enabled = false;
 
     return;
 }
@@ -357,13 +362,13 @@ Logger::CloseFilelog()
 
     Logger::LogMessage("==== Logger Closing ====");
 
-    fstrm = (std::ofstream*) Logger::RemoveStream(Logger::fileName);
+    fstrm = (std::ofstream*) Logger::RemoveStream(Logger::_FileName);
 
-    if ( fstrm != NULL && fstrm == logStream ) {
+    if ( fstrm != NULL && fstrm == Logger::_LogStream ) {
         fstrm->close();
-        delete logStream;
-        logStream = NULL;
-        fileName  = "";
+        delete Logger::_LogStream;
+        Logger::_LogStream = NULL;
+        Logger::_FileName  = "";
     }
 
     return;
@@ -375,14 +380,14 @@ void
 Logger::SetLogPrefix ( const std::string & prefix )
 {
     if ( ! prefix.empty() )
-        logPrefix = prefix;
+        Logger::_LogPrefix = prefix;
     return;
 }
 
 std::string
 Logger::GetLogPrefix()
 {
-    return logPrefix;
+    return Logger::_LogPrefix;
 }
 
 // ----------------------------------------------------------------------
@@ -391,10 +396,10 @@ void
 Logger::SetLogTime ( const time_t & now )
 {
     if ( Logger::Lock() ) {
-        Logger::logTime  = now;
+        Logger::_LogTime  = now;
     
-        if ( Logger::logTime > 0 )
-            Logger::GetTimeStr(now, Logger::logTimeStr);
+        if ( Logger::_LogTime > 0 )
+            Logger::_LogTimeStr = Logger::GetTimeString(now);
         Logger::Unlock();
     }
 
@@ -403,10 +408,11 @@ Logger::SetLogTime ( const time_t & now )
 
 // ----------------------------------------------------------------------
 
-void
-Logger::GetTimeStr ( const time_t & now, std::string & timestr )
+std::string
+Logger::GetTimeString ( const time_t & now )
 {
-    char  tstr[32];
+    char         tstr[32];
+    std::string  timestr;
 
 #   ifdef WIN32
     char * tptr = ::ctime(&now);
@@ -417,20 +423,20 @@ Logger::GetTimeStr ( const time_t & now, std::string & timestr )
     timestr = tstr;
     timestr = timestr.substr(0, timestr.length() - 1);
 
-    return;
+    return timestr;
 }
 
 // ----------------------------------------------------------------------
 
 void
-Logger::InitLogMsg()
+Logger::InitLogMessage()
 {
     LoggerMsg    logMsg;
     std::string  tstr;
     time_t       now;
 
     now  = ::time(NULL);
-    Logger::GetTimeStr(now, tstr);
+    tstr = Logger::GetTimeString(now);
 
     logMsg << "Log Initialized at '" << tstr << "'";
 
@@ -443,11 +449,11 @@ bool
 Logger::Lock()
 { 
 #   ifndef WIN32
-    if ( Logger::initlock && Logger::trylock ) {
-        if ( Logger::lock.tryLock() <= 0 )
+    if ( Logger::_InitLock && Logger::_TryLock ) {
+        if ( Logger::_Lock.tryLock() <= 0 )
             return false;
-    } else if ( Logger::initlock ) {
-        if ( Logger::lock.lock() <= 0 )
+    } else if ( Logger::_InitLock ) {
+        if ( Logger::_Lock.lock() <= 0 )
             return false;
     }
 #   endif
@@ -459,8 +465,8 @@ void
 Logger::Unlock()
 {
 #   ifndef WIN32
-    if ( Logger::initlock )
-        Logger::lock.unlock();
+    if ( Logger::_InitLock )
+        Logger::_Lock.unlock();
 #   endif 
     return;
 }
@@ -471,5 +477,4 @@ Logger::Unlock()
 } // namespace
 
 
-//  _TCANETPP_LOGGER_CPP_ 
-
+//  _TCANETPP_LOGGER_CPP_

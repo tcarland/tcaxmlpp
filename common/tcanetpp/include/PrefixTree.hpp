@@ -44,7 +44,6 @@ class PrefixTree {
  
   public:
 
-    /**  Default Constructor, which does not enable mutex locking. */
     PrefixTree()
     {
 	_pt   = pt_init();
@@ -52,10 +51,6 @@ class PrefixTree {
 	_lock = false;
     }
 
-    /**  Constructor
-      *  @param  implicit_lock  boolean indicating whether to enable
-      *     mutex locking.
-     **/
     PrefixTree ( bool implicit_lock )
     {
 	_pt   = pt_init();
@@ -65,8 +60,7 @@ class PrefixTree {
 	    pthread_mutex_init(&_mutex, NULL);
     }
 
-    /**  Default destructor */
-    ~PrefixTree()
+    virtual ~PrefixTree()
     {
 	this->clear();
 	free(_pt);
@@ -75,12 +69,6 @@ class PrefixTree {
     }
 
 
-    /**  The insert() method inserts a prefix and associated object into
-      *  the internal patricia trie and returns 1 on success or 0 on failure.
-      *
-      *  @param  p    is a Prefix object representing x.x.x.x/yy
-      *  @param  obj  is the object pointer associated with the prefix.
-     **/
     int  insert  ( Prefix & p, T obj )
     {
 	int result = 0;
@@ -97,12 +85,6 @@ class PrefixTree {
     }
 
 
-    /**  Removes the given prefix from the patricia returning the associated 
-      *  object, if any. Returns NULL if the given prefix is not found.
-      *
-      *  @param  p  is the Prefix object representing the prefix to remove
-      *     from the underlying trie.
-     **/
     T    remove  ( Prefix & p )
     {
 	if ( _lock )
@@ -117,11 +99,6 @@ class PrefixTree {
     }
 
    
-    /**  Performs an exact match lookup for the given prefix and returns the
-      *  associated object or NULL if not found.
-      *
-      *  @param  p  is the Prefix object representing the prefix to match.
-     **/
     T    exactMatch ( Prefix & p )
     {
 	if ( _lock )
@@ -136,12 +113,6 @@ class PrefixTree {
     }
 
 
-    /**  Performs a longest match lookup for the given prefix and returns
-      *  the object of the longest matching prefix found or NULL if no
-      *  valid prefix exists.
-      *
-      *  @param  p  is the Prefix object representing the prefix to match.
-     **/
     T    longestMatch ( Prefix & p )
     {
 	if ( _lock )
@@ -156,10 +127,6 @@ class PrefixTree {
     }
 
 
-    /**  Returns the current size of the patricia by counting the number
-      *  of allocated children (note that this does not usually equal the
-      *  number of allocated nodes).
-     **/
     int  size()
     {
 	if ( _lock )
@@ -174,10 +141,6 @@ class PrefixTree {
     }
 
 
-    /**  Returns the memory utilization of the patricia in bytes. Note that
-      *  this does NOT include memory allocated to the children objects (T)
-      *  stored in the trie.
-     **/
     size_t memUsage()
     {
 	size_t sz    = 0;
@@ -197,18 +160,12 @@ class PrefixTree {
     }
 
 
-    /**  Returns the total memory allocated to both the internal trie
-      *  and user allocated (T) objects.
-     **/
     size_t totalMemUsage()
     {
 	return(memUsage() + (size() * sizeof(T)));
     }
 
 
-    /**  Clears all nodes of the trie using either the internal handler
-      *  or the user supplied handler from setFreeHandler().
-     **/
     void clear()
     {
 	if ( _lock )
@@ -224,10 +181,6 @@ class PrefixTree {
     }
 
 
-    /**  Allows a user supplied callback to be used when clearing the trie.
-      *  This is useful if post-processing is needed on the stored (T) 
-      *  objects prior to deletion.
-     **/
     void setFreeHandler ( nodeHandler_t handler )
     {
 	_hl = handler;
@@ -236,9 +189,6 @@ class PrefixTree {
 
   protected:
 
-    /**  Internal handler used as the default free handler for clearing 
-      *  the trie.
-     **/
     static void ptClearHandler ( uint32_t addr, uint8_t mb, void * rock )
     {
 	T  obj = (T) rock;

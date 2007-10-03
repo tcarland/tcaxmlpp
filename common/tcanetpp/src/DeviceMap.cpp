@@ -17,8 +17,7 @@ namespace tcanetpp {
 
 
 DeviceMap::DeviceMap()
-    : _grpId(0),
-      _grpData(NULL),
+    : _groupId(0),
       _debug(false)
 {}
 
@@ -139,16 +138,75 @@ DeviceMap::clear()
 
 // ----------------------------------------------------------------------
 
+size_t
+DeviceMap::size() const
+{
+    return _devMap.size();
+}
+
+// ----------------------------------------------------------------------
+
+DeviceMap::iterator
+DeviceMap::begin()
+{
+    return _devMap.begin();
+}
+
+
+DeviceMap::iterator
+DeviceMap::end()
+{
+    return _devMap.end();
+}
+
+
+DeviceMap::const_iterator
+DeviceMap::begin() const
+{
+    return _devMap.begin();
+}
+
+
+DeviceMap::const_iterator
+DeviceMap::end() const
+{
+    return _devMap.end();
+}
+
+// ----------------------------------------------------------------------
+
+void
+DeviceMap::erase ( iterator & iter )
+{
+    _devMap.erase(iter);
+}
+
+
+void
+DeviceMap::erase ( ipv4addr_t addr )
+{
+    _devMap.erase(addr);
+}
+
+
+void
+DeviceMap::erase ( iterator & begin, iterator & end )
+{
+    _devMap.erase(begin, end);
+}
+
+// ----------------------------------------------------------------------
+
 void
 DeviceMap::groupId ( uint32_t id )
 {
-    _grpId = id;
+    _groupId = id;
 }
 
 uint32_t
 DeviceMap::groupId()
 {
-    return _grpId;
+    return _groupId;
 }
 
 // ----------------------------------------------------------------------
@@ -156,27 +214,13 @@ DeviceMap::groupId()
 void
 DeviceMap::groupName ( const std::string & name )
 {
-    _grpName = name;
+    _groupName = name;
 }
 
 const std::string&
 DeviceMap::groupName()
 {
-    return _grpName;
-}
-
-// ----------------------------------------------------------------------
-
-void
-DeviceMap::groupData ( void * data )
-{
-    _grpData = data;
-}
-
-void*
-DeviceMap::groupData()
-{
-    return _grpData;
+    return _groupName;
 }
 
 // ----------------------------------------------------------------------

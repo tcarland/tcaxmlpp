@@ -1,15 +1,14 @@
 /**  CmdBuf 
   *
-  *  @Author   tca@soe.sony.com
-  *  @Version  0.3
+  *  @Author   tcarland@gmail.com
+  *  @Version  0.5
  **/
-#define _TCANET_CMDBUF_CPP_
+#define _TCANETPP_CMDBUF_CPP_
 
 #include "CmdBuf.h"
 
 
-namespace tca {
-namespace net {
+namespace tcanetpp {
 
 
 const char*
@@ -148,7 +147,6 @@ CmdBuf::putLine ( const std::string & line )
 
 
 } // namespace
-} // namespace
 
+//  _TCANETPP_CMDBUF_CPP_ 
 
-//  _TCANET_CMDBUF_CPP_ 

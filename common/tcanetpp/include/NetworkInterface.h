@@ -26,9 +26,9 @@ class NetworkInterface {
     virtual ~NetworkInterface();
 
 
-    virtual void operator=  ( const NetworkInterface & nif );
-    virtual bool operator== ( const NetworkInterface & nif );
-    virtual bool operator<  ( const NetworkInterface & nif );
+    virtual void operator=   ( const NetworkInterface & nif );
+    virtual bool operator==  ( const NetworkInterface & nif );
+    virtual bool operator<   ( const NetworkInterface & nif );
 
 
     int          ifIndex() const;
@@ -39,7 +39,7 @@ class NetworkInterface {
     void         description ( const std::string & desc );
     std::string  description() const;
 
-    ipv4addr_t   deviceAddr() const;
+    ipv4addr_t   deviceAddr()  const;
 
     void         ifAddr ( ipv4addr_t addr );
     ipv4addr_t   ifAddr() const;

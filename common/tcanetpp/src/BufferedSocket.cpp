@@ -33,8 +33,8 @@ BufferedSocket::BufferedSocket()
 BufferedSocket::BufferedSocket ( ipv4addr_t ip, uint16_t port, SocketType socktype, int proto )
     : Socket(ip, port, socktype, proto),
       _rbuffer(new CircularBuffer()),
-      _wbuffer(new CircularBuffer()),
-      _wbx(true)
+      _wbuffer(NULL),
+      _wbx(false)
 {
     this->init(false);
 }
@@ -42,8 +42,8 @@ BufferedSocket::BufferedSocket ( ipv4addr_t ip, uint16_t port, SocketType sockty
 BufferedSocket::BufferedSocket ( sockfd_t & fd, struct sockaddr_in & csock )
     : Socket(fd, csock),
       _rbuffer(new CircularBuffer()),
-      _wbuffer(new CircularBuffer()),
-      _wbx(true)
+      _wbuffer(NULL),
+      _wbx(false)
 {
     this->init(false);
 }
@@ -61,9 +61,9 @@ BufferedSocket::~BufferedSocket()
 int
 BufferedSocket::init ( bool block )
 {
-	int i = Socket::init(block);
-	this->setSocketOption(SocketOption::SetRcvBuf(65535));
-	return i;
+    int i = Socket::init(block);
+    this->setSocketOption(SocketOption::SetRcvBuf(65535));
+    return i;
 }
 
 // ----------------------------------------------------------------------
@@ -208,12 +208,11 @@ BufferedSocket::txBufferSize()
 
 
 void
-BufferedSocket::disableTxBuffer()
+BufferedSocket::enableTxBuffer()
 {
-    if ( _wbuffer )
-        delete _wbuffer;
-    _wbuffer = NULL;
-    _wbx     = false;
+    if ( _wbuffer == NULL )
+        _wbuffer = new CircularBuffer();
+    _wbx  = true;
 }
 
 // ----------------------------------------------------------------------
