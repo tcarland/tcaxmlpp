@@ -4,8 +4,9 @@
   *  As of the time of this writing, the hash_map implementation is 
   *  not yet a part of the C++ standard library. This implementation 
   *  relies on the original SGI hash_map, which is still provided with 
-  *  the newer GNU STL releases, but as a result this code will likely 
-  *  not cross-compile or function properly on WIN32 platforms.
+  *  the newer GNU STL releases, but as a result this code may 
+  *  not cross-compile or function properly on WIN32 platforms (or 
+  *  non-Gnu stdc++)
   *
   *  @Author   tcarland@gmail.com
   *  @Version  0.2

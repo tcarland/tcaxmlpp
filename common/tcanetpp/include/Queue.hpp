@@ -1,4 +1,5 @@
-/**   SynchronizedQueue 
+/**   
+  *   A SynchronizedQueue implementation.
   *
   *    @Author    tcarland@gmail.com
   *    @Version   1.1

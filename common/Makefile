@@ -11,6 +11,7 @@ tcanetpp:
 	@echo
 
 .PHONY: tcaxml++
+tcaxml++:
 	( cd tcaxml++; make all )
 	@echo
 
@@ -28,6 +29,39 @@ tcasql++:
 tnmsCore:
 	( cd tnmsCore; make all )
 	@echo
+
+
+install:
+	( cd tcaxml++; make install )
+ifdef USE_MYSQL
+	( cd tcasql++; make install )
+endif
+	( cd tcanetpp; make install )
+	( cd tcasnmp; make install )
+	( cd tnmsCore; make install )
+	@echo
+
+clean:
+	( cd tcaxml++; make clean )
+ifdef USE_MYSQL
+	( cd tcasql++; make clean )
+endif
+	( cd tcanetpp; make clean )
+	( cd tcasnmp; make clean )
+	( cd tnmsCore; make clean )
+	@echo
+
+distclean:
+	( cd tcaxml++; make distclean )
+ifdef USE_MYSQL
+	( cd tcasql++; make distclean )
+endif
+	( cd tcanetpp; make distclean )
+	( cd tcasnmp; make distclean )
+	( cd tnmsCore; make distclean )
+	@echo
+
+
 
 
 

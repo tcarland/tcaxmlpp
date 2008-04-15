@@ -9,22 +9,25 @@ endif
 LIBS =
 INCLUDES = -I..
 
-OBJS =          
+OBJS =		        
 
-TEST_OBJS =             test.o  
+TEST_OBJS =             tree_test.o pack_test.o
 
-BIN =                   treetest
-ALL_OBJS =              $(OBJS)
+BIN =                   treetest packtest
+ALL_OBJS =              $(OBJS) $(TEST_OBJS)
 ALL_BINS =              $(BIN)
 
 
-all: treetest
+all: treetest packtest
 
 
 include ${TOPDIR}/common/make/tca
 
 
-treetest: test.o
+treetest: tree_test.o
+	$(make-cxxbin-rule)
+
+packtest: pack_test.o
 	$(make-cxxbin-rule)
 
 clean:

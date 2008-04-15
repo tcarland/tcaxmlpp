@@ -1,5 +1,5 @@
-#ifndef _HEIRARCHICALTREE_HPP_
-#define _HEIRARCHICALTREE_HPP_
+#ifndef _HEIRARCHICALSTRINGTREE_HPP_
+#define _HEIRARCHICALSTRINGTREE_HPP_
 
 #include <string>
 #include <map>
@@ -8,34 +8,28 @@
 #include <stdexcept>
 
 
-namespace tnmscore {
+namespace tnmsCore {
 
-
-class TreeException : public std::runtime_error {
-public:
-    explicit TreeException ( const std::string & errorstr )
-        : std::runtime_error(errorstr)
-    {}
-    virtual ~TreeException() throw() {}
-    virtual std::string toString() const { return this->what(); }
-};
 
 
 template < typename ValueType >
-class HeirarchicalTreeNode {
+class HeirarchicalStringTreeNode {
+    
   public:
 
-    typedef HeirarchicalTreeNode<ValueType>   TreeNode;
-    typedef std::map<std::string, TreeNode*>  TreeNodeMap;
-    typedef typename TreeNodeMap::iterator    TreeNodeMapIter;
+    typedef HeirarchicalStringTreeNode<ValueType>   TreeNode;
+    typedef std::map<std::string, TreeNode*>        TreeNodeMap;
+    typedef typename TreeNodeMap::iterator          TreeNodeMapIter;
 
   public:
 
-    HeirarchicalTreeNode ( const std::string & nodeName, TreeNode * parent,
-                           char delimiter = '/' );
+    HeirarchicalStringTreeNode ( const std::string & nodeName, 
+                                 TreeNode          * parent,
+                                 char                delimiter = '/' );
 
-    virtual ~HeirarchicalTreeNode();
+    virtual ~HeirarchicalStringTreeNode();
 
+    
     const std::string&  getName() const;
     std::string         getAbsoluteName() const;
 
@@ -48,6 +42,7 @@ class HeirarchicalTreeNode {
     TreeNodeMap&        getChildren();
     const TreeNodeMap&  getChildren() const;
 
+    
   private:
 
     ValueType           _value;
@@ -60,27 +55,28 @@ class HeirarchicalTreeNode {
 
 
 template < typename ValueType >
-class HeirarchicalTree {
+class HeirarchicalStringTree {
+    
   public:
 
-    typedef HeirarchicalTreeNode<ValueType>   Node;
-    typedef typename Node::TreeNodeMap        NodeMap;
-    typedef typename Node::TreeNodeMapIter    NodeMapIter;
+    typedef HeirarchicalStringTreeNode<ValueType>   Node;
+    typedef typename Node::TreeNodeMap              NodeMap;
+    typedef typename Node::TreeNodeMapIter          NodeMapIter;
 
-    typedef std::vector<std::string>          StringList;
-    typedef typename StringList::iterator     StringListIter;
-    typedef std::list<Node*>                  BranchNodeList;
-    typedef typename BranchNodeList::iterator BranchNodeListIter;
+    typedef std::vector<std::string>                StringList;
+    typedef typename StringList::iterator           StringListIter;
+    typedef std::list<Node*>                        BranchNodeList;
+    typedef typename BranchNodeList::iterator       BranchNodeListIter;
 
   public:
 
-    HeirarchicalTree ( char delimiter = '/' );
-    HeirarchicalTree ( const HeirarchicalTree & tree );
+    HeirarchicalStringTree ( char delimiter = '/' );
+    HeirarchicalStringTree ( const HeirarchicalStringTree & tree );
 
-    virtual ~HeirarchicalTree();
+    virtual ~HeirarchicalStringTree();
 
 
-    HeirarchicalTree&  operator= ( const HeirarchicalTree & tree );
+    HeirarchicalStringTree&  operator= ( const HeirarchicalStringTree & tree );
 
 
     char           getDelimiter() const;
@@ -95,7 +91,7 @@ class HeirarchicalTree {
     template<typename OutputIterator_>
     Node*          insert ( const std::string & absoluteName,
                             OutputIterator_ outIter )
-        throw ( TreeException );
+        throw ( std::runtime_error );
     
     template<typename OutputIterator_>
     bool           erase  ( const std::string & absoluteName,
@@ -116,6 +112,7 @@ class HeirarchicalTree {
     void           depthFirstTraversal ( Node * node, 
                                          Predicate_ & predicate );
 
+    
   public:
 
     struct BreadthOrderingFunctor
@@ -130,6 +127,7 @@ class HeirarchicalTree {
         void operator() ( Node * node ) { nodes.push_back(node); }
     };
 
+    
   private:
 
     NodeMap             _roots;
@@ -140,8 +138,8 @@ class HeirarchicalTree {
 
 }  // namespace
 
-#include "HeirarchicalTree.cpp"
+#include "HeirarchicalStringTree.cpp"
 
 
-#endif // _HEIRARCHICALTREE_HPP_
+#endif // _HEIRARCHICALSTRINGTREE_HPP_
 

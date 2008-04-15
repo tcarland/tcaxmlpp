@@ -41,7 +41,7 @@ class ThreadMutexPool {
 
     void         lock();
     void         unlock();
-    void         createMutex();
+    void         createMutexes();
 
     
   protected:

@@ -3,8 +3,8 @@
 #include <set>
 #include <iostream>
 
-#include "HeirarchicalTree.hpp"
-using namespace tnmscore;
+#include "HeirarchicalStringTree.hpp"
+using namespace tnmsCore;
 
 
 
@@ -18,15 +18,15 @@ struct foo
 
 int main()
 {
-    HeirarchicalTree<foo>  tree;
+    HeirarchicalStringTree<foo>  tree;
 
     std::string  name1 = "test/foo/bar/joy";
     std::string  name2 = "test/foo";
     std::string  name3 = "/test/foo/";
     std::string  name4 = "test/foo/bar/joy/bar";
     
-    std::set<HeirarchicalTree<foo>::Node*> addlist;
-    HeirarchicalTree<foo>::Node * node = NULL;
+    std::set<HeirarchicalStringTree<foo>::Node*> addlist;
+    HeirarchicalStringTree<foo>::Node * node = NULL;
     
     std::cout << std::endl;
     

@@ -1,18 +1,18 @@
-#ifndef _HEIRARCHICALTREE_CPP_
-#define _HEIRARCHICALTREE_CPP_
+#ifndef _HEIRARCHICALSTRINGTREE_CPP_
+#define _HEIRARCHICALSTRINGTREE_CPP_
 
 
 #include "StringUtils.h"
 using namespace tcanetpp;
 
 
-namespace tnmscore {
+namespace tnmsCore {
 
 
 template<typename ValueType>
-HeirarchicalTreeNode<ValueType>::HeirarchicalTreeNode ( const std::string & nodeName, 
-                                                        TreeNode * parent, 
-                                                        char delimiter )
+HeirarchicalStringTreeNode<ValueType>::HeirarchicalStringTreeNode ( const std::string & nodeName, 
+                                                                    TreeNode * parent, 
+                                                                    char delimiter )
     : _nodeName(nodeName),
       _parent(parent),
       _delim(delimiter)
@@ -20,13 +20,13 @@ HeirarchicalTreeNode<ValueType>::HeirarchicalTreeNode ( const std::string & node
 
 
 template<typename ValueType>
-HeirarchicalTreeNode<ValueType>::~HeirarchicalTreeNode()
+HeirarchicalStringTreeNode<ValueType>::~HeirarchicalStringTreeNode()
 {}
 
 
 template<typename ValueType>
 const std::string&
-HeirarchicalTreeNode<ValueType>::getName() const 
+HeirarchicalStringTreeNode<ValueType>::getName() const 
 {
     return _nodeName;
 }
@@ -34,7 +34,7 @@ HeirarchicalTreeNode<ValueType>::getName() const
 
 template<typename ValueType>
 std::string
-HeirarchicalTreeNode<ValueType>::getAbsoluteName() const
+HeirarchicalStringTreeNode<ValueType>::getAbsoluteName() const
 {
     std::string  absname = _nodeName;
     TreeNode   * next    = _parent;
@@ -51,7 +51,7 @@ HeirarchicalTreeNode<ValueType>::getAbsoluteName() const
 
 template<typename ValueType>
 ValueType&
-HeirarchicalTreeNode<ValueType>::getValue()
+HeirarchicalStringTreeNode<ValueType>::getValue()
 {
     return _value;
 }
@@ -59,39 +59,39 @@ HeirarchicalTreeNode<ValueType>::getValue()
 
 template<typename ValueType>
 const ValueType&
-HeirarchicalTreeNode<ValueType>::getValue() const
+HeirarchicalStringTreeNode<ValueType>::getValue() const
 {
     return _value;
 }
 
 
 template<typename ValueType>
-typename HeirarchicalTreeNode<ValueType>::TreeNode*
-HeirarchicalTreeNode<ValueType>::getParent()
+typename HeirarchicalStringTreeNode<ValueType>::TreeNode*
+HeirarchicalStringTreeNode<ValueType>::getParent()
 {
     return _parent;
 }
 
 
 template<typename ValueType>
-const typename HeirarchicalTreeNode<ValueType>::TreeNode*
-HeirarchicalTreeNode<ValueType>::getParent() const
+const typename HeirarchicalStringTreeNode<ValueType>::TreeNode*
+HeirarchicalStringTreeNode<ValueType>::getParent() const
 {
     return _parent;
 }
 
 
 template<typename ValueType>
-typename HeirarchicalTreeNode<ValueType>::TreeNodeMap&
-HeirarchicalTreeNode<ValueType>::getChildren()
+typename HeirarchicalStringTreeNode<ValueType>::TreeNodeMap&
+HeirarchicalStringTreeNode<ValueType>::getChildren()
 {
     return _children;
 }
 
 
 template<typename ValueType>
-const typename HeirarchicalTreeNode<ValueType>::TreeNodeMap&
-HeirarchicalTreeNode<ValueType>::getChildren() const
+const typename HeirarchicalStringTreeNode<ValueType>::TreeNodeMap&
+HeirarchicalStringTreeNode<ValueType>::getChildren() const
 {
     return _children;
 }
@@ -101,49 +101,49 @@ HeirarchicalTreeNode<ValueType>::getChildren() const
 
 
 template<typename ValueType>
-HeirarchicalTree<ValueType>::HeirarchicalTree ( char delimiter )
+HeirarchicalStringTree<ValueType>::HeirarchicalStringTree ( char delimiter )
     : _delim(delimiter),
       _size(0)
 {}
 
 
 template<typename ValueType>
-HeirarchicalTree<ValueType>::HeirarchicalTree ( const HeirarchicalTree & tree )
+HeirarchicalStringTree<ValueType>::HeirarchicalStringTree ( const HeirarchicalStringTree & tree )
 {}
 
 
 template<typename ValueType>
-HeirarchicalTree<ValueType>::~HeirarchicalTree()
+HeirarchicalStringTree<ValueType>::~HeirarchicalStringTree()
 {
     this->clear();
 }
 
 
 template<typename ValueType>
-typename HeirarchicalTree<ValueType>::HeirarchicalTree&
-HeirarchicalTree<ValueType>::operator= ( const HeirarchicalTree & tree )
+typename HeirarchicalStringTree<ValueType>::HeirarchicalStringTree&
+HeirarchicalStringTree<ValueType>::operator= ( const HeirarchicalStringTree & tree )
 {}
 
 
 template<typename ValueType>
 char
-HeirarchicalTree<ValueType>::getDelimiter() const
+HeirarchicalStringTree<ValueType>::getDelimiter() const
 {
     return _delim;
 }
 
 
 template<typename ValueType>
-typename HeirarchicalTree<ValueType>::NodeMap&
-HeirarchicalTree<ValueType>::getRoots()
+typename HeirarchicalStringTree<ValueType>::NodeMap&
+HeirarchicalStringTree<ValueType>::getRoots()
 {
     return _roots;
 }
 
 
 template<typename ValueType>
-const typename HeirarchicalTree<ValueType>::NodeMap&
-HeirarchicalTree<ValueType>::getRoots() const
+const typename HeirarchicalStringTree<ValueType>::NodeMap&
+HeirarchicalStringTree<ValueType>::getRoots() const
 {
     return _roots;
 }
@@ -151,15 +151,15 @@ HeirarchicalTree<ValueType>::getRoots() const
 
 template<typename ValueType>
 int
-HeirarchicalTree<ValueType>::size() const
+HeirarchicalStringTree<ValueType>::size() const
 {
     return _size;
 }
 
 
 template<typename ValueType>
-typename HeirarchicalTree<ValueType>::Node*
-HeirarchicalTree<ValueType>::find ( const std::string & absoluteName )
+typename HeirarchicalStringTree<ValueType>::Node*
+HeirarchicalStringTree<ValueType>::find ( const std::string & absoluteName )
 { 
     StringList      branchNames;
     BranchNodeList  branches;
@@ -178,10 +178,10 @@ HeirarchicalTree<ValueType>::find ( const std::string & absoluteName )
 
 template<typename ValueType>
 template<typename OutputIterator_>
-typename HeirarchicalTree<ValueType>::Node*
-HeirarchicalTree<ValueType>::insert ( const std::string & absoluteName,
-                                      OutputIterator_     outIter )
-    throw ( TreeException )
+typename HeirarchicalStringTree<ValueType>::Node*
+HeirarchicalStringTree<ValueType>::insert ( const std::string & absoluteName,
+                                            OutputIterator_     outIter )
+    throw ( std::runtime_error )
 {
     StringList      branchNames;
     BranchNodeList  branches;
@@ -231,8 +231,8 @@ HeirarchicalTree<ValueType>::insert ( const std::string & absoluteName,
 template<typename ValueType>
 template<typename OutputIterator_>
 bool
-HeirarchicalTree<ValueType>::erase ( const std::string & absoluteName,
-                                     OutputIterator_     outIter )
+HeirarchicalStringTree<ValueType>::erase ( const std::string & absoluteName,
+                                           OutputIterator_     outIter )
 {
     return true;
 }
@@ -241,8 +241,8 @@ HeirarchicalTree<ValueType>::erase ( const std::string & absoluteName,
 template<typename ValueType>
 template<typename OutputIterator_>
 bool
-HeirarchicalTree<ValueType>::erase ( Node  * node,
-                                     OutputIterator_ outIter )
+HeirarchicalStringTree<ValueType>::erase ( Node  * node,
+                                           OutputIterator_ outIter )
 {
     if ( node == NULL )
         return false;
@@ -274,7 +274,7 @@ HeirarchicalTree<ValueType>::erase ( Node  * node,
 
 template<typename ValueType>
 void
-HeirarchicalTree<ValueType>::clear()
+HeirarchicalStringTree<ValueType>::clear()
 {
     NodeMapIter  nIter;
 
@@ -298,9 +298,9 @@ HeirarchicalTree<ValueType>::clear()
 template<typename ValueType>
 template<typename BranchIterator_, typename OutputIterator_>
 bool
-HeirarchicalTree<ValueType>::nodesFromBranches ( BranchIterator_ bIter,
-                                                 BranchIterator_ end,
-                                                 OutputIterator_ outIter )
+HeirarchicalStringTree<ValueType>::nodesFromBranches ( BranchIterator_ bIter,
+                                                       BranchIterator_ end,
+                                                       OutputIterator_ outIter )
 {
     NodeMap *  children = &_roots;
     
@@ -321,7 +321,7 @@ HeirarchicalTree<ValueType>::nodesFromBranches ( BranchIterator_ bIter,
 template<typename ValueType>
 template<typename Predicate_>
 void
-HeirarchicalTree<ValueType>::depthFirstTraversal ( Node * node, Predicate_ & predicate )
+HeirarchicalStringTree<ValueType>::depthFirstTraversal ( Node * node, Predicate_ & predicate )
 {
     NodeMap & children = node->getChildren();
     

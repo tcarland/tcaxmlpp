@@ -12,14 +12,15 @@ extern "C" {
 
 namespace tcanetpp {
 
-static const
-char rcsid[] = "$Id: CircularBuffer.cpp,v 3.0 2007/09/16 04:40:57 tca Exp $";
+std::string 
+CircularBuffer::_Version = "$Id: CircularBuffer.cpp,v 3.0 2007/09/16 04:40:57 tca Exp $";
+
 
 // ----------------------------------------------------------------------
 
 CircularBuffer::CircularBuffer() throw ( BufferException )
     : _buffer(NULL),
-      _buffsize(DEFAULT_BUFFSIZE)
+      _buffsize(DEFAULT_CIRBUFFER_SIZE)
 {
     this->init();
 }
@@ -62,7 +63,7 @@ CircularBuffer::init() throw ( BufferException )
     if ( _buffer )
         ::free(_buffer);
 
-    if ( _buffsize < MINBUFFSIZE || _buffsize > MAXBUFFSIZE )
+    if ( _buffsize < MIN_CIRBUFFER_SIZE || _buffsize > MAX_CIRBUFFER_SIZE )
 	throw BufferException("Invalid _buffer size");
 
     _buffer = (char*) ::calloc(_buffsize, sizeof(char));
@@ -292,7 +293,7 @@ CircularBuffer::clear()
 bool
 CircularBuffer::resize ( size_t buffsize ) throw ( BufferException )
 {
-    if ( buffsize < MINBUFFSIZE || buffsize > MAXBUFFSIZE) 
+    if ( buffsize < MIN_CIRBUFFER_SIZE || buffsize > MAX_CIRBUFFER_SIZE) 
         return false;
 
     if ( buffsize < _buffsize ) {  // buffer size reduction
@@ -369,7 +370,7 @@ CircularBuffer::resize ( size_t buffsize ) throw ( BufferException )
 // ----------------------------------------------------------------------
 
 char*
-CircularBuffer::getWritePtr ( size_t *size )
+CircularBuffer::getWritePtr ( size_t * size )
 {
     char   *ptr    = NULL;
     size_t  offset = 0;
@@ -447,7 +448,7 @@ CircularBuffer::setWritePtr ( size_t offset ) throw ( BufferException )
 // ----------------------------------------------------------------------
 
 char*
-CircularBuffer::getReadPtr ( size_t *size )
+CircularBuffer::getReadPtr ( size_t * size )
 {
     char    *ptr = NULL;
     size_t   rd;
@@ -512,6 +513,24 @@ CircularBuffer::setReadPtr ( size_t offset ) throw ( BufferException )
 
 // ----------------------------------------------------------------------
 
+const std::string&
+CircularBuffer::getErrorStr() const
+{
+    return this->_errstr;
+}
+
+// ----------------------------------------------------------------------
+
+const std::string&
+CircularBuffer::Version()
+{
+    return CircularBuffer::_Version;
+}
+
+// ----------------------------------------------------------------------
+
+
 } // namespace
+
 
 //   _TCANETPP_CIRCULARBUFFER_CPP_

@@ -15,7 +15,7 @@ ThreadMutexPool::ThreadMutexPool()
       _lockmin(DEFAULT_MUTEXPOOL_MINSIZE),
       _lockmax(DEFAULT_MUTEXPOOL_MAXSIZE)
 {
-   this->createMutex();
+   this->createMutexes();
 }
 
 
@@ -51,7 +51,7 @@ ThreadMutexPool::AcquireMutex()
     this->lock();
 
     if ( _mutexIn.empty() )
-        this->createMutex();
+        this->createMutexes();
 
     if ( ! _mutexIn.empty() ) {
         lock = _mutexIn.front();
@@ -143,7 +143,7 @@ ThreadMutexPool::unlock()
 }
 
 void
-ThreadMutexPool::createMutex()
+ThreadMutexPool::createMutexes()
 {
     ThreadLock * lock = NULL;
     

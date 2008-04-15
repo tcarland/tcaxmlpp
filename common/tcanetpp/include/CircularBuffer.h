@@ -1,11 +1,12 @@
 /**
-  *  A circular buffer implementation.
+  *   A circular buffer implementation which allows for direct access and 
+  *   interaction to the underlying buffer to avoid excessive copying.
   *
   *   @Author  tcarland@gmail.com
   *   @Version 5.0
  **/
-#ifndef CIRCULARBUFFER_H_
-#define CIRCULARBUFFER_H_
+#ifndef _TCANETPP_CIRCULARBUFFER_H_
+#define _TCANETPP_CIRCULARBUFFER_H_
 
 
 #ifdef WIN32
@@ -26,21 +27,23 @@ namespace tcanetpp {
 
 
 /*  Default size limitations. */
-#define MINBUFFSIZE        1
-#define MAXBUFFSIZE	   2^31
-#define DEFAULT_BUFFSIZE   256000
-#define BUFFER_MULTIPLIER  1000
+#define MIN_CIRBUFFER_SIZE       1
+#define MAX_CIRBUFFER_SIZE       2^31
+#define DEFAULT_CIRBUFFER_SIZE   256000
 
 
 // ----------------------------------------------------------------------
-
 /**  Buffer Exception class
   *   Thrown in 'set' methods if buffer overwrite or overread
   *   is attempted.
  **/
 class BufferException : public Exception {
+
   public:
-    BufferException ( const std::string & s_err ) : Exception(s_err) {}
+
+    BufferException ( const std::string & s_err ) 
+        : Exception(s_err) 
+    {}
 };
 
 // ----------------------------------------------------------------------
@@ -203,6 +206,12 @@ class CircularBuffer {
     void  setReadPtr ( size_t offset ) throw ( BufferException );
 
 
+    const std::string&  getErrorStr() const;
+
+    static 
+    const std::string&  Version();
+
+
   protected:
 
     void  init() throw ( BufferException );
@@ -210,14 +219,15 @@ class CircularBuffer {
 
   private:
 
-    char*            _buffer;    
-    char*            _readPtr;
-    char*            _writePtr;
-    char*            _endPtr;   
-    char*            _wrapPtr;   
+    char*                   _buffer;    
+    char*                   _readPtr;
+    char*                   _writePtr;
+    char*                   _endPtr;   
+    char*                   _wrapPtr;   
 
-    size_t           _buffsize;
-    std::string      _errstr;
+    size_t                  _buffsize;
+    std::string             _errstr;
+    static std::string      _Version;
 };
 
 

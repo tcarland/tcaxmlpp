@@ -39,7 +39,7 @@ public:
     std::string  StringToBitString   ( const std::string & str );
 
 
-  protected:
+  public:
 
     static
     std::string  OidToString ( const oid * anOid, size_t oid_len );
