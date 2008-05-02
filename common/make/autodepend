@@ -137,7 +137,7 @@ LIBS         += -ltcanetpp
 endif
 
 ifdef NEED_TCASQLPLUS
-TCASQL_HOME = $(TOPDIR)/common/tcasqlplus
+TCASQL_HOME = $(TOPDIR)/common/tcasql++
 INCLUDES   += -I$(TCASQL_HOME)
 LFLAGS     += -L$(TCASQL_HOME)/lib
 LIBS       += -ltcasqlplus
@@ -150,26 +150,26 @@ LFLAGS    += -L$(TCASNMP_HOME)/lib
 LIBS      += -ltcasnmp
 endif
 
-ifdef NEED_SOEMONAPI3
-SOEMONAPI  = $(TOPDIR)/monapi
-INCLUDES  += -I$(SOEMONAPI) -I$(TOPDIR)/common/SoeMonCore -I$(TOPDIR)/common/libtcanet/include -I$(TOPDIR)/common/tcaxmlplus
-LFLAGS    += -L$(SOEMONAPI)/lib
-LIBS      += -lSoeMonApi3 
+ifdef NEED_MONAPI3
+MONAPI  = $(TOPDIR)/monapi
+INCLUDES  += -I$(MONAPI) -I$(TOPDIR)/common/tnmsCore -I$(TOPDIR)/common/tcanetpp/include -I$(TOPDIR)/common/tcaxml++
+LFLAGS    += -L$(MONAPI)/lib
+LIBS      += -lMonApi3 
 endif
 
-ifdef NEED_SOEMONCORE
-SOEMONCORE  = $(TOPDIR)/common/SoeMonCore
-INCLUDES   += -I$(SOEMONCORE) -I$(TOPDIR)/common/libtcanet/include \
-              -I$(TOPDIR)/common/tcaxmlplus
-LFLAGS     += -L$(SOEMONCORE)/lib
-LIBS       += -lsoemoncore
+ifdef NEED_TNMSCORE
+TNMSCORE  = $(TOPDIR)/common/tnmsCore
+INCLUDES   += -I$(TNMSCORE) -I$(TOPDIR)/common/libtcapp/include \
+              -I$(TOPDIR)/common/tcaxml++
+LFLAGS     += -L$(TNMSCORE)/lib
+LIBS       += -ltnmscore
 endif
 
-ifdef NEED_TICKETD
-TICKETD     = $(TOPDIR)/security/ticketd
-INCLUDES   += -I$(TICKETD)/include
-LFLAGS     += -L$(TICKETD)/lib
-LIBS       += -lticketd
+ifdef NEED_TICKET
+TICKET      = $(TOPDIR)/common/ticketmgr
+INCLUDES   += -I$(TICKET)/include
+LFLAGS     += -L$(TICKET)/lib
+LIBS       += -lticketmgr
 endif
 
 ifdef NEED_GSOAP
@@ -207,25 +207,12 @@ LIBS	  += -lclient -lrpc -lsupp
 endif
 
 ifdef NEED_NET_SNMP
-#NETSNMP_HOME = $(TOPDIR)/common/ext/snmp/net-snmp-5.2.3
-#INCLUDES += -I$(NETSNMP_HOME)/include
-#LFLAGS   += -L$(NETSNMP_HOME)/snmplib/.libs
-NETSNMP_HOME = /usr
-INCLUDES += -I$(NETSNMP_HOME)/include/net-snmp
+NETSNMP_HOME = $(TOPDIR)/common/ext/net-snmp-5.2.3
+INCLUDES += -I$(NETSNMP_HOME)/include
+LFLAGS   += -L$(NETSNMP_HOME)/snmplib/.libs
+#NETSNMP_HOME = /usr
+#INCLUDES += -I$(NETSNMP_HOME)/include/net-snmp
 LIBS     += -lnetsnmp -lcrypto
-endif
-
-ifdef NEED_SLEEPYCAT
-INCLUDES += -I${SLEEPYHOME}/include
-LFLAGS   += -L${SLEEPYHOME}/lib
-LIBS	  += -ldb
-endif
-
-ifdef NEED_RRDTOOL
-RRDHOME   = /usr/local/rrdtool
-INCLUDES += -I${RRDHOME}/include
-LFLAGS   += -L${RRDHOME}/lib
-LIBS     += -lrrd
 endif
 
 ifdef NEED_PYTHON

@@ -1,9 +1,7 @@
 # The top-level Makefile
-# include any necessary files here.
-# using this file precludes the need for modifying 
-# using makefiles more than once for global changes.
+# includes the dependency and platform macros here.
 #
-# get $(TOPDIR) from using makefiles
+# $(TOPDIR) must be set by source Makefile
 
 include $(TOPDIR)/common/make/environment
 include $(TOPDIR)/common/make/autodepend

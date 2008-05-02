@@ -9,7 +9,7 @@ OPT_FLAGS =	-g -DASWHO_MAIN
 
 LIBS=
 
-INCLUDES=	-I.
+INCLUDES=	-I. -I../include
 
 BIN=		client server asnwho strtest bufftest cidrtest
 
@@ -17,6 +17,8 @@ OBJS=		client.o server.o
 ASOBJ=          ../src/CmdBuf.o ../src/ASWho.o
 CBUFF_OBJS=     cirbuffer_test.o
 CIDR_OBJS=	cidrtest.o
+PT_OBJS=        
+PTT_OBJS=	pt_test.o
 
 ALL_OBJS=	$(OBJS) $(ASOBJ) $(STROBJ) $(CBUFF_OBJS) $(CIDR_OBJS)
 ALL_BINS= 	$(BIN)
@@ -47,6 +49,18 @@ cidrtest: $(CIDR_OBJS)
 	@echo
 
 bufftest: $(CBUFF_OBJS)
+	$(make-cxxbin-rule)
+	@echo
+
+pfxtest: pfxtreetest.o
+	$(make-cxxbin-rule)
+	@echo
+
+pttest: $(PT_OBJS) $(PTT_OBJS)
+	$(make-cxxbin-rule)
+	@echo
+
+strtest: str_test.o
 	$(make-cxxbin-rule)
 	@echo
 

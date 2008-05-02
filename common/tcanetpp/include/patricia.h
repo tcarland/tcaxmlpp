@@ -26,9 +26,9 @@ extern "C" {
 # endif
 
 
-#define GETBIT(v, bit) ((v) & (0x80000000 >> (bit)))
-#define PT_DELETE_FLAG 0x1
-#define MAX_MASKLEN    32
+#define GETBIT(v, bit)  ((v) & (0x80000000 >> (bit)))
+#define PT_DELETE_FLAG  0x1
+#define MAX_MASKLEN     32
 
 
 typedef struct ptNode {
@@ -56,7 +56,7 @@ void* pt_matchRock    ( ptNode_t * head, cidr_t key );
 void* pt_matchLongest ( ptNode_t * head, cidr_t key );
 
 void  pt_visit        ( ptNode_t * head, nodeHandler_t handler );
-void  pt_visit_debug  ( ptNode_t * head, pvtNodeHandler_t handler );
+void  pt_visit_node   ( ptNode_t * head, pvtNodeHandler_t handler );
 
 int   pt_nodes        ( ptNode_t * head );
 int   pt_size         ( ptNode_t * head );

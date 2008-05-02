@@ -17,6 +17,7 @@ extern "C" {
 namespace tcanetpp {
 
 
+
 /** -=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- **/
 /**  The ThreadLock class is a simple wrapper for a pthread mutex and
   *  condition variable intended primarily for providing wait/notify
@@ -64,6 +65,10 @@ class ThreadLock {
      **/
     virtual int lock();
 
+    /** Releases the lock */
+    virtual int unlock();
+
+
     /**  Trys to obtain the lock. The lock will be acquired if it
       *  is available and the function will return 1. A return of 
       *  0 indicates the lock failed (EBUSY), and -1 is returned 
@@ -71,9 +76,6 @@ class ThreadLock {
      **/
     virtual int tryLock();
     inline  int trylock() { return this->tryLock(); }
-
-    /** Releases the lock */
-    virtual int unlock();
 
 
   private:

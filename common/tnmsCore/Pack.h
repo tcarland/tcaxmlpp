@@ -38,6 +38,7 @@ public:
         return Packer::Pack(buffer, buffer_len, value.c_str(), val_len);
     }
     
+
     template<typename T>
     static int Pack ( char * buffer, size_t buffer_len, T & value )
     {
@@ -49,6 +50,7 @@ public:
         return sizeof(value);
     }
     
+
     //------------------------------------------------------------------------
     
     
@@ -70,6 +72,7 @@ public:
         return(upk + val_written + skip);
     }
     
+
     static int Unpack ( char * buffer, size_t buffer_len,
                         std::string & value, size_t & val_written )
     {
@@ -88,6 +91,7 @@ public:
         return (upk + len + skip);
     }
     
+
     template<typename T>
     static int Unpack ( char * buffer, size_t buffer_len, T & value )
     {

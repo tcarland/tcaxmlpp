@@ -78,7 +78,7 @@ class StringUtils {
     }
 
     template<typename T>
-    static inline  T     fromString       ( const std::string & str )
+    static inline  T   fromString       ( const std::string & str )
     {
         T target = T();
         std::stringstream stream(str);

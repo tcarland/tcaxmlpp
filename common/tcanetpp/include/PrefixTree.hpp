@@ -45,17 +45,17 @@ class PrefixTree {
   public:
 
     PrefixTree()
+        : _hl(NULL),
+          _lock(false)
     {
 	_pt   = pt_init();
-	_hl   = NULL;
-	_lock = false;
     }
 
     PrefixTree ( bool implicit_lock )
+        : _hl(NULL),
+          _lock(implicit_lock)
     {
 	_pt   = pt_init();
-	_hl   = NULL;
-	_lock = implicit_lock;
 	if ( _lock )
 	    pthread_mutex_init(&_mutex, NULL);
     }
@@ -135,11 +135,24 @@ class PrefixTree {
         int sz = pt_size(_pt);
 
 	if ( _lock )
-	    pthread_mutex_lock(&_mutex);
+	    pthread_mutex_unlock(&_mutex);
 
 	return sz;
     }
 
+    
+    int  nodes()
+    {
+        if ( _lock )
+            pthread_mutex_lock(&_mutex);
+        
+        int cnt = pt_nodes(_pt);
+        
+        if ( _lock )
+            pthread_mutex_unlock(&_mutex);
+        
+        return cnt;
+    }
 
     size_t memUsage()
     {

@@ -5,7 +5,7 @@
 namespace tnmscore {
 
 
-enum tnmsValueTypes {
+typedef enum tnmsValueTypes {
     TNMS_NONE,
     TNMS_INT,
     TNMS_UINT,
@@ -13,9 +13,9 @@ enum tnmsValueTypes {
     TNMS_ULONG,
     TNMS_FLOAT,
     TNMS_STRING
-};
+} EValueType;
 
-enum tnmsRecordTypes {
+typedef enum tnmsRecordTypes {
     NO_RECORD,
     AUTH_REQUEST,
     AUTH_REPLY,
@@ -29,9 +29,9 @@ enum tnmsRecordTypes {
     UNSUBSCRIBE_STRUCTURE,
     PING_REQUEST,
     PING_REPLY
-};
+} ERecordType;
 
-enum tnmsAuthResult {
+typedef enum tnmsAuthResult {
     AUTH_NO_RESULT,
     AUTH_SUCCESS,
     AUTH_INVALID,
@@ -39,7 +39,7 @@ enum tnmsAuthResult {
     AUTH_AGENT_INVALID,
     AUTH_AGENT_DENIED_IP,
     AUTH_BAD_VERSION
-};
+} EAuthResult;
 
     
 struct tnmsHeader
@@ -54,7 +54,7 @@ struct tnmsHeader
 
 struct tnmsMetric 
 {
-    uint16_t    oid_len;
+    uint32_t    oid_len;
     uint16_t*   oid;
     uint8_t     metric_value_type;
     uint8_t     pad;
@@ -69,13 +69,13 @@ struct tnmsAddRecord
 {
     uint32_t    metric_name_len;
     char*       metric_name;
-    uint16_t    oid_len;
+    uint32_t    oid_len;
     uint16_t*   oid;
 };
 
 struct tnmsRemoveRecord 
 {
-    uint16_t    oid_len;
+    uint32_t    oid_len;
     uint16_t*   oid;
 };
 
@@ -102,7 +102,7 @@ struct tnmsAuthReply
 
 struct tnmsRecordRequest
 {
-    uint16_t    oid_len;
+    uint32_t    oid_len;
     uint16_t*   oid;
 };
 

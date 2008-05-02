@@ -20,7 +20,7 @@ static int    ptsize     = 0;
 
 //  Create a new node
 static ptNode_t*
-PT_new ( cidr_t cidr, int bit, ptNode_t* llink, ptNode_t* rlink, void* rock )
+PT_new ( cidr_t cidr, int bit, ptNode_t * llink, ptNode_t * rlink, void * rock )
 {
     ptNode_t * np = NULL;
 
@@ -250,7 +250,7 @@ pt_init()
 //  inserts a node into the trie.
 //  Returns 1 on success, 0 on error.
 int
-pt_insert ( ptNode_t * head, cidr_t cidr, void* rock )
+pt_insert ( ptNode_t * head, cidr_t cidr, void * rock )
 {
     ptNode_t  * node;
     int         bit;
@@ -343,16 +343,24 @@ pt_visit ( ptNode_t * head, nodeHandler_t handler )
 	PT_visitR(head->llink, -1, handler);
 }
 
-
+//  Visits nodes of the trie in order 
+void
+pt_visit_node ( ptNode_t * head, pvtNodeHandler_t handler )
+{
+    if ( head->llink != NULL )
+        PT_visitR_node(head->llink, -1, handler);
+}
 
 int
 pt_nodes ( ptNode_t * head )
 {
     nodecnt = 0;
+    
     if ( head->llink != NULL )
 	PT_visitR_node(head->llink, -1, &PT_countNodesHandler);
     else
 	return -1;
+    
     return nodecnt;
 }
 

@@ -52,14 +52,14 @@ class Prefix {
         return(_pfx.addr < prefix._pfx.addr);
     }
 
-    inline ipv4addr_t    getPrefix()    const
+    inline ipv4addr_t    getPrefix() const
     { 
         return _pfx.addr;
     }
 
     inline uint8_t       getPrefixLen() const
     {
-        uint8_t * masklen = (uint8_t*)&_pfx.addrlen;
+        uint8_t masklen = *((uint8_t*)&_pfx.addrlen);
         return( *(uint8_t*)masklen );
     }
 

@@ -10,7 +10,7 @@ include ${TOPDIR}/common/make/tca
 #BOOST_JAM  = tools/build/jam_src/bin.linuxx86/bjam
 
 
-all: zlib
+all: zlib net-snmp
 
 
 help:
@@ -19,7 +19,7 @@ help:
 
 
 net-snmp:
-	( cd snmp/net-snmp-5.2.3; \
+	( cd net-snmp-5.2.3; \
 	  ./configure --prefix=/usr --with-gnuld --disable-applications \
 	  --disable-manuals --disable-scripts --with-defaults --disable-shared; \
 	  chmod u+w stamp-h;\
@@ -46,7 +46,7 @@ openssl:
 
 
 clean:
-	( cd snmp/net-snmp-5.2.3; make clean )
+	( cd net-snmp-5.2.3; make clean )
 	( cd mysqlpp/mysql++-1.7.40; make clean )
 	@echo
 
@@ -54,8 +54,8 @@ distclean:
 	if [ -f .external ]; then \
 		( rm .external ) \
 	fi
-	if [ -f snmp/net-snmp-5.2.3/Makefile ]; then \
-		( cd snmp/net-snmp-5.2.3; make distclean ) \
+	if [ -f net-snmp-5.2.3/Makefile ]; then \
+		( cd net-snmp-5.2.3; make distclean ) \
 	fi
 	( cd zlib; make distclean )
 	if [ -f libxml2/Makefile ]; then\

@@ -38,7 +38,6 @@ class NetworkDevice {
     void    operator=  ( const NetworkDevice & device );
     bool    operator== ( const NetworkDevice & device ) const;
     bool    operator<  ( const NetworkDevice & device ) const;
-
  
     
     bool                setDevice       ( const std::string & host );

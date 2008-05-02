@@ -64,8 +64,8 @@ CidrUtils::toCidrString ( ipv4addr_t addr, uint8_t mb )
 {
     char   cidr[INET_CIDRSTRLEN];
 
-    std::string cidrStr = CidrUtils::toString(addr);
-    sprintf(cidr, "%s%s%d", cidrStr.c_str(), "/", mb);
+    std::string cidrStr = CidrUtils::ntop(addr);
+    sprintf(cidr, "%s%s%u", cidrStr.c_str(), "/", mb);
 
     return((std::string)cidr);
 }
@@ -129,7 +129,7 @@ CidrUtils::StringToCidr ( const std::string & cidrStr )
 ipv4addr_t
 CidrUtils::bitsToMask ( uint8_t mb )
 {
-    ipv4addr_t   mask = 0xffffffff;
+    ipv4addr_t  mask = 0xffffffff;
     mask = mask >> (32 - mb) << (32 - mb);
     return mask;
 }
@@ -238,6 +238,7 @@ std::string
 CidrUtils::ntop ( ipv4addr_t addr )
 {
     char   ip[INET_ADDRSTRLEN];
+    std::string ipstr;
 
 #   ifdef WIN32
     inaddr_t  wip;
@@ -247,7 +248,9 @@ CidrUtils::ntop ( ipv4addr_t addr )
     ::inet_ntop(AF_INET, &addr, ip, sizeof(ip));
 #   endif
 
-    return((std::string) ip);
+    ipstr.assign(ip);
+    
+    return(ipstr);
 }
 
 ipv4addr_t
