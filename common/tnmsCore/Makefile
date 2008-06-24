@@ -49,7 +49,7 @@ clean:
 	*.D *.d *.bd *.o lib/*.bd *.bd
 
 doc-clean:
-	( cd doc; $(MAKE) distclean )
+	( cd docs; $(MAKE) distclean )
 	@echo
 
 lib-clean:
@@ -60,7 +60,7 @@ test-clean:
 	( cd test; $(MAKE) distclean )
 	@echo
 
-distclean: clean libclean doc-clean test-clean
+distclean: clean lib-clean doc-clean test-clean
 	$(RM) $(BIN)
 
 install:
