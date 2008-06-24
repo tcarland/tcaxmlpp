@@ -7,7 +7,7 @@ OPT_FLAGS =  -g
 endif
 
 LIBS =
-INCLUDES =
+INCLUDES =              -Iinclude
 
 OBJS =          
 
@@ -24,6 +24,24 @@ include ${TOPDIR}/common/make/tca
 .PHONY: test
 test:
 	( cd test; $(MAKE) all )
+	@echo
+
+lib:	arlib
+
+arlib:	lib/libtnmsCore.a
+
+solib:	lib/libtnmsCore.so.0.0.1
+
+lib/libtnmsCore.a:  ${OBJS}
+	( $(MKDIR) lib )
+	$(make-lib-rule)
+	@echo
+
+lib/libtnmsCore.so.0.0.1: ${OBJS}
+	( $(MKDIR) lib )
+	( $(RM) $@ lib/libtnmsCore.so
+	$(make-so-rule)
+	( cd lib; ln -s $@ libtnmsCore.so )
 	@echo
 
 clean:

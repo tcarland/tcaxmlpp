@@ -7,15 +7,15 @@ OPT_FLAGS =  -g
 endif
 
 LIBS =
-INCLUDES = -I..
+INCLUDES = 	-I../include
 
 OBJS =		        
 
-TEST_OBJS =             tree_test.o pack_test.o
+TEST_OBJS =     tree_test.o pack_test.o
 
-BIN =                   treetest packtest
-ALL_OBJS =              $(OBJS) $(TEST_OBJS)
-ALL_BINS =              $(BIN)
+BIN =           treetest packtest
+ALL_OBJS =      $(OBJS) $(TEST_OBJS)
+ALL_BINS =      $(BIN)
 
 
 all: treetest packtest

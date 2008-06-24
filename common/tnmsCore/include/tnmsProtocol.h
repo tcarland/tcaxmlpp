@@ -15,10 +15,14 @@ typedef enum tnmsValueTypes {
     TNMS_STRING
 } EValueType;
 
+
 typedef enum tnmsRecordTypes {
     NO_RECORD,
     AUTH_REQUEST,
     AUTH_REPLY,
+    AUTH_REFRESH,
+    RESOLVE_REQUEST,
+    RESOLVE_REPLY,
     RECORD_ADD,
     RECORD_REMOVE,
     RECORD_REQUEST,
@@ -44,21 +48,22 @@ typedef enum tnmsAuthResult {
     
 struct tnmsHeader
 {
-    uint16_t  major_version;
-    uint16_t  minor_version;
-    uint16_t  record_type;
-    uint16_t  record_count;
-    uint32_t  payload_size;
-    uint32_t  timestamp;
+    uint16_t    major_version;
+    uint16_t    minor_version;
+    uint16_t    record_type;
+    uint16_t    record_count;
+    uint32_t    options;
+    uint32_t    payload_size;
+    uint32_t    timestamp;
 };
 
 struct tnmsMetric 
 {
     uint32_t    oid_len;
     uint16_t*   oid;
-    uint8_t     metric_value_type;
-    uint8_t     pad;
-    uint32_t    timestamp;
+    uint32_t    metric_name_len;
+    char*       metric_name;
+    uint16_t    metric_value_type;
     uint32_t    metric_value_len;
     char*       metric_value;
     uint32_t    data_len;

@@ -3,10 +3,10 @@
 'tcanms' Line Protocol Specification
 ------------------------------------
 
-PDU     = VERSION  RECORD_OPTIONS  RECORD_TYPE  RECORD_COUNT  RECORD_PAYLOAD
+PDU     = VERSION RECORD_TYPE RECORD_COUNT RECORD_OPTIONS RECORD_PAYLOAD
 
-VERSION = UINT16
-OPTIONS = UINT16
+VERSION                  = UINT16 UINT16
+RECORD_OPTIONS           = UINT32
 
 RECORD_TYPE  = NO_RECORD_TYPE
              | AUTH_REQUEST_TYPE
@@ -23,6 +23,10 @@ RECORD_TYPE  = NO_RECORD_TYPE
              | UNSUBSCRIBE_STRUCTURE_TYPE
              | PING_REQUEST_TYPE
              | PING_REPLY_TYPE
+
+RECORD_OPTIONS = NO_RECORD_OPTIONS
+               | COMPRESSED
+               | LAST_RECORD_MARKER
 
 RECORD_PAYLOAD = NO_PAYLOAD
                | AUTH_REQUEST_PAYLOAD
@@ -43,29 +47,30 @@ RECORD_PAYLOAD = NO_PAYLOAD
 NO_TYPE                         = 0   UINT16
 AUTH_REQUEST_TYPE               = 1   UINT16
 AUTH_REPLY_TYPE                 = 2   UINT16
-RESOLVE_REQUEST_TYPE            = 3   UINT16
-RESOLVE_REPLY_TYPE              = 4   UINT16
-RECORD_ADD_TYPE                 = 5   UINT16
-RECORD_REMOVE_TYPE              = 6   UINT16
-RECORD_REQUEST_TYPE             = 7   UINT16
-RECORD_METRIC_TYPE              = 8   UINT16
-SUBSCRIBE_TYPE                  = 9   UINT16
-UNSUBSCRIBE_TYPE                = 10  UINT16
-SUBSCRIBE_STRUCTURE_TYPE        = 11  UINT16
-UNSUBSCRIBE_STRUCTURE_TYPE      = 12  UINT16
-PING_REQUEST_TYPE               = 13  UINT16
-PING_REPLY_TYPE                 = 14  UINT16
+AUTH_REFRESH_TYPE               = 3   UINT16
+RESOLVE_REQUEST_TYPE            = 4   UINT16
+RESOLVE_REPLY_TYPE              = 5   UINT16
+RECORD_ADD_TYPE                 = 6   UINT16
+RECORD_REMOVE_TYPE              = 7   UINT16
+RECORD_REQUEST_TYPE             = 8   UINT16
+RECORD_METRIC_TYPE              = 9   UINT16
+SUBSCRIBE_TYPE                  = 10  UINT16
+UNSUBSCRIBE_TYPE                = 11  UINT16
+SUBSCRIBE_STRUCTURE_TYPE        = 12  UINT16
+UNSUBSCRIBE_STRUCTURE_TYPE      = 13  UINT16
+PING_REQUEST_TYPE               = 14  UINT16
+PING_REPLY_TYPE                 = 15  UINT16
 
 NO_PAYLOAD                      = empty
 AUTH_REQUEST_PAYLOAD            = USERNAME  PASSWORD
 AUTH_REPLY_PAYLOAD              = USERNAME  AUTH_RESULT  AUTH_REASON
 RESOLVE_REQUEST_PAYLOAD         = ELEMENT_ID*
 RESOLVE_REPLY_PAYLOAD           = (ELEMENT_ID ELEMENT_NAME)*
-RECORD_ADD_PAYLOAD              = ELEMENT_NAME*
-RECORD_REMOVE_PAYLOAD           = ELEMENT_NAME*
-RECORD_REQUEST_PAYLOAD          = ELEMENT_NAME*
-RECORD_METRIC_PAYLOAD           = (ELEMENT_NAME ELEMENT_DATA TIMESTAMP
-ELEMENT_LAST ELEMENT_HIGH ELEMENT_LOW)*
+RECORD_ADD_PAYLOAD              = (ELEMENT_NAME ELEMENT_ID)*
+RECORD_REMOVE_PAYLOAD           = ELEMENT_ID*
+RECORD_REQUEST_PAYLOAD          = ELEMENT_ID*
+RECORD_METRIC_PAYLOAD           = (ELEMENT_ID ELEMENT_NAME VALUE_TYPE
+ELEMENT_VALUE ELEMENT_DATA)* 
 SUBSCRIBE_PAYLOAD               = ELEMENT_NAME*
 UNSUBSCRIBE_PAYLOAD             = ELEMENT_NAME*
 SUBSCRIBE_STRUCTURE_PAYLOAD     = NO_PAYLOAD
@@ -87,11 +92,23 @@ AUTH_RESULT             = 0   UINT16    /* no result */
 AUTH_REASON             = STRING_FIELD
 
 ELEMENT_NAME            = STRING_FIELD
+ELEMENT_ID              = OID_FIELD
 ELEMENT_DATA            = STRING_FIELD
 TIMESTAMP               = UINT32
-ELEMENT_LAST            = INT64
-ELEMENT_HIGH            = INT64
-ELEMENT_LOW             = INT64
+
+VALUE_TYPE              = 0  UINT16    /* no type */
+                        | 1  UINT16    /* signed integer (int32) */
+                        | 2  UINT16    /* unsigned integer (uint32) */
+                        | 3  UINT16    /* signed long (int64) */
+                        | 4  UINT16    /* unsigned ong (uint64) */
+                        | 5  UINT16    /* float (uint32) */
+                        | 6  UINT16    /* string */
+
+ELEMENT_VALUE           = STRING_FIELD
+
+OID_FIELD               = OID_LENGTH OID
+OID_LENGTH              = UINT32
+OID                     = UINT16*
 
 STRING_FIELD            = STRING_LENGTH   STRING
 STRING_LENGTH           = UINT32

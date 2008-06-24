@@ -9,6 +9,10 @@ using namespace tcanetpp;
 namespace tnmsCore {
 
 
+//-------------------------------------------------------------//
+//  HeirarchicalStringTreeNode
+
+
 template<typename ValueType>
 HeirarchicalStringTreeNode<ValueType>::HeirarchicalStringTreeNode ( const std::string & nodeName, 
                                                                     TreeNode * parent, 
@@ -96,8 +100,8 @@ HeirarchicalStringTreeNode<ValueType>::getChildren() const
     return _children;
 }
 
-
 //-------------------------------------------------------------//
+//  HeirarchicalStringTree
 
 
 template<typename ValueType>

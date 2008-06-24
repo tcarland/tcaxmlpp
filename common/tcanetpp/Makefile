@@ -19,10 +19,6 @@ OBJS =		    src/SocketOption.o src/Socket.o src/BufferedSocket.o \
                     
                     
                 #src/ConfigOpts.o src/FileUtils.o \
-                #src/EventManager.o src/Thread.o src/ThreadLock.o \
-                #src/ThreadMutexPool.o src/CirBuffer.o \
-                #src/Socket.o src/BufferedSocket.o \
-                #src/StringUtils.o src/Logger.o
 
 
 PT_OBJS =       src/patricia.o

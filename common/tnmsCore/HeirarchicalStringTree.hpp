@@ -138,7 +138,7 @@ class HeirarchicalStringTree {
 
 }  // namespace
 
-#include "HeirarchicalStringTree.cpp"
+#include "../src/HeirarchicalStringTree.cpp"
 
 
 #endif // _HEIRARCHICALSTRINGTREE_HPP_

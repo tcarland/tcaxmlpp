@@ -1,5 +1,5 @@
-#ifndef PACK_H_
-#define PACK_H_
+#ifndef PACK_HPP_
+#define PACK_HPP_
 
 #include <string>
 
@@ -131,4 +131,4 @@ private:
 
 }  // namespace
 
-#endif /*PACK_H_*/
+#endif // PACK_HPP_

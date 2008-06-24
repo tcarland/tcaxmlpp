@@ -23,9 +23,10 @@ int main()
     std::string  name1 = "test/foo/bar/joy";
     std::string  name2 = "test/foo";
     std::string  name3 = "/test/foo/";
-    std::string  name4 = "test/foo/bar/joy/bar";
+    std::string  name4 = "/test/foo/bar/joy/beer1/";
     
-    std::set<HeirarchicalStringTree<foo>::Node*> addlist;
+    std::set<HeirarchicalStringTree<foo>::Node*>  addlist;
+    
     HeirarchicalStringTree<foo>::Node * node = NULL;
     
     std::cout << std::endl;
@@ -34,7 +35,7 @@ int main()
     
     node = tree.insert(name1, std::inserter(addlist, addlist.begin()));
     
-    std::cout << "addlist size for adding " << name1 << " is " << addlist.size() 
+    std::cout << "list size for adding '" << name1 << "' is " << addlist.size() 
               << std::endl;
     std::cout << "tree size is " << tree.size() << std::endl;
     
@@ -96,6 +97,7 @@ int main()
     //-----------------------------------------------------------------------
     
     std::cout << std::endl << "Size before erase: " << tree.size() << std::endl;
+    std::cout << "  erasing '" << name2 << "'" << std::endl;
     
     std::set<std::string> strings;
     //tree.erase(name2, std::inserter(strings, strings.begin()));
@@ -106,7 +108,7 @@ int main()
     
     std::set<std::string>::iterator  sIter;
     for ( sIter = strings.begin(); sIter != strings.end(); ++sIter ) 
-        std::cout << "Node erase for " << *sIter << std::endl;
+        std::cout << "  Erased node " << *sIter << std::endl;
     
     //-----------------------------------------------------------------------
     

@@ -34,16 +34,16 @@ class DeviceMap {
     virtual ~DeviceMap();
     
 
-    NetworkDevice*      findDevice     ( ipv4addr_t addr );
+    NetworkDevice*      find     ( ipv4addr_t addr );
 
-    NetworkDevice*      addDevice      ( ipv4addr_t addr );
-    NetworkDevice*      addDevice      ( const NetworkDevice & device );
-    bool                addDevice      ( NetworkDevice * device );
+    NetworkDevice*      insert   ( ipv4addr_t addr );
+    NetworkDevice*      insert   ( const NetworkDevice & device );
+    bool                insert   ( NetworkDevice * device );
 
-    NetworkDevice*      removeDevice   ( ipv4addr_t addr);
+    NetworkDevice*      remove   ( ipv4addr_t addr);
 
-    bool                exists         ( ipv4addr_t addr );
-    bool                exists         ( const NetworkDevice & device );
+    bool                exists   ( ipv4addr_t addr );
+    bool                exists   ( const NetworkDevice & device );
 
     void                clear(); 
     size_t              size()  const;
@@ -54,24 +54,24 @@ class DeviceMap {
     const_iterator      end()   const;
     
 
-    void                erase          ( iterator & iter );
-    void                erase          ( ipv4addr_t addr );
-    void                erase          ( iterator & begin,  iterator & end );
+    void                erase    ( iterator & iter );
+    void                erase    ( ipv4addr_t addr );
+    void                erase    ( iterator & begin,  iterator & end );
 
-    void                groupId        ( uint32_t id );
+    void                groupId  ( uint32_t id );
     uint32_t            groupId();
     
     void                groupName      ( const std::string & name );
     const std::string&  groupName();
     
-    void                readCommunity  ( const std::string & rostr );
+    void                readCommunity  ( const std::string & ro_str );
     const std::string&  readCommunity();
     
-    void                writeCommunity ( const std::string & rwstr );
+    void                writeCommunity ( const std::string & rw_str );
     const std::string&  writeCommunity();
 
 
-    void                setDebug       ( bool d );
+    void                setDebug ( bool d );
 
 
   private:
