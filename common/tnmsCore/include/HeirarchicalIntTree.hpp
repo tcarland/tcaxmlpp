@@ -25,7 +25,7 @@ class HeirarchicalIntTreeNode {
 
   public:
 
-    HeirarchicalIntTreeNode ( uint16_t nodeName, TreeNode * parent );
+    HeirarchicalIntTreeNode ( TnmsOid & nodeName, TreeNode * parent );
 
     virtual ~HeirarchicalIntTreeNode();
 
@@ -45,7 +45,7 @@ class HeirarchicalIntTreeNode {
   private:
 
     ValueType           _value;
-    uint16_t            _nodeName;
+    TnmsOid             _nodeOid;
     TreeNode *          _parent;
     char                _delim;
     TreeNodeMap         _children;
@@ -84,15 +84,15 @@ class HeirarchicalIntTree {
 
     int            size() const;
 
-    Node*          find   ( TnmsOid  absoluteName );
+    Node*          find   ( TnmsOid & oid );
 
     template<typename OutputIterator_>
-    Node*          insert ( TnmsOid  absoluteName,
+    Node*          insert ( TnmsOid & oid,
                             OutputIterator_ outIter )
         throw ( std::runtime_error );
     
     template<typename OutputIterator_>
-    bool           erase  ( TnmsOid  absoluteName,
+    bool           erase  ( TnmsOid & oid,
                             OutputIterator_ outIter );
 
     template<typename OutputIterator_>
@@ -134,7 +134,7 @@ class HeirarchicalIntTree {
 
 }  // namespace
 
-#include "HeirarchicalIntTree.cpp"
+#include "../src/HeirarchicalIntTree.cpp"
 
 
 #endif // _HEIRARCHICALINTTREE_HPP_

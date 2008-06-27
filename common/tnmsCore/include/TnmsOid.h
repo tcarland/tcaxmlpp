@@ -17,35 +17,46 @@ typedef uint16_t*               tOid;
 class TnmsOid {
 
 public:
+
+    typedef OidList::iterator        iterator;
+    typedef OidList::const_iterator  const_iterator;
+
+public:
     
     TnmsOid();
     TnmsOid ( const OidList & oidlist );
     TnmsOid ( const std::string & oidstr );
-    TnmsOid ( TnmsOid & oid, size_t oidlen );
-    TnmsOid ( struct tnmsOid & toid );
-    TnmsOid ( const  TnmsOid & toid );
+    TnmsOid ( const TnmsOid & toid );
     
     virtual ~TnmsOid();
     
     uint16_t        operator[] ( uint32_t indx );
     
     std::string     toString() const;
-    tOid            toOidArray() const;
+    tOid            toArray() const;
     
     const OidList&  getOidList() const;
-    OidList&        getOidLIst();
+    OidList&        getOidList();
+
+    iterator        begin();
+    iterator        end();
+    const_iterator  begin() const;
+    const_iterator  end() const;
+    bool            empty() const;
     
+    const uint16_t& lastValue() const;
     uint32_t        getOidLength() const;
     uint32_t        size() const { return this->getOidLength(); }
     
-    uint16_t        lastValue();
-    
     size_t          serialize ( char * buffer, size_t len );
     
-    
+
+    static void     StringToOidList ( const std::string & oidstr,
+                                      OidList & oidlist );
+
 private:
     
-    OidList *       _oid;
+    OidList *       _oidlist;
     
 };
 

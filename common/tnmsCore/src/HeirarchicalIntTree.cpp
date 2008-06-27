@@ -10,9 +10,9 @@ namespace tnmsCore {
 
 
 template<typename ValueType>
-HeirarchicalIntTreeNode<ValueType>::HeirarchicalIntTreeNode ( uint16_t   nodeId, 
+HeirarchicalIntTreeNode<ValueType>::HeirarchicalIntTreeNode ( TnmsOid  & nodeOid, 
                                                               TreeNode * parent )
-    : _nodeId(nodeId),
+    : _nodeOid(nodeOid),
       _parent(parent)
 {}
 
@@ -23,10 +23,10 @@ HeirarchicalIntTreeNode<ValueType>::~HeirarchicalIntTreeNode()
 
 
 template<typename ValueType>
-uint16_t
+const uint16_t&
 HeirarchicalIntTreeNode<ValueType>::getName() const 
 {
-    return _nodeId;
+    return _nodeOid.lastValue();
 }
 
 
@@ -34,15 +34,7 @@ template<typename ValueType>
 TnmsOid
 HeirarchicalIntTreeNode<ValueType>::getAbsoluteName() const
 {
-    OidList      oidlist;
-    TreeNode   * next    = _parent;
-
-    while ( next != NULL ) {
-        oidlist.push_front(next->getName());
-        next = next->getParent();
-    }
-
-    return TnmsOid(oidlist);
+    return _nodeOid;
 }
 
 
@@ -156,14 +148,14 @@ HeirarchicalIntTree<ValueType>::size() const
 
 template<typename ValueType>
 typename HeirarchicalIntTree<ValueType>::Node*
-HeirarchicalIntTree<ValueType>::find ( Oid & absoluteName )
+HeirarchicalIntTree<ValueType>::find ( TnmsOid & oid )
 { 
     BranchNodeList  branches;
 
-    this->nodesFromBranches(oid.getOidList.begin(), oid.getOidList.end(),
+    this->nodesFromBranches(oid.begin(), oid.end(),
                           std::back_inserter(branches));
 
-    if ( branches.empty() || branches.size() != branchNames.size() )
+    if ( branches.empty() || branches.size() != oid.size() )
         return NULL;
 
     return branches.back();
@@ -173,17 +165,16 @@ HeirarchicalIntTree<ValueType>::find ( Oid & absoluteName )
 template<typename ValueType>
 template<typename OutputIterator_>
 typename HeirarchicalIntTree<ValueType>::Node*
-HeirarchicalIntTree<ValueType>::insert ( Oid  & oid,
+HeirarchicalIntTree<ValueType>::insert ( TnmsOid  & oid,
                                          OutputIterator_   outIter )
     throw ( std::runtime_error )
 {
     BranchNodeList  branches;
-    TnmsOidList   & branchNames  = oid.getOidList();
 
-    if ( branchNames.empty() )
+    if ( oid.empty() )
         return NULL;
 
-    if ( this->nodesFromBranches(branchNames.begin(), branchNames.end(),
+    if ( this->nodesFromBranches(oid.begin(), oid.end(),
                                  std::back_inserter(branches)) )
         return NULL;
 
@@ -196,11 +187,11 @@ HeirarchicalIntTree<ValueType>::insert ( Oid  & oid,
         parent   = branches.back();
     }
 
-    TnmsOidList::size_type  bi;
-    NodeMapIter             nIter;
+    OidList::size_type  bi;
+    NodeMapIter         nIter;
 
-    for ( bi = branches.size(); bi < branchNames.size(); ++bi ) {
-        std::pair<NodeMapIter, bool> insertR = children->insert(typename NodeMap::value_type(branchNames[bi], 0));
+    for ( bi = branches.size(); bi < oid.size(); ++bi ) {
+        std::pair<NodeMapIter, bool> insertR = children->insert(typename NodeMap::value_type(oid[bi], 0));
 
         if ( ! insertR.second )
             throw std::runtime_error("insert failed on " + oid.toString());
@@ -223,7 +214,7 @@ HeirarchicalIntTree<ValueType>::insert ( Oid  & oid,
 template<typename ValueType>
 template<typename OutputIterator_>
 bool
-HeirarchicalIntTree<ValueType>::erase ( Oid   & oid,
+HeirarchicalIntTree<ValueType>::erase ( TnmsOid   & oid,
                                         OutputIterator_  outIter )
 {
     return true;

@@ -1,54 +1,84 @@
 #define _TNMSOID_CPP_
-
+#include <list>
+#include <iostream>
 
 #include "TnmsOid.h"
 
+#include "StringUtils.h"
+using namespace tcanetpp;
 
 namespace tnmsCore {
 
 
 TnmsOid::TnmsOid()
+    : _oidlist(new OidList())
 {}
 
 TnmsOid::TnmsOid ( const OidList & oidlist )
+    : _oidlist(new OidList(oidlist))
 {
-    this->_oid  = TnmsOid::CreateNewOid(oidlist.size());
-    tnmsOid ptr = this->_oid.oid;
-
-    OidList::iterator  tIter;
-    for ( int i = 0, tIter = oidlist.begin(); tIter != oidlist.end(); ++tIter ) {
-        uint16_t val = *tIter;
-
-        ptr  = ptr + i;
-        *ptr = val;
-        i   += sizeof(val);
-    }
-
 }
 
 TnmsOid::TnmsOid ( const std::string & oid  )
+    : _oidlist(new OidList())
 {
+    TnmsOid::StringToOidList(oid, *this->_oidlist);
 }
 
-
-TnmsOid::TnmsOid ( tnmsOid oid )
-{
-}
 
 
 TnmsOid::~TnmsOid()
 {
-    if ( _oid.oid )
-        ::free(_oid.oid);
+    if ( this->_oidlist )
+        delete this->_oidlist;
 }
 
+/* this is painful and should be removed */
 uint16_t
 TnmsOid::operator[] ( uint32_t indx )
 {
-    if ( indx >= _oid.oidlen )
+    if ( indx >= (_oidlist->size() - 1) )
         return 0;
+
+    OidList::iterator tIter = _oidlist->begin();
     
-    return( *(_oid.oid + indx) );
+    uint32_t i = 0;
+    while ( i < indx ) {
+        ++tIter;
+        ++i;
+    }
+    
+    return( *tIter );
+}
+
+TnmsOid::iterator
+TnmsOid::begin()
+{
+    return _oidlist->begin();
+}
+
+TnmsOid::iterator
+TnmsOid::end()
+{
+    return _oidlist->end();
+}
+
+TnmsOid::const_iterator
+TnmsOid::begin() const 
+{
+    return _oidlist->begin();
+}
+
+TnmsOid::const_iterator
+TnmsOid::end() const
+{
+    return _oidlist->end();
+}
+
+bool
+TnmsOid::empty() const
+{
+    return _oidlist->empty();
 }
 
 
@@ -56,71 +86,110 @@ std::string
 TnmsOid::toString() const
 {
     std::string  oidstr;
-    uint32_t     indx;
+   
+    OidList::iterator  tIter = _oidlist->begin();
+    oidstr.append(StringUtils::toString(*tIter++));
     
-    oidsstr.append(StringUtils::toString(*_oid.oid));
-    
-    for ( indx = 1; indx != _oid.oidlen; ++indx ) {
-        oidsstr.append(".");
-        oidstr.append(StringUtils::toString(*(_oid.oid + indx)));
+    for ( ; tIter != _oidlist->end(); ++tIter ) {
+        oidstr.append(".");
+        oidstr.append(StringUtils::toString(*tIter));
     }
     
     return oidstr;
 }
 
 
-void
-TnmsOid::toOidArray ( OidList & oidlist ) const 
+tOid
+TnmsOid::toArray() const 
 {
-    uint32_t indx;
+    uint16_t * oid = NULL;
+    uint16_t * rid = NULL;
+
+    oid = (uint16_t*) ::calloc(_oidlist->size(), sizeof(uint16_t));
+    rid = oid;
+
+    OidList::iterator tIter;
+    for ( tIter = _oidlist->begin(); tIter != _oidlist->end(); ++tIter, ++rid )
+        *rid = *tIter;
     
-    for ( indx = 0; indx != _oid.oidlen; ++indx )
-        oidlist.push_back( *(this->_oid.oid + indx) );
-    
-    return;
+    return oid;
 }
 
-
 const OidList&
-TnmsOid::getOidList() const 
+TnmsOid::getOidList() const
 {
-    return _oid;
+    return *_oidlist;
 }
 
 
 OidList&
 TnmsOid::getOidList()
 {
-    return _oid;
+    return *_oidlist;
 }
 
 
 uint32_t
 TnmsOid::getOidLength() const
 {
-    return _oid.size();
+    return _oidlist->size();
+}
+
+
+const uint16_t&
+TnmsOid::lastValue() const
+{
+    return((*_oidlist)[_oidlist->size() - 1]);
 }
 
 
 size_t    
 TnmsOid::serialize ( char * buffer, size_t len )
 {
-    if ( len < (sizeof(uint32_t) + (_oid.oidlen * sizeof(uint16_t))) )
+    if ( len < (sizeof(uint32_t) + (_oidlist->size() * sizeof(uint16_t))) )
         return 0;
 
     size_t  sz  = sizeof(uint16_t);
     char * bptr = buffer;
     
-    Oidlist::iterator  tIter;
+    OidList::iterator  tIter;
 
-    for ( tIter = _oid.begin(); tIter != _oid.end(); ++tIter ) {
+    for ( tIter = _oidlist->begin(); tIter != _oidlist->end(); ++tIter ) {
         *bptr   = *tIter;
         bptr   += sz;
     }
 
-    sz = sz * _oid.size();
+    sz = sz * _oidlist->size();
 
     return sz;
+}
+
+void
+TnmsOid::StringToOidList ( const std::string & str, OidList & oidlist )
+{
+    std::cout << "TnmsOid::StringToOid() '" << str << "'" << std::endl;
+
+    std::list<std::string>  branchNames;
+    StringUtils::split(str, '.', std::back_inserter(branchNames));
+
+    std::list<std::string>::iterator sIter;
+
+    for ( sIter = branchNames.begin(); sIter != branchNames.end(); ++sIter )
+        oidlist.push_back(StringUtils::fromString<uint16_t>(*sIter));
+
+    /*
+    std::string::size_type  begin = 0, end = 0;
+    char delimiter = '.';
+
+    while ( (begin = str.find_first_not_of(delimiter, begin)) != std::string::npos )
+    {
+        end     = str.find_first_of(delimiter, begin);
+        oidlist.push_back(StringUtils::fromString<uint16_t>(str.substr(begin, end - begin)));
+        begin   = end;
+    }
+    */
+
+    return;
 }
 
 

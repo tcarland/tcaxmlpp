@@ -9,14 +9,14 @@ endif
 LIBS =
 INCLUDES =              -Iinclude
 
-OBJS =          
+OBJS =         		src/TnmsOid.o 
 
 BIN =                        
 ALL_OBJS =              $(OBJS)
 ALL_BINS =              $(BIN)
 
 
-all: test
+all: lib test
 
 
 include ${TOPDIR}/common/make/tca
@@ -44,12 +44,13 @@ lib/libtnmsCore.so.0.0.1: ${OBJS}
 	( cd lib; ln -s $@ libtnmsCore.so )
 	@echo
 
-clean:
+clean: test-clean
 	$(RM) $(OBJS) \
-	*.D *.d *.bd *.o lib/*.bd *.bd
+	*.D *.d *.bd *.o lib/*.bd *.bd \
+	src/*.D src/*.d src/*.bd src/*.o src/*.bd 
 
 doc-clean:
-	( cd docs; $(MAKE) distclean )
+	( cd docs; $(MAKE) clean )
 	@echo
 
 lib-clean:

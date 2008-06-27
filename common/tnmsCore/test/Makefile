@@ -11,14 +11,14 @@ INCLUDES = 	-I../include
 
 OBJS =		        
 
-TEST_OBJS =     tree_test.o pack_test.o
+TEST_OBJS =     tree_test.o pack_test.o oid_test.o
 
-BIN =           treetest packtest
+BIN =           treetest packtest oidtest
 ALL_OBJS =      $(OBJS) $(TEST_OBJS)
 ALL_BINS =      $(BIN)
 
 
-all: treetest packtest
+all: treetest packtest oidtest
 
 
 include ${TOPDIR}/common/make/tca
@@ -28,6 +28,9 @@ treetest: tree_test.o
 	$(make-cxxbin-rule)
 
 packtest: pack_test.o
+	$(make-cxxbin-rule)
+
+oidtest: oid_test.o ../src/TnmsOid.o
 	$(make-cxxbin-rule)
 
 clean:
