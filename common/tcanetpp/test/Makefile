@@ -11,7 +11,7 @@ LIBS=
 
 INCLUDES=	-I. -I../include
 
-BIN=		client server asnwho strtest bufftest cidrtest
+BIN=		client server asnwho strtest bufftest cidrtest ipconvert
 
 OBJS=		client.o server.o
 ASOBJ=          ../src/CmdBuf.o ../src/ASWho.o
@@ -25,7 +25,7 @@ ALL_BINS= 	$(BIN)
 
 
 
-all: client server cidrtest bufftest
+all: client server cidrtest bufftest ipconvert
 
 
 include ${TOPDIR}/common/make/tca
@@ -61,6 +61,10 @@ pttest: $(PT_OBJS) $(PTT_OBJS)
 	@echo
 
 strtest: str_test.o
+	$(make-cxxbin-rule)
+	@echo
+
+ipconvert: ip_convert.o
 	$(make-cxxbin-rule)
 	@echo
 

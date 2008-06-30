@@ -29,8 +29,7 @@ public:
 
     static std::string  toString        ( ipv4addr_t addr );
     static std::string  toCidrString    ( ipv4addr_t addr, uint8_t mb );
-    static std::string  toCidrString    ( const Prefix & P );
-    
+    static std::string  toCidrString    ( const Prefix & p );
 
     static int          StringToAddr    ( const std::string & addrStr, 
                                           ipv4addr_t & addr );

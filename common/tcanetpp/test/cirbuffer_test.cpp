@@ -10,8 +10,8 @@ using namespace tcanetpp;
 
 int main ( int argc, char ** argv )
 {
-    size_t  buffsize = DEFAULT_BUFFSIZE;
-    size_t  maxsize  = MAXBUFFSIZE;
+    size_t  buffsize = DEFAULT_CIRBUFFER_SIZE;
+    size_t  maxsize  = MAX_CIRBUFFER_SIZE;
 
     if ( argc == 2 )
         buffsize = StringUtils::fromString<size_t>(argv[1]);

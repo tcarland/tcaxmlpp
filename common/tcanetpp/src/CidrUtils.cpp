@@ -65,11 +65,10 @@ CidrUtils::toCidrString ( ipv4addr_t addr, uint8_t mb )
     char   cidr[INET_CIDRSTRLEN];
 
     std::string cidrStr = CidrUtils::ntop(addr);
-    sprintf(cidr, "%s%s%u", cidrStr.c_str(), "/", mb);
+    snprintf(cidr, INET_CIDRSTRLEN, "%s%s%u", cidrStr.c_str(), "/", mb);
 
     return((std::string)cidr);
 }
-
 
 std::string
 CidrUtils::toCidrString ( const Prefix & p )
@@ -103,7 +102,7 @@ CidrUtils::StringToCidr ( const std::string & cidrStr )
     Prefix      prefix;
     std::string addrstr = "";
     ipv4addr_t  addr    = 0;
-    uint8_t     mb      = 0;
+    uint16_t     mb     = 0;
     
     std::vector<std::string>  stok;
     
@@ -116,7 +115,7 @@ CidrUtils::StringToCidr ( const std::string & cidrStr )
 	return prefix;
 
     if ( stok.size() == 2 )
-	mb = (uint8_t) StringUtils::fromString<uint8_t>(stok[1]);
+	mb = (uint16_t) StringUtils::fromString<uint16_t>(stok[1]);
 
     if ( mb <= 0 || mb > 32 )
 	mb = 32;

@@ -15,12 +15,19 @@
 
 namespace tcanetpp {
 
+class Prefix;
+typedef std::vector<Prefix>  PrefixList;
+
 
 class Prefix {
 
   public:
 
-    Prefix() {}
+    Prefix()
+    {
+        _pfx.addr     = 0;
+        _pfx.addrlen  = 0;
+    }
 
     Prefix ( ipv4addr_t addr, uint8_t len )
     {
@@ -49,6 +56,8 @@ class Prefix {
     
     bool   operator<   ( const Prefix & prefix ) const
     {
+        if ( _pfx.addr == prefix._pfx.addr )
+            return(_pfx.addrlen < prefix._pfx.addrlen);
         return(_pfx.addr < prefix._pfx.addr);
     }
 
@@ -60,7 +69,7 @@ class Prefix {
     inline uint8_t       getPrefixLen() const
     {
         uint8_t masklen = *((uint8_t*)&_pfx.addrlen);
-        return( *(uint8_t*)masklen );
+        return masklen;
     }
 
     inline const cidr_t& getCidr() const
@@ -76,11 +85,7 @@ class Prefix {
 };
 
 
-typedef std::vector<Prefix>  PrefixList;
-
-
 }  // namespace
-
 
 #endif  //  _TCANETPP_PREFIX_HPP_
 
