@@ -45,7 +45,11 @@ Thread::~Thread()
 	this->stop();
 }
 
-
+/** Initiates the start of the thread by create the underlying thread object.
+ *  If the underlying call to the thread create() fails, a ThreadException is 
+ *  thrown. Once start() succeeds, the new thread will initiate with the private 
+ *  threadEntry function.
+ **/
 void
 Thread::start() throw ( ThreadException )
 {
@@ -73,7 +77,10 @@ Thread::start() throw ( ThreadException )
     return;
 }
 
-
+/**  Forcibly stops the thread, and if not detached from the thread it will
+ *   attempt to join the thread. A ThreadException is thrown if the join 
+ *   fails.
+ **/
 void
 Thread::stop() throw ( ThreadException )
 {
@@ -97,6 +104,10 @@ Thread::stop() throw ( ThreadException )
 }
 
 
+/**  Sets a thread identity or name.  The thread will automatically be given 
+ *   a name consisting of "Thread_xxx" where xxx is the thread id.  This
+ *   method overrides that default name
+ **/
 void
 Thread::threadName ( const std::string & name )
 {
@@ -104,6 +115,7 @@ Thread::threadName ( const std::string & name )
 }
 
 
+/**  Returns the thread name or string identifier of the thread */
 const std::string&
 Thread::threadName() const
 {
@@ -111,13 +123,17 @@ Thread::threadName() const
 }
 
 
+/**  Indicates whether the thread is currently in the run state. */
 bool
 Thread::isRunning()
 {
     return this->_running;
 }
 
-
+/**  Sets the _Alarm boolean to true. This has no other behavior and 
+ *   is nothing but a convenience state flag for the derived object 
+ *   to utilize in its 'run()' implementation.
+ **/
 void
 Thread::setAlarm()
 {
@@ -125,6 +141,9 @@ Thread::setAlarm()
 }
 
 
+/**  The private, thread entry function used as the entry point for 
+ *   all new threads.
+ **/
 void*
 Thread::threadEntry ( void* arg )
 {
@@ -140,7 +159,10 @@ Thread::threadEntry ( void* arg )
     return((void*)t);
 }
 
-
+/**  Yields the thread by calling the pthread 'sched_yield()' function. This 
+ *   method is protected and may only be called internally by the derived 
+ *   object.
+ **/
 void
 Thread::yield()
 {

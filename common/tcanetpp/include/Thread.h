@@ -20,7 +20,6 @@ extern "C" {
 namespace tcanetpp {
 
 
-/** -=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- **/
 /** 
   *  ThreadException class.  
  **/
@@ -31,14 +30,18 @@ class ThreadException : public Exception {
 };
 
 
-/** -=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- **/
 /**
   *  The Thread class is an abstract class for instantiating an object
-  *  as a thread. A derived object must provide its own "void run()" 
-  *  method (as in java's Runnable interface). The thread is started
-  *  via the base class' non-virtual methods, start() and stop(),
-  *  which uses a simple _Alarm boolean to indicate that the thread should
-  *  terminate operation.
+  *  as a thread. A derived object must provide its own 'run()' implementation.
+  *  The thread is started via the base class's non-virtual method 'start()', 
+  *  which sets up the thread and makes the call to the virtual 'init() method 
+  *  to provide custom thread initialization routines, and then 'run()'.
+  *  On thread exit or termination, the users' virtual method 'finished()' is 
+  *  called. Finally, stop() will terminate the thread and 'join' if appropriate. 
+  *  The thread will forcibly call 'stop()' and potentially attempt to 'join' 
+  *  the thread if the object is destroyed without the user stopping it.
+  *  setAlarm() allows for the signaling of the underlying thread 
+  *  implementation as a nice 'stop'.
  **/
 class Thread {
 
@@ -50,81 +53,47 @@ class Thread {
     virtual ~Thread();
 
 
-    /**  The run method is to be implemented by the extending class
-      *  and is called by the thread entry point at thread start.
-     **/
-    virtual void run ( void ) = 0;
+    virtual void        run ( void ) = 0;
 
 
-    /**  This is a convenience method called prior to run() by the
-      *  thread entry function
-     **/
-    virtual void init() {}
+    virtual void        init() {}
+
+    void                start() throw ( ThreadException );
+    void                stop()  throw ( ThreadException );
 
 
-    /**  Performs the function of starting the thread.
-      *  The method will throw a ThreadException if the call to
-      *   pthread_create fails, or the start method has already
-      *  been called.
-     **/
-    void start() throw ( ThreadException );
+    virtual void        finished();
 
-    /**  Performs the function of forcibly stopping the thread.
-      *  The method will throw a ThreadException if the call
-      *  to pthread_join fails.
-     **/
-    void stop() throw ( ThreadException );
+    void                threadName ( const std::string & name );
+    const std::string&  threadName() const;
 
 
-    /**  Function called by the threadEntry when run() is finished.  */
-    virtual void finished();
-
-
-    /**  Sets a cosmetic name for this thread */
-    void threadName ( const std::string & name );
-
-
-    /**  Returns the id name of this thread */
-    const std::string& threadName() const;
-
-
-    /**  Returns a boolean indicating whether the thread is 
-      *  currently running.
-     **/
-    bool isRunning();
-
-
-    /**  Method to set the alarm boolean to true */
-    virtual void setAlarm();
+    bool                isRunning();
+    virtual void        setAlarm();
 
 
   protected:
 
-    /**  This is protected because it should be used internally by
-      *  this thread to call sched_yield() in the current thread
-      *  context only.
-     **/
-    void yield();
+    void                yield();
 
 
   private:
 
-    /**  The thread entry point */
-    static void * threadEntry ( void * arg );
+    static void*        threadEntry ( void * arg );
 
 
   protected:
 
-    std::string     _threadName;
-    std::string     _serr;
-    bool            _Alarm;
-    bool            _running;
-    bool            _detach;
+    std::string         _threadName;
+    std::string         _serr;
+    bool                _Alarm;
+    bool                _running;
+    bool                _detach;
 
 
   private:
 
-    pthread_t       _tid;
+    pthread_t           _tid;
 
 };
 
@@ -135,7 +104,7 @@ class Thread {
 #endif  // _TCANETPP_THREAD_H_
 
 
-/** -=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- **/
+/* -------------------------------------------------------------- */
 
 /**  Simple Thread class example:
   *  

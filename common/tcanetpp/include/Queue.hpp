@@ -19,18 +19,14 @@ extern "C" {
 namespace tcanetpp {
 
 
-#define DEFAULT_MAXSIZE 65535
+#define DEFAULT_QUEUE_MAXSIZE 65535
 
 
 template<class ValueType> class SynchronizedQueue {
 
   public:
 
-    SynchronizedQueue() 
-        : _maxSize(DFAULT_MAXSIZE) 
-    {}
-
-    SynchronizedQueue ( size_t maxsize )
+    SynchronizedQueue ( size_t maxsize = DEFAULT_QUEUE_MAXSIZE )
         : _maxSize(maxsize) 
     {}
 

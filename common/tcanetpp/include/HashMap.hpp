@@ -57,18 +57,29 @@ class HashMap {
 
 
     ValueType& operator[]  ( const std::string & key ) 
-    { return _hash[key.c_str()]; }
+    {
+        return _hash[key.c_str()];
+    }
 
     void            add    ( const std::string & key, ValueType & val )
-    { _hash[key.c_str()] = val; }
+    {
+        _hash[key.c_str()] = val;
+    }
 
     iterator        find   ( const std::string & key )
-    { return _hash.find(key.c_str()); }
+    {
+        return _hash.find(key.c_str());
+    }
 
     void            erase  ( iterator iter )           
-    { _hash.erase(iter); }
+    {
+        _hash.erase(iter);
+    }
+
     void            erase  ( const std::string & key ) 
-    { _hash.erase(key.c_str()); }
+    { 
+        _hash.erase(key.c_str()); 
+    }
         
     size_t          size() const  { return _hash.size(); }
     void            clear()       { return _hash.clear(); }
