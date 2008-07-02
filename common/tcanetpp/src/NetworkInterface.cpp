@@ -70,66 +70,66 @@ NetworkInterface::operator< ( const NetworkInterface & nif )
 int
 NetworkInterface::ifIndex() const
 {
-    return _if_index;
+    return this->_if_index;
 }
 
 
 void
 NetworkInterface::ifName ( const std::string & ifname )
 {
-    _if_name = ifname;
+    this->_if_name = ifname;
 }
 
 std::string
 NetworkInterface::ifName() const
 {
-    return _if_name;
+    return this->_if_name;
 }
 
 
 void
 NetworkInterface::description ( const std::string & desc )
 {
-    _description = StringUtils::trim(desc);
+    this->_description = StringUtils::trim(desc);
 }
 
 std::string
 NetworkInterface::description() const
 {
-    return _description;
+    return this->_description;
 }
 
 
 ipv4addr_t
 NetworkInterface::deviceAddr() const
 {
-    return _device_ip;
+    return this->_device_ip;
 }
 
 
 void
 NetworkInterface::ifAddr ( ipv4addr_t addr )
 {
-    _if_addr = addr;
+    this->_if_addr = addr;
 }
 
 ipv4addr_t
 NetworkInterface::ifAddr() const
 {
-    return _if_addr;
+    return this->_if_addr;
 }
 
 
 void
 NetworkInterface::ifId ( int id )
 {
-    _id = id;
+    this->_id = id;
 }
 
 int
 NetworkInterface::ifId() const
 {
-    return _id;
+    return this->_id;
 }
 
 

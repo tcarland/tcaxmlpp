@@ -24,7 +24,7 @@ namespace tcanetpp {
 #define MAXSTRLINE  4096
 
 
-/**   A class of static methods for convenient string manipulation functions. */
+/**   A class of static methods for convenient string manipulation. */
 class StringUtils {
 
   public:

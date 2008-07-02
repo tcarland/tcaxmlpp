@@ -95,7 +95,7 @@ NetworkDevice::operator= ( const NetworkDevice & device )
 bool
 NetworkDevice::operator== ( const NetworkDevice & device ) const
 {
-    return(_deviceAddr == device._deviceAddr);
+    return(this->_deviceAddr == device._deviceAddr);
 }
 
 
@@ -115,7 +115,7 @@ NetworkDevice::operator< ( const NetworkDevice & device ) const
 const std::string&
 NetworkDevice::deviceName() const
 {
-    return _deviceName;
+    return this->_deviceName;
 }
 
 const std::string&
@@ -127,7 +127,7 @@ NetworkDevice::name() const
 const ipv4addr_t&
 NetworkDevice::deviceAddr() const
 {
-    return _deviceAddr;
+    return this->_deviceAddr;
 }
 
 const ipv4addr_t&
@@ -145,13 +145,13 @@ NetworkDevice::addr() const
 void
 NetworkDevice::deviceId ( const int & id )
 {
-    _deviceId = id;
+    this->_deviceId = id;
 }
 
 const int&
 NetworkDevice::deviceId() const
 {
-    return _deviceId;
+    return this->_deviceId;
 }
 /*@}*/
 
@@ -161,25 +161,25 @@ NetworkDevice::deviceId() const
 void
 NetworkDevice::readCommunity ( const std::string & comm ) 
 {
-    _readComm = comm;
+    this->_readComm = comm;
 }
 
 const std::string&
 NetworkDevice::readCommunity() const
 {
-    return _readComm;
+    return this->_readComm;
 }
 
 void
 NetworkDevice::writeCommunity ( const std::string & comm )
 {
-    _writeComm = comm;
+    this->_writeComm = comm;
 }
 
 const std::string&
 NetworkDevice::writeCommunity() const
 {
-    return _writeComm;
+    return this->_writeComm;
 }
 /*@}*/
 
@@ -189,13 +189,13 @@ NetworkDevice::writeCommunity() const
 void
 NetworkDevice::version ( const std::string & ver )
 {
-    _version = ver;
+    this->_version = ver;
 }
 
 const std::string&
 NetworkDevice::version() const
 {
-    return _version;
+    return this->_version;
 }
 /*@}*/
 
@@ -205,14 +205,14 @@ NetworkDevice::version() const
 const std::string&
 NetworkDevice::sysDescr() const
 {
-    return _sysDescr;
+    return this->_sysDescr;
 }
 
 
 void
 NetworkDevice::sysDescr ( const std::string & desc )
 {
-    _sysDescr = desc;
+    this->_sysDescr = desc;
 }
 /*@}*/
 
@@ -222,13 +222,13 @@ NetworkDevice::sysDescr ( const std::string & desc )
 void
 NetworkDevice::model ( const std::string & model )
 {
-    _model = model;
+    this->_model = model;
 }
 
 const std::string&
 NetworkDevice::model() const
 {
-    return _model;
+    return this->_model;
 }
 /*@}*/
 
@@ -238,14 +238,14 @@ NetworkDevice::model() const
 void
 NetworkDevice::serialNumber ( const std::string & serial )
 {
-    _serial = serial;
+    this->_serial = serial;
 }
 
 
 const std::string&
 NetworkDevice::serialNumber() const
 {
-    return _serial;
+    return this->_serial;
 }
 /*@}*/
 
@@ -257,13 +257,13 @@ NetworkDevice::serialNumber() const
 void
 NetworkDevice::pollable ( bool p )
 {
-    _pollable = p;
+    this->_pollable = p;
 }
 
 bool
 NetworkDevice::pollable() const
 {
-    return _pollable;
+    return this->_pollable;
 }
 /*@}*/
 
@@ -276,14 +276,14 @@ NetworkDevice::pollable() const
 void
 NetworkDevice::status ( int s )
 {
-    _status = s;
+    this->_status = s;
 }
 
 
 const int&
 NetworkDevice::status() const
 {
-    return _status;
+    return this->_status;
 }
 /*@}*/
 
@@ -293,14 +293,14 @@ NetworkDevice::status() const
 void
 NetworkDevice::errorStr ( const std::string & err )
 {
-    _errStr = err;
+    this->_errStr = err;
 }
 
 
 std::string
 NetworkDevice::errorStr() const
 {
-    return _errStr;
+    return this->_errStr;
 }
 /*@}*/
 
@@ -343,7 +343,7 @@ NetworkDevice::setDevice ( const std::string & host )
 	if ( (indx = StringUtils::indexOf(_deviceName, ".")) > 0 )
 	    _deviceName = _deviceName.substr(0, indx);
 
-	hp = gethostbyname(_deviceName.c_str());
+	hp = ::gethostbyname(_deviceName.c_str());
 
 	if ( ! hp )
 	    return false;
@@ -361,9 +361,9 @@ NetworkDevice::setDevice ( const ipv4addr_t & addr )
 {
     struct hostent * hp;
 
-    _deviceAddr = addr;
+    this->_deviceAddr = addr;
 
-    hp = gethostbyaddr(&_deviceAddr, sizeof(_deviceAddr), AF_INET);
+    hp = ::gethostbyaddr(&_deviceAddr, sizeof(_deviceAddr), AF_INET);
 
     if ( hp ) {
 	_deviceName = hp->h_name;
@@ -383,13 +383,13 @@ NetworkDevice::setDevice ( const ipv4addr_t & addr )
 void         
 NetworkDevice::setDeviceName ( const std::string & name )
 {
-    _deviceName = name;
+    this->_deviceName = name;
 }
 
 void
 NetworkDevice::setDeviceAddr ( const ipv4addr_t & addr )
 {
-    _deviceAddr = addr;
+    this->_deviceAddr = addr;
 }
 /*@}*/
 
@@ -401,7 +401,7 @@ NetworkDevice::setDeviceAddr ( const ipv4addr_t & addr )
 int
 NetworkDevice::ifcount() const
 {
-    return _ifv.size();
+    return this->_ifv.size();
 }
 
 // ----------------------------------------------------------------------
@@ -414,14 +414,13 @@ NetworkDevice::ifcount() const
 void
 NetworkDevice::setNetworkInterfaces ( IfList & ifv )
 {
-    _ifv = ifv;
-    return;
+    this->_ifv = ifv;
 }
 
 IfList&
 NetworkDevice::getNetworkInterfaces()
 {
-    return _ifv;
+    return this->_ifv;
 }
 /*@}*/
 
@@ -435,7 +434,6 @@ NetworkDevice::SetDeviceVersion ( NetworkDevice & dev, const std::string & desc 
     
     StringUtils::split(desc, '\n', std::back_inserter(stok));
     
-
     if ( stok.size() >= 2 ) {
 	vs   = stok[1];
 	stok.clear();

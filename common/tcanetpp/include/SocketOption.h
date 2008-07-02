@@ -14,7 +14,7 @@ public:
     SocketOption();
     SocketOption ( int optname, int optval, const std::string & name = "" );
     
-    ~SocketOption();
+    virtual ~SocketOption();
     
     
     int          getOptionName();

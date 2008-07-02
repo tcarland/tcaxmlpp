@@ -14,12 +14,10 @@
 
 namespace tcanetpp {
 
-
 class NetworkDevice;
 
 typedef std::set<NetworkDevice>    DeviceSet;
 typedef std::list<NetworkDevice>   DeviceList;
-
 
 
 class NetworkDevice {
@@ -35,9 +33,9 @@ class NetworkDevice {
     virtual ~NetworkDevice();
 
     
-    void    operator=  ( const NetworkDevice & device );
-    bool    operator== ( const NetworkDevice & device ) const;
-    bool    operator<  ( const NetworkDevice & device ) const;
+    void    operator=   ( const NetworkDevice & device );
+    bool    operator==  ( const NetworkDevice & device ) const;
+    bool    operator<   ( const NetworkDevice & device ) const;
  
     
     bool                setDevice       ( const std::string & host );
@@ -46,10 +44,9 @@ class NetworkDevice {
     void                setDeviceName   ( const std::string & name );
     void                setDeviceAddr   ( const ipv4addr_t & addr );
 
-    
     const std::string&  deviceName() const;
     const std::string&  name() const;
-    
+
     const ipv4addr_t&   deviceAddr() const;
     const ipv4addr_t&   addr() const;
 
@@ -58,10 +55,10 @@ class NetworkDevice {
 
     void                community      ( const std::string & comm );
     const std::string&  community() const;
-    
+
     void                readCommunity  ( const std::string & comm );
     const std::string&  readCommunity() const;
-    
+
     void                writeCommunity ( const std::string & comm );
     const std::string&  writeCommunity() const;
 
@@ -76,55 +73,52 @@ class NetworkDevice {
 
     void                serialNumber   ( const std::string & serial );
     const std::string&  serialNumber() const;
-    
+
     void                pollable       ( bool p );
     bool                pollable() const;
-    
+
     int                 ifcount() const;
-    
+
     void                status ( int s );
     const int&          status() const;
 
     void                errorStr       ( const std::string & err ); 
     std::string         errorStr() const;
  
-
     void                setNetworkInterfaces ( IfList & ifv );
     IfList&             getNetworkInterfaces();
-    
 
-    
+
   public:
-      
+
     static 
     std::string         SetDeviceVersion ( NetworkDevice & dev, 
                                            const std::string & desc ); 
 
-
   private:
 
-    IfList                  _ifv;
+    IfList              _ifv;
 
-    ipv4addr_t		    _deviceAddr;
-    int                     _deviceId;
-    std::string	            _deviceName;
+    ipv4addr_t		_deviceAddr;
+    int                 _deviceId;
+    std::string	        _deviceName;
     
-    std::string	            _readComm;
-    std::string	            _writeComm;
-    std::string	            _version;
-    std::string	            _sysDescr;
-    std::string	            _model;      
-    std::string	            _location;
-    std::string	            _serial;
-    std::string	            _errStr;
+    std::string	        _readComm;
+    std::string	        _writeComm;
+    std::string	        _version;
+    std::string	        _sysDescr;
+    std::string	        _model;      
+    std::string	        _location;
+    std::string	        _serial;
+    std::string	        _errStr;
 
-    int                     _status;
-    bool                    _pollable;
+    int                 _status;
+    bool                _pollable;
     
 };
 
 
 }  // namespace
 
-
 #endif  // _TCANETPP_NETWORKDEVICE_H_
+

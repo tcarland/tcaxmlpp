@@ -44,7 +44,7 @@ class NetworkInterface {
     void         ifAddr ( ipv4addr_t addr );
     ipv4addr_t   ifAddr() const;
 
-    void         ifId ( int id );
+    void         ifId   ( int id );
     int          ifId() const;
 
 

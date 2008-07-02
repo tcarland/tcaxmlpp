@@ -25,10 +25,8 @@ namespace tcanetpp {
 
 
 
-/**  The CmdBuf class buffers a system command's stdout
-  *  for parsing. This is a simple implementation using the 
-  *  SGI STL extentsion "stdio_filebuf". The current implementation
-  *  requires libstdc++ 5 or Gnu version 3.1 or higher.
+/**  Provides a simpler wrapper to the gnu_cxx:stdio_filebuf interface
+  *  offering the buffering system file io such as stdout, for parsing. 
  **/
 class CmdBuf {
 
