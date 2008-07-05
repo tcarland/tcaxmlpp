@@ -19,6 +19,7 @@ extern "C" {
 
 #include "EventManager.h"
 
+
 namespace tcanetpp {
 
 
@@ -238,8 +239,10 @@ EventManager::eventLoop()
 		FD_SET(io.sfd, &_wset);
 	}
 
+        // validate timer events
 	this->verifyTimers();
 
+        // set minimum event sleep interval 
 	::memset(&to, 0, sizeof(struct timeval));
 	to.tv_usec = _minevu;
 
@@ -250,8 +253,9 @@ EventManager::eventLoop()
 #       endif
 
         EventManager::GetTimeOfDay(now);
-	
-	if ( (rdy = select(_maxfdp, &_rset, &_wset, &_xset, &to)) < 0 ) {
+
+        // select on our fdsets
+	if ( (rdy = ::select(_maxfdp, &_rset, &_wset, &_xset, &to)) < 0 ) {
 #           ifdef WIN32
             int err = WSAGetLastError();
             if ( err == WSAEINTR )
@@ -262,6 +266,7 @@ EventManager::eventLoop()
 #           endif
 	}
 
+        // handle io events
 	for ( cIter = _clients.begin(); cIter != _clients.end(); cIter++ ) {
 	    EventIO & io = cIter->second;
 
@@ -281,8 +286,10 @@ EventManager::eventLoop()
 	    }
 	}
 
+        // check for timer events
 	this->checkTimers(now);
 
+        // single-shot
 	if ( this->activeRegistrations() == 0 && _dieoff )
 	    break;
     }
@@ -466,6 +473,7 @@ EventManager::GetTimeOfDay ( timeval & t )
     return;
 }
 
+//---------------------------------------------------------------//
 
 bool
 EventTimer::operator== ( const EventTimer & timer )

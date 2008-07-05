@@ -108,7 +108,7 @@ class StringUtils {
 // ----------------------------------------------------------------------
 //  The same interface is provided for wide chars and is enabled by the
 //  following compile-time definition.
-#ifdef TCANET_WIDECHAR
+#ifdef TCANETPP_WIDECHAR
 
     static bool          equals           ( const std::wstring & wstrA, 
                                             const std::wstring & wstrB );
@@ -155,10 +155,10 @@ class StringUtils {
     {
         std::wstring::size_type  begin = 0, end = 0;
 
-        while ( (begin = str.find_first_not_of(delimiter, begin)) != std::string::npos )
+        while ( (begin = wstr.find_first_not_of(delimiter, begin)) != std::string::npos )
         {
-            end     = str.find_first_of(delimiter, begin);
-            *outI++ = str.substr(begin, end - begin);
+            end     = wstr.find_first_of(delimiter, begin);
+            *outI++ = wstr.substr(begin, end - begin);
             begin   = end;
         }
     }

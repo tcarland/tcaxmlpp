@@ -10,16 +10,17 @@
 namespace tcanetpp {
 
 
-/**  A Socket client implementation that provides read buffering
-  *  as well as optional write buffering during short-term disconnects.
- **/
+
 class BufferedSocket : public Socket {
 
   public:
 
-    /**  Socket Factory class for accept() */
+    /**  Socket factory class for handling Socket::accept()
+     *   in derived classes */
     class BufferedSocketFactory : public Socket::SocketFactory {
+
       public:
+
         virtual ~BufferedSocketFactory() {}
 
         virtual Socket* operator() ( sockfd_t & fd, struct sockaddr_in & csock )
@@ -27,6 +28,9 @@ class BufferedSocket : public Socket {
             return( (Socket*) new BufferedSocket(fd, csock) );
         }
     };
+
+  public:
+
 
     static BufferedSocketFactory   factory;
 
@@ -39,6 +43,7 @@ class BufferedSocket : public Socket {
 
     BufferedSocket();
     BufferedSocket ( ipv4addr_t ip, uint16_t port, SocketType socktype, int proto );
+
     virtual ~BufferedSocket();
 
     /*  from Socket */

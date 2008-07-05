@@ -45,12 +45,7 @@ class EventManager;
   *  ( see EventHandlers.h )
  **/
 struct EventTimer {
-    
-    EventTimer()
-        : evid(0),  evmgr(0),  handler(0), count(0), fired(0), 
-          evsec(0), evusec(0), absolute(false), enabled(false) 
-    {}
-    
+       
     evid_t         	evid;      // event id
     EventManager*  	evmgr;     // evmgr owning this event 
     TimerHandler*  	handler;   // event handler for this event.
@@ -61,7 +56,14 @@ struct EventTimer {
     struct timeval 	abstime;   // absolute timeval used to track event time
     bool           	absolute;  // boolean indicating a single shot event.
     bool           	enabled;   // boolean indicating whether event is active.
-    
+     
+    EventTimer()
+        : evid(0),  evmgr(0),  
+          handler(0), count(0), fired(0), 
+          evsec(0), evusec(0), 
+          absolute(false), enabled(false) 
+    {}
+
     bool operator== ( const EventTimer & timer );
     bool operator<  ( const EventTimer & timer );
 };
@@ -76,12 +78,6 @@ typedef std::map<evid_t, EventTimer>  EventTimerMap;
   *  ( see EventHandlers.h )
  **/
 struct EventIO {
-    EventIO() 
-        : evid(0), evmgr(0), handler(0), rock(0),
-          enabled(false), isServer(false)
-    {
-        Socket::ResetDescriptor(sfd);
-    }
 
     evid_t         	evid;      // event id
     EventManager*  	evmgr;     // evmgr owning this event (ie. this)
@@ -92,10 +88,19 @@ struct EventIO {
     bool           	enabled;   // boolean indicating whether event is valid.
     bool           	isServer;  // IO socket event is a server socket.
 
+    EventIO() 
+        : evid(0), evmgr(0), 
+          handler(0), rock(0),
+          enabled(false), isServer(false)
+    {
+        Socket::ResetDescriptor(sfd);
+    }
+
     bool operator== ( const EventIO & io );
 };
 
 typedef std::map<evid_t, EventIO>  EventIOMap;
+
 
 
 /**  The EventManager class provides an interface to using select for a
@@ -117,63 +122,67 @@ class EventManager {
     void   eventLoop();
 
 
-    evid_t addTimerEvent ( TimerHandler * handler, uint32_t sec, uint32_t msec, 
-                           int count = 0 );
+    evid_t               addTimerEvent  ( TimerHandler * handler, 
+                                          uint32_t sec, uint32_t msec, 
+                                          int count = 0 );
 
-    evid_t addTimerEvent ( TimerHandler * handler, time_t abstime );
+    evid_t               addTimerEvent  ( TimerHandler * handler, 
+                                          time_t abstime );
 
-    evid_t addIOEvent    ( IOHandler * handler, const sockfd_t & sfd, 
-                           void * rock = NULL, bool isServer = false );
+    evid_t               addIOEvent     ( IOHandler * handler, 
+                                          const sockfd_t & sfd, 
+                                          void * rock = NULL, 
+                                          bool isServer = false );
 
-    bool   removeEvent   ( const evid_t & id );
-    bool   validEvent    ( const evid_t & id );
-    bool   isValidEvent  ( const evid_t & id ) { return this->validEvent(id); }
-
-
-    const EventTimer&  findTimerEvent ( const evid_t & id );
-    const EventIO&     findIOEvent    ( const evid_t & id );
+    bool                 removeEvent    ( const evid_t & id );
+    bool                 validEvent     ( const evid_t & id );
+    bool                 isValidEvent   ( const evid_t & id ) { return this->validEvent(id); }
 
 
-    int    activeRegistrations()  { return(this->activeTimers() 
-                                        + this->activeClients()); }
-    int    activeTimers()         { return((int)_timers.size()); }
-    int    activeClients()        { return((int)_clients.size()); }
-    bool   isActive ( evid_t id ) { return this->validEvent(id); }
-    void   clearTimers();
+    const EventTimer&    findTimerEvent ( const evid_t & id );
+    const EventIO&       findIOEvent    ( const evid_t & id );
 
-    void   setDebug ( bool d );
-    void   setAlarm();
+
+    int                  activeRegistrations() { return(this->activeTimers() 
+                                                 + this->activeClients()); }
+    int                  activeTimers()        { return((int)_timers.size()); }
+    int                  activeClients()       { return((int)_clients.size()); }
+    bool                 isActive       ( evid_t id ) { return this->validEvent(id); }
+    void                 clearTimers();
+
+    void                 setDebug       ( bool d );
+    void                 setAlarm();
 
 
   protected:
 
-    void   verifyTimers();
-    void   checkTimers   ( const timeval    & now );
-    void   checkMinTimer ( const EventTimer & timer );
+    void                 verifyTimers();
+    void                 checkTimers    ( const timeval    & now );
+    void                 checkMinTimer  ( const EventTimer & timer );
 
-    void   destroyEvent  ( EventTimer & timer );
-    void   destroyEvent  ( EventIO    & io );
+    void                 destroyEvent   ( EventTimer & timer );
+    void                 destroyEvent   ( EventIO    & io );
 
-    evid_t getNewEventId();
+    evid_t               getNewEventId();
 
-    static void GetTimeOfDay ( timeval & t );
+    static void          GetTimeOfDay   ( timeval & t );
     
 
   protected:
 
-    EventTimerMap               _timers;
-    EventIOMap		        _clients;
+    EventTimerMap        _timers;
+    EventIOMap		 _clients;
 
-    evid_t                      _evid;
-    fd_set                      _rset, _wset, _xset;
-    long                        _minevu;
+    evid_t               _evid;
+    fd_set               _rset, _wset, _xset;
+    long                 _minevu;
 
-    std::string                 _errstr;
-    bool                        _dieoff;
-    bool                        _alarm;
-    bool                        _debug;
+    std::string          _errstr;
+    bool                 _dieoff;
+    bool                 _alarm;
+    bool                 _debug;
 
-    static int	                _maxfdp;
+    static int	         _maxfdp;
  
 };
 

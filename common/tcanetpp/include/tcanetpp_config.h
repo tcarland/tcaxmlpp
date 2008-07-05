@@ -10,7 +10,7 @@
 
 // for enabling widechar default
 // comment to disable
-//#define TCANETPP_WIDECHAR 1
+#define TCANETPP_WIDECHAR 1
 
 
 
