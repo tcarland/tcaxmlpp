@@ -5,4 +5,4 @@ syntax: glob
 *.lo
 *.bd
 .*.sw*
-
+.metadata
