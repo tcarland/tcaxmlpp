@@ -16,6 +16,7 @@ int main ( int argc, char **argv )
     std::string zonefile = "etc/ifws.cfg";
 
     FwVars            vars;
+    FwZones  zones;
     FwVars::iterator  vIter;
 
     if ( ! vars.parse(varfile) ) {
@@ -24,10 +25,10 @@ int main ( int argc, char **argv )
     }
 
     for ( vIter = vars.begin(); vIter != vars.end(); ++vIter )
-        std::cout << vIter->first << " = " << CidrUtils::toCidrString(vIter->second)
+        std::cout << vIter->first << " = " 
+            << CidrUtils::toCidrString(vIter->second)
             << std::endl;
 
-    FwZones  zones;
 
     if ( ! zones.parse(zonefile) ) {
         std::cout << "Parse error: " << zones.getErrorStr() << std::endl;
