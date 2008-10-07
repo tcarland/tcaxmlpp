@@ -1,0 +1,389 @@
+#!/bin/bash
+#
+#  /etc/rc.d/rc.firewall
+#
+#  $Author: tcarland@gmail.com
+#  $Id:     rc.firewall,v 0.061 tca Exp $
+#
+#  Requires perl for interface and chain detection
+#
+
+AUTHOR="tcarland@gmail.com"
+VERSION="0.6"
+
+ACTION=$1
+EXT_IF=$2
+INT_IF=$3
+
+
+INT_IFS=`ifconfig | grep "Link" | grep -v "$EXT_IF" | perl -n -e \
+    'while ( m/Link/ ) { 
+	m/^(\w+)\s+Link(.*$)/;
+	print "$1 "; 
+	$_ = $2; 
+    }'`
+
+CHAINS=`iptables -n -L |perl -n -e \
+    '/Chain\s+(\S+)/ && !($1 =~ /^(INPUT|FORWARD|OUTPUT)$/) && print "$1 "'`
+
+
+ANY=0.0.0.0/0
+
+
+###################
+# Chains
+
+log_chain()
+{
+    iptables --new LOGANDDROP
+
+    echo "Settting LOGANDDROP chain ruleset:"
+    # ignore broadcast
+    echo "  ignore broadcast"
+    iptables -A LOGANDDROP --destination 255.255.255.255 -j DROP
+    # ignore domain crap
+    echo "  ignore win32 domain/netbios"
+    iptables -A LOGANDDROP --proto tcp --destination-port 135:139 -j DROP
+    iptables -A LOGANDDROP --proto udp --destination-port 135:139 -j DROP
+    iptables -A LOGANDDROP --proto tcp --destination-port 445 -j DROP
+    # ignore gnutella/limewire 
+    iptables -A LOGANDDROP --proto tcp --destination $ANY \
+	--destination-port 6346 -j DROP
+    iptables -A LOGANDDROP --proto udp --destination $ANY \
+	--destination-port 6346 -j DROP
+    
+    echo "  setting log limits: bursts/hour=6 burst-limit=15"
+    iptables -A LOGANDDROP -m limit --limit 6/hour --limit-burst 15 -j LOG \
+	--log-level info --log-prefix "FW: "
+
+    iptables -A LOGANDDROP -j DROP
+}
+
+
+internal_chain()
+{
+    iptables --new INTERNAL
+
+    echo "Setting INTERNAL chain ruleset:"
+    echo "  permit all: $INT_IFS"
+   
+    iptables -A INTERNAL --proto tcp --destination-port 6000:6010 -j DROP
+
+    for iface in $INT_IFS; do
+	iptables -A INTERNAL -i $iface -j ACCEPT
+    done
+    
+    iptables -A INTERNAL -j LOGANDDROP
+}
+
+
+
+input_chain()
+{
+    echo "Setting INPUT ruleset:"
+
+    iptables -A INPUT -i ! $EXT_IF -j INTERNAL
+    iptables -A INPUT -i $EXT_IF --proto tcp --match state \
+	--state ESTABLISHED,RELATED -j ACCEPT
+
+    # Deny L2TP Daemon 
+    iptables -A INPUT -i $EXT_IF --proto udp --destination-port 1701 -j DROP
+    # allow udp >1024
+    iptables -A INPUT -i $EXT_IF --proto udp --destination-port 1024: -j ACCEPT
+
+    # vpn rules
+    #echo "  permit vpn from xxx"
+    iptables -A INPUT -i $EXT_IF --proto udp --source $ANY \
+	--destination-port 500 -j ACCEPT
+    iptables -A INPUT -i $EXT_IF --proto udp --source $ANY \
+	--destination-port 4500 -j ACCEPT
+    iptables -A INPUT -i $EXT_IF --proto 50 --source $ANY -j ACCEPT
+    iptables -A INPUT -i $EXT_IF --proto 51 --source $ANY -j ACCEPT
+
+    #  sshd
+    echo "  permit ssh"
+    iptables -A INPUT -i $EXT_IF --proto tcp --source $ANY \
+	--destination $ANY --destination-port 22 -j ACCEPT
+
+    # irc ident
+    #echo "  permit ident from xxx irc only"
+    #iptables -A INPUT -i $EXT_IF --proto tcp --source x.x.x.x \
+	#--destination $ANY --destination-port 113 -j ACCEPT
+
+    # apache
+    echo "  permit 'local only' apache, tomcat, & tomcat ssl"
+    iptables -A INPUT -i $EXT_IF --proto tcp --source 10.10.10.0/24 \
+	--destination $ANY --destination-port 80 -j ACCEPT
+
+    # tomcat
+    iptables -A INPUT -i $EXT_IF --proto tcp --source 10.10.10.0/24 \
+	--destination $ANY --destination-port 8080 -j ACCEPT
+
+    # tomcat ssl
+    iptables -A INPUT -i $EXT_IF --proto tcp --source 10.10.10.0/24 \
+	--destination $ANY --destination-port 8443 -j ACCEPT
+
+    # xxx win32 domain 
+    #echo "  permit xxx win32 domain traffic"
+    #iptables -A INPUT -i $EXT_IF --proto tcp --source x.x.x.x/yy \
+	#--destination $ANY --destination-port 135:139 -j ACCEPT
+    #iptables -A INPUT -i $EXT_IF --proto udp --source x.x.x.x/yy \
+	#--destination $ANY --destination-port 135:139 -j ACCEPT
+    #iptables -A INPUT -i $EXT_IF --proto tcp --source x.x.x.x/yy \
+	#--destination $ANY --destination-port 445 -j ACCEPT
+
+
+    #iptables -A INPUT -i $EXT_IF --proto tcp \
+	#--source $ANY --destination $ANY --destination-port 80 -j ACCEPT
+    #iptables -A INPUT -i $EXT_IF --proto tcp \
+	#--source $ANY --destination $ANY --destination-port 8000 -j ACCEPT
+
+    #echo "  permit full xxx network"
+    #iptables -A INPUT -i $EXT_IF --source x.x.x.x/yy \
+	#--destination $ANY -j ACCEPT
+    iptables -A INPUT -i $EXT_IF --source 10.10.10.0/24 \
+	--destination $ANY -j ACCEPT
+
+    echo "  permit icmp"
+    iptables -A INPUT -i $EXT_IF --proto icmp --source $ANY \
+	--destination $ANY -j ACCEPT
+
+
+    # deny all
+    iptables -A INPUT -j LOGANDDROP
+}
+
+
+output_chain()
+{
+    echo "Setting OUTPUT rules:"
+    echo "  no OUTPUT rules to set"
+}
+
+
+forward_chain()
+{
+    echo "Setting FORWARD rules:"
+
+    ## ip forwarding should be enabled prior to this script
+    ## and not considered an appropriate location to enable.
+    # ensure forwarding is enabled within kernel
+    #echo "1" > /proc/sys/net/ipv4/ip_forward
+
+    if [ "$INT_IF" ] ; then
+	echo "Enabling forwarding..."
+	iptables --policy FORWARD ACCEPT
+    else
+	#echo "Default forwarding is LOGANDDROP"
+	#iptables -A FORWARD -j LOGANDDROP
+	echo "Forwarding needed for proper ipsec operations"
+	iptables --policy FORWARD ACCEPT
+    fi
+}
+
+
+nat_chain()
+{
+    if [ "$INT_IF" ]; then
+	echo "Setting PRE/POSTROUTING (NAT) rules:"
+        
+	# NAT
+	echo "  Enabling NAT masquerade for internal $INT_IF => $EXT_IF"
+	iptables -A POSTROUTING -t nat -o $EXT_IF -j MASQUERADE
+
+	# Port Forwarding
+
+	echo "  Port forwarding for BT"
+	iptables -A PREROUTING -t nat -i $EXT_IF --proto tcp \
+	    --destination-port 41930 -j DNAT --to 10.10.10.11:41930
+	iptables -A PREROUTING -t nat -i $EXT_IF --proto tcp \
+	    --destination-port 41931 -j DNAT --to 10.10.10.11:41931
+	iptables -A PREROUTING -t nat -i $EXT_IF --proto tcp \
+	    --destination-port 41932 -j DNAT --to 10.10.10.11:41932
+	iptables -A PREROUTING -t nat -i $EXT_IF --proto tcp \
+	    --destination-port 41933 -j DNAT --to 10.10.10.11:41933
+	iptables -A PREROUTING -t nat -i $EXT_IF --proto tcp \
+	    --destination-port 41934 -j DNAT --to 10.10.10.11:41934
+
+	# allow above ports to forward
+	iptables -A FORWARD -i $EXT_IF -o $INT_IF --proto tcp \
+	    --destination-port 41930:41934 -j ACCEPT
+
+	# l2tp forwarding
+	#iptables -A PREROUTING -t nat -i ipsec0 --proto udp --sport 1701 \
+	    #--dport 1701 -j DNAT --to 10.10.10.11
+
+	# redirection:
+	# Send incoming port-80 web traffic to our squid (transparent) proxy
+	#iptables -A PREROUTING -t nat -i $INT_IF --proto tcp \
+	    #--destination-port 80 -j REDIRECT --to-port 3128
+
+	# SNAT
+	#iptables -A POSTROUTING -t nat -o $EXT_IF -j SNAT \
+	    #--to 10.10.10.3-10.10.10.15
+    fi
+}
+
+
+usage()
+{
+    echo ""
+    echo "Usage: $0 {start|stop|open|info} {ext_if} [nat_if]"
+    echo "   where 'ext_if' is the external (public) interface and"
+    echo "   where 'nat_if' is an internal (private) interface to be"
+    echo "                  enabled for routing and NAT."
+    echo ""
+    echo "    'start' will first set DENY, flush and rebuild rulesets"
+    echo "    'stop'  will flush rules and set default DENY ALL"
+    echo "    'open'  will flush rules and set default ACCEPT ALL"
+    echo ""
+}
+
+version()
+{
+    echo ""
+    echo "$0 : Version: $VERSION  by $AUTHOR"
+    echo ""
+}
+
+
+default_policy()
+{
+    echo "Setting DEFAULT policy: "
+    echo "  input = DROP, output = ACCEPT, forward = ACCEPT"
+    iptables --policy INPUT DROP
+    iptables --policy OUTPUT ACCEPT
+    iptables --policy FORWARD ACCEPT
+}
+
+
+deny_policy()
+{
+    echo "Setting DENY policy."
+    echo "  Default DROP all"
+
+    iptables --policy INPUT DROP
+    iptables --policy OUTPUT DROP
+    iptables --policy FORWARD DROP
+}
+
+
+open_policy()
+{
+    echo "Setting OPEN policy:"
+    echo "   WARNING: INPUT = ACCEPT for $EXT_IF"
+
+    iptables --policy INPUT ACCEPT
+    iptables --policy OUTPUT ACCEPT
+    iptables --policy FORWARD ACCEPT
+}
+
+
+flush()
+{
+    echo "Flush:"
+    echo "  Flushing rulesets: INPUT OUTPUT FOWARD nat"
+    echo "  Clearing chains:   $CHAINS"
+
+    iptables --flush INPUT
+    iptables --flush OUTPUT
+    iptables --flush FORWARD
+    iptables --flush -t nat
+
+    for chain in $CHAINS; do
+	iptables --flush $chain
+    done
+
+    for chain in $CHAINS; do
+	iptables --delete-chain $chain
+    done
+}
+
+
+abort()
+{
+    # Only exit if we're in our own subshell
+    if [ "${0##*/}" = "rc.firewall" ] ; then
+	exit $EXITCODE
+    fi
+}
+
+
+check()
+{
+    echo ""
+    echo "Check State:"
+    if [ "$EXT_IF" ]; then
+	echo "  External(s): $EXT_IF"
+	if [ "$INT_IF" ]; then
+	    echo "  NAT Interface: $INT_IF"
+	fi
+	
+	echo "  Internal(s): $INT_IFS"
+	echo "  Chains:  $CHAINS"
+    else
+	echo "No external interface provided"
+	usage
+	abort
+    fi
+    echo ""
+}
+
+info()
+{
+    echo ""
+
+    for chain in $CHAINS; do
+	iptables -L $chain -v -n
+    done
+    iptables -L INPUT -v -n 
+    iptables -L FORWARD -v -n 
+    iptables -L -t nat -v -n 
+}
+
+
+
+case "$ACTION" in
+    'start')
+	echo "Starting firewall services..."
+	check
+
+	deny_policy
+
+	flush
+	log_chain
+	internal_chain
+	input_chain
+	output_chain
+
+	if [ "$INT_IF" ]; then
+	    nat_chain
+	fi
+	
+	forward_chain
+
+	default_policy
+	;;
+    'info')
+	info
+	;;
+    'check')
+    	check
+	;;
+    'open')
+	echo "Stopping firewall services with ACCEPT ALL"
+	flush
+    	open_policy
+	;;
+    'stop')
+	echo "Stopping firewall services leaving DENY ALL"
+	deny_policy
+	flush
+	;;
+    *)
+	echo "No action specified"
+	usage
+	version
+	;;
+esac
+
