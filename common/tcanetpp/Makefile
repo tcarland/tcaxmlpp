@@ -17,16 +17,16 @@ OBJS =		    src/SocketOption.o src/Socket.o src/BufferedSocket.o \
                     src/random.o src/RandomPrefix.o src/patricia.o \
                     src/DeviceMap.o src/NetworkDevice.o src/NetworkInterface.o
                     
+                #src/ConfigOpts.o src/FileUtils.o 
                     
-                #src/ConfigOpts.o src/FileUtils.o \
+CMDBUF_OBJS =       src/CmdBuf.o
 
-
-PT_OBJS =       src/patricia.o
-TEST_OBJS =     src/pttest.o
-PFX_OBJS =      src/pfxtest.o
+PT_OBJS =           src/patricia.o
+TEST_OBJS = 	    src/pttest.o
+PFX_OBJS =  	    src/pfxtest.o
 
 BIN =		    ptest pfxtest
-ALL_OBJS =	    $(OBJS) $(TEST_OBJS) $(PFX_OBJS) $(PT_OBJS)
+ALL_OBJS =	    $(OBJS) $(TEST_OBJS) $(PFX_OBJS) $(PT_OBJS) $(CMDBUF_OBJS)
 ALL_BINS = 	    $(BIN)
 
 
@@ -44,7 +44,14 @@ solib: lib/libtcanetpp.so.0.0.1
 
 libtcapt: lib/libtcapt.a
 
+libcmdbuf: lib/libcmdbuf.a
+
 lib/libtcapt.a: ${PT_OBJS}
+	( $(MKDIR) lib )
+	$(make-lib-rule)
+	@echo
+
+lib/libcmdbuf.a: ${CMDBUF_OBJS}
 	( $(MKDIR) lib )
 	$(make-lib-rule)
 	@echo

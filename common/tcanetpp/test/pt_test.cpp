@@ -23,46 +23,50 @@ char* addrs[] = { "10.0.0.0/8",
                   "10.10.10.0/24",
                   "12.0.0.0/16",
                   "172.16.0.0/16",
-                  "192.168.0.0/16"
+                  "192.168.0.0/16",
+                  "192.202.0.0/20"
                 };
 
 char* addrs2[] = { "10.0.0.0/8", "192.168.0.0/16" };
 
 
 
-void printNodeHandler(ipv4addr_t addr, void* rock)
+void printNodeHandler(ipv4addr_t addr, void * rock)
 {
     printf("node address is %s,  ", CidrUtils::ntop(addr).c_str());
     if ( rock ) printf("rock is valid\n");
     return;
 }
 
-void debugNodeHandler ( ptNode_t* node )
+void debugNodeHandler ( ptNode_t * node )
 {
     int i;
-    printf("node addr: %s, node bit: %d\n",
-        CidrUtils::ntop(node->key).c_str(), node->bit);
-
+    
+    std::string  ip  = CidrUtils::ntop(node->key);
+ 
+    printf("debugNodeHandler() node addr: %s, node bit: %d\n",
+        ip.c_str(), node->bit);
+/*
     if ( node->rlink )
-        printf("right link addr is %s  ", 
+        printf("  right link addr is %s  ", 
             CidrUtils::ntop( ((node->rlink)->key) ).c_str());
 
     if ( node->llink )
-        printf("left link addr is %s\n",
+        printf("  left link addr is %s\n",
             CidrUtils::ntop( ((node->llink)->key) ).c_str());
-
+*/
     if ( (node->flags & PT_DELETE_FLAG) > 0 )
-        printf("delete flag set\n");
+        printf("  delete flag set\n");
 
     for ( i = 0; i < MAX_MASKLEN; i++ ) {
         if ( (node->rocks[i]) )
-            printf("Rock found for entry %d\n", i);
+            printf("  entry found for %s/%d\n", ip.c_str(), i);
     }
 
     return;
 }
 
-void nodeFreeHandler ( uint32_t addr, uint8_t mb, void* rock )
+void nodeFreeHandler ( uint32_t addr, uint8_t mb, void * rock )
 {
     Prefix* p = (Prefix*) rock;
     if ( p ) {
@@ -77,20 +81,24 @@ int main ( int argc, char **argv )
 {
     ptNode_t*   ptree;
     int         tmp;
+    Prefix      pfx;
 
     std::vector<Prefix> srcp;
     std::vector<Prefix>::iterator vIter;
 
-    for ( int i = 0; i < 5; i++ ) {
-        Prefix p = CidrUtils::StringToCidr(addrs[i]);
-        srcp.push_back(p);
-        CidrUtils::deAggregate(p, 24, srcp);
+    for ( int i = 0; i < 6; i++ ) {
+        pfx = CidrUtils::StringToCidr(addrs[i]);
+        srcp.push_back(pfx);
     }
+
+    pfx = CidrUtils::StringToCidr(addrs[5]);
+    CidrUtils::deAggregate(pfx, 24, srcp);
+    
 
     printf("v size is %d\n", srcp.size());
 
-    //for ( vIter = srcp.begin(); vIter != srcp.end(); vIter++ )
-        //printf("Prefix is %s\n", CidrUtils::toCidrString(*vIter).c_str());
+    for ( vIter = srcp.begin(); vIter != srcp.end(); vIter++ )
+        printf("Prefix is %s\n", CidrUtils::toCidrString(*vIter).c_str());
     //return 0;
 
     ptree = pt_init();
@@ -103,17 +111,7 @@ int main ( int argc, char **argv )
     pt_visit_node(ptree, &debugNodeHandler);
     sleep(1);
 
-/*
-    for ( vIter = srcp.begin(); vIter != srcp.end(); vIter++ ) {
-        if ( (tmp = pt_match(ptree, vIter->getCidr())) == 0 )
-            printf("Search failed for %s\n", 
-                CidrUtils::toString(vIter->getPrefix()).c_str());
-        else
-            printf("Found addr %s\n",
-                CidrUtils::toString(vIter->getPrefix()).c_str());
-    }
-    sleep(1);
- */
+
 
     Prefix p      = CidrUtils::StringToCidr(std::string(addrs[1]));
     Prefix *pptr  = (Prefix*) pt_remove(ptree, p.getCidr());

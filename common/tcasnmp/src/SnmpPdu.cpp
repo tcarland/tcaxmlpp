@@ -33,7 +33,8 @@ SnmpPdu::getOid ( std::string & soid )
 
     char  coid[MAX_OID_LEN];
 
-    snprint_objid(coid, MAX_OID_LEN, this->pdu->variables->name, this->pdu->variables->name_length);
+    snprint_objid(coid, MAX_OID_LEN, this->pdu->variables->name, 
+                  this->pdu->variables->name_length);
     soid = std::string(coid);
 
     return true;
@@ -149,7 +150,7 @@ SnmpPdu::getObjectId ( std::string & soid )
     struct variable_list * vars = this->pdu->variables;
 
     if ( vars->type == ASN_OBJECT_ID ) {
-	rsp = (char*) malloc(rsp_len);
+	rsp  = (char*) malloc(rsp_len);
 	snprint_variable(rsp, rsp_len, vars->name, vars->name_length, vars);
 	soid = rsp;
 	free(rsp);
@@ -163,4 +164,4 @@ SnmpPdu::getObjectId ( std::string & soid )
 
 } // namespace
 
-/*  _TCASNMP_SNMPPDU_CPP_  */
+/*  _TCASNMP_SNMPPDU_CPP_ */

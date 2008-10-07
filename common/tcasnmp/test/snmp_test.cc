@@ -19,7 +19,7 @@ void usage();
 int main ( int argc, char **argv )
 {
     SnmpSession * snmp = NULL;
-    std::string        ipstr, id, comm;
+    std::string   ipstr, id, comm;
 
     if ( argc != 3 )
 	usage();
@@ -37,9 +37,8 @@ int main ( int argc, char **argv )
 
     SnmpUtils::MapInterfaces(snmp, ifmap);
 
-    printf("Results for device %s\n", ipstr.c_str());
-
-    printf("ifmap size is %d\n", ifmap.size());
+    std::cout << "Results for device " << ipstr << std::endl;
+    std::cout << "ifmap size :" << ifmap.size() << std::endl;
 
     for ( fIter = ifmap.begin(); fIter != ifmap.end(); fIter++ )
 	std::cout << fIter->first << " : " << fIter->second << std::endl;
@@ -47,35 +46,28 @@ int main ( int argc, char **argv )
     std::cout << std::endl << "Finished" << std::endl;
 
     snmp->closeSession();
-    //delete snmp;
 
     /*-------------*/
 
     NetworkDevice  dev(ipstr, comm);
 
     snmp->openSession(dev);
-    //SnmpCDP* cdp = new SnmpCDP(dev);
-    //cdp->setDebug(true);
 
-    DeviceSet  v;
-    DeviceSet::iterator vIter;
+    DeviceSet            v;
+    DeviceSet::iterator  vIter;
 
-
-    printf("devset size is %d\n", v.size());
+    std::cout << "device set == " << v.size() << std::endl;
 
     SnmpUtils::GetCDPNeighbors(snmp, v);
 
-    for ( vIter = v.begin(); vIter != v.end(); vIter++ ) {
-	NetworkDevice device = (NetworkDevice) *vIter;
-	std::string name = CidrUtils::toString(device.deviceAddr());
-	printf("DeviceName: %s  addr: %s\n", device.deviceName().c_str(), name.c_str());
-    }
+    for ( vIter = v.begin(); vIter != v.end(); vIter++ )
+        std::cout << "DeviceName: " << vIter->deviceName() 
+                  << "  addr: " << CidrUtils::toString(vIter->deviceAddr()) << std::endl;
 
     snmp->closeSession();
-    delete snmp;
-    //delete cdp;
-    
 
+    delete snmp;
+    
     return 0;
 }
 

@@ -11,7 +11,7 @@ LIBS=
 
 INCLUDES=	-I. -I../include
 
-BIN=		client server asnwho strtest bufftest cidrtest ipconvert
+BIN=		client server asnwho pttest strtest bufftest cidrtest ipconvert
 
 OBJS=		client.o server.o
 ASOBJ=          ../src/CmdBuf.o ../src/ASWho.o
@@ -25,7 +25,7 @@ ALL_BINS= 	$(BIN)
 
 
 
-all: client server cidrtest bufftest ipconvert
+all: client server cidrtest strtest bufftest pttest ipconvert
 
 
 include ${TOPDIR}/common/make/tca

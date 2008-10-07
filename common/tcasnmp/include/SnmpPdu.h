@@ -3,12 +3,8 @@
 
 #include <string>
 
-
-
-#include "tcanetpp_types.h"
-
 #include "SnmpOid.h"
-
+#include "tcanetpp_types.h"
 
 namespace tcasnmp {
 
@@ -32,9 +28,9 @@ public:
     /**  Converts the PDU response packet to the corresponding type
       *  and returns the success of that operation */
     bool     getString            ( std::string & val );
-    bool     getUnsignedInteger   ( uint32_t & val );
-    bool     getInteger           ( int & val );
-    bool     getTimestamp         ( time_t & t );
+    bool     getUnsignedInteger   ( uint32_t    & val );
+    bool     getInteger           ( int         & val );
+    bool     getTimestamp         ( time_t      & ts );
     bool     getObjectId          ( std::string & soid );
 
 
