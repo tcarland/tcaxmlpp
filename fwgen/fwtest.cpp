@@ -16,7 +16,7 @@ int main ( int argc, char **argv )
     std::string zonefile = "etc/ifws.cfg";
 
     FwVars            vars;
-    FwZones  zones;
+    FwZones           zones;
     FwVars::iterator  vIter;
 
     if ( ! vars.parse(varfile) ) {
