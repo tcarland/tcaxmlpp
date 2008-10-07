@@ -2,7 +2,7 @@
 #
 
 
-all: tcanetpp tcaxml++ tcasnmp tcasql++ tnmsCore
+all: tcanetpp tcaxml++ tcasnmp tcasql++ ticketmgr tnmsCore
 
 
 .PHONY: tcanetpp
@@ -30,6 +30,10 @@ tnmsCore:
 	( cd tnmsCore; make all )
 	@echo
 
+.PHONY: ticketmgr
+ticketmgr:
+	( cd ticketmgr; make all )
+	@echo
 
 install:
 	( cd tcaxml++; make install )
@@ -38,6 +42,7 @@ ifdef USE_MYSQL
 endif
 	( cd tcanetpp; make install )
 	( cd tcasnmp; make install )
+	( cd ticketmgr; make install )
 	( cd tnmsCore; make install )
 	@echo
 
@@ -48,6 +53,7 @@ ifdef USE_MYSQL
 endif
 	( cd tcanetpp; make clean )
 	( cd tcasnmp; make clean )
+	( cd ticketmgr; make clean )
 	( cd tnmsCore; make clean )
 	@echo
 
@@ -58,10 +64,7 @@ ifdef USE_MYSQL
 endif
 	( cd tcanetpp; make distclean )
 	( cd tcasnmp; make distclean )
+	( cd ticketmgr; make distclean )
 	( cd tnmsCore; make distclean )
 	@echo
-
-
-
-
 
