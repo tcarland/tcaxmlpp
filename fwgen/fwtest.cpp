@@ -15,14 +15,14 @@ int main ( int argc, char **argv )
     std::string varfile  = "etc/fwvars.cfg";
     std::string zonefile = "etc/ifws.cfg";
 
-    FwVars  vars;
+    FwVars            vars;
+    FwVars::iterator  vIter;
 
     if ( ! vars.parse(varfile) ) {
         std::cout << "Parse error: " << vars.getErrorStr() << std::endl;
         return 0;
     }
 
-    FwVars::iterator  vIter;
     for ( vIter = vars.begin(); vIter != vars.end(); ++vIter )
         std::cout << vIter->first << " = " << CidrUtils::toCidrString(vIter->second)
             << std::endl;
