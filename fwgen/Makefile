@@ -25,7 +25,6 @@ include $(TOPDIR)/common/make/tca
 fwtest: $(OBJS) fwtest.o
 	$(make-cxxbin-rule)
 
-
 clean:
 	$(RM) $(ALL_OBJS) \
 	*.d *.D *.bd *.o src/*.d src/*.D src/*.bd src/*.o
