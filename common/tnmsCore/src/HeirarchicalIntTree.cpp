@@ -1,7 +1,6 @@
 #ifndef _HEIRARCHICALINTTREE_CPP_
 #define _HEIRARCHICALINTTREE_CPP_
 
-
 #include "StringUtils.h"
 using namespace tcanetpp;
 
@@ -10,7 +9,7 @@ namespace tnmsCore {
 
 
 template<typename ValueType>
-HeirarchicalIntTreeNode<ValueType>::HeirarchicalIntTreeNode ( TnmsOid  & nodeOid, 
+HeirarchicalIntTreeNode<ValueType>::HeirarchicalIntTreeNode ( TnmsOid  * nodeOid,
                                                               TreeNode * parent )
     : _nodeOid(nodeOid),
       _parent(parent)
@@ -19,22 +18,24 @@ HeirarchicalIntTreeNode<ValueType>::HeirarchicalIntTreeNode ( TnmsOid  & nodeOid
 
 template<typename ValueType>
 HeirarchicalIntTreeNode<ValueType>::~HeirarchicalIntTreeNode()
-{}
-
+{
+    if ( _nodeOid )
+        delete _nodeOid;
+}
 
 template<typename ValueType>
-const uint16_t&
-HeirarchicalIntTreeNode<ValueType>::getName() const 
+uint16_t
+HeirarchicalIntTreeNode<ValueType>::getName() const
 {
-    return _nodeOid.lastValue();
+    return _nodeOid->lastValue();
 }
 
 
 template<typename ValueType>
-TnmsOid
+const TnmsOid&
 HeirarchicalIntTreeNode<ValueType>::getAbsoluteName() const
 {
-    return _nodeOid;
+    return *_nodeOid;
 }
 
 
@@ -148,12 +149,12 @@ HeirarchicalIntTree<ValueType>::size() const
 
 template<typename ValueType>
 typename HeirarchicalIntTree<ValueType>::Node*
-HeirarchicalIntTree<ValueType>::find ( TnmsOid & oid )
-{ 
+HeirarchicalIntTree<ValueType>::find ( const TnmsOid & oid )
+{
     BranchNodeList  branches;
 
     this->nodesFromBranches(oid.begin(), oid.end(),
-                          std::back_inserter(branches));
+                            std::back_inserter(branches));
 
     if ( branches.empty() || branches.size() != oid.size() )
         return NULL;
@@ -165,7 +166,7 @@ HeirarchicalIntTree<ValueType>::find ( TnmsOid & oid )
 template<typename ValueType>
 template<typename OutputIterator_>
 typename HeirarchicalIntTree<ValueType>::Node*
-HeirarchicalIntTree<ValueType>::insert ( TnmsOid  & oid,
+HeirarchicalIntTree<ValueType>::insert ( const TnmsOid   & oid,
                                          OutputIterator_   outIter )
     throw ( std::runtime_error )
 {
@@ -181,6 +182,7 @@ HeirarchicalIntTree<ValueType>::insert ( TnmsOid  & oid,
     NodeMap * children = &_roots;
     Node    * parent   = NULL;
     Node    * node     = NULL;
+    TnmsOid * noid     = NULL;
 
     if ( ! branches.empty() ) {
         children = &branches.back()->getChildren();
@@ -196,8 +198,9 @@ HeirarchicalIntTree<ValueType>::insert ( TnmsOid  & oid,
         if ( ! insertR.second )
             throw std::runtime_error("insert failed on " + oid.toString());
 
-        nIter = insertR.first;
-        node  = new Node(nIter->first, parent);
+        nIter = insertR.first; // map in elements
+        noid  = TnmsOid::OidFromIndex(oid, bi);
+        node  = new Node(noid, parent);
 
         nIter->second = node;
         *outIter++    = node;
@@ -214,10 +217,11 @@ HeirarchicalIntTree<ValueType>::insert ( TnmsOid  & oid,
 template<typename ValueType>
 template<typename OutputIterator_>
 bool
-HeirarchicalIntTree<ValueType>::erase ( TnmsOid   & oid,
+HeirarchicalIntTree<ValueType>::erase ( const TnmsOid  & oid,
                                         OutputIterator_  outIter )
 {
-    return true;
+    Node * node = this->find(oid);
+    return this->erase(node, outIter);
 }
 
 
@@ -229,31 +233,57 @@ HeirarchicalIntTree<ValueType>::erase ( Node  * node,
 {
     if ( node == NULL )
         return false;
-    
+
     DepthOrderingFunctor   depthfirst;
-    const std::string      name       = node->getName();
+    uint16_t               oidval     = node->getName();
     NodeMap              * pChildList = &_roots;
 
     if ( node->getParent() != NULL )
         pChildList = &node->getParent()->getChildren();
 
-
     this->depthFirstTraversal(node, depthfirst);
     _size -= depthfirst.nodes.size();
 
-    BranchNodeList & branches = depthfirst.nodes;
-    BranchNodeListIter bIter;
+    BranchNodeList      & branches = depthfirst.nodes;
+    BranchNodeListIter    bIter;
 
     for ( bIter = branches.begin(); bIter != branches.end(); ++bIter ) {
         *outIter++ = (*bIter)->getAbsoluteName();
         delete *bIter;
     }
 
-    pChildList->erase(name);
+    pChildList->erase(oidval);
 
     return true;
 }
 
+template<typename ValueType>
+bool
+HeirarchicalIntTree<ValueType>::erase ( Node * node )
+{
+    if ( node == NULL )
+        return false;
+
+    DepthOrderingFunctor   depthfirst;
+    uint16_t               oidval     = node->getName();
+    NodeMap              * pChildList = &_roots;
+
+    if ( node->getParent() != NULL )
+        pChildList = &node->getParent()->getChildren();
+
+    this->depthFirstTraversal(node, depthfirst);
+    _size -= depthfirst.nodes.size();
+
+    BranchNodeList      & branches = depthfirst.nodes;
+    BranchNodeListIter    bIter;
+
+    for ( bIter = branches.begin(); bIter != branches.end(); ++bIter )
+        delete *bIter;
+
+    pChildList->erase(oidval);
+
+    return true;
+}
 
 template<typename ValueType>
 void
@@ -281,16 +311,16 @@ HeirarchicalIntTree<ValueType>::clear()
 template<typename ValueType>
 template<typename BranchIterator_, typename OutputIterator_>
 bool
-HeirarchicalIntTree<ValueType>::nodesFromBranches ( BranchIterator_ bIter,
-                                                    BranchIterator_ end,
+HeirarchicalIntTree<ValueType>::nodesFromBranches ( BranchIterator_ beginIter,
+                                                    BranchIterator_ endIter,
                                                     OutputIterator_ outIter )
 {
     NodeMap *  children = &_roots;
-    
-    for ( ; bIter != end; ++bIter ) {
-        NodeMapIter nIter;
 
-        if ( (nIter = children->find(*bIter)) == children->end() )
+    for ( ; beginIter != endIter; ++beginIter ) {
+        NodeMapIter  nIter;
+
+        if ( (nIter = children->find(*beginIter)) == children->end() )
             return false;
 
         *outIter++ = nIter->second;
@@ -307,7 +337,7 @@ void
 HeirarchicalIntTree<ValueType>::depthFirstTraversal ( Node * node, Predicate_ & predicate )
 {
     NodeMap & children = node->getChildren();
-    
+
     NodeMapIter  nIter;
     for ( nIter = children.begin(); nIter != children.end(); ++nIter )
         this->depthFirstTraversal(nIter->second, predicate);

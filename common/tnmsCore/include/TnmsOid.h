@@ -9,8 +9,8 @@
 namespace tnmsCore {
 
 
-typedef std::vector<uint16_t>   OidList;
-typedef uint16_t*               tOid;
+typedef std::vector<uint16_t>    OidList;
+typedef uint16_t*                tOid;
 
 
 
@@ -22,19 +22,21 @@ public:
     typedef OidList::const_iterator  const_iterator;
 
 public:
-    
-    TnmsOid();
-    TnmsOid ( const OidList & oidlist );
-    TnmsOid ( const std::string & oidstr );
-    TnmsOid ( const TnmsOid & toid );
-    
+
+    TnmsOid ( OidList::size_type   size = 0 );
+    TnmsOid ( const OidList      & oidlist );
+    TnmsOid ( const std::string  & oidstr );
+    TnmsOid ( const TnmsOid      & toid );
+
     virtual ~TnmsOid();
-    
-    uint16_t        operator[] ( uint32_t indx );
-    
+
+    uint16_t        operator[] ( OidList::size_type indx ) const;
+    bool            operator<  ( const TnmsOid & toid ) const;
+    void            operator=  ( const TnmsOid & toid );
+
     std::string     toString() const;
     tOid            toArray() const;
-    
+
     const OidList&  getOidList() const;
     OidList&        getOidList();
 
@@ -43,21 +45,26 @@ public:
     const_iterator  begin() const;
     const_iterator  end() const;
     bool            empty() const;
-    
-    const uint16_t& lastValue() const;
+
+    uint16_t        lastValue() const;
     uint32_t        getOidLength() const;
     uint32_t        size() const { return this->getOidLength(); }
-    
-    size_t          serialize ( char * buffer, size_t len );
-    
 
-    static void     StringToOidList ( const std::string & oidstr,
-                                      OidList & oidlist );
+    size_t          serialize ( char * buffer, size_t len );
+
+
+    static void     StringToOidList ( const std::string  & oidstr,
+                                      OidList            & oidlist );
+
+    static TnmsOid* OidFromString   ( const std::string  & oidstr );
+
+    static TnmsOid* OidFromIndex    ( const TnmsOid      & oid,
+                                      OidList::size_type & indx );
 
 private:
-    
-    OidList *       _oidlist;
-    
+
+    OidList        _oidlist;
+
 };
 
 }  // namespace

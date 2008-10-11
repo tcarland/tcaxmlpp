@@ -25,13 +25,13 @@ class HeirarchicalIntTreeNode {
 
   public:
 
-    HeirarchicalIntTreeNode ( TnmsOid & nodeName, TreeNode * parent );
+    HeirarchicalIntTreeNode ( TnmsOid  * nodeOid,
+    	                      TreeNode * parent );
 
     virtual ~HeirarchicalIntTreeNode();
 
-    const uint16_t&     getName() const;
-    TnmsOid             getAbsoluteName() const;
-    std::string         getAbsoluteName() const;
+    uint16_t            getName() const;
+    const TnmsOid&      getAbsoluteName() const;
 
     ValueType&          getValue();
     const ValueType&    getValue() const;
@@ -45,7 +45,7 @@ class HeirarchicalIntTreeNode {
   private:
 
     ValueType           _value;
-    TnmsOid             _nodeOid;
+    TnmsOid  *          _nodeOid;
     TreeNode *          _parent;
     char                _delim;
     TreeNodeMap         _children;
@@ -84,30 +84,32 @@ class HeirarchicalIntTree {
 
     int            size() const;
 
-    Node*          find   ( TnmsOid & oid );
+    Node*          find   ( const TnmsOid & oid );
 
     template<typename OutputIterator_>
-    Node*          insert ( TnmsOid & oid,
+    Node*          insert ( const TnmsOid & oid,
                             OutputIterator_ outIter )
         throw ( std::runtime_error );
-    
+
     template<typename OutputIterator_>
-    bool           erase  ( TnmsOid & oid,
+    bool           erase  ( const TnmsOid & oid,
                             OutputIterator_ outIter );
 
     template<typename OutputIterator_>
     bool           erase  ( Node * node,
                             OutputIterator_ outIter );
 
+    bool           erase  ( Node * node );
+
     void           clear();
 
     template<typename BranchIterator_, typename OutputIterator_>
-    bool           nodesFromBranches   ( BranchIterator_ bIter,
-                                         BranchIterator_ end,
+    bool           nodesFromBranches   ( BranchIterator_ beginIter,
+                                         BranchIterator_ endIter,
                                          OutputIterator_ outIter );
 
     template<typename Predicate_>
-    void           depthFirstTraversal ( Node * node, 
+    void           depthFirstTraversal ( Node * node,
                                          Predicate_ & predicate );
 
   public:
@@ -133,6 +135,7 @@ class HeirarchicalIntTree {
 
 
 }  // namespace
+
 
 #include "../src/HeirarchicalIntTree.cpp"
 

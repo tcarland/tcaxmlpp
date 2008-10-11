@@ -9,7 +9,7 @@ endif
 LIBS =
 INCLUDES =              -Iinclude
 
-OBJS =         		src/TnmsOid.o 
+OBJS =         		    src/TnmsOid.o 
 
 BIN =                        
 ALL_OBJS =              $(OBJS)

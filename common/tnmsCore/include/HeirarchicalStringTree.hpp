@@ -14,7 +14,7 @@ namespace tnmsCore {
 
 template < typename ValueType >
 class HeirarchicalStringTreeNode {
-    
+
   public:
 
     typedef HeirarchicalStringTreeNode<ValueType>   TreeNode;
@@ -23,13 +23,13 @@ class HeirarchicalStringTreeNode {
 
   public:
 
-    HeirarchicalStringTreeNode ( const std::string & nodeName, 
+    HeirarchicalStringTreeNode ( const std::string & nodeName,
                                  TreeNode          * parent,
                                  char                delimiter = '/' );
 
     virtual ~HeirarchicalStringTreeNode();
 
-    
+
     const std::string&  getName() const;
     std::string         getAbsoluteName() const;
 
@@ -42,7 +42,7 @@ class HeirarchicalStringTreeNode {
     TreeNodeMap&        getChildren();
     const TreeNodeMap&  getChildren() const;
 
-    
+
   private:
 
     ValueType           _value;
@@ -56,7 +56,7 @@ class HeirarchicalStringTreeNode {
 
 template < typename ValueType >
 class HeirarchicalStringTree {
-    
+
   public:
 
     typedef HeirarchicalStringTreeNode<ValueType>   Node;
@@ -92,7 +92,7 @@ class HeirarchicalStringTree {
     Node*          insert ( const std::string & absoluteName,
                             OutputIterator_ outIter )
         throw ( std::runtime_error );
-    
+
     template<typename OutputIterator_>
     bool           erase  ( const std::string & absoluteName,
                             OutputIterator_ outIter );
@@ -109,10 +109,10 @@ class HeirarchicalStringTree {
                                          OutputIterator_ outIter );
 
     template<typename Predicate_>
-    void           depthFirstTraversal ( Node * node, 
+    void           depthFirstTraversal ( Node * node,
                                          Predicate_ & predicate );
 
-    
+
   public:
 
     struct BreadthOrderingFunctor
@@ -127,7 +127,7 @@ class HeirarchicalStringTree {
         void operator() ( Node * node ) { nodes.push_back(node); }
     };
 
-    
+
   private:
 
     NodeMap             _roots;

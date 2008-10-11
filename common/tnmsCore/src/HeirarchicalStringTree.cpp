@@ -14,8 +14,8 @@ namespace tnmsCore {
 
 
 template<typename ValueType>
-HeirarchicalStringTreeNode<ValueType>::HeirarchicalStringTreeNode ( const std::string & nodeName, 
-                                                                    TreeNode * parent, 
+HeirarchicalStringTreeNode<ValueType>::HeirarchicalStringTreeNode ( const std::string & nodeName,
+                                                                    TreeNode * parent,
                                                                     char delimiter )
     : _nodeName(nodeName),
       _parent(parent),
@@ -30,7 +30,7 @@ HeirarchicalStringTreeNode<ValueType>::~HeirarchicalStringTreeNode()
 
 template<typename ValueType>
 const std::string&
-HeirarchicalStringTreeNode<ValueType>::getName() const 
+HeirarchicalStringTreeNode<ValueType>::getName() const
 {
     return _nodeName;
 }
@@ -164,7 +164,7 @@ HeirarchicalStringTree<ValueType>::size() const
 template<typename ValueType>
 typename HeirarchicalStringTree<ValueType>::Node*
 HeirarchicalStringTree<ValueType>::find ( const std::string & absoluteName )
-{ 
+{
     StringList      branchNames;
     BranchNodeList  branches;
 
@@ -250,7 +250,7 @@ HeirarchicalStringTree<ValueType>::erase ( Node  * node,
 {
     if ( node == NULL )
         return false;
-    
+
     DepthOrderingFunctor   depthfirst;
     const std::string      name       = node->getName();
     NodeMap              * pChildList = &_roots;
@@ -303,12 +303,12 @@ template<typename ValueType>
 template<typename BranchIterator_, typename OutputIterator_>
 bool
 HeirarchicalStringTree<ValueType>::nodesFromBranches ( BranchIterator_ bIter,
-                                                       BranchIterator_ end,
+                                                       BranchIterator_ endIter,
                                                        OutputIterator_ outIter )
 {
     NodeMap *  children = &_roots;
-    
-    for ( ; bIter != end; ++bIter ) {
+
+    for ( ; bIter != endIter; ++bIter ) {
         NodeMapIter nIter;
 
         if ( (nIter = children->find(*bIter)) == children->end() )
@@ -328,7 +328,7 @@ void
 HeirarchicalStringTree<ValueType>::depthFirstTraversal ( Node * node, Predicate_ & predicate )
 {
     NodeMap & children = node->getChildren();
-    
+
     NodeMapIter  nIter;
     for ( nIter = children.begin(); nIter != children.end(); ++nIter )
         this->depthFirstTraversal(nIter->second, predicate);

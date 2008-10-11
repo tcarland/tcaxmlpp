@@ -3,9 +3,6 @@
 #include <iostream>
 
 #include "TnmsOid.h"
-#include "HeirarchicalStringTree.hpp"
-#include "HeirarchicalIntTree.hpp"
-
 using namespace tnmsCore;
 
 
@@ -22,12 +19,15 @@ int main()
 
     TnmsOid  toid1 = TnmsOid(oid1);
     TnmsOid  toid2 = TnmsOid(oid2);
+    TnmsOid  toid3("10.10.10");
 
     std::cout << "oid IN is  " << oid1 << std::endl;
     std::cout << "oid OUT is " << toid1.toString() << std::endl;
     std::cout << std::endl;
     std::cout << "oid IN is  " << oid2 << std::endl;
     std::cout << "oid OUT is " << toid2.toString() << std::endl;
+    std::cout << std::endl;
+    std::cout << "oid OUT is " << toid3.toString() << std::endl;
 
     std::cout << std::endl << "tnmsoid1 '" << toid1.toString() << "' has a size of "
         << toid1.size() << " and last value of " << toid1.lastValue() << std::endl;
@@ -46,6 +46,6 @@ int main()
     }
 
 
-    
+
     return 0;
 }

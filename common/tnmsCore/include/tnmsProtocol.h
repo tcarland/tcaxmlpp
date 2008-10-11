@@ -7,13 +7,19 @@ namespace tnmscore {
 
 typedef enum tnmsValueTypes {
     TNMS_NONE,
-    TNMS_INT,
-    TNMS_UINT,
-    TNMS_LONG,
-    TNMS_ULONG,
+    TNMS_INT32,   
+    TNMS_UINT32,
+    TNMS_INT64,
+    TNMS_UINT64,
     TNMS_FLOAT,
     TNMS_STRING
 } EValueType;
+
+
+typedef TNMS_INT32  TNMS_INT;
+typedef TNMS_UINT32 TNMS_UINT;
+typedef TNMS_INT64  TNMS_LONG;
+typedef TNMS_UINT64 TNMS_ULONG;
 
 
 typedef enum tnmsRecordTypes {

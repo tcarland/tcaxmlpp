@@ -24,7 +24,7 @@ all: treetest packtest oidtest
 include ${TOPDIR}/common/make/tca
 
 
-treetest: tree_test.o
+treetest: tree_test.o ../src/TnmsOid.o
 	$(make-cxxbin-rule)
 
 packtest: pack_test.o
