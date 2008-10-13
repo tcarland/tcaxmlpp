@@ -18,33 +18,35 @@ class BufferedSocket : public Socket {
     /**  Socket factory class for handling Socket::accept()
      *   in derived classes */
     class BufferedSocketFactory : public Socket::SocketFactory {
-
       public:
-
         virtual ~BufferedSocketFactory() {}
 
-        virtual Socket* operator() ( sockfd_t & fd, struct sockaddr_in & csock )
+        virtual Socket* operator() ( sockfd_t           & fd, 
+                                     struct sockaddr_in & csock )
         {
             return( (Socket*) new BufferedSocket(fd, csock) );
         }
     };
-
-  public:
-
 
     static BufferedSocketFactory   factory;
 
 
   protected:
 
-    BufferedSocket ( sockfd_t & fd, struct sockaddr_in & csock );
+    BufferedSocket ( sockfd_t           & fd, 
+                     struct sockaddr_in & csock );
 
   public:
 
     BufferedSocket();
-    BufferedSocket ( ipv4addr_t ip, uint16_t port, SocketType socktype, int proto );
+
+    BufferedSocket ( ipv4addr_t  ip, 
+                     uint16_t    port, 
+                     SocketType  socktype, 
+                     int         proto );
 
     virtual ~BufferedSocket();
+
 
     /*  from Socket */
     

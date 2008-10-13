@@ -33,6 +33,9 @@ packtest: pack_test.o
 oidtest: oid_test.o ../src/TnmsOid.o
 	$(make-cxxbin-rule)
 
+typetest: typetests.o
+	$(make-cxxbin-rule)
+
 clean:
 	$(RM) $(OBJS) \
 	*.D *.d *.bd *.o lib/*.bd *.bd

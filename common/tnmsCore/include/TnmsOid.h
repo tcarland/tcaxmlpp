@@ -1,12 +1,15 @@
-#ifndef _TNMSOID_H_
-#define _TNMSOID_H_
+#ifndef _TNMSCORE_TNMSOID_H_
+#define _TNMSCORE_TNMSOID_H_
 
 #include <vector>
 #include <string>
 
 #include <inttypes.h>
 
-namespace tnmsCore {
+#include "Serializable.hpp"
+
+
+namespace tnmscore {
 
 
 typedef std::vector<uint16_t>    OidList;
@@ -14,7 +17,7 @@ typedef uint16_t*                tOid;
 
 
 
-class TnmsOid {
+class TnmsOid : public Serializable {
 
 public:
 
@@ -31,8 +34,8 @@ public:
     virtual ~TnmsOid();
 
     uint16_t        operator[] ( OidList::size_type indx ) const;
-    bool            operator<  ( const TnmsOid & toid ) const;
-    void            operator=  ( const TnmsOid & toid );
+    bool            operator<  ( const TnmsOid    & toid ) const;
+    void            operator=  ( const TnmsOid    & toid );
 
     std::string     toString() const;
     tOid            toArray() const;
@@ -48,9 +51,10 @@ public:
 
     uint16_t        lastValue() const;
     uint32_t        getOidLength() const;
-    uint32_t        size() const { return this->getOidLength(); }
+    uint32_t        size() const    { return this->getOidLength(); }
 
-    size_t          serialize ( char * buffer, size_t len );
+
+    size_t          serialize       ( char * buffer, size_t len );
 
 
     static void     StringToOidList ( const std::string  & oidstr,
@@ -69,5 +73,5 @@ private:
 
 }  // namespace
 
-#endif // _TNMSOID_H_
+#endif // _TNMSCORE_TNMSOID_H_
 

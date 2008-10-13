@@ -10,24 +10,26 @@ using namespace tcanetpp;
 namespace tnmsCore {
 
 
+
 TnmsOid::TnmsOid ( OidList::size_type  size )
     : _oidlist(OidList(size))
 {}
 
+
 TnmsOid::TnmsOid ( const OidList & oidlist )
     : _oidlist(oidlist)
-{
-}
+{}
+
 
 TnmsOid::TnmsOid ( const std::string & oidstr  )
 {
     TnmsOid::StringToOidList(oidstr, this->_oidlist);
 }
 
+
 TnmsOid::TnmsOid ( const TnmsOid & toid )
     : _oidlist(toid.getOidList())
-{
-}
+{}
 
 
 TnmsOid::~TnmsOid()
@@ -45,6 +47,7 @@ TnmsOid::operator[] ( OidList::size_type  indx ) const
     return( _oidlist[indx] );
 }
 
+
 bool
 TnmsOid::operator< ( const TnmsOid & toid ) const
 {
@@ -56,6 +59,7 @@ TnmsOid::operator= ( const TnmsOid & toid )
 {
     this->_oidlist = toid.getOidList();
 }
+
 
 TnmsOid::iterator
 TnmsOid::begin()
@@ -69,6 +73,7 @@ TnmsOid::end()
     return _oidlist.end();
 }
 
+
 TnmsOid::const_iterator
 TnmsOid::begin() const
 {
@@ -80,6 +85,7 @@ TnmsOid::end() const
 {
     return _oidlist.end();
 }
+
 
 bool
 TnmsOid::empty() const
@@ -178,6 +184,7 @@ TnmsOid::serialize ( char * buffer, size_t len )
     return sz;
 }
 
+
 void
 TnmsOid::StringToOidList ( const std::string & str, OidList & oidlist )
 {
@@ -191,6 +198,7 @@ TnmsOid::StringToOidList ( const std::string & str, OidList & oidlist )
 
     return;
 }
+
 
 TnmsOid*
 TnmsOid::OidFromString ( const std::string & str )

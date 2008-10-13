@@ -1,34 +1,47 @@
-#ifndef TNMSPROTOCOL_H_
-#define TNMSPROTOCOL_H_
+#ifndef _TNMSCORE_TNMSPROTOCOL_H_
+#define _TNMSCORE_NMSPROTOCOL_H_
 
 
 namespace tnmscore {
 
 
-typedef enum tnmsValueTypes {
-    TNMS_NONE,
-    TNMS_INT32,   
-    TNMS_UINT32,
-    TNMS_INT64,
-    TNMS_UINT64,
-    TNMS_FLOAT,
-    TNMS_STRING
-} EValueType;
+#define TNMS_VERSION_MAJOR          0x05
+#define TNMS_VERSION_MINOR          0x61
+
+#define TNMS_DEFAULT_DELIMITER      "."
+#define TNMS_RECORD_LIMIT           1000
+#define TNMS_RECORD_SIZE            1024
+#define TNMS_PACKET_SIZE            (TNMS_RECORD_SIZE * MAX_QUEUE_LIMIT)
+
+#define TNMS_FLUSH_LIMIT            500
+#define TNMS_CLIENT_TIMEOUT         120
+
+#define DEFAULT_COMPRESSION_ENABLE  1
+#define DEFAULT_FLUSH_ENABLE        1
 
 
-typedef TNMS_INT32  TNMS_INT;
-typedef TNMS_UINT32 TNMS_UINT;
-typedef TNMS_INT64  TNMS_LONG;
-typedef TNMS_UINT64 TNMS_ULONG;
+typedef enum eValueTypes {
+    TNMS_NONE    = 0,
+    TNMS_INT32   = 1,
+    TNMS_UINT32  = 2,
+    TNMS_INT64   = 3,
+    TNMS_UINT64  = 4,
+    TNMS_FLOAT   = 5,
+    TNMS_STRING  = 6
+} e_valueTypes_t;
 
 
-typedef enum tnmsRecordTypes {
+typedef TNMS_INT32   TNMS_INT;
+typedef TNMS_UINT32  TNMS_UINT;
+typedef TNMS_INT64   TNMS_LONG;
+typedef TNMS_UINT64  TNMS_ULONG;
+
+
+typedef enum eRecordTypes {
     NO_RECORD,
     AUTH_REQUEST,
     AUTH_REPLY,
     AUTH_REFRESH,
-    RESOLVE_REQUEST,
-    RESOLVE_REPLY,
     RECORD_ADD,
     RECORD_REMOVE,
     RECORD_REQUEST,
@@ -39,9 +52,10 @@ typedef enum tnmsRecordTypes {
     UNSUBSCRIBE_STRUCTURE,
     PING_REQUEST,
     PING_REPLY
-} ERecordType;
+} e_recordTypes_t;
 
-typedef enum tnmsAuthResult {
+
+typedef enum eAuthTypes {
     AUTH_NO_RESULT,
     AUTH_SUCCESS,
     AUTH_INVALID,
@@ -49,10 +63,10 @@ typedef enum tnmsAuthResult {
     AUTH_AGENT_INVALID,
     AUTH_AGENT_DENIED_IP,
     AUTH_BAD_VERSION
-} EAuthResult;
+} e_authTypes_t;
 
-    
-struct tnmsHeader
+
+typedef struct tnmsHeader
 {
     uint16_t    major_version;
     uint16_t    minor_version;
@@ -61,9 +75,10 @@ struct tnmsHeader
     uint32_t    options;
     uint32_t    payload_size;
     uint32_t    timestamp;
-};
+} tnmsHdr_t;
 
-struct tnmsMetric 
+
+typedef struct tnmsMetric
 {
     uint32_t    oid_len;
     uint16_t*   oid;
@@ -72,34 +87,49 @@ struct tnmsMetric
     uint16_t    metric_value_type;
     uint32_t    metric_value_len;
     char*       metric_value;
-    uint32_t    data_len;
-    char*       data;
-};
+    uint32_t    pvt_data_len;
+    char*       pvt_data;
+} tnmsMetric_t;
 
-struct tnmsAddRecord 
+
+typedef struct tnmsRequest
 {
     uint32_t    metric_name_len;
     char*       metric_name;
     uint32_t    oid_len;
     uint16_t*   oid;
-};
+} tnmsRequest_t;
 
-struct tnmsRemoveRecord 
+
+typedef struct tnmsAdd
 {
+    uint32_t    metric_name_len;
+    char*       metric_name;
     uint32_t    oid_len;
     uint16_t*   oid;
-};
+} tnmsAdd_t;
 
-struct tnmsAuthRequest
+
+typedef struct tnmsRemove
+{
+    uint32_t    metric_name_len;
+    char*       metric_name;
+    uint32_t    oid_len;
+    uint16_t*   oid;
+} tnmsRemove_t;
+
+
+typedef struct tnmsAuthRequest
 {
     uint32_t    agent_name_len;
     char*       agent_name;
     uint32_t    auth_key_len;
     char*       auth_key;
     uint32_t    ip_address;
-};
+} tnmsAuth_t;
 
-struct tnmsAuthReply
+
+typedef struct tnmsAuthReply
 {
     uint32_t    agent_name_len;
     char*       agent_name;
@@ -109,15 +139,10 @@ struct tnmsAuthReply
     char*       reason;
     uint32_t    reply_data_len;
     char*       reply_data;
-};
-
-struct tnmsRecordRequest
-{
-    uint32_t    oid_len;
-    uint16_t*   oid;
-};
+} tnmsAuthReply_t;
 
 
 }  // namespace
 
-#endif /*TNMSPROTOCOL_H_*/
+
+#endif  //  _TNMSCORE_TNMSPROTOCOL_H_
