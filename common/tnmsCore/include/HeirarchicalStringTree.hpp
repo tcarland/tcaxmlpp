@@ -11,7 +11,6 @@
 namespace tnmsCore {
 
 
-
 template < typename ValueType >
 class HeirarchicalStringTreeNode {
 
@@ -30,17 +29,17 @@ class HeirarchicalStringTreeNode {
     virtual ~HeirarchicalStringTreeNode();
 
 
-    const std::string&  getName() const;
-    std::string         getAbsoluteName() const;
+    const std::string&   getName() const;
+    std::string          getAbsoluteName() const;
 
-    ValueType&          getValue();
-    const ValueType&    getValue() const;
+    ValueType&           getValue();
+    const ValueType&     getValue() const;
 
-    TreeNode*           getParent();
-    const TreeNode*     getParent() const;
+    TreeNode*            getParent();
+    const TreeNode*      getParent() const;
 
-    TreeNodeMap&        getChildren();
-    const TreeNodeMap&  getChildren() const;
+    TreeNodeMap&         getChildren();
+    const TreeNodeMap&   getChildren() const;
 
 
   private:
@@ -79,38 +78,42 @@ class HeirarchicalStringTree {
     HeirarchicalStringTree&  operator= ( const HeirarchicalStringTree & tree );
 
 
-    char           getDelimiter() const;
+    char            getDelimiter() const;
 
-    NodeMap&       getRoots();
-    const NodeMap& getRoots() const;
+    NodeMap&        getRoots();
+    const NodeMap&  getRoots() const;
 
-    int            size() const;
+    int             size() const;
 
-    Node*          find   ( const std::string & absoluteName );
+    Node*           find   ( const std::string & absoluteName );
+
 
     template<typename OutputIterator_>
-    Node*          insert ( const std::string & absoluteName,
-                            OutputIterator_ outIter )
+    Node*           insert ( const std::string & absoluteName,
+                             OutputIterator_ outIter )
         throw ( std::runtime_error );
 
-    template<typename OutputIterator_>
-    bool           erase  ( const std::string & absoluteName,
-                            OutputIterator_ outIter );
 
     template<typename OutputIterator_>
-    bool           erase  ( Node * node,
-                            OutputIterator_ outIter );
+    bool            erase  ( const std::string & absoluteName,
+                             OutputIterator_ outIter );
 
-    void           clear();
+    template<typename OutputIterator_>
+    bool            erase  ( Node * node,
+                             OutputIterator_ outIter );
+
+    void            clear();
+
 
     template<typename BranchIterator_, typename OutputIterator_>
-    bool           nodesFromBranches   ( BranchIterator_ bIter,
-                                         BranchIterator_ end,
-                                         OutputIterator_ outIter );
+    bool            nodesFromBranches   ( BranchIterator_ bIter,
+                                          BranchIterator_ end,
+                                          OutputIterator_ outIter );
+
 
     template<typename Predicate_>
-    void           depthFirstTraversal ( Node * node,
-                                         Predicate_ & predicate );
+    void            depthFirstTraversal ( Node * node,
+                                          Predicate_ & predicate );
 
 
   public:

@@ -115,10 +115,10 @@ public:
 
     /*  Messaging Callbacks  */
 
-    virtual void        AddHandler          ( const tnmsAdd     & addmsg ) {}
-    virtual void        RemoveHandler       ( const tnmsRemove  & remmsg ) {}
-    virtual void        MetricHandler       ( const tnmsMetric  & metric ) {}
-    virtual void        RequestHandler      ( const tnmsRequest & request ) {}
+    virtual void        AddHandler          ( const TnmsAdd     & addmsg ) {}
+    virtual void        RemoveHandler       ( const TnmsRemove  & remmsg ) {}
+    virtual void        MetricHandler       ( const TnmsMetric  & metric ) {}
+    virtual void        RequestHandler      ( const TnmsRequest & request ) {}
 
     virtual void        SubscribeHandler    ( const std::string & name ) {}
     virtual void        UnsubscribeHandler  ( const std::string & name ) {}
@@ -126,18 +126,18 @@ public:
 
     virtual void        LastRecordHandler() {}
 
-    virtual void        AuthRequestHandler  ( const tnmsAuthRequest & request );
-    virtual void        AuthReplyHandler    ( const tnmsAuthReply   & reply );
+    virtual void        AuthRequestHandler  ( const TnmsAuthRequest & request );
+    virtual void        AuthReplyHandler    ( const TnmsAuthReply   & reply );
 
 
     /*  send message handling / packing  */
 
-    bool                sendAuthRequest     ( tnmsAuthRequest & req );
-    bool                sendAuthReply       ( tnmsAuthReply   & res );
-    bool                sendMetric          ( tnmsMetric      & metric );
-    bool                sendAdd             ( tnmsAdd         & add );
-    bool                sendRemove          ( tnmsRemove      & rem );
-    bool                sendRequest         ( tnmsRequest     & req );
+    bool                sendAuthRequest     ( TnmsAuthRequest & req );
+    bool                sendAuthReply       ( TnmsAuthReply   & res );
+    bool                sendMetric          ( TnmsMetric      & metric );
+    bool                sendAdd             ( TnmsAdd         & add );
+    bool                sendRemove          ( TnmsRemove      & rem );
+    bool                sendRequest         ( TnmsRequest     & req );
     void                setLastRecord();
 
     /*  receive message handling / extraction  */

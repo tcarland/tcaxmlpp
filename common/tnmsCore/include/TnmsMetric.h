@@ -10,32 +10,22 @@
 
 #include "TnmsOid.h"
 #include "tnmsProtocol.h"
-#include "Serializable.hpp"
+#include "TnmsMessage.hpp"
 
 
 namespace tnmscore {
 
 
-class TnmsMetric : public Serializable {
+class TnmsMetric : public TnmsMessage {
 
 public:
 
     TnmsMetric();
-    TnmsMetric ( const std::string & name, TnmsOid * oid );
+    TnmsMetric ( const std::string & name, const TnmsOid & oid );
 
     virtual ~TnmsMetric();
 
 
-    const std::string&  getName() const;
-    const TnmsOid&      getOid( ) const;
-
-    size_t              size()    const;
-    inline size_t       getSize() const { return this->size(); }
-
-    /*  Overloaded getValue() for retrieving a string or a number.
-     *  Due to string support being somewhat dynamic, the type 
-     *  should be checked via getValueType() 
-     */
     std::string  getValue();
     template<typename T>
     T&           getValue();
@@ -46,14 +36,12 @@ public:
     template< typename T >
     bool         setValue  ( eValueType  valtype, T  & value );
 
-
+    //  Serializable
     ssize_t      serialize ( char  * buffer, size_t  sz );
+    size_t       size() const;
 
 
-private:
-
-    std::string         _name;
-    TnmsOid *           _oid;
+protected:
 
     eValueType          _valType;
     uint64_t            _value;
