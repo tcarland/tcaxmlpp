@@ -220,6 +220,22 @@ TnmsSocket::closeConnection()
 
 // ------------------------------------------------------------------- //
 
+int
+TnmsSocket::send()
+{
+    return -1;
+}
+
+// ------------------------------------------------------------------- //
+
+int
+TnmsSocket::receive()
+{
+    return -1;
+}
+
+// ------------------------------------------------------------------- //
+
 bool
 TnmsSocket::isConnected() const
 {
@@ -422,7 +438,7 @@ TnmsSocket::getTimeout()
 // ------------------------------------------------------------------- //
 
 int
-TnmsSocket::subscribes()
+TnmsSocket::subscribeCount()
 {
     return this->_subscriptions->size();
 }
@@ -434,12 +450,57 @@ TnmsSocket::resubscribe()
 {}
 
 // ------------------------------------------------------------------- //
+
+bool
+TnmsSocket::sendMessage ( Serializable * message )
+{
+    size_t  msz, wt;
+    
+    msz = message.size();
+    wt  = 0;
+
+    if ( ! this->initHeader(message.type(), msz) )
+        return false;
+
+    wt = message.serialize(_wptr, (_wtsize - _wtt));
+
+    _wptr += wt;
+    _wtt  += wt;
+
+    _hdr->record_count++;
+    _hdr->payload_size += wt;
+
+    if ( this->flush() < 0 )
+        return false;
+
+    return true;
+}
+
 // ------------------------------------------------------------------- //
 
 bool
 TnmsSocket::sendAuthRequest ( TnmsAuthRequest & request )
 {
-    return false;
+    size_t  msz, wt;
+    
+    msz = request.size();
+    wt  = 0;
+
+    if ( ! this->initHeader(AUTH_REQUEST, msz) )
+        return false;
+
+    wt = request.serialize(_wptr, (_wtsize - _wtt));
+
+    _wptr += wt;
+    _wtt  += wt;
+
+    _hdr->record_count++;
+    _hdr->payload_size += wt;
+
+    if ( this->flush() < 0 )
+        return false;
+
+    return true;
 }
 // ------------------------------------------------------------------- //
 
@@ -452,7 +513,7 @@ TnmsSocket::sendAuthReply ( TnmsAuthReply & reply )
 // ------------------------------------------------------------------- //
 
 bool
-TnmsSocket::sendMetric ( TnmsMetric & metric )
+TnmsSocket::sendMetric ( TnmsMetricMessage & metric )
 {
     return false;
 }
@@ -460,7 +521,7 @@ TnmsSocket::sendMetric ( TnmsMetric & metric )
 // ------------------------------------------------------------------- //
 
 bool
-TnmsSocket::sendAdd ( TnmsAdd & metric )
+TnmsSocket::sendAdd ( TnmsAddMessage & metric )
 {
     return false;
 }
@@ -468,7 +529,7 @@ TnmsSocket::sendAdd ( TnmsAdd & metric )
 // ------------------------------------------------------------------- //
 
 bool
-TnmsSocket::sendRemove ( TnmsRemove & metric )
+TnmsSocket::sendRemove ( TnmsRemoveMessage & metric )
 {
     return false;
 }
@@ -476,7 +537,7 @@ TnmsSocket::sendRemove ( TnmsRemove & metric )
 // ------------------------------------------------------------------- //
 
 bool
-TnmsSocket::sendRequest ( TnmsRequest & metric )
+TnmsSocket::sendRequest ( TnmsRequestMessage & metric )
 {
     return false;
 }
@@ -491,3 +552,100 @@ TnmsSocket::setLastRecord()
 
 // ------------------------------------------------------------------- //
 // ------------------------------------------------------------------- //
+
+int
+TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
+{
+    return -1;
+}
+
+// ------------------------------------------------------------------- //
+
+int
+TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
+{
+    return -1;
+}
+
+// ------------------------------------------------------------------- //
+
+int
+TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
+{
+    return -1;
+}
+
+// ------------------------------------------------------------------- //
+
+int
+TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
+{
+    return -1;
+}
+
+// ------------------------------------------------------------------- //
+
+int
+TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
+{
+    return -1;
+}
+
+// ------------------------------------------------------------------- //
+
+int
+TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
+{
+    return -1;
+}
+
+// ------------------------------------------------------------------- //
+
+int
+TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
+{
+    return -1;
+}
+
+// ------------------------------------------------------------------- //
+
+int
+TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
+{
+    return -1;
+}
+
+// ------------------------------------------------------------------- //
+
+void
+TnmsSocket::clearState()
+{}
+
+// ------------------------------------------------------------------- //
+
+void
+TnmsSocket::setHostStr()
+{
+}
+
+// ------------------------------------------------------------------- //
+
+bool
+TnmsSocket::initHeader()
+{
+    return false;
+}
+
+// ------------------------------------------------------------------- //
+
+bool
+TnmsSocket::flush()
+{
+    return false;
+}
+
+// ------------------------------------------------------------------- //
+
+} // namespace
+
+

@@ -35,7 +35,6 @@ public:
     int                 openConnection  ( const std::string & host,
                                           uint16_t port );
     int                 openConnection();
-    int                 closeConnection();
 
 
     virtual int         connect()  { return this->openConnection(); }
@@ -115,10 +114,10 @@ public:
 
     /*  Messaging Callbacks  */
 
-    virtual void        AddHandler          ( const TnmsAdd     & addmsg ) {}
-    virtual void        RemoveHandler       ( const TnmsRemove  & remmsg ) {}
-    virtual void        MetricHandler       ( const TnmsMetric  & metric ) {}
-    virtual void        RequestHandler      ( const TnmsRequest & request ) {}
+    virtual void        AddHandler          ( const TnmsAddMessage     & addmsg ) {}
+    virtual void        RemoveHandler       ( const TnmsRemoveMessage  & remmsg ) {}
+    virtual void        MetricHandler       ( const TnmsMetricMessage  & metric ) {}
+    virtual void        RequestHandler      ( const TnmsRequestMessage & request ) {}
 
     virtual void        SubscribeHandler    ( const std::string & name ) {}
     virtual void        UnsubscribeHandler  ( const std::string & name ) {}
@@ -132,12 +131,12 @@ public:
 
     /*  send message handling / packing  */
 
-    bool                sendAuthRequest     ( TnmsAuthRequest & req );
-    bool                sendAuthReply       ( TnmsAuthReply   & res );
-    bool                sendMetric          ( TnmsMetric      & metric );
-    bool                sendAdd             ( TnmsAdd         & add );
-    bool                sendRemove          ( TnmsRemove      & rem );
-    bool                sendRequest         ( TnmsRequest     & req );
+    bool                sendAuthRequest     ( TnmsAuthRequest    & request );
+    bool                sendAuthReply       ( TnmsAuthReply      & reply );
+    bool                sendMetric          ( TnmsMetricMessage  & metric );
+    bool                sendAdd             ( TnmsAddMessage     & add );
+    bool                sendRemove          ( TnmsRemoveMessage  & rem );
+    bool                sendRequest         ( TnmsRequestMessage & req );
     void                setLastRecord();
 
     /*  receive message handling / extraction  */

@@ -94,29 +94,44 @@ typedef struct tnmsMetric
 
 typedef struct tnmsRequest
 {
-    uint32_t    metric_name_len;
-    char*       metric_name;
+    uint16_t    record_type;    
     uint32_t    oid_len;
     uint16_t*   oid;
+    uint32_t    metric_name_len;
+    char*       metric_name;
 } tnmsRequest_t;
 
 
-typedef struct tnmsAdd
+typedef struct tnmsAdd : public tnmsRequest
 {
-    uint32_t    metric_name_len;
-    char*       metric_name;
-    uint32_t    oid_len;
-    uint16_t*   oid;
+    tnmsAdd() 
+        : record_type(RECORD_ADD)
+    {}
 } tnmsAdd_t;
 
 
-typedef struct tnmsRemove
+typedef struct tnmsRemove : public tnmsRequest
 {
-    uint32_t    metric_name_len;
-    char*       metric_name;
-    uint32_t    oid_len;
-    uint16_t*   oid;
+    tnmsRemove()
+        : record_type(RECORD_REMOVE)
+    {}
 } tnmsRemove_t;
+
+
+typedef struct tnmsSubscribe : public tnmsRequest
+{
+    tnmsSubscribe()
+        : record_type(RECORD_SUBSCRIBE)
+    {}
+} tnmsSub_t;
+
+
+typedef struct tnmsUnsubscribe : public tnmsRequest
+{
+    tnmsUnsubscribe()
+        : record_type(RECORD_UNSUBSCRIBE)
+    {}
+} tnmsUnsub_t;
 
 
 typedef struct tnmsAuthRequest
