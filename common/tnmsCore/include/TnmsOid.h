@@ -51,10 +51,11 @@ public:
 
     uint16_t        lastValue() const;
     uint32_t        getOidLength() const;
-    uint32_t        size() const    { return this->getOidLength(); }
 
 
-    size_t          serialize       ( char * buffer, size_t len );
+    ssize_t         serialize       ( char * buffer, size_t len );
+    size_t          size() const    { return this->getOidLength(); }
+    uint16_t        message_type() const { return 0; }
 
 
     static void     StringToOidList ( const std::string  & oidstr,

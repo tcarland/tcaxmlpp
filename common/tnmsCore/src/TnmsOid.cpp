@@ -7,7 +7,7 @@
 using namespace tcanetpp;
 
 
-namespace tnmsCore {
+namespace tnmscore {
 
 
 
@@ -163,7 +163,7 @@ TnmsOid::lastValue() const
 }
 
 
-size_t
+ssize_t
 TnmsOid::serialize ( char * buffer, size_t len )
 {
     if ( len < (sizeof(uint32_t) + (_oidlist.size() * sizeof(uint16_t))) )

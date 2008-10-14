@@ -114,8 +114,8 @@ public:
 
     /*  Messaging Callbacks  */
 
-    virtual void        AddHandler          ( const TnmsAddMessage     & addmsg ) {}
-    virtual void        RemoveHandler       ( const TnmsRemoveMessage  & remmsg ) {}
+    virtual void        AddHandler          ( const TnmsAddMessage     & add ) {}
+    virtual void        RemoveHandler       ( const TnmsRemoveMessage  & remove ) {}
     virtual void        MetricHandler       ( const TnmsMetricMessage  & metric ) {}
     virtual void        RequestHandler      ( const TnmsRequestMessage & request ) {}
 
@@ -130,6 +130,8 @@ public:
 
 
     /*  send message handling / packing  */
+
+    virtual bool        sendMessage         ( Serializable  * message );
 
     bool                sendAuthRequest     ( TnmsAuthRequest    & request );
     bool                sendAuthReply       ( TnmsAuthReply      & reply );
@@ -159,6 +161,8 @@ private:
     void                setHostStr();
 
     bool                initHeader();
+    bool                checkStall() {}
+    void                clearStall() {}
 
 
 
@@ -204,7 +208,7 @@ private:
     char*                       _wptr;
     size_t                      _wtsize;
     size_t                      _wttotal;
-    size_t                      _wxstall;
+    size_t                      _wxstallsz;
     int                         _loginAttempts;
 
     time_t                      _clTimeout;

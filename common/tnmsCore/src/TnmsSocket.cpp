@@ -221,9 +221,49 @@ TnmsSocket::closeConnection()
 // ------------------------------------------------------------------- //
 
 int
-TnmsSocket::send()
+TnmsSocket::send ( const time_t & now )
 {
-    return -1;
+    ssize_t  wt, fl;
+
+    if ( _sock == NULL )
+        return -1;
+
+    if ( this->isConnecting() ) {
+        return this->OpenConnection();
+    } else if ( ! this->isConnected() ) {
+        return -1;
+    }
+
+    wt = this->flush();
+
+    if ( wt < 0 )
+        return -1;
+
+    fl = _sock->flushAvailable() + _wxbuff->fullDataAvailable();
+
+    if ( wt == 0 && fl > 0 ) {
+        if ( _lastWxTime > 0 ) {
+            if ( _wxstallsz <= (size_t) fl ) {
+                if ( (_lastWxTime + _wxTimeout) < now ) {
+                    _errStr.append(" TnmsSocket::send() client stalled, timeout exceeded: ");
+                    _errStr.append(_hostStr);
+                    return -1;
+                }
+                _wxStallsz = fl;
+            } else {
+                _lastWxTime = 0;
+                _wxstallsz  = 0;
+            }
+        } else {
+            _lastWxTime  = now;
+            _wxstallsz = fl;
+        }
+    } else if ( wt > 0 ) {
+        _lastWxTime = 0;
+        _wxstallsz  = 0;
+    }
+
+    return wt;
 }
 
 // ------------------------------------------------------------------- //
@@ -231,7 +271,78 @@ TnmsSocket::send()
 int
 TnmsSocket::receive()
 {
-    return -1;
+    tnmsHeader  hdr;
+    size_t      hdrlen;
+    ssize_t     rd;
+    int         mctr, actr, ctr;
+
+    hdrlen  = sizeof(tnmsHeader);
+    rd      = 0;
+    mctr    = 0;
+    actr    = 0;
+    ctr     = 0;
+
+    if ( _sock == NULL )
+        return -1;
+
+    if ( this->isConnecting() )
+        return this->openConnection();
+    else if ( ! this->isConnected() ) {  // connection lost
+        return -1;
+    }
+
+    do {
+        rd  = _sock->read((void*)&hdr, hdrlen);
+
+        if ( ((size_t) rd) != hdrlen ) {
+            if ( rd < 0 )
+                return -1;
+            _sock->reverse(rd);
+            return ctr;
+        }
+
+        if ( hdr.payload_size > TNMS_MAXPACKET_SIZE ) {
+            _errStr = "Payload too large";
+            return -1;
+        } else if ( hdr.payload_size > _sock->dataAvailable() ) {
+            _sock->reverse(hdrlen);
+            return ctr;
+        }
+
+        if ( hdr.options & ZLIB_COMPRESSED ) {
+            rd = this->uncompressPayload(hdr.payloadsize);
+            if ( rd > 0 )
+                hdr.payload_size = rd;
+        } else {
+            rd = _sock->read((void*)_rxbuff, hdr.payload_size);
+        }
+
+        if ( (size_t) rd != hdr.payload_size ) {
+            if ( rd < 0 ) {
+                _errstr = "TnmsSocket::receive() payload size mismatch: ";
+                _errstr.append(_hostStr);
+                return -1;
+            }
+            _sock->reverse(rd + hdrlen);
+            return ctr;
+        }
+
+        switch ( hdr.record_type ) {
+            case AUTH_TYPE:
+                break;
+            case RECORD_METRIC:
+                ctr += this->rcvMetrics(hdr);
+                break;
+            default:
+                //unknown type
+                break;
+        }
+
+        if ( hdr.options & LAST_RECORD )
+            this->lastRecordHandler(hdr.record_type);
+    } while ( rd > 0 );
+
+    return ctr;
 }
 
 // ------------------------------------------------------------------- //
@@ -459,7 +570,7 @@ TnmsSocket::sendMessage ( Serializable * message )
     msz = message.size();
     wt  = 0;
 
-    if ( ! this->initHeader(message.type(), msz) )
+    if ( ! this->initHeader(message.message_type(), msz) )
         return false;
 
     wt = message.serialize(_wptr, (_wtsize - _wtt));
@@ -477,7 +588,7 @@ TnmsSocket::sendMessage ( Serializable * message )
 }
 
 // ------------------------------------------------------------------- //
-
+/*
 bool
 TnmsSocket::sendAuthRequest ( TnmsAuthRequest & request )
 {
@@ -541,7 +652,7 @@ TnmsSocket::sendRequest ( TnmsRequestMessage & metric )
 {
     return false;
 }
-
+*/
 // ------------------------------------------------------------------- //
 
 bool
@@ -619,21 +730,141 @@ TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
 
 void
 TnmsSocket::clearState()
-{}
+{
+    _hdr     = NULL;
+    _wptr    = NULL;
+    _wtt     = 0;
+    _wtsize  = 0;
+
+    if ( this->compression() ) {
+        if ( _zipper )
+            delete _zipper;
+        if ( _zipout )
+            delete _zipout;
+        _zipper = NULL;
+        _zipout = NULL;
+    }
+
+    return;
+}
 
 // ------------------------------------------------------------------- //
 
 void
 TnmsSocket::setHostStr()
 {
+    if ( _sock == NULL )
+        return;
+
+    if ( _hostname.length() == 0 )
+        _hostname = _sock->getAddrStr();
+    if ( _port == 0 )
+        _port = _sock->getPort();
+
+    std::ostringstream strbuf;
+    strbuf << _hostname << "(" << _sock->getAddrStr() << "):" << _port;
+    _hostStr = strbuf.str();
+    return;
 }
 
 // ------------------------------------------------------------------- //
 
 bool
-TnmsSocket::initHeader()
-{
-    return false;
+TnmsSocket::initHeader ( int type, size_t messagesize )
+{    
+    size_t  sz, hdrlen, rd;
+    
+    hdrlen = sizeof(tnmsHeader_t);
+    sz     = messagesie;
+    rd     = 0;
+
+    if ( _sock == NULL || ! this->IsConnected() )
+        return false;
+
+    if ( _wptr ) { // update output buffer
+        if ( _compression && (type == METRIC_TYPE 
+                          || type == ADD_TYPE || type == REMOVE_TYPE) )
+        {} 
+        else {
+            _wxbuff->setWritePtr(_wtt);
+            _wptr   = NULL;
+        }
+    }
+
+    // check current header
+    if ( _hdr ) {   // check flush limit
+
+        if ( _flush && _hdr->field_count >= _flushLimit ) {
+            if ( _hdr->record_type != type )
+                _hdr->options |= LAST_RECORD;
+            rd = this->FlushQueue();
+        
+        } else if ( _hdr->record_type == type ) {  // continue pdu
+
+            if ( _compression && (type == METRIC_TYPE 
+                              || type == ADD_TYPE || type == REMOVE_TYPE) )
+            {
+                if ( _wtsize < (_wtt + recordsize) ) {  // buffer full, stop queue'ing
+                    this->FlushQueue();
+                    return false;
+                }
+            } 
+            else 
+            {
+                _wptr   = _wxbuff->getWritePtr(&sz);
+                _wtsize = sz;  // store space avail for writing
+                _wtt    = 0;   // init write total for this write session
+
+                if ( _wptr == NULL ) {
+                    _errstr = "TnmsSocket::initHeader() out of space: ";
+                    _errstr.append(_connstr);
+                    _wxbuff->setWritePtr(0);
+                    this->flush();
+                    return false;
+                }
+            }
+
+            return true; 
+        
+        } else {   // flush pdu
+            _hdr->options |= LAST_RECORD;
+            rd = this->flush();
+        }
+    }
+    
+    sz    = messagesize + hdrlen;
+    _wptr = _wxbuff->getWritePtr(&sz);
+
+    if ( _wptr == NULL || sz < (messagesize+hdrlen) ) {
+        _wxbuff->setWritePtr(0);
+        this->clearState();
+        _errstr = "ClientSocket::initHeader() out of space: ";
+        _errstr.append(_connstr);
+        return false;
+    }
+
+    // initialize new header
+    _hdr     = (tnmsHeader_t*) _wptr;
+    _wptr   += hdrlen;
+    _wtt     = hdrlen;
+    _wtsize  = (sz - _wtt);
+
+    _hdr->version       = TNMSCORE_VERSION_MAJOR | TNMSCORE_VERSION_MINOR;
+    _hdr->options       = 0;
+    _hdr->payload_size  = 0;
+    _hdr->field_count   = 0;
+    _hdr->record_type   = type;
+
+    // reset compression buffer if applicable
+    if ( _compression && (type == RECORD_METRIC || type == RECORD_ADD 
+                      ||  type == RECORD_REMOVE) )
+    {
+        _hdr->options |= ZLIB_COMPRESSED;
+        _zipout  = new std::ostringstream(std::ios::out);
+        _zipper  = new zip_ostream(*_zipout, true);
+    }
+
+    return true;
 }
 
 // ------------------------------------------------------------------- //
@@ -641,7 +872,128 @@ TnmsSocket::initHeader()
 bool
 TnmsSocket::flush()
 {
-    return false;
+    char    *rptr;
+    size_t   sz, hdrlen;
+    ssize_t  wt, tt;
+
+    hdrlen = sizeof(tnmsHeader_t);
+
+    if ( _sock == NULL || ! this->isConnected() )
+        return -1;
+
+    if ( _sock->flushAvailable() > 0 )
+        wt = _sock->flush();
+
+    if ( wt < 0 )
+        return wt;
+    else if ( wt > 1 ) 
+        tt += wt;
+
+    if ( _hdr && _hdr->record_count > 0 ) {
+        wt = 0;
+
+        if ( _compression && (_hdr->record_type == RECORD_METRIC
+                          ||  _hdr->record_type == RECORD_ADD
+                          ||  _hdr->record_type == RECORD_REMOVE) )
+        {
+            size_t len;
+
+            _zipper->zflush();
+            len = _zipout->str().length();
+            _hdr->payload_size = len;
+
+            if ( _wxbuff->fullSpaceAvailable < len ) {
+                _errStr = "TnmsSocket::flush() write buffer out of space: ";
+                _errStr.append(_hostStr);
+            } else {
+                _wxbuff->setWritePtr(hdrsz);
+                wt = _wxbuff->write(_zipout->str().c_str(), len);
+                if ( (size_t) wt < len ) {
+                    _errStr = "TnmsSocket::flush() error flushing compressed data: ";
+                    _errStr.append(_hostStr);
+                    return -1;
+                }
+            }
+        }
+        else  // no compression
+        {
+            if ( _wptr )
+                _wxbuff->setWritePtr(_wtt);
+            wt = _wtt;
+        }
+
+        if ( wt > 0 )
+            this->clearState();
+    }
+
+    rptr = _wxbuff->getReadPtr(&sz);
+    if ( rptr == NULL )
+        return wt;
+
+    wt   = _sock->write(rptr, sz);
+    if ( wt < 0 )
+        return wt;
+
+    _wxbuff->setReadPtr(wt);
+    tt  += wt;
+
+    return tt;
+}
+
+// ------------------------------------------------------------------- //
+
+ssize_t
+TnmsSocket::uncompress ( uint32_t size )
+{
+    char   * rptr = NULL;
+    ssize_t  sz;
+
+    sz  = _sock->read((void*)_zxbuff, tsz);
+
+    if ( (size_t) sz != size ) {
+        _errStr = "TnmsSocket::uncompress() error uncompressing payload";
+        return -1;
+    }
+
+    std::ostringstream  outbuff;
+    std::streamsize     in;
+
+    outbuff.write(_zxbuff, size);
+
+    std::istringstream  istream(outbuff.str(), std::ios::in);
+    zip_istream         unzipper(istream);
+
+    rptr = _rxbuff;
+    sz   = 0;
+
+    while ( unzipper.peek() != EOF ) {
+        in = unzipper.rdbuf()->in_avail();
+        if ( ((size_t)in + sz) > _rxbuffsz ) {
+            _rxbuffsz += in;
+            _rxbuff    = (char*) ::realloc(_rxbuff, _rxbuffsz);
+
+            if ( _rxbuff == NULL ) {
+                _errstr = "ClientSocket::uncompress() Fatal error in realloc of rxbuff";
+                return -1;
+            }
+
+            rptr = _rxbuff + sz;
+        }
+
+        unzipper.read(rptr, in);
+        rptr += in;
+        sz   += in;
+    }
+
+    unzipper.read_footer();
+    
+    if ( unzout == 0 )
+        return -1;
+
+    //size_t zin    = unzipper.rdbuf()->get_in_size();
+    //size_t unzout = unzipper.rdbuf()->get_out_size();
+
+    return unzout;
 }
 
 // ------------------------------------------------------------------- //

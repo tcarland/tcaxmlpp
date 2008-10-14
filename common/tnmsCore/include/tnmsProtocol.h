@@ -1,5 +1,7 @@
 #ifndef _TNMSCORE_TNMSPROTOCOL_H_
-#define _TNMSCORE_NMSPROTOCOL_H_
+#define _TNMSCORE_TNMSPROTOCOL_H_
+
+#include "tcanetpp_types.h"
 
 
 namespace tnmscore {
@@ -29,12 +31,6 @@ typedef enum eValueTypes {
     TNMS_FLOAT   = 5,
     TNMS_STRING  = 6
 } e_valueTypes_t;
-
-
-typedef TNMS_INT32   TNMS_INT;
-typedef TNMS_UINT32  TNMS_UINT;
-typedef TNMS_INT64   TNMS_LONG;
-typedef TNMS_UINT64  TNMS_ULONG;
 
 
 typedef enum eRecordTypes {
@@ -99,13 +95,17 @@ typedef struct tnmsRequest
     uint16_t*   oid;
     uint32_t    metric_name_len;
     char*       metric_name;
+
+    tnmsRequest ( int type )
+        : record_type(type)
+    {}
 } tnmsRequest_t;
 
 
 typedef struct tnmsAdd : public tnmsRequest
 {
     tnmsAdd() 
-        : record_type(RECORD_ADD)
+        : tnmsRequest(RECORD_ADD)
     {}
 } tnmsAdd_t;
 
@@ -113,7 +113,7 @@ typedef struct tnmsAdd : public tnmsRequest
 typedef struct tnmsRemove : public tnmsRequest
 {
     tnmsRemove()
-        : record_type(RECORD_REMOVE)
+        : tnmsRequest(RECORD_REMOVE)
     {}
 } tnmsRemove_t;
 
@@ -121,7 +121,7 @@ typedef struct tnmsRemove : public tnmsRequest
 typedef struct tnmsSubscribe : public tnmsRequest
 {
     tnmsSubscribe()
-        : record_type(RECORD_SUBSCRIBE)
+        : tnmsRequest(SUBSCRIBE)
     {}
 } tnmsSub_t;
 
@@ -129,7 +129,7 @@ typedef struct tnmsSubscribe : public tnmsRequest
 typedef struct tnmsUnsubscribe : public tnmsRequest
 {
     tnmsUnsubscribe()
-        : record_type(RECORD_UNSUBSCRIBE)
+        : tnmsRequest(UNSUBSCRIBE)
     {}
 } tnmsUnsub_t;
 
