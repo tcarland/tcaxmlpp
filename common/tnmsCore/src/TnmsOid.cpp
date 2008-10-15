@@ -164,24 +164,74 @@ TnmsOid::lastValue() const
 
 
 ssize_t
-TnmsOid::serialize ( char * buffer, size_t len )
+TnmsOid::serialize ( char * buffer, size_t buffer_len )
 {
-    if ( len < (sizeof(uint32_t) + (_oidlist.size() * sizeof(uint16_t))) )
+    ssize_t  pk, wt = 0;
+
+    if ( buffer_len < this->size() )
         return 0;
 
     size_t  sz  = sizeof(uint16_t);
-    char * bptr = buffer;
+    char * wptr = buffer;
+
+    pk  = Packer::pack(wptr, buffer_len - wt, (uint16_t) _oidlist.size());
+    if ( pk < 0 )
+        return -1;
+    wt += pk;
 
     OidList::iterator  tIter;
-
     for ( tIter = _oidlist.begin(); tIter != _oidlist.end(); ++tIter ) {
-        *bptr   = *tIter;
-        bptr   += sz;
+        pk = Packer::pack(wptr, buffer_len - wt, *tIter);
+        if ( pk < 0 )
+            return -1;
+        wt    += pk;
+        wptr  += pk;
     }
 
-    sz = sz * _oidlist.size();
+    return wt;
+}
 
-    return sz;
+
+ssize_t
+TnmsOid::deserialize ( char * buffer, size_t buffer_len )
+{
+    char     * rptr;
+    size_t     rsz, rd = 0;
+    ssize_t    upk;
+    uint32_t   oid_len, i;
+
+    if ( buffer_len < this->size() )
+        return -1;
+
+    if ( ! _oidlist.empty() )
+        this->clear();
+
+    rptr  = buffer;
+    rsz   = buffer_len;
+
+    upk   = Packer::unpack(rptr, (rsz-rd), oid_len);
+    if ( upk < 0 )
+        return -1;
+
+    rd   += upk;
+    rptr += upk;
+
+    rsz   = sizeof(uint16_t);
+
+    for (  i = 0; i < oid_len; ++i ) {
+        _oidlist.push_back( *((uint16_t*) rptr) );
+        rptr += rsz;
+        rd   += rsz;
+    }
+
+    return rd;
+}
+
+
+size_t
+TnmsOid::size() const
+{
+    return(sizeof(uint32_t) + (_oidlist.size() * sizeof(uint16_t)));
 }
 
 
@@ -226,8 +276,13 @@ TnmsOid::OidFromString ( const std::string & str )
 }
 
 
+/** OidFromOidIndex will take an existing TnmsOid and create a new parent oid
+  * for or representing the given index. This is helpful for auto-generating 
+  * parent tree objects when inserting a new Oid. Our tree has no restrictions
+  * in allowing 'depth-first' objects within the tree.
+ **/
 TnmsOid*
-TnmsOid::OidFromIndex ( const TnmsOid & oid, OidList::size_type & indx )
+TnmsOid::OidFromOidIndex ( const TnmsOid & oid, OidList::size_type & index )
 {
     TnmsOid  * noid  = NULL;
 
@@ -241,7 +296,7 @@ TnmsOid::OidFromIndex ( const TnmsOid & oid, OidList::size_type & indx )
 
     OidList & nlist = noid->getOidList();
 
-    for ( tIter = oid.begin(); tIter != oid.end(), bi != (indx+1); ++tIter, ++bi )
+    for ( tIter = oid.begin(); tIter != oid.end(), bi != (index+1); ++tIter, ++bi )
         nlist.push_back(*tIter);
 
     return noid;

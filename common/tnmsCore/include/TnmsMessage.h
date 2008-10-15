@@ -33,22 +33,23 @@ public:
 
     virtual ~TnmsMessage();
 
-
     const std::string&  getElementName() const;
     const TnmsOid&      getElementOid()  const;
 
     // Serializable
-    virtual ssize_t     serialize ( char * buffer, size_t buffer_len );
+    virtual ssize_t     serialize   ( char * buffer, size_t buffer_len );
+    virtual ssize_t     deserialize ( char * buffer, size_t buffer_len );
     virtual size_t      size() const;
     virtual uint16_t    message_type() const;
 
-protected:
+
+public:
 
     std::string         _element_name;
     TnmsOid             _element_oid;
     uint16_t            _message_type;
-
 };
+
 
 typedef class TnmsMessage TnmsRequestMessage;
 
@@ -75,6 +76,38 @@ public:
     TnmsRemoveMessage ( const std::string  & element_name,
                         const TnmsOid      & oid )
         : TnmsMessage(element_name, oid, RECORD_REMOVE)
+    {}
+
+    virtual ~TnmsRemoveMessage() {}
+};
+
+class TnmsSubscribeMessage : public TnmsMessage {
+public:
+    TnmsRemoveMessage ( const std::string  & element_name )
+        : TnmsMessage(element_name, SUBSCRIBE )
+    {}
+    TnmsRemoveMessage ( const TnmsOid      & oid )
+        : TnmsMessage(oid, RECORD_REMOVE )
+    {}
+    TnmsRemoveMessage ( const std::string  & element_name,
+                        const TnmsOid      & oid )
+        : TnmsMessage(element_name, oid, SUBSCRIBE)
+    {}
+
+    virtual ~TnmsRemoveMessage() {}
+};
+
+class TnmsUnsubscribeMessage : public TnmsMessage {
+public:
+    TnmsRemoveMessage ( const std::string  & element_name )
+        : TnmsMessage(element_name, UNSUBSCRIBE )
+    {}
+    TnmsRemoveMessage ( const TnmsOid      & oid )
+        : TnmsMessage(oid, RECORD_REMOVE )
+    {}
+    TnmsRemoveMessage ( const std::string  & element_name,
+                        const TnmsOid      & oid )
+        : TnmsMessage(element_name, oid, UNSUBSCRIBE)
     {}
 
     virtual ~TnmsRemoveMessage() {}

@@ -148,8 +148,9 @@ typedef struct tnmsAuthReply
 {
     uint32_t    agent_name_len;
     char*       agent_name;
-    uint8_t     auth_result;
-    uint8_t     pad;
+    uint32_t    oid_len;
+    uint16_t*   oid;
+    uint16_t    auth_result;
     uint32_t    reason_len;
     char*       reason;
     uint32_t    reply_data_len;

@@ -33,42 +33,45 @@ public:
 
     virtual ~TnmsOid();
 
-    uint16_t        operator[] ( OidList::size_type indx ) const;
-    bool            operator<  ( const TnmsOid    & toid ) const;
-    void            operator=  ( const TnmsOid    & toid );
+    uint16_t         operator[] ( OidList::size_type indx ) const;
+    bool             operator<  ( const TnmsOid    & toid ) const;
+    void             operator=  ( const TnmsOid    & toid );
 
-    std::string     toString() const;
-    tOid            toArray() const;
+    std::string      toString() const;
+    tOid             toArray() const;
 
-    const OidList&  getOidList() const;
-    OidList&        getOidList();
+    const OidList&   getOidList() const;
+    OidList&         getOidList();
 
-    iterator        begin();
-    iterator        end();
-    const_iterator  begin() const;
-    const_iterator  end() const;
-    bool            empty() const;
+    iterator         begin();
+    iterator         end();
+    const_iterator   begin() const;
+    const_iterator   end() const;
+    bool             empty() const;
 
-    uint16_t        lastValue() const;
-    uint32_t        getOidLength() const;
+    uint16_t         lastValue() const;
+    uint32_t         getOidLength() const;
+    uint32_t         length() const { return this->getOidLength(); }
 
+    // Serializable
+    virtual ssize_t  serialize       ( char * buffer, size_t len );
+    virtual ssize_t  deserialize     ( char * buffer, size_t len );
+    virtual size_t   size() const;
+    virtual uint16_t message_type() const { return 0; }
 
-    ssize_t         serialize       ( char * buffer, size_t len );
-    size_t          size() const    { return this->getOidLength(); }
-    uint16_t        message_type() const { return 0; }
+public:
 
+    static void      StringToOidList ( const std::string  & oidstr,
+                                       OidList            & oidlist );
 
-    static void     StringToOidList ( const std::string  & oidstr,
-                                      OidList            & oidlist );
+    static TnmsOid*  OidFromString   ( const std::string  & oidstr );
 
-    static TnmsOid* OidFromString   ( const std::string  & oidstr );
+    static TnmsOid*  OidFromOidIndex ( const TnmsOid      & oid,
+                                       OidList::size_type & index );
 
-    static TnmsOid* OidFromIndex    ( const TnmsOid      & oid,
-                                      OidList::size_type & indx );
+protected:
 
-private:
-
-    OidList        _oidlist;
+    OidList         _oidlist;
 
 };
 

@@ -3,8 +3,7 @@
 
 #include <string>
 
-// libtcanetpp
-#include "tcanetpp_types.h"
+#include "tcanetpp_types.h"  // tcanetpp
 
 
 namespace tnmsCore {

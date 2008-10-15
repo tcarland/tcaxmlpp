@@ -667,13 +667,33 @@ TnmsSocket::setLastRecord()
 int
 TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
 {
-    return -1;
+    char    * rptr;
+    size_t    rsz, rd;
+    ssize_t   upk;
+
+    tnmsAuthRequest_t  auth;
+
+    rptr  = _rxbuff;
+    rsz   = hdr.payload_size;
+    rd    = 0;
+    upk   = 0;
+
+    upk = TnmsAuthRequest::Unpack(rptr, rsz, auth);
+
+    if ( upk < 0 ) {
+        _errStr = "TnmsSocket::rcvAuthRequest() Error ";
+        return -1;
+    }
+
+    this->AuthRequestHandler(auth);
+
+    return 1;
 }
 
 // ------------------------------------------------------------------- //
 
 int
-TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
+TnmsSocket::rcvAuthReply ( tnmsHeader & hdr )
 {
     return -1;
 }
@@ -681,7 +701,96 @@ TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
 // ------------------------------------------------------------------- //
 
 int
-TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
+TnmsSocket::rcvMetrics ( tnmsHeader & hdr )
+{
+    char   * rptr;
+    size_t   rsz, rd;
+    ssize_t  upk, i;
+    
+    rptr = _rxbuff;
+    rsz  = hdr.payload_size;
+    rd   = 0;
+    upk  = 0;
+
+    for ( i = 0; i < hdr.record_count; ++i ) {
+        TnmsMetric  metric;
+
+        upk = TnmsMetric::unpack(rptr, rsz-rd, metric);
+
+        if ( upk < 0 ) {
+            _errStr = "TnmsSocket::rcvMetrics() Error";
+            break;
+        }
+
+        rd   += upk;
+        rptr += upk;
+
+        this->MetricHandler(metric);
+    }
+
+    return i;
+}
+
+// ------------------------------------------------------------------- //
+
+int
+TnmsSocket::rcvAdds ( tnmsHeader & hdr )
+{
+    char    * rptr;
+    size_t    rsz, rd;
+    ssize_t   upk, i;
+
+    for ( i = 0; i < hdr.record_count; ++i ) {
+        TnmsAdd  addmsg;
+
+        upk = TnmsRequest::Unpack(rptr, rsz - rd, addmsg);
+
+        if ( upk < 0 ) {
+            _errStr = "TnmsSocket::rcvAdds() Error unpacking add";
+            break;
+        }
+
+        rd   += upk;
+        rptr += upk;
+
+        this->AddHandler(addmsg);
+    }
+                
+    return i;
+}
+
+// ------------------------------------------------------------------- //
+
+int
+TnmsSocket::rcvRemoves ( tnmsHeader & hdr )
+{
+    char   * rptr;
+    size_t   rsz, rd;
+    ssize_t  upk, i;
+
+    for ( i = 0; i < hdr.record_count; ++i ) {
+        TnmsRemove  remove;
+
+        upk  = TnmsRequest::Unpack(rptr, rsz - rd, remove);
+
+        if ( upk < 0 ) {
+            _errStr = "TnmsSocket::rcvRemoves() Error unpacking";
+            break;
+        }
+
+        rd   += upk;
+        rptr += upk;
+
+        this->RemoveHandler(remove);
+    }
+
+    return i;
+}
+
+// ------------------------------------------------------------------- //
+
+int
+TnmsSocket::rcvSubscribes ( tnmsHeader & hdr )
 {
     return -1;
 }
@@ -689,7 +798,7 @@ TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
 // ------------------------------------------------------------------- //
 
 int
-TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
+TnmsSocket::rcvUnsubscribes ( tnmsHeader & hdr )
 {
     return -1;
 }
@@ -697,31 +806,7 @@ TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
 // ------------------------------------------------------------------- //
 
 int
-TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
-{
-    return -1;
-}
-
-// ------------------------------------------------------------------- //
-
-int
-TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
-{
-    return -1;
-}
-
-// ------------------------------------------------------------------- //
-
-int
-TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
-{
-    return -1;
-}
-
-// ------------------------------------------------------------------- //
-
-int
-TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
+TnmsSocket::rcvRequests ( tnmsHeader & hdr )
 {
     return -1;
 }
