@@ -51,66 +51,66 @@ protected:
 };
 
 
-typedef class TnmsMessage TnmsRequestMessage;
+typedef class TnmsMessage TnmsRequest;
 
 
-class TnmsAddMessage : public TnmsMessage {
+class TnmsAdd : public TnmsMessage {
 public:
-    TnmsAddMessage ( const std::string &  element_name,
+    TnmsAdd ( const std::string &  element_name,
                      const TnmsOid     &  oid )
         : TnmsMessage(element_name, oid, RECORD_ADD)
     {}
 
-    virtual ~TnmsAddMessage() {}
+    virtual ~TnmsAdd() {}
 };
 
 
-class TnmsRemoveMessage : public TnmsMessage {
+class TnmsRemove : public TnmsMessage {
 public:
-    TnmsRemoveMessage ( const std::string  & element_name )
+    TnmsRemove ( const std::string  & element_name )
         : TnmsMessage(element_name, RECORD_REMOVE )
     {}
-    TnmsRemoveMessage ( const TnmsOid      & oid )
+    TnmsRemove ( const TnmsOid      & oid )
         : TnmsMessage(oid, RECORD_REMOVE )
     {}
-    TnmsRemoveMessage ( const std::string  & element_name,
-                        const TnmsOid      & oid )
+    TnmsRemove ( const std::string  & element_name,
+                 const TnmsOid      & oid )
         : TnmsMessage(element_name, oid, RECORD_REMOVE)
     {}
 
-    virtual ~TnmsRemoveMessage() {}
+    virtual ~TnmsRemove() {}
 };
 
-class TnmsSubscribeMessage : public TnmsMessage {
+class TnmsSubscribe : public TnmsMessage {
 public:
-    TnmsSubscribeMessage ( const std::string  & element_name )
+    TnmsSubscribe ( const std::string  & element_name )
         : TnmsMessage(element_name, SUBSCRIBE )
     {}
-    TnmsSubscribeMessage ( const TnmsOid      & oid )
+    TnmsSubscribe ( const TnmsOid      & oid )
         : TnmsMessage(oid, RECORD_REMOVE )
     {}
-    TnmsSubscribeMessage ( const std::string  & element_name,
-                        const TnmsOid      & oid )
+    TnmsSubscribe ( const std::string  & element_name,
+                    const TnmsOid      & oid )
         : TnmsMessage(element_name, oid, SUBSCRIBE)
     {}
 
-    virtual ~TnmsSubscribeMessage() {}
+    virtual ~TnmsSubscribe() {}
 };
 
-class TnmsUnsubscribeMessage : public TnmsMessage {
+class TnmsUnsubscribe : public TnmsMessage {
 public:
-    TnmsUnsubscribeMessage ( const std::string  & element_name )
+    TnmsUnsubscribe ( const std::string  & element_name )
         : TnmsMessage(element_name, UNSUBSCRIBE )
     {}
-    TnmsUnsubscribeMessage ( const TnmsOid      & oid )
+    TnmsUnsubscribe ( const TnmsOid      & oid )
         : TnmsMessage(oid, RECORD_REMOVE )
     {}
-    TnmsUnsubscribeMessage ( const std::string  & element_name,
-                        const TnmsOid      & oid )
+    TnmsUnsubscribe ( const std::string  & element_name,
+                      const TnmsOid      & oid )
         : TnmsMessage(element_name, oid, UNSUBSCRIBE)
     {}
 
-    virtual ~TnmsUnsubscribeMessage() {}
+    virtual ~TnmsUnsubscribe() {}
 };
 
 

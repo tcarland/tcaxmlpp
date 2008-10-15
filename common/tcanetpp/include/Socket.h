@@ -40,6 +40,9 @@ enum SocketType
     SOCKET_RAW
 };
 
+#define SOCKET_TCP IPPROTO_TCP
+#define SOCKET_UDP IPPROTO_UDP
+#define SOCKET_RAW IPPROTO_RAW
 
 
 /**  SocketException class for fatal Socket class errors */

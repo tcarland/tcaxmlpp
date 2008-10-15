@@ -74,6 +74,7 @@ class BufferedSocket : public Socket {
     size_t           txBufferSize();
 
     void             enableTxBuffer();
+    void             disableTxBuffer();
 
     CircularBuffer*  getRxBuffer() { return _rbuffer; }
     CircularBuffer*  getTxBuffer() { return _wbuffer; }

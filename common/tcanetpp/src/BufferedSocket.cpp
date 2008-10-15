@@ -215,6 +215,14 @@ BufferedSocket::enableTxBuffer()
     _wbx  = true;
 }
 
+void
+BufferedSocket::disableTxBuffer()
+{
+    if ( _wbuffer )
+        delete _wbuffer;
+    _wbx = false;
+}
+
 // ----------------------------------------------------------------------
 
 ssize_t

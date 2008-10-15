@@ -2,8 +2,10 @@
 #define _TNMSCORE_TNMSSOCKET_H_
 
 #include <sstream>
+#include <set>
 
 #include "BufferedSocket.h"
+#include "CircularBuffer.h"
 using namespace tcanetpp;
 
 #include "tnmsProtocol.h"
@@ -22,17 +24,19 @@ using namespace zlib_stream;
 namespace tnmscore {
 
 
+typedef std::set<std::string>  SubscriptionList;
+
 class TnmsSocket {
 
 public:
 
-    TnmsSocket  ( uint32_t  flush_limit = DEFAULT_FLUSH_LIMIT );
+    TnmsSocket  ( uint32_t  flush_limit = TNMS_FLUSH_LIMIT );
 
     TnmsSocket  ( ipv4addr_t ip, uint16_t port,
-                  uint32_t  flush_limit = DEFAULT_FLUSH_LIMIT );
+                  uint32_t  flush_limit = TNMS_FLUSH_LIMIT );
 
     TnmsSocket  ( tcanetpp::BufferedSocket * sock,
-                  uint32_t  flush_limit = DEFAULT_FLUSH_LIMIT );
+                  uint32_t  flush_limit = TNMS_FLUSH_LIMIT );
 
     virtual ~TnmsSocket();
 
@@ -43,11 +47,11 @@ public:
 
 
     virtual int         connect()  { return this->openConnection(); }
-    virtual int         close()    { return this->closeConnection(); }
+    virtual void        close()    { return this->closeConnection(); }
 
 
-    int                 send();
-    int                 receive();
+    int                 send       ( const time_t  & now );
+    int                 receive    ( const time_t  & now );
 
     ssize_t             flush();
     size_t              txBytesBuffered();
@@ -59,7 +63,7 @@ public:
     bool                isConnecting() const;
 
     const sockfd_t&     getDescriptor() const;
-    const sockfd_t&     getSockFD() const    { return this->getSocketDescriptor(); }
+    const sockfd_t&     getSockFD() const    { return this->getDescriptor(); }
 
     void                reconnectTime        ( const time_t & secs );
     const time_t&       reconnectTime() const;
@@ -119,10 +123,10 @@ public:
 
     /*  Messaging Callbacks  */
 
-    virtual void        AddHandler          ( const TnmsAddMessage     & add ) {}
-    virtual void        RemoveHandler       ( const TnmsRemoveMessage  & remove ) {}
-    virtual void        MetricHandler       ( const TnmsMetricMessage  & metric ) {}
-    virtual void        RequestHandler      ( const TnmsRequestMessage & request ) {}
+    virtual void        AddHandler          ( const TnmsAdd     & add ) {}
+    virtual void        RemoveHandler       ( const TnmsRemove  & remove ) {}
+    virtual void        MetricHandler       ( const TnmsMetric  & metric ) {}
+    virtual void        RequestHandler      ( const TnmsRequest & request ) {}
 
     virtual void        SubscribeHandler    ( const std::string & name ) {}
     virtual void        UnsubscribeHandler  ( const std::string & name ) {}
@@ -166,20 +170,21 @@ private:
     void                setHostStr();
 
     bool                initHeader();
-    bool                checkStall() {}
-    void                clearStall() {}
+    ssize_t             uncompress          ( uint32_t size );
+    //bool                checkStall();
+    //void                clearStall() {}
 
 
 
 protected:
 
-    TreeAuthFunctor *           _authorizations;
-    AuthFunctor *               _authFunctor;
+    TreeAuthFunctor *           _authFunctor;
+    TreeAuthList                _authorizations;
     SubscriptionList            _subscriptions;
 
     /* state */
     bool                        _connecting;
-    bool                        _authenticating;
+    bool                        _authorizing;
     bool                        _authorized;
     bool                        _subscribed;
     bool                        _subtree;
@@ -208,7 +213,7 @@ private:
     zip_ostream*                _zipper;
     std::ostringstream*         _zipout;
 
-    CirBuffer*                  _wxcbuff;
+    CircularBuffer*             _wxcbuff;
     size_t                      _wxcbuffsz;
     char*                       _wptr;
     size_t                      _wtsize;

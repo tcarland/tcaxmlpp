@@ -37,6 +37,13 @@ typedef enum eRecordTypes {
 } e_recordTypes_t;
 
 
+typedef enum eRecordOptions {
+    NO_OPTIONS       = 0x00,
+    LAST_RECORD      = 0x01,
+    ZLIB_COMPRESSED  = 0x02
+} e_recordOptions_t;
+
+
 typedef enum eAuthTypes {
     AUTH_NO_RESULT,
     AUTH_SUCCESS,
