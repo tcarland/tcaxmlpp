@@ -6,7 +6,7 @@
 #include "tcanetpp_types.h"  // tcanetpp
 
 
-namespace tnmsCore {
+namespace tnmscore {
 
 
 #define PACKER_WORDSIZE 4

@@ -2,6 +2,7 @@
 #include <list>
 
 #include "TnmsOid.h"
+#include "Pack.hpp"
 
 #include "StringUtils.h"
 using namespace tcanetpp;
@@ -166,22 +167,27 @@ TnmsOid::lastValue() const
 ssize_t
 TnmsOid::serialize ( char * buffer, size_t buffer_len )
 {
+    char   * wptr;
+    size_t   wsz;
     ssize_t  pk, wt = 0;
+    uint32_t oidsz;
 
     if ( buffer_len < this->size() )
         return 0;
 
-    size_t  sz  = sizeof(uint16_t);
-    char * wptr = buffer;
+    wptr  = buffer;
+    wsz   = buffer_len;
 
-    pk  = Packer::pack(wptr, buffer_len - wt, (uint16_t) _oidlist.size());
+    oidsz = (uint32_t) _oidlist.size();
+    pk    = Packer::Pack(wptr, (wsz - wt), oidsz);
     if ( pk < 0 )
         return -1;
-    wt += pk;
+    wt   += pk;
+    wptr += pk;
 
     OidList::iterator  tIter;
     for ( tIter = _oidlist.begin(); tIter != _oidlist.end(); ++tIter ) {
-        pk = Packer::pack(wptr, buffer_len - wt, *tIter);
+        pk = Packer::Pack(wptr, (wsz-wt), *tIter);
         if ( pk < 0 )
             return -1;
         wt    += pk;
@@ -204,12 +210,12 @@ TnmsOid::deserialize ( char * buffer, size_t buffer_len )
         return -1;
 
     if ( ! _oidlist.empty() )
-        this->clear();
+        _oidlist.clear();
 
     rptr  = buffer;
     rsz   = buffer_len;
 
-    upk   = Packer::unpack(rptr, (rsz-rd), oid_len);
+    upk   = Packer::Unpack(rptr, (rsz-rd), oid_len);
     if ( upk < 0 )
         return -1;
 

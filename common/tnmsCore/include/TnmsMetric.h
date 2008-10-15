@@ -10,7 +10,7 @@
 
 #include "TnmsOid.h"
 #include "tnmsProtocol.h"
-#include "TnmsMessage.hpp"
+#include "TnmsMessage.h"
 
 
 namespace tnmscore {
@@ -34,10 +34,10 @@ public:
 
     int             getValueType()  const;
 
-    bool            setValue    ( eValueType valtype, std::string & value );
+    bool            setValue    ( eValueTypes valtype, std::string & value );
 
     template< typename T >
-    bool            setValue    ( eValueType valtype, T & value );
+    bool            setValue    ( eValueTypes valtype, T & value );
 
     //  Serializable
     virtual ssize_t serialize   ( char * buffer, size_t buffer_len );
@@ -45,9 +45,9 @@ public:
     virtual size_t  size() const;
 
 
-protected::
+protected:
 
-    eValueType          _valType;
+    eValueTypes         _valType;
     uint64_t            _value;
     std::string         _valueStr;
     std::string         _pvt;

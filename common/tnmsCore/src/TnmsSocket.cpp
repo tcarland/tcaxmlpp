@@ -20,7 +20,7 @@ TnmsSocket::TnmsSocket ( uint32_t  flush_limit )
       _rxbuff(NULL),
       _zxbuff(NULL),
       _zipper(NULL),
-      _wxbuff(NULL),
+      _wxcbuff(NULL),
       _wptr(NULL),
       _clTimeout(TNMS_CLIENT_TIMEOUT),
       _reconTime(TNMS_CLIENT_TIMEOUT),
@@ -49,7 +49,7 @@ TnmsSocket::TnmsSocket ( ipv4addr_t ip, uint16_t port,
       _rxbuff(NULL),
       _zxbuff(NULL),
       _zipper(NULL),
-      _wxbuff(NULL),
+      _wxcbuff(NULL),
       _wptr(NULL),
       _clTimeout(TNMS_CLIENT_TIMEOUT),
       _reconTime(TNMS_CLIENT_TIMEOUT),
@@ -77,7 +77,7 @@ TnmsSocket::TnmsSocket ( BufferedSocket * sock, uint32_t flush_limit )
       _rxbuff(NULL),
       _zxbuff(NULL),
       _zipper(NULL),
-      _wxbuff(NULL),
+      _wxcbuff(NULL),
       _wptr(NULL),
       _clTimeout(DEFAULT_CLIENT_TIMEOUT),
       _reconTime(DEFAULT_CLIENT_TIMEOUT),
@@ -115,7 +115,7 @@ TnmsSocket::init()
     _loginAttemtps  = 0;
 
     // buffers
-    _wxbuff         = new CirBuffer(MAX_TNMSPACKET_SIZE * 2);
+    _wxcbuff         = new CirBuffer(MAX_TNMSPACKET_SIZE * 2);
     _rxbuff         = (char*) malloc((size_t) MAX_TNMSPACKET_SIZE);
     _zxbuff         = (char*) malloc((size_t) MAX_TNMSPACKET_SIZE);
     _rxbuffsz       = (size_t) MAX_TNMSPACKET_SIZE;
@@ -212,7 +212,7 @@ TnmsSocket::closeConnection()
     if ( _sock == NULL )
         return -1;
 
-    if ( _wxbuff )
+    if ( _wxcbuff )
         this->clearState();
 
     return;
@@ -239,14 +239,14 @@ TnmsSocket::send ( const time_t & now )
     if ( wt < 0 )
         return -1;
 
-    fl = _sock->flushAvailable() + _wxbuff->fullDataAvailable();
+    fl = _sock->flushAvailable() + _wxcbuff->fullDataAvailable();
 
     if ( wt == 0 && fl > 0 ) {
         if ( _lastWxTime > 0 ) {
             if ( _wxstallsz <= (size_t) fl ) {
                 if ( (_lastWxTime + _wxTimeout) < now ) {
-                    _errStr.append(" TnmsSocket::send() client stalled, timeout exceeded: ");
-                    _errStr.append(_hostStr);
+                    _errstr.append(" TnmsSocket::send() client stalled, timeout exceeded: ");
+                    _errstr.append(_hostStr);
                     return -1;
                 }
                 _wxStallsz = fl;
@@ -302,7 +302,7 @@ TnmsSocket::receive()
         }
 
         if ( hdr.payload_size > TNMS_MAXPACKET_SIZE ) {
-            _errStr = "Payload too large";
+            _errstr = "Payload too large";
             return -1;
         } else if ( hdr.payload_size > _sock->dataAvailable() ) {
             _sock->reverse(hdrlen);
@@ -424,7 +424,7 @@ TnmsSocket::setTxQueueSize ( size_t bytes )
 size_t
 TnmsSocket::getTxQueueSize()
 {
-    return this->_wxbuffsz;
+    return this->_wxcbuffsz;
 }
 
 // ------------------------------------------------------------------- //
@@ -681,7 +681,7 @@ TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
     upk = TnmsAuthRequest::Unpack(rptr, rsz, auth);
 
     if ( upk < 0 ) {
-        _errStr = "TnmsSocket::rcvAuthRequest() Error ";
+        _errstr = "TnmsSocket::rcvAuthRequest() Error ";
         return -1;
     }
 
@@ -718,7 +718,7 @@ TnmsSocket::rcvMetrics ( tnmsHeader & hdr )
         upk = TnmsMetric::unpack(rptr, rsz-rd, metric);
 
         if ( upk < 0 ) {
-            _errStr = "TnmsSocket::rcvMetrics() Error";
+            _errstr = "TnmsSocket::rcvMetrics() Error";
             break;
         }
 
@@ -746,7 +746,7 @@ TnmsSocket::rcvAdds ( tnmsHeader & hdr )
         upk = TnmsRequest::Unpack(rptr, rsz - rd, addmsg);
 
         if ( upk < 0 ) {
-            _errStr = "TnmsSocket::rcvAdds() Error unpacking add";
+            _errstr = "TnmsSocket::rcvAdds() Error unpacking add";
             break;
         }
 
@@ -774,7 +774,7 @@ TnmsSocket::rcvRemoves ( tnmsHeader & hdr )
         upk  = TnmsRequest::Unpack(rptr, rsz - rd, remove);
 
         if ( upk < 0 ) {
-            _errStr = "TnmsSocket::rcvRemoves() Error unpacking";
+            _errstr = "TnmsSocket::rcvRemoves() Error unpacking";
             break;
         }
 
@@ -871,7 +871,7 @@ TnmsSocket::initHeader ( int type, size_t messagesize )
                           || type == ADD_TYPE || type == REMOVE_TYPE) )
         {} 
         else {
-            _wxbuff->setWritePtr(_wtt);
+            _wxcbuff->setWritePtr(_wtt);
             _wptr   = NULL;
         }
     }
@@ -896,14 +896,14 @@ TnmsSocket::initHeader ( int type, size_t messagesize )
             } 
             else 
             {
-                _wptr   = _wxbuff->getWritePtr(&sz);
+                _wptr   = _wxcbuff->getWritePtr(&sz);
                 _wtsize = sz;  // store space avail for writing
                 _wtt    = 0;   // init write total for this write session
 
                 if ( _wptr == NULL ) {
                     _errstr = "TnmsSocket::initHeader() out of space: ";
                     _errstr.append(_connstr);
-                    _wxbuff->setWritePtr(0);
+                    _wxcbuff->setWritePtr(0);
                     this->flush();
                     return false;
                 }
@@ -918,10 +918,10 @@ TnmsSocket::initHeader ( int type, size_t messagesize )
     }
     
     sz    = messagesize + hdrlen;
-    _wptr = _wxbuff->getWritePtr(&sz);
+    _wptr = _wxcbuff->getWritePtr(&sz);
 
     if ( _wptr == NULL || sz < (messagesize+hdrlen) ) {
-        _wxbuff->setWritePtr(0);
+        _wxcbuff->setWritePtr(0);
         this->clearState();
         _errstr = "ClientSocket::initHeader() out of space: ";
         _errstr.append(_connstr);
@@ -987,15 +987,15 @@ TnmsSocket::flush()
             len = _zipout->str().length();
             _hdr->payload_size = len;
 
-            if ( _wxbuff->fullSpaceAvailable < len ) {
-                _errStr = "TnmsSocket::flush() write buffer out of space: ";
-                _errStr.append(_hostStr);
+            if ( _wxcbuff->fullSpaceAvailable < len ) {
+                _errstr = "TnmsSocket::flush() write buffer out of space: ";
+                _errstr.append(_hostStr);
             } else {
-                _wxbuff->setWritePtr(hdrsz);
-                wt = _wxbuff->write(_zipout->str().c_str(), len);
+                _wxcbuff->setWritePtr(hdrsz);
+                wt = _wxcbuff->write(_zipout->str().c_str(), len);
                 if ( (size_t) wt < len ) {
-                    _errStr = "TnmsSocket::flush() error flushing compressed data: ";
-                    _errStr.append(_hostStr);
+                    _errstr = "TnmsSocket::flush() error flushing compressed data: ";
+                    _errstr.append(_hostStr);
                     return -1;
                 }
             }
@@ -1003,7 +1003,7 @@ TnmsSocket::flush()
         else  // no compression
         {
             if ( _wptr )
-                _wxbuff->setWritePtr(_wtt);
+                _wxcbuff->setWritePtr(_wtt);
             wt = _wtt;
         }
 
@@ -1011,7 +1011,7 @@ TnmsSocket::flush()
             this->clearState();
     }
 
-    rptr = _wxbuff->getReadPtr(&sz);
+    rptr = _wxcbuff->getReadPtr(&sz);
     if ( rptr == NULL )
         return wt;
 
@@ -1019,7 +1019,7 @@ TnmsSocket::flush()
     if ( wt < 0 )
         return wt;
 
-    _wxbuff->setReadPtr(wt);
+    _wxcbuff->setReadPtr(wt);
     tt  += wt;
 
     return tt;
@@ -1036,7 +1036,7 @@ TnmsSocket::uncompress ( uint32_t size )
     sz  = _sock->read((void*)_zxbuff, tsz);
 
     if ( (size_t) sz != size ) {
-        _errStr = "TnmsSocket::uncompress() error uncompressing payload";
+        _errstr = "TnmsSocket::uncompress() error uncompressing payload";
         return -1;
     }
 
@@ -1072,11 +1072,11 @@ TnmsSocket::uncompress ( uint32_t size )
 
     unzipper.read_footer();
     
+    //size_t zin    = unzipper.rdbuf()->get_in_size();
+    size_t unzout = unzipper.rdbuf()->get_out_size();
+
     if ( unzout == 0 )
         return -1;
-
-    //size_t zin    = unzipper.rdbuf()->get_in_size();
-    //size_t unzout = unzipper.rdbuf()->get_out_size();
 
     return unzout;
 }

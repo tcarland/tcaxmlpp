@@ -1,6 +1,7 @@
 TOPDIR = ../..
 NEED_PTHREADS = 1
 NEED_TCANETPP = 1
+NEED_ZLIB = 1
 
 ifdef DEBUG
 OPT_FLAGS =  -g

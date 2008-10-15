@@ -53,7 +53,7 @@ TnmsMetric::getValueType()
 
 
 bool
-TnmsMetric::setValue ( eValueType valtype, const std::string & value )
+TnmsMetric::setValue ( eValueTypes valtype, const std::string & value )
 {
     _valType  = TNMS_STRING;
     _valueStr = value;
@@ -63,7 +63,7 @@ TnmsMetric::setValue ( eValueType valtype, const std::string & value )
 
 template<typename T>
 bool
-TnmsMetric::setValue ( eValueType valtype, T  & value )
+TnmsMetric::setValue ( eValueTypes valtype, T  & value )
 {
     if ( valtype > TNMS_NONE && valtype < TNMS_STRING ) {
         _valType = valtype;
@@ -88,22 +88,22 @@ TnmsMetric::serialize ( char * buffer, size_t  buffer_len )
     wt   += pk;
     wptr += pk;
 
-    pk    = Packer::pack(wptr, (buffer_len - wt), _element_name);
+    pk    = Packer::Pack(wptr, (buffer_len - wt), _element_name);
     if ( pk < 0 )
         return -1;
     wt   += pk;
     wptr += pk;
 
-    pk  = Packer::pack(wptr, (buffer_len - wt), (uint16_t) _valueType);
+    pk  = Packer::Pack(wptr, (buffer_len - wt), (uint16_t) _valueType);
     if ( pk < 0 )
         return -1;
     wt   += pk;
     wptr += pk;
 
     if ( _valueType == TNMS_STRING )
-        pk = Packer::pack(wptr, (buffer_len - wt), _valueStr);
+        pk = Packer::Pack(wptr, (buffer_len - wt), _valueStr);
     else
-        pk = Packer::pack(wptr, (buffer_len - wt), _value);
+        pk = Packer::Pack(wptr, (buffer_len - wt), _value);
     if ( pk < 0 )
         return -1;
     wt   += pk;
@@ -112,7 +112,7 @@ TnmsMetric::serialize ( char * buffer, size_t  buffer_len )
     // TO-DO: pvt data
     std::string  pvt;
 
-    pk   = Packer::pack(wptr, (size - wt), pvt);
+    pk   = Packer::Pack(wptr, (size - wt), pvt);
     if ( pk < 0 )
         return -1;
 
@@ -141,14 +141,14 @@ TnmsMetric::deserialize ( char * buffer, size_t  buffer_len )
     rd   += upk;
     rptr += upk;
 
-    upk   = Packer::unpack(rptr, (rsz-rd), _element_name);
+    upk   = Packer::Unpack(rptr, (rsz-rd), _element_name);
     if ( upk < 0 )
         return -1;
     rd   += upk;
     rptr += upk;
 
     uint16_t  value_type;
-    upk   = Packer::unpack(rptr, (rsz-rd), value_type);
+    upk   = Packer::Unpack(rptr, (rsz-rd), value_type);
     if ( upk < 0 )
         return -1;
     rd   += upk;
@@ -157,20 +157,20 @@ TnmsMetric::deserialize ( char * buffer, size_t  buffer_len )
 
     uint32_t  vallen = 0;
     if ( _valType == TNMS_STRING ) {
-        upk = Packer::unpack(rptr, (rsz-rd), _valueStr);
+        upk = Packer::Unpack(rptr, (rsz-rd), _valueStr);
         if ( upk < 0 )
             return -1;
         rd   += upk;
         rptr += upk;
     } else if ( _valType > 0 ) {
-        upk = Packer::unpack(rptr, (rsz-rd), vallen);
+        upk = Packer::Unpack(rptr, (rsz-rd), vallen);
         if ( upk < 0 )
             return -1;
         rd   += upk;
         rptr += upk;
 
         if ( vallen == sizeof(uint64_t) )
-            upk = Packer::unpack(rptr, (rsz-rd), _value);
+            upk = Packer::Unpack(rptr, (rsz-rd), _value);
         else
             upk = vallen;
 
@@ -180,7 +180,7 @@ TnmsMetric::deserialize ( char * buffer, size_t  buffer_len )
         rptr += upk;
     }
 
-    upk   = Packer::unpack(rptr, (rsz-rd), _pvt);
+    upk   = Packer::Unpack(rptr, (rsz-rd), _pvt);
     if ( upk < 0 )
         return -1;
     rd   += upk;

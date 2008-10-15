@@ -1,5 +1,5 @@
-#ifndef _TNMSSOCKET_H_
-#define _TNMSSOCKET_H_
+#ifndef _TNMSCORE_TNMSSOCKET_H_
+#define _TNMSCORE_TNMSSOCKET_H_
 
 #include <sstream>
 
@@ -7,7 +7,12 @@
 using namespace tcanetpp;
 
 #include "tnmsProtocol.h"
-#include "TnmsFilters.hpp"
+#include "TreeAuthorizations.hpp"
+#include "TnmsMessage.h"
+#include "TnmsMetric.h"
+#include "TnmsAuthRequest.h"
+#include "TnmsAuthReply.h"
+#include "TnmsOid.h"
 
 #include "zipstream.hpp"
 using namespace zlib_stream;
@@ -53,8 +58,8 @@ public:
     bool                isConnected()  const;
     bool                isConnecting() const;
 
-    const sock_t&       getDescriptor() const;
-    const sock_t&       getSockFD() const    { return this->getSocketDescriptor(); }
+    const sockfd_t&     getDescriptor() const;
+    const sockfd_t&     getSockFD() const    { return this->getSocketDescriptor(); }
 
     void                reconnectTime        ( const time_t & secs );
     const time_t&       reconnectTime() const;
@@ -225,5 +230,5 @@ private:
 
 } // namespace
 
-#endif  // _TNMSSOCKET_H_
+#endif  // _TNMSCORE_TNMSSOCKET_H_
 

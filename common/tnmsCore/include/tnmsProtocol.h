@@ -1,25 +1,11 @@
 #ifndef _TNMSCORE_TNMSPROTOCOL_H_
 #define _TNMSCORE_TNMSPROTOCOL_H_
 
-#include "tcanetpp_types.h"
+#include "tnmsConfig.h"
 
 
 namespace tnmscore {
 
-
-#define TNMS_VERSION_MAJOR          0x05
-#define TNMS_VERSION_MINOR          0x61
-
-#define TNMS_DEFAULT_DELIMITER      "."
-#define TNMS_RECORD_LIMIT           1000
-#define TNMS_RECORD_SIZE            1024
-#define TNMS_PACKET_SIZE            (TNMS_RECORD_SIZE * MAX_QUEUE_LIMIT)
-
-#define TNMS_FLUSH_LIMIT            500
-#define TNMS_CLIENT_TIMEOUT         120
-
-#define DEFAULT_COMPRESSION_ENABLE  1
-#define DEFAULT_FLUSH_ENABLE        1
 
 
 typedef enum eValueTypes {
