@@ -9,7 +9,7 @@
 #include "Serializable.hpp"
 
 
-namespace tnmscore {
+namespace tnmsCore {
 
 
 typedef std::vector<uint16_t>    OidList;

@@ -7,7 +7,7 @@ using namespace tcanetpp;
 
 
 
-namespace tnmscore {
+namespace tnmsCore {
 
 
 TnmsSocket::TnmsSocket ( uint32_t  flush_limit )
@@ -25,11 +25,11 @@ TnmsSocket::TnmsSocket ( uint32_t  flush_limit )
       _zipper(NULL),
       _wxcbuff(NULL),
       _wptr(NULL),
+      _loginAttempts(0),
       _clTimeout(TNMS_CLIENT_TIMEOUT),
       _reconTime(TNMS_CLIENT_TIMEOUT),
       _lastWxTime(0),
       _wxTimeout(TNMS_CLIENT_TIMEOUT),
-      _loginAttempts(0),
       _flush(FLUSH_ENABLE),
       _flushLimit(flush_limit),
       _maxMessages(TNMS_RECORD_LIMIT)
@@ -54,11 +54,11 @@ TnmsSocket::TnmsSocket ( ipv4addr_t ip, uint16_t port,
       _zipper(NULL),
       _wxcbuff(NULL),
       _wptr(NULL),
+      _loginAttempts(0),
       _clTimeout(TNMS_CLIENT_TIMEOUT),
       _reconTime(TNMS_CLIENT_TIMEOUT),
       _lastWxTime(0),
       _wxTimeout(TNMS_CLIENT_TIMEOUT),
-      _loginAttempts(0),
       _flush(FLUSH_ENABLE),
       _flushLimit(flush_limit),
       _maxMessages(TNMS_RECORD_LIMIT)
@@ -82,11 +82,11 @@ TnmsSocket::TnmsSocket ( BufferedSocket * sock, uint32_t flush_limit )
       _zipper(NULL),
       _wxcbuff(NULL),
       _wptr(NULL),
+      _loginAttempts(0),
       _clTimeout(TNMS_CLIENT_TIMEOUT),
       _reconTime(TNMS_CLIENT_TIMEOUT),
       _lastWxTime(0),
       _wxTimeout(TNMS_CLIENT_TIMEOUT),
-      _loginAttempts(0),
       _flush(FLUSH_ENABLE),
       _flushLimit(flush_limit),
       _maxMessages(TNMS_RECORD_LIMIT)
@@ -109,7 +109,7 @@ TnmsSocket::init()
 {
     // initialize state
     _connecting     = false;
-    _authenticating = false;
+    _authorizing    = false;
     _authorized     = false;
     _subscribed     = false;
     _subtree        = false;
@@ -118,7 +118,7 @@ TnmsSocket::init()
     _loginAttempts  = 0;
 
     // buffers
-    _wxcbuff         = new CircularBuffer(TNMS_PACKET_SIZE * 2);
+    _wxcbuff        = new CircularBuffer(TNMS_PACKET_SIZE * 2);
     _rxbuff         = (char*) malloc((size_t) TNMS_PACKET_SIZE);
     _zxbuff         = (char*) malloc((size_t) TNMS_PACKET_SIZE);
     _rxbuffsz       = (size_t) TNMS_PACKET_SIZE;
@@ -239,7 +239,7 @@ TnmsSocket::send ( const time_t & now )
         return -1;
 
     if ( this->isConnecting() ) {
-        return this->OpenConnection();
+        return this->openConnection();
     } else if ( ! this->isConnected() ) {
         return -1;
     }
@@ -286,7 +286,7 @@ TnmsSocket::receive ( const time_t & now )
     ssize_t     rd;
     int         mctr, actr, ctr;
 
-    hdrlen  = sizeof(tnmsHeader);
+    hdrlen  = sizeof(hdr);
     rd      = 0;
     mctr    = 0;
     actr    = 0;
@@ -320,7 +320,7 @@ TnmsSocket::receive ( const time_t & now )
         }
 
         if ( hdr.options & ZLIB_COMPRESSED ) {
-            rd = this->uncompress(hdr.payloadsize);
+            rd = this->uncompress(hdr.payload_size);
             if ( rd > 0 )
                 hdr.payload_size = rd;
         } else {
@@ -349,7 +349,7 @@ TnmsSocket::receive ( const time_t & now )
         }
 
         if ( hdr.options & LAST_RECORD )
-            this->lastRecordHandler(hdr.record_type);
+            this->LastRecordHandler(hdr.record_type);
     } while ( rd > 0 );
 
     return ctr;
@@ -358,7 +358,7 @@ TnmsSocket::receive ( const time_t & now )
 // ------------------------------------------------------------------- //
 
 bool
-TnmsSocket::isConnected() const
+TnmsSocket::isConnected()
 {
     if ( _sock == NULL )
         return false;
@@ -374,15 +374,15 @@ TnmsSocket::isConnected() const
 }
 
 bool
-TnmsSocket::isConnecting() const
+TnmsSocket::isConnecting()
 {
     return this->_connecting;
 }
 
 // ------------------------------------------------------------------- //
 
-const sock_t&
-TnmsSocket::GetDescriptor() const
+sockfd_t
+TnmsSocket::getDescriptor() const
 {
     if ( _sock == NULL )
         return -1;
@@ -398,8 +398,8 @@ TnmsSocket::reconnectTime ( const time_t & secs )
     this->_reconTime = secs;
 }
 
-
-TnmsSocket::reconnectTime()
+const time_t&
+TnmsSocket::reconnectTime() const
 {
     return this->_reconTime;
 }
@@ -432,7 +432,7 @@ TnmsSocket::setTxQueueSize ( size_t bytes )
 
 
 size_t
-TnmsSocket::getTxQueueSize()
+TnmsSocket::getTxQueueSize() const
 {
     return this->_wxcbuffsz;
 }
@@ -543,17 +543,17 @@ TnmsSocket::flushEnabled()
 // ------------------------------------------------------------------- //
 
 void
-TnmsSocket::setTimeout ( time_t secs )
+TnmsSocket::setTimeout ( const time_t & secs )
 {
-    this->_timeout = secs;
+    this->_clTimeout = secs;
 }
 
 // ------------------------------------------------------------------- //
 
-time_t
-TnmsSocket::getTimeout()
+const time_t&
+TnmsSocket::getTimeout() const
 {
-    return this->_timeout;
+    return this->_clTimeout;
 }
 
 // ------------------------------------------------------------------- //
@@ -561,14 +561,21 @@ TnmsSocket::getTimeout()
 int
 TnmsSocket::subscribeCount()
 {
-    return this->_subscriptions->size();
+    return this->_subs.size();
 }
 
 // ------------------------------------------------------------------- //
 
 void
 TnmsSocket::resubscribe()
-{}
+{
+    SubscriptionList::iterator  sIter;
+
+    for ( sIter = _subs.begin(); sIter != _subs.end(); ++sIter )
+        this->subscribe(*sIter);
+
+    return;
+}
 
 // ------------------------------------------------------------------- //
 
@@ -577,13 +584,13 @@ TnmsSocket::sendMessage ( Serializable * message )
 {
     size_t  msz, wt;
     
-    msz = message.size();
+    msz = message->size();
     wt  = 0;
 
-    if ( ! this->initHeader(message.message_type(), msz) )
+    if ( ! this->initHeader(message->message_type(), msz) )
         return false;
 
-    wt = message.serialize(_wptr, (_wtsize - _wtt));
+    wt = message->serialize(_wptr, (_wtsize-_wtt));
 
     _wptr += wt;
     _wtt  += wt;
@@ -662,7 +669,6 @@ TnmsSocket::sendRequest ( TnmsRequestMessage & metric )
 {
     return false;
 }
-*/
 // ------------------------------------------------------------------- //
 
 bool
@@ -671,6 +677,7 @@ TnmsSocket::setLastRecord()
     return false;
 }
 
+*/
 // ------------------------------------------------------------------- //
 // ------------------------------------------------------------------- //
 
@@ -852,12 +859,12 @@ TnmsSocket::setHostStr()
         return;
 
     if ( _hostname.length() == 0 )
-        _hostname = _sock->getAddrStr();
+        _hostname = _sock->getAddrString();
     if ( _port == 0 )
         _port = _sock->getPort();
 
     std::ostringstream strbuf;
-    strbuf << _hostname << "(" << _sock->getAddrStr() << "):" << _port;
+    strbuf << _hostname << "(" << _sock->getAddrString() << "):" << _port;
     _hoststr = strbuf.str();
     return;
 }
@@ -865,15 +872,15 @@ TnmsSocket::setHostStr()
 // ------------------------------------------------------------------- //
 
 bool
-TnmsSocket::initHeader ( int type, size_t messagesize )
+TnmsSocket::initHeader ( uint16_t type, size_t messagesize )
 {    
     size_t  sz, hdrlen, rd;
     
-    hdrlen = sizeof(tnmsHeader_t);
+    hdrlen = sizeof(tnmsHdr_t);
     sz     = messagesize;
     rd     = 0;
 
-    if ( _sock == NULL || ! this->IsConnected() )
+    if ( _sock == NULL || ! this->isConnected() )
         return false;
 
     if ( _wptr ) { // update output buffer
@@ -889,18 +896,18 @@ TnmsSocket::initHeader ( int type, size_t messagesize )
     // check current header
     if ( _hdr ) {   // check flush limit
 
-        if ( _flush && _hdr->field_count >= _flushLimit ) {
+        if ( _flush && _hdr->record_count >= _flushLimit ) {
             if ( _hdr->record_type != type )
                 _hdr->options |= LAST_RECORD;
-            rd = this->FlushQueue();
+            rd = this->flush();
         
         } else if ( _hdr->record_type == type ) {  // continue pdu
 
             if ( _compression && (type == RECORD_METRIC 
                               ||  type == RECORD_ADD || type == RECORD_REMOVE) )
             {
-                if ( _wtsize < (_wtt + recordsize) ) {  // buffer full, stop queue'ing
-                    this->FlushQueue();
+                if ( _wtsize < (_wtt + sz) ) {  // buffer full, stop queue'ing
+                    this->flush();
                     return false;
                 }
             } 
@@ -939,15 +946,16 @@ TnmsSocket::initHeader ( int type, size_t messagesize )
     }
 
     // initialize new header
-    _hdr     = (tnmsHeader_t*) _wptr;
+    _hdr     = (tnmsHdr_t*) _wptr;
     _wptr   += hdrlen;
     _wtt     = hdrlen;
     _wtsize  = (sz - _wtt);
 
-    _hdr->version       = TNMS_VERSION_MAJOR | TNMS_VERSION_MINOR;
+    _hdr->major_version = TNMS_VERSION_MAJOR;
+    _hdr->minor_version = TNMS_VERSION_MINOR;
     _hdr->options       = 0;
     _hdr->payload_size  = 0;
-    _hdr->field_count   = 0;
+    _hdr->record_count  = 0;
     _hdr->record_type   = type;
 
     // reset compression buffer if applicable
@@ -964,14 +972,14 @@ TnmsSocket::initHeader ( int type, size_t messagesize )
 
 // ------------------------------------------------------------------- //
 
-bool
+ssize_t
 TnmsSocket::flush()
 {
     char    *rptr;
     size_t   sz, hdrlen;
     ssize_t  wt, tt;
 
-    hdrlen = sizeof(tnmsHeader_t);
+    hdrlen = sizeof(tnmsHdr_t);
 
     if ( _sock == NULL || ! this->isConnected() )
         return -1;
@@ -994,14 +1002,14 @@ TnmsSocket::flush()
             size_t len;
 
             _zipper->zflush();
-            len = _zipout->str().length();
+            len  = _zipout->str().length();
             _hdr->payload_size = len;
 
-            if ( _wxcbuff->fullSpaceAvailable < len ) {
+            if ( _wxcbuff->fullSpaceAvailable() < len ) {
                 _errstr = "TnmsSocket::flush() write buffer out of space: ";
                 _errstr.append(_hoststr);
             } else {
-                _wxcbuff->setWritePtr(hdrsz);
+                _wxcbuff->setWritePtr(hdrlen);
                 wt = _wxcbuff->write(_zipout->str().c_str(), len);
                 if ( (size_t) wt < len ) {
                     _errstr = "TnmsSocket::flush() error flushing compressed data: ";
@@ -1043,7 +1051,7 @@ TnmsSocket::uncompress ( uint32_t size )
     char   * rptr = NULL;
     ssize_t  sz;
 
-    sz  = _sock->read((void*)_zxbuff, tsz);
+    sz  = _sock->read((void*)_zxbuff, size);
 
     if ( (size_t) sz != size ) {
         _errstr = "TnmsSocket::uncompress() error uncompressing payload";

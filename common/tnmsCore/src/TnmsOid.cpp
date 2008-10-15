@@ -8,7 +8,7 @@
 using namespace tcanetpp;
 
 
-namespace tnmscore {
+namespace tnmsCore {
 
 
 

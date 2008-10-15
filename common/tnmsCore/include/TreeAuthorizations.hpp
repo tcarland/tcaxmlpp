@@ -16,7 +16,7 @@
 using namespace tcanetpp;
 
 
-namespace tnmscore {
+namespace tnmsCore {
 
 
 typedef std::list<std::string>  TreeAuthList;

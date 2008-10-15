@@ -21,7 +21,7 @@ using namespace zlib_stream;
 
 
 
-namespace tnmscore {
+namespace tnmsCore {
 
 
 typedef std::set<std::string>  SubscriptionList;
@@ -59,11 +59,11 @@ public:
 
     /*  Attributes  */
 
-    bool                isConnected()  const;
-    bool                isConnecting() const;
+    bool                isConnected();
+    bool                isConnecting();
 
-    const sockfd_t&     getDescriptor() const;
-    const sockfd_t&     getSockFD() const    { return this->getDescriptor(); }
+    sockfd_t            getDescriptor() const;
+    sockfd_t            getSockFD() const    { return this->getDescriptor(); }
 
     void                reconnectTime        ( const time_t & secs );
     const time_t&       reconnectTime() const;
@@ -93,8 +93,8 @@ public:
     uint32_t            flushLimit();
 
     void                enableTimeout       ( bool   timeout );
-    void                setTimeout          ( time_t secs );
-    time_t              getTimeout();
+    void                setTimeout          ( const time_t & secs );
+    const time_t&       getTimeout() const;
 
 
     /*  Subscriptions  */
@@ -132,7 +132,7 @@ public:
     virtual void        UnsubscribeHandler  ( const std::string & name ) {}
     virtual void        StructureHandler    ( bool  subscribe ) {}
 
-    virtual void        LastRecordHandler() {}
+    virtual void        LastRecordHandler   ( int   record_type ) {}
 
     virtual void        AuthRequestHandler  ( const TnmsAuthRequest & request );
     virtual void        AuthReplyHandler    ( const TnmsAuthReply   & reply );
@@ -169,7 +169,7 @@ private:
     void                closeConnection();
     void                setHostStr();
 
-    bool                initHeader();
+    bool                initHeader          ( uint16_t type, size_t size );
     ssize_t             uncompress          ( uint32_t size );
     //bool                checkStall();
     //void                clearStall() {}
@@ -180,7 +180,7 @@ protected:
 
     TreeAuthFunctor *           _authFunctor;
     TreeAuthList                _authorizations;
-    SubscriptionList            _subscriptions;
+    SubscriptionList            _subs;
 
     /* state */
     bool                        _connecting;
@@ -194,6 +194,7 @@ protected:
     std::string                 _hostname;
     std::string                 _login;
     std::string                 _hoststr;
+    std::string                 _addrstr;
     std::string                 _errstr;
     uint32_t                    _version;
     uint16_t                    _port;
@@ -217,7 +218,7 @@ private:
     size_t                      _wxcbuffsz;
     char*                       _wptr;
     size_t                      _wtsize;
-    size_t                      _wttotal;
+    size_t                      _wtt;
     size_t                      _wxstallsz;
     int                         _loginAttempts;
 

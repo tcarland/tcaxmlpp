@@ -11,7 +11,7 @@
 #include "Pack.hpp"
 
 
-namespace tnmscore {
+namespace tnmsCore {
 
 
 
@@ -46,9 +46,9 @@ TnmsMetric::getValue()
 
 
 int
-TnmsMetric::getValueType()
+TnmsMetric::getValueType() const
 {
-    return((int)this->_valueType);
+    return((int)this->_valType);
 }
 
 
@@ -78,32 +78,36 @@ TnmsMetric::setValue ( eValueTypes valtype, T  & value )
 ssize_t
 TnmsMetric::serialize ( char * buffer, size_t  buffer_len )
 {
+    char    * wptr;
+    size_t    wsz;
     ssize_t   pk, wt = 0;
 
-    char * wptr = buffer;
+    wptr = buffer;
+    wsz  = buffer_len;
 
-    pk    = _oid->serialize(wptr, (buffer_len - wt));
+    pk    = _element_oid.serialize(wptr, (wsz-wt));
     if ( pk < 0 )
         return -1;
     wt   += pk;
     wptr += pk;
 
-    pk    = Packer::Pack(wptr, (buffer_len - wt), _element_name);
+    pk    = Packer::Pack(wptr, (wsz-wt), _element_name);
     if ( pk < 0 )
         return -1;
     wt   += pk;
     wptr += pk;
 
-    pk  = Packer::Pack(wptr, (buffer_len - wt), (uint16_t) _valueType);
+    uint16_t  type = _valType;
+    pk  = Packer::Pack(wptr, (wsz-wt), type);
     if ( pk < 0 )
         return -1;
     wt   += pk;
     wptr += pk;
 
-    if ( _valueType == TNMS_STRING )
-        pk = Packer::Pack(wptr, (buffer_len - wt), _valueStr);
+    if ( _valType == TNMS_STRING )
+        pk = Packer::Pack(wptr, (wsz-wt), _valueStr);
     else
-        pk = Packer::Pack(wptr, (buffer_len - wt), _value);
+        pk = Packer::Pack(wptr, (wsz-wt), _value);
     if ( pk < 0 )
         return -1;
     wt   += pk;
@@ -112,7 +116,7 @@ TnmsMetric::serialize ( char * buffer, size_t  buffer_len )
     // TO-DO: pvt data
     std::string  pvt;
 
-    pk   = Packer::Pack(wptr, (size - wt), pvt);
+    pk   = Packer::Pack(wptr, (wsz-wt), pvt);
     if ( pk < 0 )
         return -1;
 
@@ -153,7 +157,7 @@ TnmsMetric::deserialize ( char * buffer, size_t  buffer_len )
         return -1;
     rd   += upk;
     rptr += upk;
-    this->_valType = value_type;
+    this->_valType = (eValueTypes) value_type;
 
     uint32_t  vallen = 0;
     if ( _valType == TNMS_STRING ) {
@@ -199,13 +203,6 @@ TnmsMetric::size() const
     sz  += ( 4 * sizeof(uint32_t)) + sizeof(uint64_t);
 
     return sz;
-}
-
-
-int
-TnmsMetric::message_type() const
-{
-    return _message_type;
 }
 
 

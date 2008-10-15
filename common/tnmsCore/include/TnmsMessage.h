@@ -13,7 +13,7 @@
 #include "tnmsProtocol.h"
 #include "TnmsOid.h"
 
-namespace tnmscore {
+namespace tnmsCore {
 
 class TnmsMessage : public Serializable {
 
@@ -56,8 +56,11 @@ typedef class TnmsMessage TnmsRequest;
 
 class TnmsAdd : public TnmsMessage {
 public:
+    TnmsAdd()
+        : TnmsMessage(RECORD_ADD)
+    {}
     TnmsAdd ( const std::string &  element_name,
-                     const TnmsOid     &  oid )
+              const TnmsOid     &  oid )
         : TnmsMessage(element_name, oid, RECORD_ADD)
     {}
 
@@ -67,6 +70,9 @@ public:
 
 class TnmsRemove : public TnmsMessage {
 public:
+    TnmsRemove()
+        : TnmsMessage(RECORD_REMOVE)
+    {}
     TnmsRemove ( const std::string  & element_name )
         : TnmsMessage(element_name, RECORD_REMOVE )
     {}
@@ -83,6 +89,9 @@ public:
 
 class TnmsSubscribe : public TnmsMessage {
 public:
+    TnmsSubscribe()
+        : TnmsMessage(SUBSCRIBE)
+    {}
     TnmsSubscribe ( const std::string  & element_name )
         : TnmsMessage(element_name, SUBSCRIBE )
     {}
@@ -99,11 +108,14 @@ public:
 
 class TnmsUnsubscribe : public TnmsMessage {
 public:
+    TnmsUnsubscribe()
+        : TnmsMessage(UNSUBSCRIBE)
+    {}
     TnmsUnsubscribe ( const std::string  & element_name )
         : TnmsMessage(element_name, UNSUBSCRIBE )
     {}
     TnmsUnsubscribe ( const TnmsOid      & oid )
-        : TnmsMessage(oid, RECORD_REMOVE )
+        : TnmsMessage(oid, UNSUBSCRIBE )
     {}
     TnmsUnsubscribe ( const std::string  & element_name,
                       const TnmsOid      & oid )

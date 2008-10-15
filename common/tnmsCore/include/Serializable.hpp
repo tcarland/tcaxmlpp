@@ -4,7 +4,7 @@
 #include "tcanetpp_types.h"
 
 
-namespace tnmscore {
+namespace tnmsCore {
 
 
 class Serializable {

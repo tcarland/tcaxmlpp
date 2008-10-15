@@ -13,7 +13,7 @@
 #include "TnmsMessage.h"
 
 
-namespace tnmscore {
+namespace tnmsCore {
 
 
 class TnmsMetric : public TnmsMessage {
@@ -34,7 +34,8 @@ public:
 
     int             getValueType()  const;
 
-    bool            setValue    ( eValueTypes valtype, std::string & value );
+    bool            setValue    ( eValueTypes         valtype, 
+                                  const std::string & value );
 
     template< typename T >
     bool            setValue    ( eValueTypes valtype, T & value );

@@ -4,7 +4,7 @@
 #include "tnmsConfig.h"
 
 
-namespace tnmscore {
+namespace tnmsCore {
 
 
 

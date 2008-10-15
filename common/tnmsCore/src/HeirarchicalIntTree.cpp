@@ -199,7 +199,7 @@ HeirarchicalIntTree<ValueType>::insert ( const TnmsOid   & oid,
             throw std::runtime_error("insert failed on " + oid.toString());
 
         nIter = insertR.first; // map in elements
-        noid  = TnmsOid::OidFromIndex(oid, bi);
+        noid  = TnmsOid::OidFromOidIndex(oid, bi);
         node  = new Node(noid, parent);
 
         nIter->second = node;

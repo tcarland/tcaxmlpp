@@ -11,7 +11,8 @@ LIBS =
 INCLUDES =              -Iinclude
 
 OBJS =                  src/TnmsOid.o src/TnmsSocket.o \
-			src/TnmsMessage.o src/TnmsMetricMessage.o
+			src/TnmsMessage.o src/TnmsMetric.o \
+			src/TnmsAuthRequest.o src/TnmsAuthReply.o
 
 BIN =                        
 ALL_OBJS =              $(OBJS)

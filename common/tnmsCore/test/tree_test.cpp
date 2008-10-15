@@ -145,7 +145,7 @@ int main()
         std::cout << " index " << bi << " = '" << oid1[bi] << "'" << std::endl;
 
     bi = 2;
-    TnmsOid * noid = TnmsOid::OidFromIndex(oid1, bi);
+    TnmsOid * noid = TnmsOid::OidFromOidIndex(oid1, bi);
     std::cout << "OidFromIndex() indx: " << bi << " for oid1: "
               << noid->toString() << std::endl;
 
