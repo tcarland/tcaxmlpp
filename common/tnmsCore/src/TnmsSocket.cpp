@@ -3,6 +3,7 @@
 #include "TnmsSocket.h"
 
 #include "CidrUtils.h"
+#include "StringUtils.h"
 using namespace tcanetpp;
 
 
@@ -231,6 +232,13 @@ TnmsSocket::closeConnection()
 // ------------------------------------------------------------------- //
 
 int
+TnmsSocket::send()
+{
+    time_t  now = ::time(NULL);
+    return this->send(now);
+}
+
+int
 TnmsSocket::send ( const time_t & now )
 {
     ssize_t  wt, fl;
@@ -277,6 +285,13 @@ TnmsSocket::send ( const time_t & now )
 }
 
 // ------------------------------------------------------------------- //
+
+int
+TnmsSocket::receive()
+{
+    time_t  now = ::time(NULL);
+    return this->receive(now);
+}
 
 int
 TnmsSocket::receive ( const time_t & now )
@@ -442,8 +457,22 @@ TnmsSocket::getTxQueueSize() const
 void
 TnmsSocket::login ( const std::string & user, const std::string & pw )
 {
+
     this->_login = user;
 
+    if ( _authorizing && _loginAttempts > TNMS_LOGIN_ATTEMPTS ) {
+        this->close();
+        return;
+    } else {
+        _loginAttempts++;
+        _authorizing = true;
+    }
+
+    TnmsAuthRequest  req(user, pw);
+    this->sendMessage(&req);
+    this->_login  = user;
+
+    return;
 }
 
 // ------------------------------------------------------------------- //
@@ -573,6 +602,162 @@ TnmsSocket::resubscribe()
 
     for ( sIter = _subs.begin(); sIter != _subs.end(); ++sIter )
         this->subscribe(*sIter);
+
+    return;
+}
+// ------------------------------------------------------------------- //
+
+bool
+TnmsSocket::subscribeStructure() 
+{
+    this->_subtree = true;
+
+    if ( ! this->initHeader(SUBSCRIBE_STRUCTURE, 0) )
+        return false;
+
+    if ( _hdr )
+        _hdr->options |= LAST_RECORD;
+
+    if ( this->send() < 0 )
+        return false;
+    return true;
+}
+
+bool
+TnmsSocket::unsubscribeStructure() 
+{
+    this->_subtree = false;
+
+    if ( ! this->initHeader(UNSUBSCRIBE_STRUCTURE, 0) )
+        return false;
+
+    if ( _hdr )
+        _hdr->options |= LAST_RECORD;
+
+    if ( this->send() < 0 )
+        return false;
+    return true;
+}
+
+// ------------------------------------------------------------------- //
+
+bool
+TnmsSocket::subscribeAll()
+{
+    return this->subscribe("*");
+}
+
+bool
+TnmsSocket::unsubscribeAll()
+{
+    return this->unsubscribe("*");
+}
+
+// ------------------------------------------------------------------- //
+
+bool
+TnmsSocket::subscribe ( const std::string & name )
+{
+    TnmsSubscribe msg(name);
+    return this->sendMessage(&msg);
+}
+
+bool
+TnmsSocket::subscribe ( const TnmsOid & oid )
+{
+    TnmsSubscribe msg(oid);
+    return this->sendMessage(&msg);
+}
+
+// ------------------------------------------------------------------- //
+
+bool
+TnmsSocket::unsubscribe ( const std::string & name ) 
+{
+    TnmsUnsubscribe msg(name);
+    return this->sendMessage(&msg);
+}
+
+bool
+TnmsSocket::unsubscribe ( const TnmsOid & oid )
+{
+    TnmsUnsubscribe  msg(oid);
+    return this->sendMessage(&msg);
+}
+
+// ------------------------------------------------------------------- //
+
+bool
+TnmsSocket::subscribeLevel ( const std::string & name )
+{
+    char         pf, delim;
+    std::string  sub = name;
+
+    if ( name.empty() )
+        return false;
+
+    delim = TNMS_DELIMITER_CHAR;
+    pf    = name[name.length() - 1];
+
+    if ( pf != delim )
+        sub.append(TNMS_DELIMITER);
+
+    return this->subscribe(sub);
+}
+
+
+bool
+TnmsSocket::unsubscribeLevel ( const std::string & name )
+{
+    char         pf, delim;
+    std::string  unsub;
+
+    if ( name.empty() )
+        return false;
+
+    delim = TNMS_DELIMITER_CHAR;
+    pf    = name[name.length() - 1];
+
+    if ( pf != delim )
+        unsub.append(TNMS_DELIMITER);
+
+    return this->unsubscribe(unsub);
+}
+
+// ------------------------------------------------------------------- //
+
+void
+TnmsSocket::AuthReplyHandler ( const TnmsAuthReply & reply )
+{
+    this->_authorizing = false;
+
+    if ( reply.authResult() == AUTH_SUCCESS )
+        this->_authorized = true;
+    else
+        this->_authorized = false;
+
+    if ( ! this->_authorized )
+        return;
+
+    std::string::size_type  pos;
+
+    _authorizations.clear();
+    if ( _authFunctor )
+        delete _authFunctor;
+
+    pos = reply.authReason().find_first_of(":");
+
+    if ( pos != std::string::npos ) {
+        StringUtils::split(reply.authReason(), ':', std::back_inserter(_authorizations));
+        std::string isInc  = _authorizations.back();
+
+        if ( isInc.compare("<I>") == 0 )
+            _authFunctor = new AuthIncludeFunctor(_authorizations);
+        else
+            _authFunctor = new AuthExcludeFunctor(_authorizations);
+    } else {
+        _authFunctor = new AuthAllFunctor(_authorizations);
+    }
 
     return;
 }

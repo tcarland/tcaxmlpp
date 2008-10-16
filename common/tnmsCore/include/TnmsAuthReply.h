@@ -22,9 +22,9 @@ public:
         : TnmsMessage(agent_name, oid, AUTH_REPLY)
     {}
 
-    eAuthTypes      authResult();
-    std::string     authReason();
-    std::string     authData();
+    eAuthTypes      authResult() const;
+    std::string     authReason() const;
+    std::string     authData()   const;
 
     virtual ssize_t serialize   ( char * buffer, size_t buffer_len );
     virtual ssize_t deserialize ( char * buffer, size_t buffer_len );

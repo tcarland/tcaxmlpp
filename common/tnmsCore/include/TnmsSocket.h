@@ -49,8 +49,9 @@ public:
     virtual int         connect()  { return this->openConnection(); }
     virtual void        close()    { return this->closeConnection(); }
 
-
+    int                 send();
     int                 send       ( const time_t  & now );
+    int                 receive();
     int                 receive    ( const time_t  & now );
 
     ssize_t             flush();
@@ -111,11 +112,13 @@ public:
     virtual bool        subscribeAll();
     virtual bool        unsubscribeAll();
 
-    virtual bool        subscribe           ( const TnmsOid  & oid );
-    virtual bool        unsubscribe         ( const TnmsOid  & oid );
+    virtual bool        subscribe           ( const std::string & name );
+    virtual bool        subscribe           ( const TnmsOid     & oid );
+    virtual bool        unsubscribe         ( const std::string & oid );
+    virtual bool        unsubscribe         ( const TnmsOid     & oid );
 
-    virtual bool        subscribeLevel      ( const TnmsOid  & oid );
-    virtual bool        unsubscribeLevel    ( const TnmsOid  & oid );
+    virtual bool        subscribeLevel      ( const std::string & oid );
+    virtual bool        unsubscribeLevel    ( const std::string & oid );
 
     int                 subscribeCount();
     void                resubscribe();
@@ -134,7 +137,7 @@ public:
 
     virtual void        LastRecordHandler   ( int   record_type ) {}
 
-    virtual void        AuthRequestHandler  ( const TnmsAuthRequest & request );
+    virtual void        AuthRequestHandler  ( const TnmsAuthRequest & request ) {}
     virtual void        AuthReplyHandler    ( const TnmsAuthReply   & reply );
 
 

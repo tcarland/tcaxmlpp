@@ -24,6 +24,8 @@ TnmsMetric::TnmsMetric ( const std::string & name,
     : TnmsMessage(name, oid, RECORD_METRIC)
 {}
 
+TnmsMetric::~TnmsMetric() {}
+
 
 std::string
 TnmsMetric::getValue()

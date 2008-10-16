@@ -1,5 +1,5 @@
-#ifndef _HEIRARCHICALINTTREE_HPP_
-#define _HEIRARCHICALINTTREE_HPP_
+#ifndef _TNMSCORE_HEIRARCHICALINTTREE_HPP_
+#define _TNMSCORE_HEIRARCHICALINTTREE_HPP_
 
 #include <string>
 #include <map>
@@ -7,12 +7,10 @@
 #include <vector>
 #include <stdexcept>
 
-
 #include "TnmsOid.h"
 
 
 namespace tnmsCore {
-
 
 
 template < typename ValueType >
@@ -49,7 +47,6 @@ class HeirarchicalIntTreeNode {
     TreeNode *          _parent;
     char                _delim;
     TreeNodeMap         _children;
-
 };
 
 
@@ -137,5 +134,5 @@ class HeirarchicalIntTree {
 
 #include "../src/HeirarchicalIntTree.cpp"
 
-#endif // _HEIRARCHICALINTTREE_HPP_
+#endif // _TNMSCORE_HEIRARCHICALINTTREE_HPP_
 

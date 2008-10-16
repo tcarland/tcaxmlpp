@@ -162,7 +162,7 @@ TNMSCORE  = $(TOPDIR)/common/tnmsCore
 INCLUDES   += -I$(TNMSCORE) -I$(TOPDIR)/common/libtcapp/include \
               -I$(TOPDIR)/common/tcaxml++
 LFLAGS     += -L$(TNMSCORE)/lib
-LIBS       += -ltnmscore
+LIBS       += -ltnmsCore
 endif
 
 ifdef NEED_TICKET

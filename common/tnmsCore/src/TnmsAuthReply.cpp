@@ -7,6 +7,25 @@
 namespace tnmsCore {
 
 
+eAuthTypes
+TnmsAuthReply::authResult() const
+{
+    return _auth_result;
+}
+
+std::string
+TnmsAuthReply::authReason() const
+{
+    return _auth_reason;
+}
+
+std::string
+TnmsAuthReply::authData() const
+{
+    return _auth_data;
+}
+
+
 ssize_t
 TnmsAuthReply::serialize ( char * buffer, size_t buffer_len )
 {

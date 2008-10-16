@@ -3,9 +3,9 @@
 #include <set>
 #include <iostream>
 
+#include "tnmsCore.h"
 #include "HeirarchicalStringTree.hpp"
 #include "HeirarchicalIntTree.hpp"
-#include "TnmsOid.h"
 using namespace tnmsCore;
 
 

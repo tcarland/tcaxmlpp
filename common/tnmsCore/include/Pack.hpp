@@ -13,9 +13,10 @@ namespace tnmsCore {
 
 
 class Packer {
+  public:
 
-public:
-
+    //------------------------------------------------------------------------
+    
     static int Pack ( char       * buffer,
                       size_t       buffer_len,
                       const char * value,
@@ -34,6 +35,7 @@ public:
         return pk;
     }
 
+    //------------------------------------------------------------------------
 
     static int Pack ( char              * buffer,
                       size_t              buffer_len,
@@ -43,6 +45,7 @@ public:
         return Packer::Pack(buffer, buffer_len, value.c_str(), val_len);
     }
 
+    //------------------------------------------------------------------------
 
     template<typename T>
     static int Pack ( char * buffer, size_t buffer_len, T & value )
@@ -55,9 +58,8 @@ public:
         return sizeof(value);
     }
 
-
     //------------------------------------------------------------------------
-
+    //------------------------------------------------------------------------
 
     static int Unpack ( char   * buffer,
                         size_t   buffer_len,
@@ -80,6 +82,7 @@ public:
         return(upk + val_written + skip);
     }
 
+    //------------------------------------------------------------------------
 
     static int Unpack ( char        * buffer,
                         size_t        buffer_len,
@@ -101,6 +104,7 @@ public:
         return (upk + len + skip);
     }
 
+    //------------------------------------------------------------------------
 
     template<typename T>
     static int Unpack ( char * buffer, size_t buffer_len, T & value )
@@ -113,6 +117,8 @@ public:
         return sizeof(value);
     }
 
+
+    //------------------------------------------------------------------------
     //------------------------------------------------------------------------
 
 
@@ -122,13 +128,14 @@ public:
         return (pad == 0) ? 0 : PACKER_WORDSIZE - pad;
     }
 
-
+    //------------------------------------------------------------------------
 
     static inline size_t Skip ( const size_t & length )
     {
         return Packer::PadLen(length);
     }
 
+    //------------------------------------------------------------------------
 
     static inline size_t Pad ( char * buffer, size_t  buffer_len,
                                const size_t & wtlen )
@@ -141,6 +148,7 @@ public:
         return pad;
     }
 
+    //------------------------------------------------------------------------
 };
 
 }  // namespace

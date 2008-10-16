@@ -1,5 +1,5 @@
-#ifndef _HEIRARCHICALSTRINGTREE_HPP_
-#define _HEIRARCHICALSTRINGTREE_HPP_
+#ifndef _TNMSCORE_HEIRARCHICALSTRINGTREE_HPP_
+#define _TNMSCORE_HEIRARCHICALSTRINGTREE_HPP_
 
 #include <string>
 #include <map>
@@ -13,7 +13,6 @@ namespace tnmsCore {
 
 template < typename ValueType >
 class HeirarchicalStringTreeNode {
-
   public:
 
     typedef HeirarchicalStringTreeNode<ValueType>   TreeNode;
@@ -24,7 +23,7 @@ class HeirarchicalStringTreeNode {
 
     HeirarchicalStringTreeNode ( const std::string & nodeName,
                                  TreeNode          * parent,
-                                 char                delimiter = '/' );
+                                 char                delimiter = '.' );
 
     virtual ~HeirarchicalStringTreeNode();
 
@@ -40,7 +39,6 @@ class HeirarchicalStringTreeNode {
 
     TreeNodeMap&         getChildren();
     const TreeNodeMap&   getChildren() const;
-
 
   private:
 
@@ -69,7 +67,7 @@ class HeirarchicalStringTree {
 
   public:
 
-    HeirarchicalStringTree ( char delimiter = '/' );
+    HeirarchicalStringTree ( char delimiter = '.' );
     HeirarchicalStringTree ( const HeirarchicalStringTree & tree );
 
     virtual ~HeirarchicalStringTree();
@@ -106,13 +104,13 @@ class HeirarchicalStringTree {
 
 
     template<typename BranchIterator_, typename OutputIterator_>
-    bool            nodesFromBranches   ( BranchIterator_ bIter,
+    bool            nodesFromBranches   ( BranchIterator_ begin,
                                           BranchIterator_ end,
                                           OutputIterator_ outIter );
 
 
     template<typename Predicate_>
-    void            depthFirstTraversal ( Node * node,
+    void            depthFirstTraversal ( Node       * node,
                                           Predicate_ & predicate );
 
 
@@ -144,5 +142,5 @@ class HeirarchicalStringTree {
 #include "../src/HeirarchicalStringTree.cpp"
 
 
-#endif // _HEIRARCHICALSTRINGTREE_HPP_
+#endif // _TNMSCORE_HEIRARCHICALSTRINGTREE_HPP_
 

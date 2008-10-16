@@ -56,10 +56,12 @@ typedef class TnmsMessage TnmsRequest;
 
 
 class TnmsAdd : public TnmsMessage {
-public:
+  public:
+
     TnmsAdd()
         : TnmsMessage(RECORD_ADD)
     {}
+
     TnmsAdd ( const std::string &  element_name,
               const TnmsOid     &  oid )
         : TnmsMessage(element_name, oid, RECORD_ADD)
@@ -70,16 +72,20 @@ public:
 
 
 class TnmsRemove : public TnmsMessage {
-public:
+  public:
+
     TnmsRemove()
         : TnmsMessage(RECORD_REMOVE)
     {}
+
     TnmsRemove ( const std::string  & element_name )
         : TnmsMessage(element_name, RECORD_REMOVE )
     {}
+
     TnmsRemove ( const TnmsOid      & oid )
         : TnmsMessage(oid, RECORD_REMOVE )
     {}
+
     TnmsRemove ( const std::string  & element_name,
                  const TnmsOid      & oid )
         : TnmsMessage(element_name, oid, RECORD_REMOVE)
@@ -88,17 +94,21 @@ public:
     virtual ~TnmsRemove() {}
 };
 
+
 class TnmsSubscribe : public TnmsMessage {
 public:
     TnmsSubscribe()
         : TnmsMessage(SUBSCRIBE)
     {}
+
     TnmsSubscribe ( const std::string  & element_name )
         : TnmsMessage(element_name, SUBSCRIBE )
     {}
+
     TnmsSubscribe ( const TnmsOid      & oid )
         : TnmsMessage(oid, RECORD_REMOVE )
     {}
+
     TnmsSubscribe ( const std::string  & element_name,
                     const TnmsOid      & oid )
         : TnmsMessage(element_name, oid, SUBSCRIBE)
@@ -107,17 +117,23 @@ public:
     virtual ~TnmsSubscribe() {}
 };
 
+
+
 class TnmsUnsubscribe : public TnmsMessage {
-public:
+  public:
+
     TnmsUnsubscribe()
         : TnmsMessage(UNSUBSCRIBE)
     {}
+
     TnmsUnsubscribe ( const std::string  & element_name )
         : TnmsMessage(element_name, UNSUBSCRIBE )
     {}
+
     TnmsUnsubscribe ( const TnmsOid      & oid )
         : TnmsMessage(oid, UNSUBSCRIBE )
     {}
+
     TnmsUnsubscribe ( const std::string  & element_name,
                       const TnmsOid      & oid )
         : TnmsMessage(element_name, oid, UNSUBSCRIBE)
