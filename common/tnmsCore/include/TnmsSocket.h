@@ -144,15 +144,8 @@ public:
     /*  send message handling / packing  */
 
     virtual bool        sendMessage         ( Serializable  * message );
-/*
-    bool                sendAuthRequest     ( TnmsAuthRequest    & request );
-    bool                sendAuthReply       ( TnmsAuthReply      & reply );
-    bool                sendMetric          ( TnmsMetricMessage  & metric );
-    bool                sendAdd             ( TnmsAddMessage     & add );
-    bool                sendRemove          ( TnmsRemoveMessage  & rem );
-    bool                sendRequest         ( TnmsRequestMessage & req );
-    void                setLastRecord();
-*/
+
+
     /*  receive message handling / extraction  */
 
     int                 rcvAuthRequest      ( tnmsHeader  & hdr );
