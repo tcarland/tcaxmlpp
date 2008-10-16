@@ -115,7 +115,7 @@ BufferedSocket::flush()
     size_t   size;
     ssize_t  wtn, r;
 
-    if ( !_wbx || _wbuffer->fullDataAvailable() == 0 )
+    if ( !_wbx || _wbuffer->readAvailable() == 0 )
         return 1;
 
     do {
@@ -131,7 +131,7 @@ BufferedSocket::flush()
 
         _wbuffer->setReadPtr(wtn);
 
-    } while ( _wbuffer->fullDataAvailable() > 0 && r > 0 );
+    } while ( _wbuffer->readAvailable() > 0 && r > 0 );
 
     return r;
 }
@@ -141,7 +141,7 @@ BufferedSocket::flush()
 size_t
 BufferedSocket::dataAvailable()
 {
-    return _rbuffer->fullDataAvailable();
+    return _rbuffer->readAvailable();
 }
 
 // ----------------------------------------------------------------------
@@ -150,7 +150,7 @@ size_t
 BufferedSocket::flushAvailable()
 {
     if ( _wbuffer )
-        return _wbuffer->fullDataAvailable();
+        return _wbuffer->readAvailable();
     return 0;
 }
 
@@ -239,10 +239,10 @@ BufferedSocket::bufferedWrite ( const void *vptr, size_t n )
     wt = 0;
     
     // handle buffers first
-    if ( _wbx && _wbuffer->fullDataAvailable() > 0 ) {
+    if ( _wbx && _wbuffer->readAvailable() > 0 ) {
         r = this->flush();
         if ( r <= 0 ) {
-            if ( _wbuffer->fullSpaceAvailable() >= n ) {
+            if ( _wbuffer->writeAvailable() >= n ) {
                 wt = _wbuffer->write(vptr, n);
             }
             return r;
@@ -262,7 +262,7 @@ BufferedSocket::bufferedWrite ( const void *vptr, size_t n )
     } while ( nleft > 0 );
 
 
-    if ( nleft > 0 && _wbx && _wbuffer->fullSpaceAvailable() >= nleft )
+    if ( nleft > 0 && _wbx && _wbuffer->writeAvailable() >= nleft )
         wt += _wbuffer->write(ptr, nleft);
 
     if ( wtn < 0 )
@@ -283,7 +283,7 @@ BufferedSocket::bufferData()
     ssize_t  rcv = 0;
 
     do {
-        size = _rbuffer->spaceAvailable();
+        size = _rbuffer->writePtrAvailable();
         wptr = _rbuffer->getWritePtr(&size);
 
         if ( wptr == NULL ) {

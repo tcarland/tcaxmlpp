@@ -61,7 +61,9 @@ class BufferedSocket : public Socket {
     virtual void     close();
     
     virtual size_t   dataAvailable();
+    size_t           readAvailable() { return this->dataAvailable(); }
     virtual size_t   flushAvailable();
+    size_t           writeAvailable() { return this->flushAvailable(); }
     
     virtual size_t   reverse ( size_t offset );
     virtual size_t   skip    ( size_t offset );
