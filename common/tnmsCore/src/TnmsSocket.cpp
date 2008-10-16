@@ -257,7 +257,7 @@ TnmsSocket::send ( const time_t & now )
     if ( wt < 0 )
         return -1;
 
-    fl = _sock->flushAvailable() + _wxcbuff->fullDataAvailable();
+    fl = _sock->flushAvailable() + _wxcbuff->readAvailable();
 
     if ( wt == 0 && fl > 0 ) {
         if ( _lastWxTime > 0 ) {
@@ -1115,7 +1115,7 @@ TnmsSocket::flush()
             len  = _zipout->str().length();
             _hdr->payload_size = len;
 
-            if ( _wxcbuff->fullSpaceAvailable() < len ) {
+            if ( _wxcbuff->writeAvailable() < len ) {
                 _errstr = "TnmsSocket::flush() write buffer out of space: ";
                 _errstr.append(_hoststr);
             } else {

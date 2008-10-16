@@ -20,7 +20,6 @@ class TnmsMetric : public TnmsMessage {
 public:
 
     TnmsMetric();
-
     TnmsMetric ( const std::string & name, const TnmsOid & oid );
 
     virtual ~TnmsMetric();

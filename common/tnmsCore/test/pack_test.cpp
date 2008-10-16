@@ -2,7 +2,7 @@
 #include <string>
 
 
-#include "Pack.hpp"
+#include "Pack.h"
 
 using namespace tnmsCore;
 
@@ -30,17 +30,17 @@ int main ()
     std::cout << "a Pack added " << t << " bytes for '" 
               << strA << "'" << std::endl;
     
-    t = Packer::Pack(ptr+r, bsize-r, strB, strB.length());
+    t = Packer::Pack(ptr+r, bsize-r, strB);
     r += t;
     std::cout << "b Pack added " << t << " bytes for '" 
               << strB << "'" << std::endl;
     
-    t = Packer::Pack<int16_t>(ptr+r, bsize-r, intA);
+    t = Packer::Pack(ptr+r, bsize-r, intA);
     r += t;
     std::cout << "c Pack added " << t << " bytes for '" 
               << intA << "'" << std::endl;
     
-    t = Packer::Pack<uint32_t>(ptr+r, bsize-r, intB);
+    t = Packer::Pack(ptr+r, bsize-r, intB);
     r += t;
     std::cout << "d Pack added " << t << " bytes for '" 
               << intB << "'" << std::endl;
@@ -52,22 +52,21 @@ int main ()
     
     r = 0;
     
-    size_t  wt = 0;
-    t = Packer::Unpack(ptr+r, bsize-r, ustr, wt);
+    t = Packer::Unpack(ptr+r, bsize-r, ustr);
     r += t;
     std::cout << "a Unpacked " << t << " bytes == " 
               << ustr << std::endl;
 
-    t = Packer::Unpack(ptr+r, bsize-r, ustr, wt);
+    t = Packer::Unpack(ptr+r, bsize-r, ustr);
     r += t;
     std::cout << "b Unpacked " << t << " bytes == " 
               << ustr << std::endl;
 
-    t = Packer::Unpack<int16_t>(ptr+r, bsize-r, a);
+    t = Packer::Unpack(ptr+r, bsize-r, a);
     r += t;
     std::cout << "c Unpacked " << t << " bytes == " << a << std::endl;
     
-    t = Packer::Unpack<uint32_t>(ptr+r, bsize-r, b);
+    t = Packer::Unpack(ptr+r, bsize-r, b);
     r += t;
     std::cout << "d Unpacked " << t << " bytes == " << b << std::endl;
     

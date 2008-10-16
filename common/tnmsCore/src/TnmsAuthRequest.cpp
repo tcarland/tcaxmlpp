@@ -1,7 +1,7 @@
 #define _TNMSCORE_TNMSAUTHREQUEST_CPP_
 
 #include "TnmsAuthRequest.h"
-#include "Pack.hpp"
+#include "Pack.h"
 
 
 namespace tnmsCore {

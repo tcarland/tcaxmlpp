@@ -19,7 +19,7 @@
 #define COMPRESSION_ENABLE          1
 #define FLUSH_ENABLE                1
 
-
+#include "Pack.hpp"
 #include "tnmsProtocol.h"
 #include "TnmsSocket.h"
 

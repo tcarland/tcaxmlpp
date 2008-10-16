@@ -1,7 +1,7 @@
 #define _TNMSCORE_TNMSMESSAGE_CPP_
 
 #include "TnmsMessage.h"
-#include "Pack.hpp"
+#include "Pack.h"
 
 
 namespace tnmsCore {

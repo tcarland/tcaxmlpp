@@ -40,6 +40,7 @@ typetest: typetests.o
 	$(make-cxxbin-rule)
 
 msgtest: msg_test.o
+	$(make-cxxbin-rule)
 
 clean:
 	$(RM) $(OBJS) \

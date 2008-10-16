@@ -22,15 +22,15 @@ int main ( int argc, char ** argv )
 
     std::cout << " buffer capacity = " << buff->size() 
         << ", max is " << maxsize
-        << ", string '" << bstr 
+        << ", string '" << bstr << std::endl
         << "', count is " << count << std::endl << std::endl;
 
-    while ( buff->fullSpaceAvailable() >= bstr.length() )
+    while ( buff->writeAvailable() >= bstr.length() )
         buff->write(bstr.c_str(), bstr.length());
 
     char * out = (char*) calloc(bstr.length(), sizeof(char));
 
-    std::cout << " dataAvail in buffer = " << buff->fullDataAvailable()
+    std::cout << " dataAvail in buffer = " << buff->readAvailable()
               << std::endl;
 
     for ( int i = 0; i < (count / 2); ++i ) {
@@ -45,24 +45,24 @@ int main ( int argc, char ** argv )
         std::cout << "RESIZE FAILED" << std::endl;
 
     std::cout << " buffer capacity = " << buff->size() << std::endl 
-        << " fullDataAvail = " << buff->fullDataAvailable()
-        << " dataAvail = " << buff->dataAvailable() << std::endl
-        << " fullSpaceAvail = " << buff->fullSpaceAvailable()
-        << " spaceAvail = " << buff->spaceAvailable()
+        << " fullDataAvail = " << buff->readAvailable()
+        << " dataAvail = " << buff->readPtrAvailable() << std::endl
+        << " fullSpaceAvail = " << buff->writeAvailable()
+        << " spaceAvail = " << buff->writePtrAvailable()
               << std::endl << std::endl;
 
     int c = 0;
-    while ( buff->spaceAvailable() >= bstr.length() ) {
+    while ( buff->writePtrAvailable() >= bstr.length() ) {
         buff->write(bstr.c_str(), bstr.length());
         c++;
     }
     std::cout << " write count = " << c << std::endl << std::endl;
 
     std::cout << " buffer capacity = " << buff->size() << std::endl 
-              << " fullDataAvail = "   << buff->fullDataAvailable()
-              << " dataAvail = "       << buff->dataAvailable() << std::endl
-              << " fullSpaceAvail = "  << buff->fullSpaceAvailable()
-              << " spaceAvail = "      << buff->spaceAvailable()
+              << " fullDataAvail = "   << buff->readAvailable()
+              << " dataAvail = "       << buff->readPtrAvailable() << std::endl
+              << " fullSpaceAvail = "  << buff->writeAvailable()
+              << " spaceAvail = "      << buff->writePtrAvailable()
               << std::endl << std::endl;
 
     buffsize = buff->size() + bstr.length();
@@ -72,10 +72,10 @@ int main ( int argc, char ** argv )
         std::cout << " RESIZE FAILED " << std::endl;
 
     std::cout << " buffer capacity = " << buff->size() << std::endl 
-              << " fullDataAvail = "   << buff->fullDataAvailable()
-              << " dataAvail = "       << buff->dataAvailable() << std::endl
-              << " fullSpaceAvail = "  << buff->fullSpaceAvailable()
-              << " spaceAvail = "      << buff->spaceAvailable()
+              << " fullDataAvail = "   << buff->readAvailable()
+              << " dataAvail = "       << buff->readPtrAvailable() << std::endl
+              << " fullSpaceAvail = "  << buff->writeAvailable()
+              << " spaceAvail = "      << buff->writePtrAvailable()
               << std::endl << std::endl;
 
     ::free(out);

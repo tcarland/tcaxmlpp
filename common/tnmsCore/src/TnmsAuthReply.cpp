@@ -1,7 +1,7 @@
 #define _TNMSCORE_TNMSAUTHREPLY_CPP_
 
 #include "TnmsAuthReply.h"
-#include "Pack.hpp"
+#include "Pack.h"
 
 
 namespace tnmsCore {

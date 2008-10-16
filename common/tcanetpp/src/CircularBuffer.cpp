@@ -49,9 +49,11 @@ CircularBuffer::CircularBuffer ( const CircularBuffer & buffer )
         _endPtr  += (buffer._endPtr - buffer._buffer);
         _wrapPtr  = _endPtr;
     }
+
     _readPtr  += (buffer._readPtr - buffer._buffer);
     _writePtr += (buffer._writePtr - buffer._buffer);
 }
+
 
 CircularBuffer::~CircularBuffer()
 {

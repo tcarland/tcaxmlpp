@@ -2,7 +2,7 @@
 #include <list>
 
 #include "TnmsOid.h"
-#include "Pack.hpp"
+#include "Pack.h"
 
 #include "StringUtils.h"
 using namespace tcanetpp;
