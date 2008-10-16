@@ -1,7 +1,10 @@
 #ifndef _TNMSCORE_TNMSPROTOCOL_H_
 #define _TNMSCORE_TNMSPROTOCOL_H_
 
-#include "tnmsConfig.h"
+#include "tcanetpp_types.h"  // tcanetpp
+
+#include "tnmsCore.h"
+#include "tnmsSocket.h"
 
 
 namespace tnmsCore {
