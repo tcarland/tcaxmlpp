@@ -8,7 +8,7 @@
 #include "CircularBuffer.h"
 using namespace tcanetpp;
 
-#include "tnmsProtocol.h"
+#include "tnmsCore.h"
 #include "TreeAuthorizations.hpp"
 #include "TnmsMessage.h"
 #include "TnmsMetric.h"

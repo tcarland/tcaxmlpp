@@ -9,11 +9,12 @@
 
 #include <string>
 
-#include "Serializable.hpp"
 #include "tnmsProtocol.h"
+#include "Serializable.hpp"
 #include "TnmsOid.h"
 
 namespace tnmsCore {
+
 
 class TnmsMessage : public Serializable {
 

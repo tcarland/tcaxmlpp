@@ -2,6 +2,7 @@
 #define _TNMSCORE_TNMSCONFIG_H_
 
 #include "tnmsProtocol.h"
+#include "TnmsSocket.h"
 
 #define TNMS_VERSION_MAJOR          0x05
 #define TNMS_VERSION_MINOR          0x61

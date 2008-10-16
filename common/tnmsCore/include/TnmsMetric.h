@@ -8,12 +8,11 @@
 #ifndef _TNMSCORE_TNMSMETRIC_H_
 #define _TNMSCORE_TNMSMETRIC_H_
 
-#include "TnmsOid.h"
-#include "tnmsProtocol.h"
 #include "TnmsMessage.h"
 
 
 namespace tnmsCore {
+
 
 
 class TnmsMetric : public TnmsMessage {

@@ -3,8 +3,7 @@
 
 #include "tcanetpp_types.h"  // tcanetpp
 
-#include "tnmsCore.h"
-#include "tnmsSocket.h"
+//#include "tnmsCore.h"
 
 
 namespace tnmsCore {
