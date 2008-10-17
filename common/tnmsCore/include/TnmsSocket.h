@@ -10,10 +10,7 @@ using namespace tcanetpp;
 
 #include "tnmsCore.h"
 #include "TreeAuthorizations.hpp"
-#include "TnmsMessage.h"
-#include "TnmsMetric.h"
-#include "TnmsAuthRequest.h"
-#include "TnmsAuthReply.h"
+#include "MessageHandler.hpp"
 #include "TnmsOid.h"
 
 #include "zipstream.hpp"
@@ -28,15 +25,15 @@ typedef std::set<std::string>  SubscriptionList;
 
 class TnmsSocket {
 
-public:
+  public:
 
-    TnmsSocket  ( uint32_t  flush_limit = TNMS_FLUSH_LIMIT );
+    TnmsSocket  ( MessageHandler * msgHandler = NULL );
 
-    TnmsSocket  ( ipv4addr_t ip, uint16_t port,
-                  uint32_t  flush_limit = TNMS_FLUSH_LIMIT );
+    TnmsSocket  ( ipv4addr_t ip, uint16_t port, 
+                  MessageHandler * msgHandler );
 
     TnmsSocket  ( tcanetpp::BufferedSocket * sock,
-                  uint32_t  flush_limit = TNMS_FLUSH_LIMIT );
+                  MessageHandler * msgHandler );
 
     virtual ~TnmsSocket();
 
@@ -65,6 +62,9 @@ public:
 
     sockfd_t            getDescriptor() const;
     sockfd_t            getSockFD() const    { return this->getDescriptor(); }
+
+    void                setMessageHandler    ( MessageHandler * msgHandler );
+    MessageHandler*     getMessageHandler();
 
     void                reconnectTime        ( const time_t & secs );
     const time_t&       reconnectTime() const;
@@ -123,30 +123,14 @@ public:
     int                 subscribeCount();
     void                resubscribe();
 
-
-    /*  Messaging Callbacks  */
-
-    virtual void        AddHandler          ( const TnmsAdd     & add ) {}
-    virtual void        RemoveHandler       ( const TnmsRemove  & remove ) {}
-    virtual void        MetricHandler       ( const TnmsMetric  & metric ) {}
-    virtual void        RequestHandler      ( const TnmsRequest & request ) {}
-
-    virtual void        SubscribeHandler    ( const std::string & name ) {}
-    virtual void        UnsubscribeHandler  ( const std::string & name ) {}
-    virtual void        StructureHandler    ( bool  subscribe ) {}
-
-    virtual void        LastRecordHandler   ( int   record_type ) {}
-
-    virtual void        AuthRequestHandler  ( const TnmsAuthRequest & request ) {}
-    virtual void        AuthReplyHandler    ( const TnmsAuthReply   & reply );
-
-
     /*  send message handling / packing  */
 
-    virtual bool        sendMessage         ( Serializable  * message );
+    bool                sendMessage         ( Serializable  * message );
 
+  protected:
 
     /*  receive message handling / extraction  */
+    bool                receiveMessage      ( tnmsHeader  & hdr );
 
     int                 rcvAuthRequest      ( tnmsHeader  & hdr );
     int                 rcvAuthReply        ( tnmsHeader  & hdr );
@@ -157,8 +141,7 @@ public:
     int                 rcvSubscribes       ( tnmsHeader  & hdr );
     int                 rcvUnsubscribes     ( tnmsHeader  & hdr );
 
-
-private:
+  private:
 
     void                init();
     void                clearState();
@@ -167,15 +150,16 @@ private:
 
     bool                initHeader          ( uint16_t type, size_t size );
     ssize_t             uncompress          ( uint32_t size );
+    void                authReply           ( const TnmsAuthReply & reply );
     //bool                checkStall();
     //void                clearStall() {}
 
 
-
-protected:
+  protected:
 
     TreeAuthFunctor *           _authFunctor;
     TreeAuthList                _authorizations;
+    MessageHandler *            _msgHandler;
     SubscriptionList            _subs;
 
     /* state */
@@ -196,7 +180,7 @@ protected:
     uint16_t                    _port;
     bool                        _debug;
 
-private:
+  private:
 
     BufferedSocket *            _sock;
     tnmsHeader *                _hdr;

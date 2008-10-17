@@ -11,8 +11,9 @@ using namespace tcanetpp;
 namespace tnmsCore {
 
 
-TnmsSocket::TnmsSocket ( uint32_t  flush_limit )
+TnmsSocket::TnmsSocket ( MessageHandler * msgHandler )
     : _authFunctor(new AuthAllFunctor(_authorizations)),
+      _msgHandler(msgHandler),
       _connecting(false),
       _authorizing(false),
       _authorized(false),
@@ -32,7 +33,7 @@ TnmsSocket::TnmsSocket ( uint32_t  flush_limit )
       _lastWxTime(0),
       _wxTimeout(TNMS_CLIENT_TIMEOUT),
       _flush(FLUSH_ENABLE),
-      _flushLimit(flush_limit),
+      _flushLimit(TNMS_FLUSH_LIMIT),
       _maxMessages(TNMS_RECORD_LIMIT)
 {
     this->init();
@@ -40,8 +41,9 @@ TnmsSocket::TnmsSocket ( uint32_t  flush_limit )
 
 
 TnmsSocket::TnmsSocket ( ipv4addr_t ip, uint16_t port,
-                         uint32_t  flush_limit )
+                         MessageHandler * msgHandler )
     : _authFunctor(new AuthAllFunctor(_authorizations)),
+      _msgHandler(msgHandler),
       _connecting(false),
       _authorizing(false),
       _authorized(false),
@@ -61,15 +63,16 @@ TnmsSocket::TnmsSocket ( ipv4addr_t ip, uint16_t port,
       _lastWxTime(0),
       _wxTimeout(TNMS_CLIENT_TIMEOUT),
       _flush(FLUSH_ENABLE),
-      _flushLimit(flush_limit),
+      _flushLimit(TNMS_FLUSH_LIMIT),
       _maxMessages(TNMS_RECORD_LIMIT)
 {
     this->init();
 }
 
 
-TnmsSocket::TnmsSocket ( BufferedSocket * sock, uint32_t flush_limit )
+TnmsSocket::TnmsSocket ( BufferedSocket * sock, MessageHandler * msgHandler )
     : _authFunctor(new AuthAllFunctor(_authorizations)),
+      _msgHandler(msgHandler),
       _connecting(false),
       _authorizing(false),
       _authorized(false),
@@ -89,7 +92,7 @@ TnmsSocket::TnmsSocket ( BufferedSocket * sock, uint32_t flush_limit )
       _lastWxTime(0),
       _wxTimeout(TNMS_CLIENT_TIMEOUT),
       _flush(FLUSH_ENABLE),
-      _flushLimit(flush_limit),
+      _flushLimit(TNMS_FLUSH_LIMIT),
       _maxMessages(TNMS_RECORD_LIMIT)
 {
     if ( sock == NULL )
@@ -99,7 +102,22 @@ TnmsSocket::TnmsSocket ( BufferedSocket * sock, uint32_t flush_limit )
 }
 
 
-TnmsSocket::~TnmsSocket() {}
+TnmsSocket::~TnmsSocket() 
+{
+    this->close();
+    if ( _authFunctor )
+        delete _authFunctor;
+    if ( _msgHandler )
+        delete _msgHandler;
+    if ( _sock )
+        delete _sock;
+    if ( _rxbuff )
+        ::free(_zxbuff);
+    if ( _zxbuff )
+        ::free(_zxbuff);
+    
+    delete _wxcbuff;
+}
 
 
 // ------------------------------------------------------------------- //
@@ -121,7 +139,7 @@ TnmsSocket::init()
     // buffers
     _wxcbuff        = new CircularBuffer(TNMS_PACKET_SIZE * 2);
     _rxbuff         = (char*) malloc((size_t) TNMS_PACKET_SIZE);
-    _zxbuff         = (char*) malloc((size_t) TNMS_PACKET_SIZE);
+    //_zxbuff         = (char*) malloc((size_t) TNMS_PACKET_SIZE);
     _rxbuffsz       = (size_t) TNMS_PACKET_SIZE;
     _zxbuffsz       = (size_t) TNMS_PACKET_SIZE;
     _lastWxTime     = 0;
@@ -134,6 +152,9 @@ TnmsSocket::init()
         _sock->rxBufferSize(TNMS_PACKET_SIZE);
         this->setHostStr();
     }
+
+    if ( _msgHandler == NULL )
+        _msgHandler = new MessageHandler();
 
     return;
 }
@@ -352,22 +373,52 @@ TnmsSocket::receive ( const time_t & now )
             return ctr;
         }
 
-        switch ( hdr.record_type ) {
-            case AUTH_REQUEST:
-                break;
-            case RECORD_METRIC:
-                ctr += this->rcvMetrics(hdr);
-                break;
-            default:
-                //unknown type
-                break;
-        }
+        if ( _msgHandler )
+            this->receiveMessage(hdr);
 
-        if ( hdr.options & LAST_RECORD )
-            this->LastRecordHandler(hdr.record_type);
     } while ( rd > 0 );
 
     return ctr;
+}
+
+// ------------------------------------------------------------------- //
+
+bool
+TnmsSocket::receiveMessage ( tnmsHeader & hdr ) 
+{
+    int         ctr = 0;
+
+    switch ( hdr.record_type ) {
+        case AUTH_REQUEST:
+            break;
+        case RECORD_METRIC:
+            ctr += this->rcvMetrics(hdr);
+            break;
+        default:
+            //unknown type
+            break;
+    }
+
+    if ( hdr.options & LAST_RECORD )
+        _msgHandler->LastRecordHandler(hdr.record_type);
+
+    return true;
+}
+
+// ------------------------------------------------------------------- //
+
+void
+TnmsSocket::setMessageHandler ( MessageHandler * msgHandler )
+{
+    if ( this->_msgHandler )
+        delete _msgHandler;
+    _msgHandler = msgHandler;
+}
+
+MessageHandler*
+TnmsSocket::getMessageHandler()
+{
+    return this->_msgHandler;
 }
 
 // ------------------------------------------------------------------- //
@@ -425,6 +476,17 @@ void
 TnmsSocket::compression ( bool compress )
 {
     this->_compression = compress;
+
+    if ( compress ) {
+        if ( _zxbuff )
+            ::free(_zxbuff);
+        _zxbuff  = (char*) malloc((size_t) TNMS_PACKET_SIZE);
+    } else {
+        if ( _zxbuff )
+            ::free(_zxbuff);
+        _zxbuff = NULL;
+    }
+    return;
 }
 
 
@@ -727,7 +789,7 @@ TnmsSocket::unsubscribeLevel ( const std::string & name )
 // ------------------------------------------------------------------- //
 
 void
-TnmsSocket::AuthReplyHandler ( const TnmsAuthReply & reply )
+TnmsSocket::authReply ( const TnmsAuthReply & reply )
 {
     this->_authorizing = false;
 
@@ -758,6 +820,8 @@ TnmsSocket::AuthReplyHandler ( const TnmsAuthReply & reply )
     } else {
         _authFunctor = new AuthAllFunctor(_authorizations);
     }
+
+    _msgHandler->AuthReplyHandler(reply);
 
     return;
 }
@@ -812,7 +876,7 @@ TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
         return -1;
     }
 
-    this->AuthRequestHandler(auth);
+    _msgHandler->AuthRequestHandler(auth);
 
     return 1;
 }
@@ -822,7 +886,26 @@ TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
 int
 TnmsSocket::rcvAuthReply ( tnmsHeader & hdr )
 {
-    return -1;
+    char   * rptr;
+    size_t   rsz, rd;
+    ssize_t  upk;
+
+    TnmsAuthReply  reply;
+
+    rptr  = _rxbuff;
+    rsz   = hdr.payload_size;
+    rd    = 0;
+    
+    upk = reply.deserialize(rptr, rsz);
+
+    if ( upk < 0 ) {
+        _errstr = "TnmsSocket::rcvAuthReply() error ";
+        return -1;
+    }
+
+    this->authReply(reply);
+
+    return 1;
 }
 
 // ------------------------------------------------------------------- //
@@ -852,7 +935,7 @@ TnmsSocket::rcvMetrics ( tnmsHeader & hdr )
         rd   += upk;
         rptr += upk;
 
-        this->MetricHandler(metric);
+        _msgHandler->MetricHandler(metric);
     }
 
     return i;
@@ -867,6 +950,11 @@ TnmsSocket::rcvAdds ( tnmsHeader & hdr )
     size_t    rsz, rd;
     ssize_t   upk, i;
 
+    rptr = _rxbuff;
+    rsz  = hdr.payload_size;
+    rd   = 0;
+    upk  = 0;
+
     for ( i = 0; i < hdr.record_count; ++i ) {
         TnmsAdd  addmsg;
 
@@ -880,7 +968,7 @@ TnmsSocket::rcvAdds ( tnmsHeader & hdr )
         rd   += upk;
         rptr += upk;
 
-        this->AddHandler(addmsg);
+        _msgHandler->AddHandler(addmsg);
     }
                 
     return i;
@@ -895,6 +983,11 @@ TnmsSocket::rcvRemoves ( tnmsHeader & hdr )
     size_t   rsz, rd;
     ssize_t  upk, i;
 
+    rptr = _rxbuff;
+    rsz  = hdr.payload_size;
+    rd   = 0;
+    upk  = 0;
+
     for ( i = 0; i < hdr.record_count; ++i ) {
         TnmsRemove  remove;
 
@@ -908,7 +1001,7 @@ TnmsSocket::rcvRemoves ( tnmsHeader & hdr )
         rd   += upk;
         rptr += upk;
 
-        this->RemoveHandler(remove);
+        _msgHandler->RemoveHandler(remove);
     }
 
     return i;
@@ -1090,6 +1183,8 @@ TnmsSocket::flush()
     ssize_t  wt, tt;
 
     hdrlen = sizeof(tnmsHdr_t);
+    wt     = 0;
+    tt     = 0;
 
     if ( _sock == NULL || ! this->isConnected() )
         return -1;
