@@ -102,7 +102,7 @@ TnmsSocket::TnmsSocket ( BufferedSocket * sock, MessageHandler * msgHandler )
 }
 
 
-TnmsSocket::~TnmsSocket() 
+TnmsSocket::~TnmsSocket()
 {
     this->close();
     if ( _authFunctor )
@@ -115,7 +115,7 @@ TnmsSocket::~TnmsSocket()
         ::free(_zxbuff);
     if ( _zxbuff )
         ::free(_zxbuff);
-    
+
     delete _wxcbuff;
 }
 
@@ -374,7 +374,7 @@ TnmsSocket::receive ( const time_t & now )
         }
 
         if ( _msgHandler )
-            this->receiveMessage(hdr);
+            ctr = this->receiveMessages(hdr);
 
     } while ( rd > 0 );
 
@@ -383,26 +383,58 @@ TnmsSocket::receive ( const time_t & now )
 
 // ------------------------------------------------------------------- //
 
-bool
-TnmsSocket::receiveMessage ( tnmsHeader & hdr ) 
+int
+TnmsSocket::receiveMessages ( tnmsHeader & hdr )
 {
-    int         ctr = 0;
+    int  ctr = 0;
 
-    switch ( hdr.record_type ) {
+    switch ( hdr.message_type ) {
         case AUTH_REQUEST:
+            ctr += this->rcvAuthRequest(hdr);
             break;
-        case RECORD_METRIC:
+        case AUTH_REPLY:
+            ctr += this->rcvAuthReply(hdr);
+            break;
+        case AUTH_REFRESH:
+            break;
+        case ADD_MESSAGE:
+            ctr += this->rcvAdds(hdr);
+            break;
+        case REMOVE_MESSAGE:
+            ctr += this->rcvRemoves(hdr);
+            break;
+        case REQUEST_MESSAGE:
+            ctr += this->rcvRequests(hdr);
+            break;
+        case METRIC_MESSAGE:
             ctr += this->rcvMetrics(hdr);
+            break;
+        case SUBSCRIBE:
+            ctr += this->rcvSubscribes(hdr);
+            break;
+        case UNSUBSCRIBE:
+            break;
+        case SUBSCRIBE_STRUCTURE:
+            _msgHandler->StructureHandler(true);
+            break;
+        case UNSUBSCRIBE_STRUCTURE:
+            _msgHandler->StructureHandler(false);
+            break;
+        case PING_REQUEST:
+            _msgHandler->PingHandler();
+            break;
+        case PING_REPLY:
+            _msgHandler->PingReplyHandler();
             break;
         default:
             //unknown type
             break;
     }
 
-    if ( hdr.options & LAST_RECORD )
-        _msgHandler->LastRecordHandler(hdr.record_type);
+    if ( hdr.options & LAST_MESSAGE )
+        _msgHandler->LastMessageHandler(hdr.message_type);
 
-    return true;
+    return ctr;
 }
 
 // ------------------------------------------------------------------- //
@@ -670,7 +702,7 @@ TnmsSocket::resubscribe()
 // ------------------------------------------------------------------- //
 
 bool
-TnmsSocket::subscribeStructure() 
+TnmsSocket::subscribeStructure()
 {
     this->_subtree = true;
 
@@ -678,7 +710,7 @@ TnmsSocket::subscribeStructure()
         return false;
 
     if ( _hdr )
-        _hdr->options |= LAST_RECORD;
+        _hdr->options |= LAST_MESSAGE;
 
     if ( this->send() < 0 )
         return false;
@@ -686,7 +718,7 @@ TnmsSocket::subscribeStructure()
 }
 
 bool
-TnmsSocket::unsubscribeStructure() 
+TnmsSocket::unsubscribeStructure()
 {
     this->_subtree = false;
 
@@ -694,7 +726,7 @@ TnmsSocket::unsubscribeStructure()
         return false;
 
     if ( _hdr )
-        _hdr->options |= LAST_RECORD;
+        _hdr->options |= LAST_MESSAGE;
 
     if ( this->send() < 0 )
         return false;
@@ -734,7 +766,7 @@ TnmsSocket::subscribe ( const TnmsOid & oid )
 // ------------------------------------------------------------------- //
 
 bool
-TnmsSocket::unsubscribe ( const std::string & name ) 
+TnmsSocket::unsubscribe ( const std::string & name )
 {
     TnmsUnsubscribe msg(name);
     return this->sendMessage(&msg);
@@ -832,7 +864,7 @@ bool
 TnmsSocket::sendMessage ( Serializable * message )
 {
     size_t  msz, wt;
-    
+
     msz = message->size();
     wt  = 0;
 
@@ -844,7 +876,7 @@ TnmsSocket::sendMessage ( Serializable * message )
     _wptr += wt;
     _wtt  += wt;
 
-    _hdr->record_count++;
+    _hdr->message_count++;
     _hdr->payload_size += wt;
 
     if ( this->flush() < 0 )
@@ -895,7 +927,7 @@ TnmsSocket::rcvAuthReply ( tnmsHeader & hdr )
     rptr  = _rxbuff;
     rsz   = hdr.payload_size;
     rd    = 0;
-    
+
     upk = reply.deserialize(rptr, rsz);
 
     if ( upk < 0 ) {
@@ -916,13 +948,13 @@ TnmsSocket::rcvMetrics ( tnmsHeader & hdr )
     char   * rptr;
     size_t   rsz, rd;
     ssize_t  upk, i;
-    
+
     rptr = _rxbuff;
     rsz  = hdr.payload_size;
     rd   = 0;
     upk  = 0;
 
-    for ( i = 0; i < hdr.record_count; ++i ) {
+    for ( i = 0; i < hdr.message_count; ++i ) {
         TnmsMetric  metric;
 
         upk = metric.deserialize(rptr, rsz-rd);
@@ -955,7 +987,7 @@ TnmsSocket::rcvAdds ( tnmsHeader & hdr )
     rd   = 0;
     upk  = 0;
 
-    for ( i = 0; i < hdr.record_count; ++i ) {
+    for ( i = 0; i < hdr.message_count; ++i ) {
         TnmsAdd  addmsg;
 
         upk = addmsg.deserialize(rptr, (rsz-rd));
@@ -970,7 +1002,7 @@ TnmsSocket::rcvAdds ( tnmsHeader & hdr )
 
         _msgHandler->AddHandler(addmsg);
     }
-                
+
     return i;
 }
 
@@ -988,7 +1020,7 @@ TnmsSocket::rcvRemoves ( tnmsHeader & hdr )
     rd   = 0;
     upk  = 0;
 
-    for ( i = 0; i < hdr.record_count; ++i ) {
+    for ( i = 0; i < hdr.message_count; ++i ) {
         TnmsRemove  remove;
 
         upk  = remove.deserialize(rptr, (rsz-rd));
@@ -1076,9 +1108,9 @@ TnmsSocket::setHostStr()
 
 bool
 TnmsSocket::initHeader ( uint16_t type, size_t messagesize )
-{    
+{
     size_t  sz, hdrlen, rd;
-    
+
     hdrlen = sizeof(tnmsHdr_t);
     sz     = messagesize;
     rd     = 0;
@@ -1087,9 +1119,9 @@ TnmsSocket::initHeader ( uint16_t type, size_t messagesize )
         return false;
 
     if ( _wptr ) { // update output buffer
-        if ( _compression && (type == RECORD_METRIC 
-                          ||  type == RECORD_ADD || type == RECORD_REMOVE) )
-        {} 
+        if ( _compression && (type == METRIC_MESSAGE
+                          ||  type == ADD_MESSAGE || type == REMOVE_MESSAGE) )
+        {}
         else {
             _wxcbuff->setWritePtr(_wtt);
             _wptr   = NULL;
@@ -1099,22 +1131,22 @@ TnmsSocket::initHeader ( uint16_t type, size_t messagesize )
     // check current header
     if ( _hdr ) {   // check flush limit
 
-        if ( _flush && _hdr->record_count >= _flushLimit ) {
-            if ( _hdr->record_type != type )
-                _hdr->options |= LAST_RECORD;
+        if ( _flush && _hdr->message_count >= _flushLimit ) {
+            if ( _hdr->message_type != type )
+                _hdr->options |= LAST_MESSAGE;
             rd = this->flush();
-        
-        } else if ( _hdr->record_type == type ) {  // continue pdu
 
-            if ( _compression && (type == RECORD_METRIC 
-                              ||  type == RECORD_ADD || type == RECORD_REMOVE) )
+        } else if ( _hdr->message_type == type ) {  // continue pdu
+
+            if ( _compression && (type == METRIC_MESSAGE
+                              ||  type == ADD_MESSAGE || type == REMOVE_MESSAGE) )
             {
                 if ( _wtsize < (_wtt + sz) ) {  // buffer full, stop queue'ing
                     this->flush();
                     return false;
                 }
-            } 
-            else 
+            }
+            else
             {
                 _wptr   = _wxcbuff->getWritePtr(&sz);
                 _wtsize = sz;  // store space avail for writing
@@ -1129,14 +1161,14 @@ TnmsSocket::initHeader ( uint16_t type, size_t messagesize )
                 }
             }
 
-            return true; 
-        
+            return true;
+
         } else {   // flush pdu
-            _hdr->options |= LAST_RECORD;
+            _hdr->options |= LAST_MESSAGE;
             rd = this->flush();
         }
     }
-    
+
     sz    = messagesize + hdrlen;
     _wptr = _wxcbuff->getWritePtr(&sz);
 
@@ -1158,12 +1190,12 @@ TnmsSocket::initHeader ( uint16_t type, size_t messagesize )
     _hdr->minor_version = TNMS_VERSION_MINOR;
     _hdr->options       = 0;
     _hdr->payload_size  = 0;
-    _hdr->record_count  = 0;
-    _hdr->record_type   = type;
+    _hdr->message_count  = 0;
+    _hdr->message_type   = type;
 
     // reset compression buffer if applicable
-    if ( _compression && (type == RECORD_METRIC || type == RECORD_ADD 
-                      ||  type == RECORD_REMOVE) )
+    if ( _compression && (type == METRIC_MESSAGE || type == ADD_MESSAGE
+                      ||  type == REMOVE_MESSAGE) )
     {
         _hdr->options |= ZLIB_COMPRESSED;
         _zipout  = new std::ostringstream(std::ios::out);
@@ -1194,15 +1226,15 @@ TnmsSocket::flush()
 
     if ( wt < 0 )
         return wt;
-    else if ( wt > 1 ) 
+    else if ( wt > 1 )
         tt += wt;
 
-    if ( _hdr && _hdr->record_count > 0 ) {
+    if ( _hdr && _hdr->message_count > 0 ) {
         wt = 0;
 
-        if ( _compression && (_hdr->record_type == RECORD_METRIC
-                          ||  _hdr->record_type == RECORD_ADD
-                          ||  _hdr->record_type == RECORD_REMOVE) )
+        if ( _compression && (_hdr->message_type == METRIC_MESSAGE
+                          ||  _hdr->message_type == ADD_MESSAGE
+                          ||  _hdr->message_type == REMOVE_MESSAGE) )
         {
             size_t len;
 
@@ -1294,7 +1326,7 @@ TnmsSocket::uncompress ( uint32_t size )
     }
 
     unzipper.read_footer();
-    
+
     //size_t zin    = unzipper.rdbuf()->get_in_size();
     size_t unzout = unzipper.rdbuf()->get_out_size();
 

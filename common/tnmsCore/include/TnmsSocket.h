@@ -29,7 +29,7 @@ class TnmsSocket {
 
     TnmsSocket  ( MessageHandler * msgHandler = NULL );
 
-    TnmsSocket  ( ipv4addr_t ip, uint16_t port, 
+    TnmsSocket  ( ipv4addr_t ip, uint16_t port,
                   MessageHandler * msgHandler );
 
     TnmsSocket  ( tcanetpp::BufferedSocket * sock,
@@ -130,7 +130,7 @@ class TnmsSocket {
   protected:
 
     /*  receive message handling / extraction  */
-    bool                receiveMessage      ( tnmsHeader  & hdr );
+    int                 receiveMessages     ( tnmsHeader  & hdr );
 
     int                 rcvAuthRequest      ( tnmsHeader  & hdr );
     int                 rcvAuthReply        ( tnmsHeader  & hdr );

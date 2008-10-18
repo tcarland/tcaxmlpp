@@ -4,7 +4,7 @@
  *  Created on: Oct 12, 2008
  *      Author: tca
  */
-#define _TNMSMETRIC_CPP_
+#define _TNMSCORE_TNMSMETRIC_CPP_
 
 
 #include "TnmsMetric.h"
@@ -16,12 +16,12 @@ namespace tnmsCore {
 
 
 TnmsMetric::TnmsMetric()
-    : TnmsMessage(RECORD_METRIC)
+    : TnmsMessage(METRIC_MESSAGE)
 {}
 
-TnmsMetric::TnmsMetric ( const std::string & name, 
+TnmsMetric::TnmsMetric ( const std::string & name,
                          const TnmsOid     & oid )
-    : TnmsMessage(name, oid, RECORD_METRIC)
+    : TnmsMessage(name, oid, METRIC_MESSAGE)
 {}
 
 TnmsMetric::~TnmsMetric() {}
@@ -200,7 +200,7 @@ TnmsMetric::size() const
 {
     size_t  sz  = 0;
 
-    sz   = _element_name.length() +_element_oid.size() 
+    sz   = _element_name.length() +_element_oid.size()
         + _valueStr.size() + _pvt.size();
     sz  += ( 4 * sizeof(uint32_t)) + sizeof(uint64_t);
 
