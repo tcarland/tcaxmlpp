@@ -30,19 +30,24 @@
 namespace tcanetpp {
 
 
-/**  Socket types for Socket constructor  */
-enum SocketType
-{
-    SOCKET_NONE,
-    SOCKET_CLIENT,
-    SOCKET_SERVER,
-    SOCKET_SERVER_CLIENT,
-    SOCKET_RAW
-};
 
-#define SOCKET_TCP IPPROTO_TCP
-#define SOCKET_UDP IPPROTO_UDP
-#define SOCKET_RAW IPPROTO_RAW
+#define SOCKET_TCP  IPPROTO_TCP
+#define SOCKET_UDP  IPPROTO_UDP
+#define SOCKET_RAW  IPPROTO_RAW
+
+
+
+/**  Socket types for Socket constructor  */
+typedef enum SocketType
+{
+    SOCKET_NONE = 0,
+    SOCKET_CLIENT = 1,
+    SOCKET_SERVER = 2,
+    SOCKET_SERVER_CLIENT = 3,
+    SOCKET_RAW = 4
+} sockType_t;
+
+
 
 
 /**  SocketException class for fatal Socket class errors */
@@ -56,11 +61,11 @@ public:
 
 
 class Socket {
-	
-public:
+  public:
 
     class SocketFactory {
-    public:
+      public:
+
         virtual ~SocketFactory() {}
             
         virtual Socket* operator() ( sockfd_t & fd, struct sockaddr_in & csock )
@@ -69,9 +74,11 @@ public:
         }
     };
 
+
     static SocketFactory  factory;
 	
-public:
+
+  public:
 	
     Socket();
 
@@ -81,12 +88,12 @@ public:
     virtual ~Socket();
 	
 	
-protected:
+  protected:
 	
     Socket ( sockfd_t & fd, struct sockaddr_in & csock );
 	
 	
-public:
+  public:
     
     virtual int         init ( bool block = false );
     
@@ -129,7 +136,7 @@ public:
     virtual ssize_t     write    ( const void * vptr, size_t n );
             
     
-public:	
+  public:	
     
     static void         Block    ( Socket * s );
     static void         Unblock  ( Socket * s );
@@ -141,7 +148,7 @@ public:
     static void         ResetDescriptor   ( sockfd_t & fd );
 
     
-protected:
+  protected:
     
     ssize_t             nwriten  ( const void * vptr, size_t n );
     ssize_t             nreadn   ( void * vptr, size_t n );
@@ -151,13 +158,13 @@ protected:
         throw ( SocketException );
     
     
-protected:
+  protected:
     
     std::string	            _addrstr;
     std::string	            _errstr;
     
     
-private:
+  private:
     
     sockfd_t                _fd;
     struct sockaddr_in      _sock;
