@@ -1,0 +1,30 @@
+<tnms version="0.1">
+    <tnmsd
+        agent_name="my agent"
+        logfile="mylogfile"
+        syslog="false"
+        debug="true"
+        auth_server="authhost"
+        auth_port="15100">
+
+        <server
+            agent_port="15300"
+            client_port="15500"
+            holddown="30"
+            reconnect="30"/>
+
+        <client
+            name="upstream1"
+            host="upstreamhost"
+            port="15301">
+
+            <subscribe 
+                name="tcanms"/>
+        <client
+            name="upstream2"
+            host="up2host"
+            port="15302"/>
+    </tnmsd>
+</tnms>
+
+

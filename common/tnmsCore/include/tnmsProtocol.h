@@ -21,29 +21,29 @@ typedef enum eValueTypes {
 } e_valueTypes_t;
 
 
-typedef enum eRecordTypes {
+typedef enum eMessageTypes {
     NO_RECORD,
     AUTH_REQUEST,
     AUTH_REPLY,
     AUTH_REFRESH,
-    RECORD_ADD,
-    RECORD_REMOVE,
-    RECORD_REQUEST,
-    RECORD_METRIC,
+    ADD_MESSAGE,
+    REMOVE_MESSAGE,
+    REQUEST_MESSAGE,
+    METRIC_MESSAGE,
     SUBSCRIBE,
     UNSUBSCRIBE,
     SUBSCRIBE_STRUCTURE,
     UNSUBSCRIBE_STRUCTURE,
     PING_REQUEST,
     PING_REPLY
-} e_recordTypes_t;
+} e_msgTypes_t;
 
 
-typedef enum eRecordOptions {
+typedef enum eMessageOptions {
     NO_OPTIONS       = 0x00,
-    LAST_RECORD      = 0x01,
+    LAST_MESSAGE     = 0x01,
     ZLIB_COMPRESSED  = 0x02
-} e_recordOptions_t;
+} e_msgOptions_t;
 
 
 typedef enum eAuthTypes {
@@ -61,8 +61,8 @@ typedef struct tnmsHeader
 {
     uint16_t    major_version;
     uint16_t    minor_version;
-    uint16_t    record_type;
-    uint16_t    record_count;
+    uint16_t    message_type;
+    uint16_t    message_count;
     uint32_t    options;
     uint32_t    payload_size;
     uint32_t    timestamp;
@@ -85,7 +85,7 @@ typedef struct tnmsMetric
 
 typedef struct tnmsRequest
 {
-    uint16_t    record_type;    
+    uint16_t    record_type;
     uint32_t    oid_len;
     uint16_t*   oid;
     uint32_t    metric_name_len;
@@ -99,8 +99,8 @@ typedef struct tnmsRequest
 
 typedef struct tnmsAdd : public tnmsRequest
 {
-    tnmsAdd() 
-        : tnmsRequest(RECORD_ADD)
+    tnmsAdd()
+        : tnmsRequest(ADD_MESSAGE)
     {}
 } tnmsAdd_t;
 
@@ -108,7 +108,7 @@ typedef struct tnmsAdd : public tnmsRequest
 typedef struct tnmsRemove : public tnmsRequest
 {
     tnmsRemove()
-        : tnmsRequest(RECORD_REMOVE)
+        : tnmsRequest(REMOVE_MESSAGE)
     {}
 } tnmsRemove_t;
 

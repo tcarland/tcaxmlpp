@@ -1,11 +1,11 @@
 /** 
-  *   Logger - Logging facility supporting multiple syslog(unix), filelog, or
+  *   LogFacility - Logging facility supporting multiple syslog(unix), filelog, or
   *            log iostreams.
   * 
   *   @Author  tcarland@gmail.com 
  **/
-#ifndef _TCANETPP_LOGGER_H_
-#define _TCANETPP_LOGGER_H_
+#ifndef _TCANETPP_LOGFACILITY_H_
+#define _TCANETPP_LOGFACILITY_H_
 
 extern "C" {
 #ifndef WIN32
@@ -26,22 +26,22 @@ extern "C" {
 namespace tcanetpp {
 
 
-typedef enum LoggerLevel
+typedef enum LogLevel
 {
-    LOGGER_EMERG   = 0,
-    LOGGER_ALERT   = 1, 
-    LOGGER_ERR     = 3,
-    LOGGER_WARN    = 4,
-    LOGGER_NOTICE  = 5,
-    LOGGER_DEBUG   = 7
+    LOGFAC_EMERG   = 0,
+    LOGFAC_ALERT   = 1, 
+    LOGFAC_ERR     = 3,
+    LOGFAC_WARN    = 4,
+    LOGFAC_NOTICE  = 5,
+    LOGFAC_DEBUG   = 7
 } logLevel_t;
 
 
 
-typedef std::ostringstream    LoggerMsg;
+typedef std::ostringstream   LogMsg;
 
 
-class Logger {
+class LogFacility {
 
   public:
 
@@ -59,20 +59,20 @@ class Logger {
                                             std::ostream * stream );
     
     
-    static bool           AddStream       ( const std::string & name, 
+    static bool           AddLogStream    ( const std::string & name, 
                                             std::ostream * stream );
     
     static std::ostream*  RemoveStream    ( const std::string & name );
     
-    static void           CloseLogger();
+    static void           CloseLogFacility();
 
     
     static void           LogMessage      ( const std::string & entry, 
-                                            int level = LOGGER_NOTICE );
+                                            int level = LOGFAC_NOTICE );
 
     static void           LogMessage      ( const std::string & prefix, 
                                             const std::string & entry,
-                                            int level = LOGGER_NOTICE );
+                                            int level = LOGFAC_NOTICE );
 
     static void           LogToStream     ( const std::string & streamName,
                                             const std::string & prefix,

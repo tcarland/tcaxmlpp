@@ -13,13 +13,10 @@ namespace tnmsCore {
 class MessageHandler {
 
   public:
-    
+
     virtual ~MessageHandler() {}
 
-
     /*  Messaging Callbacks  */
-
-    
     virtual void  AddHandler         ( const TnmsAdd     & add ) {}
     virtual void  RemoveHandler      ( const TnmsRemove  & remove ) {}
     virtual void  MetricHandler      ( const TnmsMetric  & metric ) {}
@@ -29,10 +26,13 @@ class MessageHandler {
     virtual void  UnsubscribeHandler ( const std::string & name ) {}
     virtual void  StructureHandler   ( bool  subscribe ) {}
 
-    virtual void  LastRecordHandler  ( int   record_type ) {}
-
     virtual void  AuthRequestHandler ( const TnmsAuthRequest & request ) {}
     virtual void  AuthReplyHandler   ( const TnmsAuthReply   & reply ) {}
+
+    virtual void  PingHandler() {}
+    virtual void  PingReplyHandler() {}
+
+    virtual void  LastMessageHandler ( int   record_type ) {}
 
 };
 
