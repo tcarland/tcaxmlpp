@@ -14,23 +14,13 @@ using namespace tcanetpp;
 namespace fwgen {
 
 
-struct FwZone {
-    std::string           zoneName;
-    FwDevList             deviceList; 
-
-    FwZone ( const std::string & zonename ) 
-        : zoneName(zonename) {}
-};
-
-
-
 class FwZones {
 
   public:
 
-    typedef std::map< std::string, FwZone* >  FwZoneMap;
-    typedef FwZoneMap::iterator               iterator;
-    typedef FwZoneMap::const_iterator         const_iterator;
+    typedef std::map< std::string, FwZone >  FwZoneMap;
+    typedef FwZoneMap::iterator              iterator;
+    typedef FwZoneMap::const_iterator        const_iterator;
 
   public:
 
@@ -42,9 +32,11 @@ class FwZones {
     bool            parse   ( const std::string & zonefile );
 
     FwZone*         find    ( const std::string & zonename );
-    bool            insert  ( const std::string & zonename, 
-                              FwZone * zone );
-    FwZone*         remove  ( const std::string & zonename );
+
+    bool            insert  ( const std::string & zonename,
+                              const FwZone      & zone );
+
+    bool            remove  ( const std::string & zonename );
 
     bool            exists  ( const std::string & zonename );
     void            clear();
@@ -60,19 +52,20 @@ class FwZones {
     void            erase ( iterator & begin, iterator & end );
 
     std::string     getErrorStr() const;
+    void            setDebug ( bool d ) { _debug = d; }
 
 
   private:
 
-    FwDevice*       resolveDevice   ( const std::string & devicename );
+    FwDevice*       resolveDevice   ( const std::string & devname );
 
-    void            parseZoneData   ( FwZone        * fwzone, 
-    								  std::string   & ln );           
+    void            parseZoneData   ( FwZone        * fwzone,
+                                      std::string   & ln );
 
-    void            parseDeviceData ( std::ifstream & ifn, 
+    void            parseDeviceData ( std::ifstream & ifn,
                                       std::string   & line );
 
-    void            parseInterfaces ( std::ifstream & ifn, 
+    void            parseInterfaces ( std::ifstream & ifn,
                                       FwDevice      * fwdev );
 
 
@@ -81,7 +74,7 @@ class FwZones {
     FwZoneMap       _fwZoneMap;
     std::string     _errStr;
     bool            _debug;
-    
+
 };
 
 }  // namespace

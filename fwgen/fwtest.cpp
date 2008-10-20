@@ -25,11 +25,12 @@ int main ( int argc, char **argv )
     }
 
     for ( vIter = vars.begin(); vIter != vars.end(); ++vIter )
-        std::cout << vIter->first << " = " 
+        std::cout << vIter->first << " = "
             << CidrUtils::toCidrString(vIter->second)
             << std::endl;
 
 
+    zones.setDebug(true);
     if ( ! zones.parse(zonefile) ) {
         std::cout << "Parse error: " << zones.getErrorStr() << std::endl;
         return 0;
@@ -42,7 +43,7 @@ int main ( int argc, char **argv )
     FwConfig::ParseFwVars(varfile, varmap);
 
     for ( vIter = varmap.begin(); vIter != varmap.end(); ++vIter ) {
-        std::cout << "fwvar: " << vIter->first << " == " 
+        std::cout << "fwvar: " << vIter->first << " == "
             << CidrUtils::toCidrString(vIter->second) << std::endl;
     }
 

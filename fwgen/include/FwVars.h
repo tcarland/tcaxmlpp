@@ -13,6 +13,17 @@ using namespace tcanetpp;
 namespace fwgen {
 
 
+/**
+  *    The FwVars class acts as our container of firewall variable mappings.
+  *  A variable mapping is simply a key value expression where the key
+  *  defines the variable name to be later expanded within a firewall rule.
+  *  eg.  MyNetwork = "10.1.2.0/24", ANY = "0.0.0.0"
+  *  Variables can be added directly or more commonly parsed from a
+  *  file via the parse() method. Note that each call to parse will
+  *  add more variables to the map. clear() should be used between calls
+  *  to parse() if this behaviour is not desired. Duplicate variables
+  *  are not permitted in either case.
+ **/
 class FwVars {
 
   public:
@@ -26,12 +37,11 @@ class FwVars {
     FwVars();
     FwVars ( const std::string & varfile ) throw ( Exception );
 
-    ~FwVars();
+    virtual ~FwVars();
 
     bool            parse   ( const std::string & varfile );
 
     Prefix          find    ( const std::string & name );
-
     bool            insert  ( const std::string & name, Prefix & p );
     bool            insert  ( const std::string & name, const Prefix & p );
 

@@ -7,11 +7,6 @@
 namespace fwgen {
 
 
-struct FwPort {
-    uint16_t  port;
-    uint16_t  port_high;
-    bool      ranged;
-};
 
 enum FwProtocol {
     FWPROTO_NONE,
@@ -20,41 +15,49 @@ enum FwProtocol {
 };
 
 
-struct FwRule {
-    bool      permit;
-    Prefix    src;
-    FwPort    srcport;
-    Prefix    dst;
-    FwPort    dstport;
-    uint16_t  proto;
-    bool      established;
+struct FwPort {
+    uint16_t    port;
+    uint16_t    port_high;
+    bool        ranged;
 };
+
+
+struct FwRule {
+    bool        permit;
+    Prefix      src;
+    FwPort      srcport;
+    Prefix      dst;
+    FwPort      dstport;
+    uint16_t    proto;
+    bool        established;
+};
+
 
 typedef std::set<FwRule*> FwRuleSet;
 
 
 class FwRules {
-	
+
 public:
-	
+
 	FwRules();
 	FwRules ( const std::string & rulefile );
-	
+
 	~FwRules();
-	
-	
+
+
 	bool	     parse	( const std::string & rulefile );
-	
-	
+
+
 	std::string  getErrorStr() const;
-	
-	
+
+
 private:
-	
-	
+
+
 	std::string   & errStr;
-	
-	
+
+
 };
 
 

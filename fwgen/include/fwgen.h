@@ -13,36 +13,49 @@ using namespace tcanetpp;
 namespace fwgen {
 
 
-enum FwType
+typedef enum eFwType
 {
     IPTABLES = 0,
     CISCO_ACL = 1,
     CISCO_FW  = 2,
     BSD = 3
+} fwtype_t;
+
+
+typedef struct FwDevicePort
+{
+    std::string     ifName;
+    Prefix          ifAddr;
+    bool            isExternal;
+} fwdevport_t;
+
+
+typedef std::list< FwDevicePort >  FwPortList;
+
+
+struct FwDevice
+{
+    std::string     deviceName;
+    FwPortList      portslist;
+    eFwType         fwType;
+
+    FwDevice ( const std::string & devicename )
+        : deviceName(devicename) {}
 };
 
-
-typedef struct FwInterface {
-    std::string         ifName;
-    Prefix              ifAddr;
-    bool                isExternal;
-} FwIface;
-
-typedef std::list< FwIface* > FwIfaceList;
+typedef std::list< FwDevice > FwDeviceList;
 
 
-struct FwDevice {
-    std::string    deviceName;
-    FwIfaceList    ifaceList;
-    FwType         fwType;
+struct FwZone
+{
+    std::string     zoneName;
+    FwDeviceList    deviceList;
 
-    FwDevice ( const std::string & devname )
-        : deviceName(devname) {}
+    FwZone ( const std::string & zonename = "" )
+        : zoneName(zonename) {}
 };
-
-typedef std::list< FwDevice* > FwDevList;
 
 
 } // namespace
 
-#endif
+#endif // fwgen_h
