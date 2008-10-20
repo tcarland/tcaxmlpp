@@ -27,16 +27,16 @@ TnmsMetric::TnmsMetric ( const std::string & name,
 TnmsMetric::~TnmsMetric() {}
 
 
-std::string
-TnmsMetric::getValue()
+const std::string&
+TnmsMetric::getValue() const
 {
     return _valueStr;
 }
 
 
 template<typename T>
-T
-TnmsMetric::getValue()
+const T&
+TnmsMetric::getValue() const
 {
     if ( _valType == TNMS_STRING )
         return 0;
@@ -74,6 +74,19 @@ TnmsMetric::setValue ( eValueTypes valtype, T  & value )
     }
 
     return false;
+}
+
+
+const std::string&
+TnmsMetric::getPvtData() const
+{
+    return _pvt;
+}
+
+bool
+TnmsMetric::setPvtData ( const std::string & data )
+{
+    _pvt = data;
 }
 
 

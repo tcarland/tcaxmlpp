@@ -38,7 +38,7 @@ public:
     void             operator=  ( const TnmsOid    & toid );
 
     std::string      toString() const;
-    tOid             toArray() const;
+    tOid             toArray()  const;
 
     const OidList&   getOidList() const;
     OidList&         getOidList();
@@ -46,10 +46,10 @@ public:
     iterator         begin();
     iterator         end();
     const_iterator   begin() const;
-    const_iterator   end() const;
+    const_iterator   end()   const;
     bool             empty() const;
 
-    uint16_t         lastValue() const;
+    uint16_t         lastValue()    const;
     uint32_t         getOidLength() const;
     uint32_t         length() const { return this->getOidLength(); }
 

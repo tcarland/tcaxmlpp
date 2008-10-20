@@ -25,20 +25,24 @@ public:
     virtual ~TnmsMetric();
 
 
-    std::string     getValue();
+    int                 getValueType() const;
 
+
+    const std::string&  getValue() const;
     template<typename T>
-    T               getValue();
+    const T&            getValue() const;
 
-    int             getValueType()  const;
-
-    bool            setValue    ( eValueTypes         valtype,
-                                  const std::string & value );
-
+    bool                setValue    ( eValueTypes valtype,
+                                      const std::string & value );
     template< typename T >
-    bool            setValue    ( eValueTypes valtype, T & value );
+    bool                setValue    ( eValueTypes valtype, T & value );
 
-    //  Serializable
+
+    const std::string&  getPvtData() const;
+    bool                setPvtData ( const std::string &  data );
+
+    /*  Serializable */
+
     virtual ssize_t serialize   ( char * buffer, size_t buffer_len );
     virtual ssize_t deserialize ( char * buffer, size_t buffer_len );
     virtual size_t  size() const;

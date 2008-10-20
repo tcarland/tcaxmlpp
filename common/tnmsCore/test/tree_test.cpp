@@ -55,7 +55,8 @@ int main()
         return -1;
     }
 
-    std::cout << "Retrieved node " << node->getAbsoluteName() << std::endl << std::endl;
+    std::cout << "Retrieved node " << node->getAbsoluteName() 
+        << std::endl << std::endl;
     node->getValue().f1 = 2;
     node->getValue().f2 = 2;
 
@@ -67,7 +68,8 @@ int main()
     node = tree.insert(name3, std::inserter(addlist, addlist.begin()));
 
     if ( node != NULL ) {
-        std::cout << "ERROR! Duplicate insert not detected for " << name3 << std::endl;
+        std::cout << "ERROR! Duplicate insert not detected for " << name3 
+            << std::endl;
         return -1;
     }
 
@@ -77,7 +79,8 @@ int main()
 
     node = tree.insert(name4, std::inserter(addlist, addlist.begin()));
 
-    std::cout << "Add of " << name4 << " resulted in " << addlist.size() << " adds." << std::endl;
+    std::cout << "Add of " << name4 << " resulted in " << addlist.size() 
+        << " adds." << std::endl;
 
     if ( addlist.size() != 1 ) {
         std::cout << "ERROR! too many adds for " << name4 << std::endl;
@@ -95,8 +98,8 @@ int main()
 
     std::cout << "Retrieved node for name '" << node->getName() << "' of path '"
         << node->getAbsoluteName() << std::endl;
-    std::cout << " f1 = " << node->getValue().f1 << " f2 = " << node->getValue().f2
-        << std::endl << std::endl;
+    std::cout << " f1 = " << node->getValue().f1 << " f2 = " 
+        << node->getValue().f2 << std::endl << std::endl;
 
     //-----------------------------------------------------------------------
 
@@ -153,8 +156,8 @@ int main()
 
     inode = inttree.insert(oid1, std::inserter(iaddlist, iaddlist.begin()));
 
-    std::cout << "list size for adding '" << oid1.toString() << "' is " << iaddlist.size()
-              << std::endl;
+    std::cout << "list size for adding '" << oid1.toString() << "' is " 
+        << iaddlist.size() << std::endl;
     std::cout << "tree size is " << inttree.size() << std::endl;
 
     inode->getValue().f1 = 4;
@@ -165,13 +168,15 @@ int main()
     inode = inttree.find(oid2);
 
     if ( inode == NULL ) {
-        std::cout << "ERROR! node not found for branch " << oid2.toString() << std::endl;
+        std::cout << "ERROR! node not found for branch " << oid2.toString() 
+            << std::endl;
         return -1;
     }
 
     TnmsOid oid2out = inode->getAbsoluteName();
 
-    //std::cout << "Retrieved node " << inode->getAbsoluteName().toString() << "' "
+    //std::cout << "Retrieved node " << inode->getAbsoluteName().toString() 
+        //<< "' "
     std::cout << "Retrieved node '" << oid2out.toString() << "' "
 			  << std::endl << std::endl;
 
@@ -181,12 +186,14 @@ int main()
     //-----------------------------------------------------------------------
 
     iaddlist.clear();
-    std::cout << "Attempting duplicate insert of " << oid3.toString() << std::endl;
+    std::cout << "Attempting duplicate insert of " << oid3.toString() 
+        << std::endl;
 
     inode = inttree.insert(oid3, std::inserter(iaddlist, iaddlist.begin()));
 
     if ( inode != NULL ) {
-        std::cout << "ERROR! Duplicate insert not detected for " << name3 << std::endl;
+        std::cout << "ERROR! Duplicate insert not detected for " 
+            << name3 << std::endl;
         return -1;
     }
 
@@ -196,11 +203,12 @@ int main()
 
     inode = inttree.insert(oid4, std::inserter(iaddlist, iaddlist.begin()));
 
-    std::cout << "Add of " << oid4.toString() << " resulted in " << iaddlist.size()
-              << " adds." << std::endl;
+    std::cout << "Add of " << oid4.toString() << " resulted in " 
+        << iaddlist.size() << " adds." << std::endl;
 
     if ( iaddlist.size() != 1 ) {
-        std::cout << "ERROR! too many adds for " << oid4.toString() << std::endl;
+        std::cout << "ERROR! too many adds for " << oid4.toString() 
+            << std::endl;
         return -1;
     }
 
@@ -220,7 +228,8 @@ int main()
 
     //-----------------------------------------------------------------------
 
-    std::cout << std::endl << "Size before erase: " << inttree.size() << std::endl;
+    std::cout << std::endl << "Size before erase: " << inttree.size
+        () << std::endl;
     std::cout << "  erasing '" << oid2.toString() << "'" << std::endl;
 
     std::set<TnmsOid>   oidset;
@@ -232,8 +241,9 @@ int main()
     for ( oIter = oidset.begin(); oIter != oidset.end(); ++oIter )
         std::cout << "  Erased node " << oIter->toString() << std::endl;
 
+    std::cout << std::endl << "Size after erase: " << inttree.size() 
+        << std::endl;
 
-    std::cout << std::endl << "Size after erase: " << inttree.size() << std::endl;
     return 0;
 }
 
