@@ -102,19 +102,22 @@ CidrUtils::StringToCidr ( const std::string & cidrStr, Prefix & pfx )
     std::string::size_type  indx;
 
     indx = cidrStr.find_first_of('/');
-    if ( indx == std::string::npos )
-        return 0;
-
-    addrstr = cidrStr.substr(0, indx);
+    if ( indx == std::string::npos ) {
+        addrstr = cidrStr;
+        mb = 32;
+    } else {
+        addrstr = cidrStr.substr(0, indx);
+    }
 
     if ( CidrUtils::pton(addrstr, addr) <= 0 )
         return 0;
-   
-    addrstr = cidrStr.substr(indx+1);
-
-    // must use a short here, uint8_t is an unsigned char 
-    // and is interpreted wrong by fromString()
-    mb = (uint16_t) StringUtils::fromString<uint16_t>(addrstr);
+  
+    if ( mb == 0 ) {
+        addrstr = cidrStr.substr(indx+1);
+        // must use a short here, uint8_t is an unsigned char 
+        // and is interpreted wrong by fromString()
+        mb = (uint16_t) StringUtils::fromString<uint16_t>(addrstr);
+    }
 
     if ( mb < 1 || mb > 32 )
 	mb = 32;
