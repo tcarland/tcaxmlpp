@@ -11,12 +11,11 @@ using namespace tcanetpp;
 
 
 
-
 int main() {
 
     // string conversions
-    int inta      = 256;
-    uint32_t intb = 512;
+    //int inta      = 256;
+    //uint32_t intb = 512;
     uint16_t intc = 1;
     uint8_t  mb   = 28;
     uint16_t mbb  = 29;

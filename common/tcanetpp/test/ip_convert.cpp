@@ -21,6 +21,7 @@ int main ( int argc, char **argv )
         return 0;
     }
 
+    Prefix      pfx;
     std::string input;
     uint32_t    ip;
     uint16_t    mb;
@@ -30,10 +31,10 @@ int main ( int argc, char **argv )
         input = argv[i];
 
         if ( StringUtils::indexOf(input, ".") >= 0 ) {
-            Prefix p = CidrUtils::StringToCidr(input);
+            CidrUtils::StringToCidr(input, pfx);
 
-            ip = p.getPrefix();
-            mb = p.getPrefixLen();
+            ip = pfx.getPrefix();
+            mb = pfx.getPrefixLen();
 
             std::cout <<  "  " 
                 << std::setiosflags(std::ios::left) << std::setw(20) 
@@ -58,12 +59,12 @@ int main ( int argc, char **argv )
                 mb = 32;
             }
 
-            Prefix  p = Prefix(ip, mb);
+            pfx  = Prefix(ip, mb);
             std::cout << "  "
                 << std::setiosflags(std::ios::left) << std::setw(20) 
                 << input << "  ==  " 
                 << std::setiosflags(std::ios::right) << std::setw(20)
-                << CidrUtils::toCidrString(p) 
+                << CidrUtils::toString(pfx) 
                 << std::resetiosflags(std::ios::right) << std::endl;
         }
     }

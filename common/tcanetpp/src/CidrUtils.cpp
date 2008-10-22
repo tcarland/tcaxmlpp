@@ -7,7 +7,6 @@
 #define _TCANETPP_CIDRUTILS_CPP_
 
 #include <math.h>
-#include <vector>
 
 #ifndef WIN32
 # include <arpa/inet.h>
@@ -58,69 +57,71 @@ CidrUtils::toString ( ipv4addr_t addr )
     return CidrUtils::ntop(addr);
 }
 
-
 std::string
-CidrUtils::toCidrString ( ipv4addr_t addr, uint8_t mb )
+CidrUtils::toString ( const Prefix & pfx )
 {
-    char   cidr[INET_CIDRSTRLEN];
-
-    std::string cidrStr = CidrUtils::ntop(addr);
-    snprintf(cidr, INET_CIDRSTRLEN, "%s%s%u", cidrStr.c_str(), "/", mb);
-
-    return((std::string)cidr);
+    return CidrUtils::toString(pfx.getPrefix(), pfx.getPrefixLen());
 }
 
+
 std::string
-CidrUtils::toCidrString ( const Prefix & p )
+CidrUtils::toString ( ipv4addr_t addr, uint8_t mb )
 {
-    return CidrUtils::toCidrString(p.getPrefix(), p.getPrefixLen());
+    char  cidr[INET_CIDRSTRLEN];
+
+    std::string  cidrStr = CidrUtils::ntop(addr);
+    snprintf(cidr, INET_CIDRSTRLEN, "%s%s%u", cidrStr.c_str(), "/", mb);
+
+    cidrStr.assign(cidr);
+
+    return cidrStr;
+}
+
+//-------------------------------------------------------------------//
+
+/**  Converts the provided string to the provided 32bit unsigned 
+  *  integer. The function essentially wraps a call to inet_pton 
+  *  and returns a 0 if the string fails to parse.
+ **/
+int
+CidrUtils::StringToAddr ( const std::string & addrStr, ipv4addr_t & addr )
+{
+    return( CidrUtils::pton(addrStr, addr) );
 }
 
 //-------------------------------------------------------------------//
 
 int
-CidrUtils::StringToAddr ( const std::string & addrStr, ipv4addr_t & addr )
-{
-    int rs = 0;
-
-#   ifdef WIN32
-    addr = CidrUtils::pton(addrStr);
-    if ( addr > 0 )
-        rs   = 1;
-#   else
-    rs = inet_pton(AF_INET, addrStr.c_str(), &addr);
-#   endif
-
-    return rs;
-}
-
-//-------------------------------------------------------------------//
-
-Prefix
-CidrUtils::StringToCidr ( const std::string & cidrStr )
+CidrUtils::StringToCidr ( const std::string & cidrStr, Prefix & pfx )
 {
     Prefix      prefix;
     std::string addrstr = "";
     ipv4addr_t  addr    = 0;
-    uint16_t     mb     = 0;
+    uint16_t    mb      = 0;  // using a short intentionally
     
-    std::vector<std::string>  stok;
-    
-    StringUtils::split(cidrStr, '/', std::back_inserter(stok));
-    
-    if ( stok.size() >= 1 )
-        addrstr = stok[0];
+    std::string::size_type  indx;
 
-    if ( CidrUtils::StringToAddr(addrstr, addr) <= 0 )
-	return prefix;
+    indx = cidrStr.find_first_of('/');
+    if ( indx == std::string::npos )
+        return 0;
 
-    if ( stok.size() == 2 )
-	mb = (uint16_t) StringUtils::fromString<uint16_t>(stok[1]);
+    addrstr = cidrStr.substr(0, indx);
 
-    if ( mb <= 0 || mb > 32 )
+    if ( CidrUtils::pton(addrstr, addr) <= 0 )
+        return 0;
+   
+    addrstr = cidrStr.substr(indx+1);
+
+    // must use a short here, uint8_t is an unsigned char 
+    // and is interpreted wrong by fromString()
+    mb = (uint16_t) StringUtils::fromString<uint16_t>(addrstr);
+
+    if ( mb < 1 || mb > 32 )
 	mb = 32;
 
-    return(Prefix(addr, mb));
+    pfx = Prefix(addr, mb);
+
+    return 1;
 }
 
 //-------------------------------------------------------------------//
@@ -236,11 +237,11 @@ CidrUtils::matchCidr ( Prefix & p, ipv4addr_t addr )
 std::string
 CidrUtils::ntop ( ipv4addr_t addr )
 {
-    char   ip[INET_ADDRSTRLEN];
-    std::string ipstr;
+    char         ip[INET_ADDRSTRLEN];
+    std::string  ipstr;
 
 #   ifdef WIN32
-    inaddr_t  wip;
+    inaddr_t   wip;
     wip.s_addr = addr;
     ::strncpy(ip, ::inet_ntoa(wip), INET_ADDRSTRLEN);
 #   else
@@ -252,20 +253,18 @@ CidrUtils::ntop ( ipv4addr_t addr )
     return(ipstr);
 }
 
-ipv4addr_t
-CidrUtils::pton ( const std::string & ipstr )
+int
+CidrUtils::pton ( const std::string & ipstr, ipv4addr_t & addr )
 {
-    ipv4addr_t addr = 0;
+    int rs = 0;
 
 #   ifdef WIN32
     addr = (unsigned long) inet_addr(ipstr.c_str());
-    if ( addr == INADDR_NONE )
-        addr = 0;
 #   else
-    ::inet_pton(AF_INET, ipstr.c_str(), &addr);
+    rs = ::inet_pton(AF_INET, ipstr.c_str(), &addr);
 #   endif
 
-    return addr;
+    return rs;
 }
 
 //-------------------------------------------------------------------//
@@ -373,7 +372,7 @@ CidrUtils::getHostAddrList ( const std::string & host, AddrList & addrlist )
 bool
 CidrUtils::isLoopback ( ipv4addr_t addr )
 {
-    return(addr == (CidrUtils::pton(std::string("127.0.0.1"))));
+    return(addr == IPV4ADDR_LOOPBACK);
 }
 
 //-------------------------------------------------------------------//

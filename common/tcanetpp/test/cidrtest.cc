@@ -31,7 +31,9 @@ int main ( int argc, char **argv )
     }
 
     std::string  cidr = "192.102.249.0/32";
-    Prefix       p    = CidrUtils::StringToCidr(cidr);
+    Prefix       p;
+
+    CidrUtils::StringToCidr(cidr, p);
     
     printf("\nProcessing string %s ...\n", cidr.c_str());
     printf("Result is %u / %u\n", p.getPrefix(), p.getPrefixLen());

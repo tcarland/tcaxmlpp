@@ -29,12 +29,13 @@ sigHandler ( int signal )
 
 int main ( int argc, char **argv )
 {
-    foo_t     foo;
-    int       wt, port;
+    foo_t       foo;
+    int         wt, port;
+    ipv4addr_t  addr; 
 
     BufferedSocket  * sock = NULL;
 
-    ipv4addr_t addr = CidrUtils::pton("127.0.0.1");
+    CidrUtils::pton("127.0.0.1", addr);
 
     if ( argc == 1 ) {
 	printf("Usage: client [server_port]\n");

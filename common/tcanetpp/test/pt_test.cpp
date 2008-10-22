@@ -87,18 +87,18 @@ int main ( int argc, char **argv )
     std::vector<Prefix>::iterator vIter;
 
     for ( int i = 0; i < 6; i++ ) {
-        pfx = CidrUtils::StringToCidr(addrs[i]);
+        CidrUtils::StringToCidr(addrs[i], pfx);
         srcp.push_back(pfx);
     }
 
-    pfx = CidrUtils::StringToCidr(addrs[5]);
+    CidrUtils::StringToCidr(addrs[5], pfx);
     CidrUtils::deAggregate(pfx, 24, srcp);
     
 
     printf("v size is %d\n", srcp.size());
 
     for ( vIter = srcp.begin(); vIter != srcp.end(); vIter++ )
-        printf("Prefix is %s\n", CidrUtils::toCidrString(*vIter).c_str());
+        printf("Prefix is %s\n", CidrUtils::toString(*vIter).c_str());
     //return 0;
 
     ptree = pt_init();
@@ -112,13 +112,14 @@ int main ( int argc, char **argv )
     sleep(1);
 
 
-
-    Prefix p      = CidrUtils::StringToCidr(std::string(addrs[1]));
+    Prefix  p;
+    CidrUtils::StringToCidr(addrs[1], p);
     Prefix *pptr  = (Prefix*) pt_remove(ptree, p.getCidr());
 
     if ( pptr ) {
-        printf("removed address %s/%d\n", CidrUtils::ntop(pptr->getPrefix()).c_str(),
-            pptr->getPrefixLen());
+        printf("removed address %s/%d\n", 
+                CidrUtils::ntop(pptr->getPrefix()).c_str(),
+                pptr->getPrefixLen());
         delete pptr;
     }
    
