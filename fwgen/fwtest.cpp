@@ -5,6 +5,7 @@ using namespace tcanetpp;
 
 #include "FwVars.h"
 #include "FwZones.h"
+#include "FwRules.h"
 
 
 using namespace fwgen;
@@ -14,10 +15,21 @@ int main ( int argc, char **argv )
 {
     std::string varfile  = "etc/fwvars.cfg";
     std::string zonefile = "etc/ifws.cfg";
+    std::string rulefile = "etc/fwrules.cfg";
 
-    FwVars            vars;
-    FwZones           zones;
-    FwVars::iterator  vIter;
+    FwVars                 vars;
+    FwVars::iterator       vIter;
+
+    FwZones                zones;
+    FwZones::iterator      zIter;
+
+    FwDeviceMap::iterator  dIter;
+
+    FwRules                rules;
+
+    std::cout << std::endl 
+        << " -------- fw variables --------" << std::endl;
+
 
     if ( ! vars.parse(varfile) ) {
         std::cout << "Parse error: " << vars.getErrorStr() << std::endl;
@@ -30,56 +42,56 @@ int main ( int argc, char **argv )
             << std::endl;
 
 
-    zones.setDebug(true);
+
+    std::cout << std::endl 
+        << " -------- fw zones --------" << std::endl;
+
+
+    //zones.setDebug(true);
     if ( ! zones.parse(zonefile) ) {
         std::cout << "Parse error: " << zones.getErrorStr() << std::endl;
         return 0;
     }
 
-/*
-    FwVarMap            varmap;
-    FwVarMap::iterator  vIter;
+    for ( zIter = zones.begin(); zIter != zones.end(); ++zIter )
+    {
+        std::cout << std::endl << "Zone: " << zIter->first << "  (" 
+            << zIter->second.deviceMap.size() << " devices)" << std::endl;
+        if ( zIter->second.deviceMap.size() > 0 )
+        {
+            FwDeviceMap & dlist = zIter->second.deviceMap;
 
-    FwConfig::ParseFwVars(varfile, varmap);
+            for ( dIter = dlist.begin(); dIter != dlist.end(); ++dIter ) {
+                std::cout << "  Device: " << dIter->first << "  ("
+                    << dIter->second.portsmap.size() << " ports)" << std::endl;
 
-    for ( vIter = varmap.begin(); vIter != varmap.end(); ++vIter ) {
-        std::cout << "fwvar: " << vIter->first << " == "
-            << CidrUtils::toCidrString(vIter->second) << std::endl;
-    }
+                FwPortMap & pmap = dIter->second.portsmap;
+                FwPortMap::iterator  pIter;
 
-    FwZoneMap            zonemap;
-    FwZoneMap::iterator  zIter;
-    FwDevList::iterator  dIter;
-
-    FwConfig::ParseFwInterfaces("etc/ifws.cfg", zonemap);
-
-    for ( zIter = zonemap.begin(); zIter != zonemap.end(); ++zIter ) {
-        FwZone    * zone  = zIter->second;
-        FwDevList & dlist = zone->deviceList;
-
-        std::cout << "Zone: " << zone->zoneName << std::endl;
-
-        for ( dIter = dlist.begin(); dIter != dlist.end(); ++dIter ) {
-            FwDevice              * dev   = *dIter;
-            FwIfaceList           & flist = dev->ifaceList;
-            FwIfaceList::iterator   fIter;
-
-            std::cout << " device: " << dev->deviceName << std::endl;
-
-            for ( fIter = flist.begin(); fIter != flist.end(); ++fIter ) {
-                FwIface * iface = *fIter;
-                std::cout << iface->ifName << " : "
-                    << CidrUtils::toCidrString(iface->ifAddr) << " : "
-                    << iface->isExternal << std::endl;
-
+                for ( pIter = pmap.begin(); pIter != pmap.end(); ++pIter ) {
+                    std::cout << pIter->second.portName << " : " 
+                        << CidrUtils::toCidrString(pIter->second.portAddr)
+                        << " : " << pIter->second.isExternal << std::endl;
+                }
             }
         }
-
     }
-    FwRuleSet  fwrules;
 
-    FwConfig::ParseFwRules("etc/fwrules.cfg", fwrules);
-*/
+
+
+    std::cout << std::endl 
+        << " -------- fw rules --------" << std::endl;
+
+
+    //rules.setDebug(true);
+    if ( ! rules.parse(rulefile) ) {
+        std::cout << "Parse error: " << rules.getErrorStr() << std::endl;
+        return 0;
+    }
+
+
+
+
     return 0;
 }
 

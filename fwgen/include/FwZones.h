@@ -13,6 +13,15 @@ using namespace tcanetpp;
 
 namespace fwgen {
 
+struct FwZone
+{
+    std::string     zoneName;
+    FwDeviceMap     deviceMap;
+
+    FwZone ( const std::string & zonename = "" )
+        : zoneName(zonename) {}
+};
+
 
 class FwZones {
 
@@ -26,7 +35,8 @@ class FwZones {
 
     FwZones();
     FwZones ( const std::string & zonefile ) throw ( Exception );
-    ~FwZones();
+    
+    virtual ~FwZones();
 
 
     bool            parse   ( const std::string & zonefile );

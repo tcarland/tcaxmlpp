@@ -11,7 +11,7 @@ INCLUDES=	-Iinclude
 
 BIN=		fwtest
 
-OBJS=		src/FwVars.o src/FwZones.o
+OBJS=		src/FwVars.o src/FwZones.o src/FwRules.o
 
 
 ALL_OBJS=	$(OBJS)

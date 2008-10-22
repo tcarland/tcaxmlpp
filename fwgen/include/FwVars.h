@@ -42,12 +42,12 @@ class FwVars {
     bool            parse   ( const std::string & varfile );
 
     Prefix          find    ( const std::string & name );
+    bool            exists  ( const std::string & name );
+    
     bool            insert  ( const std::string & name, Prefix & p );
     bool            insert  ( const std::string & name, const Prefix & p );
 
     Prefix          remove  ( const std::string & name );
-
-    bool            exists  ( const std::string & name );
 
     void            clear();
     size_t          size() const;

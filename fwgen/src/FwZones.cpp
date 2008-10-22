@@ -66,7 +66,6 @@ FwZones::parse ( const std::string & zonefile )
             FwZone  fwzone(zone);
 
             this->parseZoneData(&fwzone, ln);
-
             this->insert(zone, fwzone);
         }
 
@@ -88,7 +87,8 @@ FwZones::parseZoneData ( FwZone * fwzone, std::string & ln )
         devname = ln.substr(0, indx);
         StringUtils::trim(devname);
 
-        fwzone->deviceList.push_back(FwDevice(devname));
+        //fwzone->deviceList.push_back(FwDevice(devname));
+        fwzone->deviceMap[devname] = FwDevice(devname);
 
         ln   = ln.substr(indx + 1);
         indx = ln.find_first_of(':');
@@ -99,7 +99,9 @@ FwZones::parseZoneData ( FwZone * fwzone, std::string & ln )
 
     if ( ln.size() > 0 ) {
         StringUtils::trim(ln);
-        fwzone->deviceList.push_back(FwDevice(ln));
+        //fwzone->deviceList.push_back(FwDevice(ln));
+        fwzone->deviceMap[ln] = FwDevice(ln);
+
         if ( this->_debug )
             std::cout << " Added device " << ln << " to zone "
                 << fwzone->zoneName << std::endl;
@@ -226,8 +228,10 @@ FwZones::resolveDevice ( const std::string & devicename )
 
     for ( zIter = this->begin(); zIter != this->end(); ++zIter ) {
         if ( devicename.compare(zIter->first) == 0 ) {
-            return &zIter->second.deviceList.front();
+            //return &zIter->second.deviceList.front();
+            return ( &(zIter->second.deviceMap.begin()->second) );
         } else {
+            /*
             FwDeviceList & dlist = zIter->second.deviceList;
             FwDeviceList::iterator  dIter;
 
@@ -236,6 +240,14 @@ FwZones::resolveDevice ( const std::string & devicename )
                 if ( devicename.compare(dev.deviceName) == 0 )
                     return &dev;
             }
+            */
+            FwDeviceMap & dmap = zIter->second.deviceMap;
+            FwDeviceMap::iterator  dIter;
+
+            dIter = dmap.find(devicename);
+
+            if ( dIter != dmap.end() )
+                return &dIter->second;
         }
     }
 
@@ -251,17 +263,24 @@ FwZones::parseDeviceData ( std::ifstream & ifs, std::string & line )
 
     indx = line.find_first_of('{');
 
-    if ( indx != std::string::npos ) { // get zone name
+    if ( indx != std::string::npos )   // get zone name
+    {
         zonename = line.substr(0, indx);
         StringUtils::trim(zonename);
 
         FwDevice * fwdev  = this->resolveDevice(zonename);
 
-        if ( fwdev == NULL )          // skipping undefined
+        if ( this->_debug ) {
+            std::cout << "FwZones::parseDeviceData() " << zonename
+                << std::endl;
+        }
+
+        if ( fwdev == NULL ) {     // skipping undefined
             if ( this->_debug )
             	std::cout << "Skipping undefined zone "  << zonename << std::endl;
-        else
+        } else {
             this->parseInterfaces(ifs, fwdev);
+        }
     }
 
     return;
@@ -274,6 +293,9 @@ FwZones::parseInterfaces ( std::ifstream & ifs, FwDevice * fwdev )
     std::string              ln, addr;
     std::string::size_type   indx, indx2;
 
+    if ( fwdev == NULL )
+        return;
+
     while ( std::getline(ifs, ln) ) {
         if ( (indx = ln.find_first_of("}")) != std::string::npos )
             break;
@@ -283,9 +305,9 @@ FwZones::parseInterfaces ( std::ifstream & ifs, FwDevice * fwdev )
         if ( indx == std::string::npos )
             continue;
 
-        FwDevicePort devport;
+        FwDevicePort  devport;
 
-        devport.ifName = ln.substr(0, indx);
+        devport.portName = ln.substr(0, indx);
         indx2  = ln.find_first_of(':', indx + 1);
 
         if ( indx2 == std::string::npos ) {
@@ -300,14 +322,15 @@ FwZones::parseInterfaces ( std::ifstream & ifs, FwDevice * fwdev )
         }
 
         StringUtils::trim(addr);
-        devport.ifAddr = CidrUtils::StringToCidr(addr);
+        devport.portAddr = CidrUtils::StringToCidr(addr);
 
         if ( this->_debug )
-            std::cout << devport.ifName << " : "
-                << CidrUtils::toCidrString(devport.ifAddr) << " : "
+            std::cout << devport.portName << " : "
+                << CidrUtils::toCidrString(devport.portAddr) << " : "
                 << devport.isExternal << std::endl;
 
-        fwdev->portslist.push_back(devport);
+        //fwdev->portslist.push_back(devport);
+        fwdev->portsmap[devport.portName] = devport;
     }
 
     return;

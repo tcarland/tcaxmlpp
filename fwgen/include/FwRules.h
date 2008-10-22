@@ -1,66 +1,68 @@
 #ifndef _INCLUDE_FWRULES_H_
 #define _INCLUDE_FWRULES_H_
 
+
 #include "fwgen.h"
 
 
 namespace fwgen {
 
-
-
-enum FwProtocol {
-    FWPROTO_NONE,
-    FWPROTO_TCP = 17,
-    FWPROTO_UDP = 9,
-};
-
-
-struct FwPort {
-    uint16_t    port;
-    uint16_t    port_high;
-    bool        ranged;
-};
-
-
-struct FwRule {
-    bool        permit;
-    Prefix      src;
-    FwPort      srcport;
-    Prefix      dst;
-    FwPort      dstport;
-    uint16_t    proto;
-    bool        established;
-};
-
-
-typedef std::set<FwRule*> FwRuleSet;
+class FwVars;
+class FwZones;
 
 
 class FwRules {
 
 public:
 
-	FwRules();
-	FwRules ( const std::string & rulefile );
+    typedef FwRuleList::iterator         iterator;
+    typedef FwRuleList::const_iterator   const_iterator;
+    
+public:
 
-	~FwRules();
+    FwRules ( FwVars * vars = NULL, FwZones * zones = NULL,
+              const std::string & protofile = FWGEN_PROTOCOLS_FILE);
+
+    virtual ~FwRules();
 
 
-	bool	     parse	( const std::string & rulefile );
+    bool            parse          ( const std::string & rulefile );
+
+    const_iterator  begin() const;
+    const_iterator  end()   const;
+    size_t          size()  const;
+
+    std::string     getErrorStr() const;
+    void            setDebug       ( bool d ) { _debug = d; }
 
 
-	std::string  getErrorStr() const;
+protected: 
 
+    bool            parseProto     ( const std::string & str, 
+                                     uint16_t          & pval );
+
+    bool            parseProtoFile ( const std::string & protofile );
+    bool            resolveFwVar   ( const std::string & src,
+                                     Prefix            & srcPrefix );
+    bool            resolveFwPort  ( const std::string & portstr,
+                                     FwPort            & fwport );
 
 private:
 
+    FwRuleList      _rules;
 
-	std::string   & errStr;
+    FwProtoMap      _proto;
+
+    FwVars        * _vars;
+    FwZones       * _zones;
+ 
+    std::string     _errstr;
+    bool            _debug;
 
 
 };
 
 
-}
+} // namespace
 
 #endif /*_INCLUDE_FWRULES_H_*/
