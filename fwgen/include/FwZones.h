@@ -1,5 +1,5 @@
-#ifndef _INCLUDE_FWZONES_H_
-#define _INCLUDE_FWZONES_H_
+#ifndef _FWGEN_FWZONES_H_
+#define _FWGEN_FWZONES_H_
 
 #include <list>
 #include <fstream>
@@ -87,7 +87,9 @@ class FwZones {
 
 };
 
+
 }  // namespace
 
 
-#endif  //  _INCLUDE_FWZONES_H_
+#endif  /* _FWGEN_FWZONES_H_ */
+

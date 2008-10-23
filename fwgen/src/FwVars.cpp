@@ -1,10 +1,12 @@
-#define _SOURCE_FWVARS_CPP_
+#define _FWGEN_FWVARS_CPP_
 
 #include <fstream>
 #include <iostream>
 
 #include "StringUtils.h"
 #include "CidrUtils.h"
+using namespace tcanetpp;
+
 
 #include "FwVars.h"
 
@@ -209,5 +211,5 @@ FwVars::getErrorStr() const
 
 }  // namespace
 
-// _SOURCE_FWVARS_CPP_
+// _FWGEN_FWVARS_CPP_
 

@@ -1,5 +1,5 @@
-#ifndef _INCLUDE_FWRULES_H_
-#define _INCLUDE_FWRULES_H_
+#ifndef _FWGEN_FWRULES_H_
+#define _FWGEN_FWRULES_H_
 
 
 #include "fwgen.h"
@@ -26,43 +26,44 @@ public:
     virtual ~FwRules();
 
 
-    bool            parse          ( const std::string & rulefile );
+    bool            parse           ( const std::string & rulefile );
 
     const_iterator  begin() const;
     const_iterator  end()   const;
     size_t          size()  const;
 
     std::string     getErrorStr() const;
-    void            setDebug       ( bool d ) { _debug = d; }
+    void            setDebug        ( bool d ) { _debug = d; }
 
 
 protected: 
 
-    bool            parseProto     ( const std::string & str, 
-                                     uint16_t          & pval );
+    bool            resolveProtocol ( const std::string & str, 
+                                      uint16_t          & pval );
 
-    bool            parseProtoFile ( const std::string & protofile );
-    bool            resolveFwVar   ( const std::string & src,
-                                     Prefix            & srcPrefix );
-    bool            resolveFwPort  ( const std::string & portstr,
-                                     FwPort            & fwport );
+    bool            resolveFwVar    ( const std::string & src,
+                                      Prefix            & srcPrefix );
+    bool            resolveFwPort   ( const std::string & portstr,
+                                      FwPort            & fwport );
+
+    bool            parseProtoFile  ( const std::string & protofile );
+
 
 private:
 
-    FwRuleList      _rules;
-
-    FwProtoMap      _proto;
-
-    FwVars        * _vars;
-    FwZones       * _zones;
+    FwVars *               _vars;
+    FwZones *              _zones;
  
-    std::string     _errstr;
-    bool            _debug;
+    FwRuleList             _rules;
+    FwProtoMap             _proto;
 
+    std::string            _errstr;
+    bool                   _debug;
 
 };
 
 
 } // namespace
 
-#endif /*_INCLUDE_FWRULES_H_*/
+#endif  /* _FWGEN_FWRULES_H_ */
+

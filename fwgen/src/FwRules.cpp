@@ -1,4 +1,4 @@
-#define _SOURCE_FWRULES_CPP_
+#define _FWGEN_FWRULES_CPP_
 
 #include <fstream>
 #include <iostream>
@@ -63,6 +63,14 @@ FwRules::parse ( const std::string & rulefile )
             continue;
         }
 
+
+        if ( _debug ) {
+            for ( vIter = rulev.begin(); vIter != rulev.end(); ++vIter )
+                std::cout << *vIter << " ";
+            std::cout << std::endl;
+        }
+
+
         // rules in format of:
         //  
         //  [permit|deny]  proto  src  (srcport)  dst  (dstport)  flags
@@ -71,23 +79,20 @@ FwRules::parse ( const std::string & rulefile )
         FwRule  fwrule;
         int     i = 0;
 
+        // permit or deny
+        StringUtils::toLowerCase(rulev[i]);
         if ( rulev[i].compare("permit") == 0 )
             fwrule.permit = true;
         else if ( rulev[i].compare("deny") == 0 )
             fwrule.permit = false;
         else {       // not a rule
+            std::cout << "NOT A RULE" << std::endl;
             continue;
         }
         i++;  // 1
 
-        if ( _debug ) {
-            for ( vIter = rulev.begin(); vIter != rulev.end(); ++vIter )
-                std::cout << *vIter << " ";
-            std::cout << std::endl;
-        }
-
         // proto
-        if ( ! this->parseProto(rulev[i], fwrule.proto) ) {
+        if ( ! this->resolveProtocol(rulev[i], fwrule.proto) ) {
             _errstr = "Rule parse error in protocol: " + ln;
             return false;
         }
@@ -138,8 +143,9 @@ FwRules::parse ( const std::string & rulefile )
     return true;
 }
 
+
 bool
-FwRules::parseProto ( const std::string & str, uint16_t & pval ) 
+FwRules::resolveProtocol ( const std::string & str, uint16_t & pval ) 
 {
     std::string           protostr;
     FwProtoMap::iterator  pIter;
@@ -268,4 +274,6 @@ FwRules::parseProtoFile ( const std::string & protofile )
 
 } // namespace
 
-// _SOURCE_FWRULES_CPP_
+
+// _FWGEN_FWRULES_CPP_
+

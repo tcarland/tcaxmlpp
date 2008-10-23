@@ -343,3 +343,5 @@ FwZones::parseInterfaces ( std::ifstream & ifs, FwDevice * fwdev )
 } // namespace
 
 
+/*  _FWGEN_FWZONES_CPP_  */
+

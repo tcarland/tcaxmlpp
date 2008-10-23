@@ -1,5 +1,5 @@
-#ifndef _INCLUDE_FWVARS_H_
-#define _INCLUDE_FWVARS_H_
+#ifndef _FWGEN_FWVARS_H_
+#define _FWGEN_FWVARS_H_
 
 #include <string>
 #include <map>
@@ -74,4 +74,5 @@ class FwVars {
 }  // namespace
 
 
-#endif  // _INCLUDE_FWVARS_H_
+#endif  /* _FWGEN_FWVARS_H_  */
+
