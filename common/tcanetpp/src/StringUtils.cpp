@@ -241,10 +241,13 @@ StringUtils::stripComments ( std::string & strline )
     std::string::size_type indx = 0;
 
     if ( (indx = strline.find_first_of('#')) != std::string::npos )
-        strline = strline.substr(indx);
+        strline = strline.substr(0, indx);
 
     if ( (indx = strline.find_first_of(';')) != std::string::npos )
-        strline = strline.substr(indx);
+        strline = strline.substr(0, indx);
+
+    if ( (indx = strline.find("//")) != std::string::npos )
+        strline = strline.substr(0, indx);
     
     return;
 }
@@ -476,10 +479,13 @@ StringUtils::stripComments ( std::wstring & wstrline )
     std::wstring::size_type indx = 0;
 
     if ( (indx = wstrline.find_first_of('#')) != std::string::npos )
-        wstrline = wstrline.substr(indx);
+        wstrline = wstrline.substr(0, indx);
 
     if ( (indx = wstrline.find_first_of(';')) != std::string::npos )
-        wstrline = wstrline.substr(indx);
+        wstrline = wstrline.substr(0, indx);
+    
+    if ( (indx = wstrline.find(L"//")) != std::string::npos )
+        wstrline = wstrline.substr(0, indx);
     
     return;
 }

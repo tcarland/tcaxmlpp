@@ -87,6 +87,7 @@ bool
 TnmsMetric::setPvtData ( const std::string & data )
 {
     _pvt = data;
+    return true;
 }
 
 
