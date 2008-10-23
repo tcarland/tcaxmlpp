@@ -66,8 +66,14 @@ class StringUtils {
 
     static std::string   trim             ( const std::string & str );
     static void          trim             ( std::string & str );
-    static void          trim             ( std::string & str, 
+
+    static void          strip            ( std::string & str, 
                                             const std::string & remove );
+    static void          strip            ( std::string & str, char c );
+
+    static void          stripComments    ( std::string & strline );
+    static void          replaceTabs      ( std::string & strline );
+
 
     template<typename T>
     static inline std::string toString    ( const T & a )
@@ -78,7 +84,7 @@ class StringUtils {
     }
 
     template<typename T>
-    static inline  T   fromString       ( const std::string & str )
+    static inline  T     fromString       ( const std::string & str )
     {
         T target = T();
         std::stringstream stream(str);
@@ -143,10 +149,32 @@ class StringUtils {
     static void          toUpperCase      ( std::wstring & wstr );
     static std::wstring  trim             ( const std::wstring & wstr );
     static void          trim             ( std::wstring & wstr );
-    static void          trim             ( std::wstring & wstr, const std::wstring & rem );
-    
+    static void          strip            ( std::wstring & wstr, const std::wstring & rem );
+    static void          strip            ( std::wstring & wstr, wchar_t c );
+   
+    static void          stripComments    ( std::wstring & wstrline );
+    static void          replaceTabs      ( std::wstring & wstrline );
+
     static std::wstring  ctowstr          ( const std::string  & wstr );
     static std::string   wtocstr          ( const std::wstring & wstr );
+
+    template<typename T>
+    static inline std::wstring toWString   ( const T & a )
+    {
+        std::wstringstream  stream;
+        stream << a;
+        return stream.str();
+    }
+
+    template<typename T>
+    static inline  T     fromWString       ( const std::wstring & wstr )
+    {
+        T target = T();
+        std::wstringstream stream(wstr);
+        stream >> target;
+        return target;
+    }
+
 
     template< typename OutputIterator_ >
     static inline void   split            ( const std::wstring  & wstr, 
@@ -163,10 +191,11 @@ class StringUtils {
         }
     }
 
+
 #endif  // TCANET_WIDECHAR
 
 
-}; 
+}; // class StringUtils
 
  
 }  // namespace

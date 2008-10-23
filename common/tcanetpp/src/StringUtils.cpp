@@ -205,17 +205,61 @@ StringUtils::trim ( std::string & str )
 /*@}*/
 
 
-/**  Strips all occurances of @param rem from the provided string. */
+// ----------------------------------------------------------------------
+/**@{  Strips all occurances of @param rem from the provided string. */
 void
-StringUtils::trim ( std::string & str, const std::string & rem )
+StringUtils::strip ( std::string & str, const std::string & rem )
 {
-    int indx = 0;
+    std::string::size_type indx = 0;
 
-    while ( (indx = StringUtils::indexOf(str, rem)) >= 0 )
+    while ( (indx = str.find(rem)) != std::string::npos )
         str.erase(indx, rem.length());
 
     return;
 }
+
+void
+StringUtils::strip ( std::string & str, char c )
+{
+    std::string::size_type indx = 0;
+
+    while ( (indx = str.find_first_of(c)) != std::string::npos )
+        str.erase(indx, 1);
+
+    return;
+}
+/*@}*/
+
+// ----------------------------------------------------------------------
+
+/**  Strips inline comments from a given string line. Valid inline or 
+  *  to end of line comments are '#', ';', and '//'
+ **/
+void
+StringUtils::stripComments ( std::string & strline )
+{
+    std::string::size_type indx = 0;
+
+    if ( (indx = strline.find_first_of('#')) != std::string::npos )
+        strline = strline.substr(indx);
+
+    if ( (indx = strline.find_first_of(';')) != std::string::npos )
+        strline = strline.substr(indx);
+    
+    return;
+}
+ 
+void
+StringUtils::replaceTabs ( std::string & strline )
+{
+    std::string::size_type indx = 0;
+
+    if ( (indx = strline.find_first_of('\t')) != std::string::npos )
+        strline = strline.replace(indx, 1, " ");
+    
+    return;
+}
+
 
 
 // ----------------------------------------------------------------------
@@ -395,17 +439,62 @@ StringUtils::trim ( std::wstring & str )
     return;
 }
 
+// ----------------------------------------------------------------------
 
 void
-StringUtils::trim ( std::wstring & str, const std::wstring & rem )
+StringUtils::strip ( std::wstring & str, const std::wstring & rem )
 {
-    int indx = 0;
+    std::wstring::size_type indx = 0;
 
-    while ( (indx = StringUtils::indexOf(str, rem)) >= 0 )
+    while ( (indx = str.find(rem)) != std::string::npos )
         str.erase(indx, str.length());
 
     return;
 }
+
+void
+StringUtils::strip ( std::wstring & str, wchar_t c )
+{
+    std::wstring::size_type indx = 0;
+
+    while ( (indx = str.find_first_of(c)) != std::wstring::npos )
+        str.erase(indx, str.length());
+
+    return;
+}
+
+
+// ----------------------------------------------------------------------
+
+/**  Strips inline comments from a given string line. Valid inline or 
+  *  to end of line comments are '#', ';', and '//'
+ **/
+
+void
+StringUtils::stripComments ( std::wstring & wstrline )
+{
+    std::wstring::size_type indx = 0;
+
+    if ( (indx = wstrline.find_first_of('#')) != std::string::npos )
+        wstrline = wstrline.substr(indx);
+
+    if ( (indx = wstrline.find_first_of(';')) != std::string::npos )
+        wstrline = wstrline.substr(indx);
+    
+    return;
+}
+ 
+void
+StringUtils::replaceTabs ( std::wstring & wstrline )
+{
+    std::wstring::size_type indx = 0;
+
+    if ( (indx = wstrline.find_first_of('\t')) != std::string::npos )
+        wstrline = wstrline.replace(indx, 1, L" ");
+    
+    return;
+}
+
 
 // ----------------------------------------------------------------------
 /**@{  Provides conversion between ascii and wide strings  */
