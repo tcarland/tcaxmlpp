@@ -1,6 +1,7 @@
 #define _SOURCE_FWVARS_CPP_
 
 #include <fstream>
+#include <iostream>
 
 #include "StringUtils.h"
 #include "CidrUtils.h"
@@ -11,14 +12,11 @@
 namespace fwgen {
 
 
-FwVars::FwVars() 
-{
-}
 
 FwVars::FwVars ( const std::string & varfile )
     throw ( Exception )
 {
-    if ( ! this->parse(varfile) )
+    if ( ! varfile.empty() && ! this->parse(varfile) )
         throw Exception(this->_errStr);
 }
 
@@ -33,7 +31,7 @@ FwVars::parse ( const std::string & varfile )
 {
     std::string               ln, key, val;
     FwVarMap::iterator        vIter;
-    int                       indx = 0;
+    std::string::size_type    indx = 0;
     Prefix                    pfx;
 
     std::ifstream  ifn(varfile.c_str());
@@ -43,24 +41,31 @@ FwVars::parse ( const std::string & varfile )
 
     while ( std::getline(ifn, ln) ) {
         StringUtils::trim(ln);
+       
+        StringUtils::stripComments(ln);
+        StringUtils::replaceTabs(ln);
+
+        // strip quotes
+        while ( (indx = ln.find_first_of('\"')) != std::string::npos )
+            ln.replace(indx, 1, " ");
+
+        indx = ln.find_first_of('=');
+        if ( indx == std::string::npos )
+            continue;
         
-        // ignoring comment
-        if ( StringUtils::startsWith(ln, "#") || StringUtils::startsWith(ln, ";") )
-            continue;
-
-        indx = StringUtils::indexOf(ln, "=");
-
-        if ( indx < 0 )
-            continue;
-
-        key  = ln.substr(0, indx);
-        val  = ln.substr(indx+1);
+        key = ln.substr(0, indx);
+        val = ln.substr(indx + 1);
         StringUtils::trim(val);
 
-        pfx = CidrUtils::StringToCidr(val);
+        if ( val.compare("any") == 0 ) {
+            pfx = Prefix(0,0);
+        } else if ( CidrUtils::StringToCidr(val, pfx) <= 0 ) {
+            _errStr = "FwVars::parse() Error parsing address: " + val;
+            return false;
+        }
 
         if ( ! this->insert(key, pfx) ) {
-            this->_errStr = "Duplicate fw variable detected: " + key;
+            this->_errStr = "FwVars::parse() Duplicate fw variable detected: " + key;
             return false;
         }
     }

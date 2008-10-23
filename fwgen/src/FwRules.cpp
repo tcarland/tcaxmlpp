@@ -10,6 +10,7 @@
 
 #include "Exception.hpp"
 #include "StringUtils.h"
+#include "CidrUtils.h"
 using namespace tcanetpp;
 
 
@@ -38,7 +39,7 @@ bool
 FwRules::parse ( const std::string & rulefile )
 {
     std::string               ln;
-    std::string::size_type    indx;
+    //std::string::size_type    indx;
     std::vector<std::string>  rulev;
 
     std::vector<std::string>::iterator  vIter;
@@ -50,15 +51,8 @@ FwRules::parse ( const std::string & rulefile )
 
     while ( std::getline(ifn, ln) ) {
         StringUtils::trim(ln);
- 
-        // ignoring comment
-        if ( StringUtils::startsWith(ln, "#") || StringUtils::startsWith(ln, ";") )
-            continue;
-
-        // strip end of line comments
-        indx = ln.find_first_of('#');
-        if ( indx != std::string::npos )
-            ln = ln.substr(0, indx);
+        StringUtils::stripComments(ln);
+        StringUtils::replaceTabs(ln);
 
         StringUtils::split(ln, ' ', std::back_inserter(rulev));
 
@@ -69,17 +63,22 @@ FwRules::parse ( const std::string & rulefile )
             continue;
         }
 
+        // rules in format of:
+        //  
+        //  [permit|deny]  proto  src  (srcport)  dst  (dstport)  flags
+        //          0       1     2      3    ( 3 or 4) (4 or 5)  ( 4, 5, or 6)
+        //
         FwRule  fwrule;
+        int     i = 0;
 
-        if ( rulev[0].compare("permit") == 0 )
+        if ( rulev[i].compare("permit") == 0 )
             fwrule.permit = true;
-        else if ( rulev[0].compare("deny") == 0 )
+        else if ( rulev[i].compare("deny") == 0 )
             fwrule.permit = false;
         else {       // not a rule
-            _errstr = "Rule parse error with line: " + ln;
-            //return false;
             continue;
         }
+        i++;  // 1
 
         if ( _debug ) {
             for ( vIter = rulev.begin(); vIter != rulev.end(); ++vIter )
@@ -88,18 +87,50 @@ FwRules::parse ( const std::string & rulefile )
         }
 
         // proto
-        if ( ! this->parseProto(rulev[1], fwrule.proto) ) {
+        if ( ! this->parseProto(rulev[i], fwrule.proto) ) {
             _errstr = "Rule parse error in protocol: " + ln;
             return false;
         }
+        i = 2;
 
-        // source
-        if ( StringUtils::startsWith(rulev[2], "$") )
-            this->resolveFwVar(rulev[2], fwrule.src);
-
+        // src
+        if ( StringUtils::startsWith(rulev[i], "$") ) {
+            ln = rulev[i].substr(1);
+            this->resolveFwVar(ln, fwrule.src);
+        } else if ( CidrUtils::StringToCidr(rulev[i], fwrule.src) <= 0 ) {
+            _errstr = "Rule parse error in source: " + ln;
+            return false;
+        }
+        i = 3;
+      
         // src port
-        if ( fwrule.proto != _proto["ip"] )
-            this->resolveFwPort(rulev[3], fwrule.srcport);
+        if ( fwrule.proto != _proto["ip"] ) {
+            this->resolveFwPort(rulev[i], fwrule.srcport);
+            i++; // 4
+        }
+
+        // dst   w/ i = 3 or 4
+        if ( StringUtils::startsWith(rulev[i], "$") ) {
+            ln = rulev[i].substr(1);
+            this->resolveFwVar(ln, fwrule.dst);
+        } else if ( CidrUtils::StringToCidr(rulev[i], fwrule.dst) <= 0 ) {
+            _errstr = "Rule parse error in source: " + ln;
+            return false;
+        }
+        i++;  // 4 or 5
+
+        // dst port w/i = 4 or 5
+        if ( fwrule.proto != _proto["ip"] ) {
+            this->resolveFwPort(rulev[i], fwrule.dstport);
+            i++; // 5 or 6
+        }
+        
+        // flags 
+        if ( (u_int) i < rulev.size() ) {
+            std::string  flags = rulev[i];
+            if ( StringUtils::startsWith(flags, "estab") )
+                fwrule.established = true;
+        }
 
         rulev.clear();
     }
@@ -206,7 +237,7 @@ FwRules::parseProtoFile ( const std::string & protofile )
         if ( indx != std::string::npos )
             ln = ln.substr(0, indx);
 
-        // replace any tabs with whitespace
+        // replace tabs with whitespace
         while ( (indx = ln.find_first_of('\t')) != std::string::npos )
             ln.replace(indx, 1, "  ");
 

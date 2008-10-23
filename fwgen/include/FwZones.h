@@ -69,13 +69,13 @@ class FwZones {
 
     FwDevice*       resolveDevice   ( const std::string & devname );
 
-    void            parseZoneData   ( FwZone        * fwzone,
+    bool            parseZoneData   ( FwZone        * fwzone,
                                       std::string   & ln );
 
-    void            parseDeviceData ( std::ifstream & ifn,
+    bool            parseDeviceData ( std::ifstream & ifn,
                                       std::string   & line );
 
-    void            parseInterfaces ( std::ifstream & ifn,
+    bool            parseInterfaces ( std::ifstream & ifn,
                                       FwDevice      * fwdev );
 
 

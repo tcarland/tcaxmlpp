@@ -38,7 +38,7 @@ int main ( int argc, char **argv )
 
     for ( vIter = vars.begin(); vIter != vars.end(); ++vIter )
         std::cout << vIter->first << " = "
-            << CidrUtils::toCidrString(vIter->second)
+            << CidrUtils::toString(vIter->second)
             << std::endl;
 
 
@@ -70,7 +70,7 @@ int main ( int argc, char **argv )
 
                 for ( pIter = pmap.begin(); pIter != pmap.end(); ++pIter ) {
                     std::cout << pIter->second.portName << " : " 
-                        << CidrUtils::toCidrString(pIter->second.portAddr)
+                        << CidrUtils::toString(pIter->second.portAddr)
                         << " : " << pIter->second.isExternal << std::endl;
                 }
             }
@@ -78,12 +78,11 @@ int main ( int argc, char **argv )
     }
 
 
-
     std::cout << std::endl 
         << " -------- fw rules --------" << std::endl;
 
 
-    //rules.setDebug(true);
+    rules.setDebug(true);
     if ( ! rules.parse(rulefile) ) {
         std::cout << "Parse error: " << rules.getErrorStr() << std::endl;
         return 0;

@@ -43,10 +43,8 @@ FwZones::parse ( const std::string & zonefile )
 
     while ( std::getline(ifn, ln) ) {
         StringUtils::trim(ln);
-
-        // ignoring comment
-        if ( StringUtils::startsWith(ln, "#") || StringUtils::startsWith(ln, ";") )
-            continue;
+        StringUtils::stripComments(ln);
+        StringUtils::replaceTabs(ln);
 
         indx = ln.find_first_of('=');
 
@@ -75,7 +73,7 @@ FwZones::parse ( const std::string & zonefile )
 }
 
 
-void
+bool
 FwZones::parseZoneData ( FwZone * fwzone, std::string & ln )
 {
     std::string              devname;
@@ -107,7 +105,7 @@ FwZones::parseZoneData ( FwZone * fwzone, std::string & ln )
                 << fwzone->zoneName << std::endl;
     }
 
-    return;
+    return true;
 }
 
 
@@ -255,7 +253,7 @@ FwZones::resolveDevice ( const std::string & devicename )
 }
 
 
-void
+bool
 FwZones::parseDeviceData ( std::ifstream & ifs, std::string & line )
 {
     std::string              zonename;
@@ -283,26 +281,28 @@ FwZones::parseDeviceData ( std::ifstream & ifs, std::string & line )
         }
     }
 
-    return;
+    return true;
 }
 
 
-void
+bool
 FwZones::parseInterfaces ( std::ifstream & ifs, FwDevice * fwdev )
 {
     std::string              ln, addr;
     std::string::size_type   indx, indx2;
 
     if ( fwdev == NULL )
-        return;
+        return false;
 
     while ( std::getline(ifs, ln) ) {
+        StringUtils::trim(ln);
+        StringUtils::stripComments(ln);
+        StringUtils::replaceTabs(ln);
+
         if ( (indx = ln.find_first_of("}")) != std::string::npos )
             break;
 
-        indx = ln.find_first_of(':');
-
-        if ( indx == std::string::npos )
+        if ( (indx = ln.find_first_of(':')) == std::string::npos )
             continue;
 
         FwDevicePort  devport;
@@ -322,18 +322,21 @@ FwZones::parseInterfaces ( std::ifstream & ifs, FwDevice * fwdev )
         }
 
         StringUtils::trim(addr);
-        devport.portAddr = CidrUtils::StringToCidr(addr);
+
+        if ( ! CidrUtils::StringToCidr(addr, devport.portAddr) ) {
+            _errStr = "FwZones::parseInterfaces(): error parsing address: " + addr;
+            return false;
+        }
 
         if ( this->_debug )
             std::cout << devport.portName << " : "
-                << CidrUtils::toCidrString(devport.portAddr) << " : "
+                << CidrUtils::toString(devport.portAddr) << " : "
                 << devport.isExternal << std::endl;
 
-        //fwdev->portslist.push_back(devport);
         fwdev->portsmap[devport.portName] = devport;
     }
 
-    return;
+    return true;
 }
 
 

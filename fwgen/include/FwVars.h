@@ -34,8 +34,8 @@ class FwVars {
 
   public:
 
-    FwVars();
-    FwVars ( const std::string & varfile ) throw ( Exception );
+    FwVars ( const std::string & varfile = "" ) 
+        throw ( Exception );
 
     virtual ~FwVars();
 
