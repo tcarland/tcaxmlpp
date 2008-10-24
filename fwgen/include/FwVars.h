@@ -44,8 +44,11 @@ class FwVars {
     Prefix          find    ( const std::string & name );
     bool            exists  ( const std::string & name );
     
-    bool            insert  ( const std::string & name, Prefix & p );
-    bool            insert  ( const std::string & name, const Prefix & p );
+    bool            insert  ( const std::string & name, 
+                              Prefix            & pfx );
+
+    bool            insert  ( const std::string & name, 
+                              const Prefix      & pfx );
 
     Prefix          remove  ( const std::string & name );
 

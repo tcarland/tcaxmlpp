@@ -256,10 +256,10 @@ void
 StringUtils::replaceTabs ( std::string & strline )
 {
     std::string::size_type indx = 0;
-
-    if ( (indx = strline.find_first_of('\t')) != std::string::npos )
-        strline = strline.replace(indx, 1, " ");
-    
+    while ( (indx = strline.find_first_of('\t')) != std::string::npos ) {
+        strline.erase(indx, 1);
+        strline.insert(indx, 8, ' ');
+    } 
     return;
 }
 
@@ -495,8 +495,10 @@ StringUtils::replaceTabs ( std::wstring & wstrline )
 {
     std::wstring::size_type indx = 0;
 
-    if ( (indx = wstrline.find_first_of('\t')) != std::string::npos )
-        wstrline = wstrline.replace(indx, 1, L" ");
+    if ( (indx = wstrline.find_first_of('\t')) != std::string::npos ) {
+        wstrline.erase(indx, 1);
+        wstrline.insert(indx, 8, ' ');
+    }
     
     return;
 }

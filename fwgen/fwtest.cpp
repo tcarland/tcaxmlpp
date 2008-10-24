@@ -25,7 +25,7 @@ int main ( int argc, char **argv )
 
     FwDeviceMap::iterator  dIter;
 
-    FwRules                rules;
+    FwRules                rules(&vars, &zones);
 
     std::cout << std::endl 
         << " -------- fw variables --------" << std::endl;
@@ -81,15 +81,15 @@ int main ( int argc, char **argv )
     std::cout << std::endl 
         << " -------- fw rules --------" << std::endl;
 
-
-    rules.setDebug(true);
+    //rules.setDebug(true);
     if ( ! rules.parse(rulefile) ) {
         std::cout << "Parse error: " << rules.getErrorStr() << std::endl;
         return 0;
     }
 
-
-
+    FwRules::const_iterator  rIter;
+    for ( rIter = rules.begin(); rIter != rules.end(); ++rIter )
+        FwRules::PrintRule(*rIter);
 
     return 0;
 }

@@ -43,7 +43,6 @@ FwVars::parse ( const std::string & varfile )
 
     while ( std::getline(ifn, ln) ) {
         StringUtils::trim(ln);
-       
         StringUtils::stripComments(ln);
         StringUtils::replaceTabs(ln);
 
@@ -57,6 +56,7 @@ FwVars::parse ( const std::string & varfile )
         
         key = ln.substr(0, indx);
         val = ln.substr(indx + 1);
+        StringUtils::trim(key);
         StringUtils::trim(val);
 
         if ( val.compare("any") == 0 ) {
@@ -67,7 +67,8 @@ FwVars::parse ( const std::string & varfile )
         }
 
         if ( ! this->insert(key, pfx) ) {
-            this->_errStr = "FwVars::parse() Duplicate fw variable detected: " + key;
+            this->_errStr = "FwVars::parse() Duplicate fw variable detected: " 
+                + key;
             return false;
         }
     }
@@ -132,8 +133,9 @@ FwVars::exists ( const std::string & name )
 {
     FwVarMap::iterator vIter = this->_varMap.find(name);
 
-    if ( vIter == this->end() )
+    if ( vIter == _varMap.end() )
         return false;
+
     return true;
 }
 

@@ -28,12 +28,14 @@ public:
 
     bool            parse           ( const std::string & rulefile );
 
-    const_iterator  begin() const;
-    const_iterator  end()   const;
-    size_t          size()  const;
+    const_iterator  begin() const   { return _rules.begin(); }
+    const_iterator  end()   const   { return _rules.end(); }
+    size_t          size()  const   { return _rules.size(); }
 
     std::string     getErrorStr() const;
     void            setDebug        ( bool d ) { _debug = d; }
+
+    static void     PrintRule       ( const FwRule & rule );
 
 
 protected: 
