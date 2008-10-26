@@ -10,7 +10,7 @@
 #define _TCANETPP_EVENTMANAGER_H_
 
 #include <map>
-#include <list>
+#include <set>
 #include <string>
 
 #include "tcanetpp_types.h"
@@ -33,10 +33,10 @@ namespace tcanetpp {
 
 
  
-typedef uint32_t evid_t;  // event registration id 
+typedef uint64_t  evid_t;  // event registration id 
+
 
 class EventManager;
-
 
 
 /**  The EventTimer struct is created and used internally to 
@@ -58,10 +58,10 @@ struct EventTimer {
     bool           	enabled;   // boolean indicating whether event is active.
      
     EventTimer()
-        : evid(0),  evmgr(0),  
-          handler(0), count(0), fired(0), 
-          evsec(0), evusec(0), 
-          absolute(false), enabled(false) 
+        : evid(0),   evmgr(NULL), handler(NULL), 
+          count(0),  fired(0),    evsec(0), 
+          evusec(0), absolute(false), 
+          enabled(false) 
     {}
 
     bool operator== ( const EventTimer & timer );
@@ -89,9 +89,8 @@ struct EventIO {
     bool           	isServer;  // IO socket event is a server socket.
 
     EventIO() 
-        : evid(0), evmgr(0), 
-          handler(0), rock(0),
-          enabled(false), isServer(false)
+        : evid(0),    evmgr(NULL),    handler(NULL), 
+          rock(NULL), enabled(false), isServer(false)
     {
         Socket::ResetDescriptor(sfd);
     }
@@ -108,12 +107,17 @@ typedef std::map<evid_t, EventIO>  EventIOMap;
   *  run endlessly until setAlarm() is called.  Alternatively, upon
   *  construction, if 'dieoff' is true, the event loop will exit once
   *  there are no remaining, enabled events in the system. 
+  *
+  *  Currently not thread safe and can only hold sizeof(uint64_t) 
+  *  number of events (which should hopefully be enough :)
+  *  BUG: currently the event id counter does not reuse events. This is a 
+  *  serious bug when considering ioevents over time.
  **/
 class EventManager {
 
   public:
 
-    EventManager( bool dieoff = false );
+    EventManager ( bool dieoff = false );
 
     virtual ~EventManager();
 
@@ -122,33 +126,33 @@ class EventManager {
     void   eventLoop();
 
 
-    evid_t               addTimerEvent  ( TimerHandler * handler, 
-                                          uint32_t sec, uint32_t msec, 
-                                          int count = 0 );
+    evid_t               addTimerEvent  ( TimerHandler   * handler, 
+                                          uint32_t         sec, 
+                                          uint32_t         msec, 
+                                          int              count = 0 );
 
-    evid_t               addTimerEvent  ( TimerHandler * handler, 
+    evid_t               addTimerEvent  ( TimerHandler   * handler, 
                                           time_t abstime );
 
-    evid_t               addIOEvent     ( IOHandler * handler, 
+    evid_t               addIOEvent     ( IOHandler      * handler, 
                                           const sockfd_t & sfd, 
-                                          void * rock = NULL, 
-                                          bool isServer = false );
+                                          void           * rock = NULL, 
+                                          bool             isServer = false );
 
-    bool                 removeEvent    ( const evid_t & id );
-    bool                 validEvent     ( const evid_t & id );
-    bool                 isValidEvent   ( const evid_t & id ) { return this->validEvent(id); }
+    bool                 removeEvent    ( const evid_t   & id );
 
+    bool                 isActive       ( evid_t  id );
+    bool                 isValidEvent   ( evid_t  id );
 
-    const EventTimer&    findTimerEvent ( const evid_t & id );
-    const EventIO&       findIOEvent    ( const evid_t & id );
+    const EventTimer*    findTimerEvent ( const evid_t   & id ) const;
+    const EventIO*       findIOEvent    ( const evid_t   & id ) const;
 
+    size_t               activeEvents()  const;
+    size_t               activeTimers()  const;
+    size_t               activeClients() const;
 
-    int                  activeRegistrations() { return(this->activeTimers() 
-                                                 + this->activeClients()); }
-    int                  activeTimers()        { return((int)_timers.size()); }
-    int                  activeClients()       { return((int)_clients.size()); }
-    bool                 isActive       ( evid_t id ) { return this->validEvent(id); }
     void                 clearTimers();
+    void                 clearStaleEvents();
 
     void                 setDebug       ( bool d );
     void                 setAlarm();
@@ -170,10 +174,14 @@ class EventManager {
 
   protected:
 
+    typedef std::set<evid_t>  EventSet;
+
+    EventSet             _events;
     EventTimerMap        _timers;
     EventIOMap		 _clients;
 
-    evid_t               _evid;
+
+    evid_t               _evid, _lastid;
     fd_set               _rset, _wset, _xset;
     long                 _minevu;
 

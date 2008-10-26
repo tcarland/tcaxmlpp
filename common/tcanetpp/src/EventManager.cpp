@@ -30,6 +30,17 @@ int EventManager::_maxfdp = MAX_FDVAL;
 #endif
 
 
+class FindStaleIOEvents {
+
+    explicit FindStaleIOEvents() {}
+
+    bool operator() ( const EventIO & io )
+    {
+        return io.enabled;
+    }
+};
+
+
 
 /**  @param dieoff  boolean indicates whether to terminate when
   *  there are no subscribed clients or timers left to execute */
@@ -52,14 +63,13 @@ EventManager::addTimerEvent ( TimerHandler * handler,
 {
     EventTimer  timer;
 
-    if ( (handler == NULL) || (sec == 0 && msec == 0) )
+    if ( (handler == NULL) || (sec == 0 && msec == 0) ) {
+        _errstr = "EventManager::addTimerEvent: invalid parameters";
 	return 0;
+    }
 
-#   ifdef EV_DEBUG
-    printf("EventManager::addTimerEvent(): ");
-#   endif 
-    
-    timer.evid    = ++_evid;
+    timer.evid    =  this->getNewEventId();
+
     if ( timer.evid == 0 )
         return 0;
 
@@ -102,6 +112,7 @@ EventManager::addTimerEvent ( TimerHandler * handler, time_t abstime )
 #   endif
     
     timer.evid      = this->getNewEventId();
+
     if ( timer.evid == 0 )
         return 0;
 
@@ -163,7 +174,7 @@ EventManager::addIOEvent ( IOHandler * handler, const sockfd_t & sfd,
 
 
 bool
-EventManager::validEvent ( const evid_t & id )
+EventManager::isValidEvent ( evid_t  id )
 {
     EventIOMap::iterator     cIter;
     EventTimerMap::iterator  tIter;
@@ -191,16 +202,21 @@ EventManager::removeEvent ( const evid_t & id )
 #   endif
 
     if ( (tIter = _timers.find(id)) != _timers.end() ) {
-        this->destroyEvent(tIter->second);
+        if ( tIter->second.enabled )
+            this->destroyEvent(tIter->second);
+        _events.erase(id);
         _timers.erase(tIter);
 	return true;
     }
 
     if ( (cIter = _clients.find(id)) != _clients.end() ) {
-        FD_CLR(cIter->second.sfd, &_rset);
-        FD_CLR(cIter->second.sfd, &_wset);
-        FD_CLR(cIter->second.sfd, &_xset);
-        this->destroyEvent(cIter->second);
+        if ( tIter->second.enabled ) {
+            FD_CLR(cIter->second.sfd, &_rset);
+            FD_CLR(cIter->second.sfd, &_wset);
+            FD_CLR(cIter->second.sfd, &_xset);
+            this->destroyEvent(cIter->second);
+        }
+        _events.erase(id);
         _clients.erase(cIter);
     	return true;
     }
@@ -290,7 +306,7 @@ EventManager::eventLoop()
 	this->checkTimers(now);
 
         // single-shot
-	if ( this->activeRegistrations() == 0 && _dieoff )
+	if ( this->activeEvents() == 0 && _dieoff )
 	    break;
     }
 
@@ -307,6 +323,62 @@ EventManager::eventLoop()
 #   endif
     
     return;
+}
+
+
+const EventTimer*
+EventManager::findTimerEvent ( const evid_t & id ) const
+{
+    EventTimerMap::const_iterator  tIter;
+
+    tIter = _timers.find(id);
+
+    if ( tIter == _timers.end() )
+        return NULL;
+
+    return &tIter->second;
+}
+
+
+const EventIO*
+EventManager::findIOEvent ( const evid_t & id ) const
+{
+    EventIOMap::const_iterator  iIter;
+
+    iIter = _clients.find(id);
+
+    if ( iIter == _clients.end() )
+        return NULL;
+
+    return &iIter->second;
+}
+
+
+size_t
+EventManager::activeEvents() const
+{
+    return( this->activeTimers() + this->activeClients() );
+}
+
+
+size_t
+EventManager::activeTimers() const
+{
+    return _timers.size();
+}
+
+
+size_t
+EventManager::activeClients() const
+{
+    return _clients.size();
+}
+
+
+bool
+EventManager::isActive ( evid_t  id )
+{
+    return this->isValidEvent(id);
 }
 
 
@@ -391,6 +463,24 @@ EventManager::clearTimers()
     return;
 }
 
+void
+EventManager::clearStaleEvents()
+{
+    EventTimerMap::iterator  tIter;
+
+    for ( tIter = _timers.begin(); tIter != _timers.end(); ++tIter )
+        if ( ! tIter->second.enabled ) 
+            _timers.erase(tIter);
+
+    EventIOMap::iterator  iIter;
+
+    for ( iIter = _clients.begin(); iIter != _clients.end(); ++iIter )
+        if ( ! iIter->second.enabled )
+            _clients.erase(iIter);
+
+    return;
+}
+
 
 void
 EventManager::checkMinTimer ( const EventTimer & timer )
@@ -438,24 +528,21 @@ EventManager::setAlarm()
 evid_t
 EventManager::getNewEventId()
 {
-    evid_t id = 0;
+    evid_t  id  = _lastid + 1;
 
-    if ( (evid_t) this->activeRegistrations() == (--id) ) // max events
+    EventSet::iterator  sIter;
+    while ( id != _lastid ) {
+        if ( (sIter = _events.find(id)) == _events.end() && id != 0 )
+            break;
+        id++;
+    }
+
+    if ( id == _lastid || id == 0 ) {
+        _errstr = "Max Events reached. No more event id's available";
         return 0;
-
-    EventTimerMap::iterator tIter;
-    EventIOMap::iterator    cIter;
-    bool avail = false;
-
-    while ( ! avail ) {
-        avail = true;
-        id    = ++_evid;
-
-        if ( (tIter = _timers.find(id)) != _timers.end() )
-            avail = false;
-
-        if ( (cIter = _clients.find(id)) != _clients.end() )
-            avail = false;
+    } else {
+        _events.insert(id);
+        _lastid = id;
     }
 
     return id;
