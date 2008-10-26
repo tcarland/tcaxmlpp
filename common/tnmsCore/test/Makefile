@@ -13,10 +13,9 @@ INCLUDES = 	-I../include
 
 OBJS =		        
 
-TEST_OBJS =     tree_test.o pack_test.o oid_test.o typetests.o \
-		msg_test.o
+TEST_OBJS =     tree_test.o pack_test.o oid_test.o msg_test.o
 
-BIN =           treetest packtest oidtest typetest msgtest
+BIN =           treetest packtest oidtest msgtest
 ALL_OBJS =      $(OBJS) $(TEST_OBJS)
 ALL_BINS =      $(BIN)
 
@@ -34,9 +33,6 @@ packtest: pack_test.o
 	$(make-cxxbin-rule)
 
 oidtest: oid_test.o
-	$(make-cxxbin-rule)
-
-typetest: typetests.o
 	$(make-cxxbin-rule)
 
 msgtest: msg_test.o
