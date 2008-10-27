@@ -124,9 +124,9 @@ endif
 
 ifdef NEED_TCAXML
 TCAXML_HOME = $(TOPDIR)/common/tcaxml++
-INCLUDES   += -I$(TCAXML_HOME)
+INCLUDES   += -I$(TCAXML_HOME)/include
 LFLAGS     += -L$(TCAXML_HOME)/lib
-LIBS       += -ltcaxmlplus
+LIBS       += -ltcaxml++
 endif
 
 ifdef NEED_TCANETPP
