@@ -7,6 +7,19 @@
 namespace tnmsCore {
 
 
+//---------------------------------------------------------------------
+/** The Packer Class provides a common interface in the overridden Pack() 
+ *  function for ensure proper type encoding within our transmit buffers.
+ *  This is purely for adherence to the tnmsProtocol spec. that encodes
+ *  a length field prior to any variable length fields. 
+ *  The Packer is not meant to handle the encryption and/or compression of 
+ *  a given buffer, but possibly network order of byte fields where 
+ *  appropriate. The current implementation assumes little endian and 
+ *  does not change any values to network order (big endian), but if such
+ *  behavior is needed, it would be easily provided here.
+**/
+
+
 int
 Packer::Pack ( char * buffer, size_t buffer_len,
                const char * value,  size_t val_len )
@@ -119,6 +132,10 @@ Packer::Pack( char * buffer, size_t buffer_len, uint64_t value )
 
     return sizeof(value);
 }
+
+
+//---------------------------------------------------------------------
+
 
 int
 Packer::Unpack ( char   * buffer, size_t  buffer_len,

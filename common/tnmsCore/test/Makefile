@@ -20,7 +20,7 @@ ALL_OBJS =      $(OBJS) $(TEST_OBJS)
 ALL_BINS =      $(BIN)
 
 
-all: treetest packtest oidtest typetest msgtest
+all: treetest packtest oidtest msgtest
 
 
 include ${TOPDIR}/common/make/tca

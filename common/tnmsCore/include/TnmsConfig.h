@@ -3,6 +3,9 @@
 
 #include <list>
 
+#include "XmlDocument.h"
+using namespace tcaxmlplus;
+
 
 namespace tnmsCore {
 
@@ -41,6 +44,8 @@ namespace tnmsCore {
  *
  */
 
+
+//  Is depth needed?
 typedef struct Subscription
 {
     std::string  name;
@@ -50,28 +55,29 @@ typedef struct Subscription
 
 typedef std::list<std::string>  StringList;
 
-struct TnmsClient
+
+struct TnmsClientConfig
 {
-    std::string  svrhost;
+    std::string  connection_name;
+    std::string  hostname;
     ipv4addr_t   hostaddr;
     uint16_t     port;
 
     StringList   subs;
 };
 
-typedef std::list<TnmsMirror>  MirrorList;
+typedef std::list<TnmsClientConfig>  ClientList;
 
-struct TnmsServer
+
+struct TnmsServerConfig
 {
-    uint16_t     agent_port;
-    uint16_t     client_port;
-    uint32_t     holddown;
-    uint32_t     reconnect;
-
-    MirrorList   mirrors;
+    uint16_t     agent_listenport;
+    uint16_t     client_listenport;
+    uint32_t     holddown_interval;
+    uint32_t     reconnect_interval;
 };
 
-typedef std::list<TnmsServer>  ServerList;
+typedef std::list<TnmsServerConfig>  ServerList;
 
 
 struct TnmsConfig
@@ -85,7 +91,8 @@ struct TnmsConfig
     bool          syslog;
     bool          debug;
 
-    ServerList    servers;
+    TnmsServerConfig  svrconfig;
+    ClientList        clients;
 
 };
 
@@ -96,41 +103,44 @@ class TnmsConfigHandler {
 
     TnmsConfigHandler() {}
 
-    TnmsConfigHandler ( const std::string & filename,
-                        const std::string & appname );
+    TnmsConfigHandler ( const std::string & xmlfilename,
+                        const std::string & rootname );
 
     TnmsConfigHandler ( const char * xmlblob, size_t len,
-                        const std::string & appname );
+                        const std::string & rootname );
 
 
     virtual ~TnmsConfigHandler() {}
 
 
-    virtual bool parse();
+
+    virtual bool        parse();
 
 
-    bool         setDebug ( bool d ) { this->_debug = d; }
-    std::string  getErrorStr() const { return _errstr; }
+    bool                setDebug ( bool d ) { this->_debug = d; }
+    std::string         getErrorStr() const { return _errstr; }
 
 
   public:
 
-    TnmsConfig   config;
+    TnmsConfig          config;
 
 
   protected:
 
-    bool         parseRoot();
-    bool         parseServer();
-    bool         parseClient();
-    bool         parseSubs();
+    bool                parseRoot   ( XmlNode * node );
+    bool                parseServer ( XmlNode * node );
+    bool                parseClient ( XmlNode * node );
+
+    XmlNode*            findRootNode   ( XmlNode * node, std::string & name );
+
 
   protected:
 
     std::string         _xmlcfg;
     bool                _isXML;
     bool                _debug;
-    std::string         _appname;
+    std::string         _rootname;
     std::string         _errstr;
 
     bool                _debug;
