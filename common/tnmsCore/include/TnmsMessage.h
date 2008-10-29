@@ -41,6 +41,7 @@ public:
     virtual ssize_t     serialize   ( char * buffer, size_t buffer_len );
     virtual ssize_t     deserialize ( char * buffer, size_t buffer_len );
     virtual size_t      size() const;
+    virtual void        message_type ( eValueType msgtype );
     virtual uint16_t    message_type() const;
 
 

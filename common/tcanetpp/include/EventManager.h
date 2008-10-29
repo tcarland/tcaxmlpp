@@ -39,23 +39,18 @@ typedef uint64_t  evid_t;  // event registration id
 class EventManager;
 
 
-/**  The EventTimer struct is created and used internally to 
-  *  represent a timer event. When an event is fired, a const 
-  *  pointer to this struct is provided to the event handler.
-  *  ( see EventHandlers.h )
- **/
 struct EventTimer {
        
-    evid_t         	evid;      // event id
-    EventManager*  	evmgr;     // evmgr owning this event 
-    TimerHandler*  	handler;   // event handler for this event.
-    uint32_t       	count;     // number of times to fire event (0 == forever)
-    uint32_t       	fired;     // number of times event has fired
-    long           	evsec;     // event interval in seconds (if applicable).
-    long           	evusec;    // event interval in microseconds (if applicable).
-    struct timeval 	abstime;   // absolute timeval used to track event time
-    bool           	absolute;  // boolean indicating a single shot event.
-    bool           	enabled;   // boolean indicating whether event is active.
+    evid_t              evid;      // event id
+    EventManager*       evmgr;     // evmgr owning this event 
+    EventTimerHandler*  handler;   // event handler for this event.
+    uint32_t            count;     // number of times to fire event (0 == forever)
+    uint32_t            fired;     // number of times event has fired
+    long                evsec;     // event interval in seconds (if applicable).
+    long                evusec;    // event interval in microseconds (if applicable).
+    struct timeval      abstime;   // absolute timeval used to track event time
+    bool                absolute;  // boolean indicating a single shot event.
+    bool                enabled;   // boolean indicating whether event is active.
      
     EventTimer()
         : evid(0),   evmgr(NULL), handler(NULL), 
@@ -79,14 +74,14 @@ typedef std::map<evid_t, EventTimer>  EventTimerMap;
  **/
 struct EventIO {
 
-    evid_t         	evid;      // event id
-    EventManager*  	evmgr;     // evmgr owning this event (ie. this)
-    IOHandler*     	handler;   // event handler for this event.
-    sockfd_t      	sfd;       // event socket id
-    void*               rock;      // event object
-    struct timeval      abstime;   // time of event firing.
-    bool           	enabled;   // boolean indicating whether event is valid.
-    bool           	isServer;  // IO socket event is a server socket.
+    evid_t             evid;      // event id
+    EventManager*      evmgr;     // evmgr owning this event (ie. this)
+    EventIOHandler*    handler;   // event handler for this event.
+    sockfd_t           sfd;       // event socket id
+    void*              rock;      // event object
+    struct timeval     abstime;   // time of event firing.
+    bool               enabled;   // boolean indicating whether event is valid.
+    bool               isServer;  // IO socket event is a server socket.
 
     EventIO() 
         : evid(0),    evmgr(NULL),    handler(NULL), 
@@ -104,14 +99,9 @@ typedef std::map<evid_t, EventIO>  EventIOMap;
 
 /**  The EventManager class provides an interface to using select for a
   *  variety of I/O and timer events.  By default the main loop will
-  *  run endlessly until setAlarm() is called.  Alternatively, upon
-  *  construction, if 'dieoff' is true, the event loop will exit once
-  *  there are no remaining, enabled events in the system. 
-  *
-  *  Currently not thread safe and can only hold sizeof(uint64_t) 
-  *  number of events (which should hopefully be enough :)
-  *  BUG: currently the event id counter does not reuse events. This is a 
-  *  serious bug when considering ioevents over time.
+  *  run endlessly until setAlarm() is called or if 'dieoff' is set true, 
+  *  the event loop will exit once there are no remaining active events in
+  *  the system. 
  **/
 class EventManager {
 
@@ -122,19 +112,18 @@ class EventManager {
     virtual ~EventManager();
 
 
-    /*  EventManager main loop */
     void   eventLoop();
 
 
-    evid_t               addTimerEvent  ( TimerHandler   * handler, 
+    evid_t               addTimerEvent  ( EventTimerHandler * handler, 
                                           uint32_t         sec, 
                                           uint32_t         msec, 
                                           int              count = 0 );
 
-    evid_t               addTimerEvent  ( TimerHandler   * handler, 
+    evid_t               addTimerEvent  ( EventTimerHandler * handler, 
                                           time_t abstime );
 
-    evid_t               addIOEvent     ( IOHandler      * handler, 
+    evid_t               addIOEvent     ( EventIOHandler * handler, 
                                           const sockfd_t & sfd, 
                                           void           * rock = NULL, 
                                           bool             isServer = false );
@@ -178,7 +167,7 @@ class EventManager {
 
     EventSet             _events;
     EventTimerMap        _timers;
-    EventIOMap		 _clients;
+    EventIOMap           _clients;
 
 
     evid_t               _evid, _lastid;
@@ -190,7 +179,7 @@ class EventManager {
     bool                 _alarm;
     bool                 _debug;
 
-    static int	         _maxfdp;
+    static int           _maxfdp;
  
 };
 

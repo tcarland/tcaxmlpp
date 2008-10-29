@@ -58,7 +58,7 @@ EventManager::~EventManager()
 
 
 evid_t
-EventManager::addTimerEvent ( TimerHandler * handler, 
+EventManager::addTimerEvent ( EventTimerHandler * handler, 
 			      uint32_t sec, uint32_t msec, int count )
 {
     EventTimer  timer;
@@ -100,7 +100,7 @@ EventManager::addTimerEvent ( TimerHandler * handler,
 
 
 evid_t
-EventManager::addTimerEvent ( TimerHandler * handler, time_t abstime )
+EventManager::addTimerEvent ( EventTimerHandler * handler, time_t abstime )
 {
     EventTimer  timer;
 
@@ -134,7 +134,7 @@ EventManager::addTimerEvent ( TimerHandler * handler, time_t abstime )
 
 
 evid_t
-EventManager::addIOEvent ( IOHandler * handler, const sockfd_t & sfd, 
+EventManager::addIOEvent ( EventIOHandler * handler, const sockfd_t & sfd, 
                            void * rock, bool isServer )
 {
     EventIO  io;

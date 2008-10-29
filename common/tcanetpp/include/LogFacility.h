@@ -38,7 +38,7 @@ typedef enum LogLevel
 
 
 
-typedef std::ostringstream   LogMsg;
+typedef std::ostringstream   Message;
 
 
 class LogFacility {
@@ -64,6 +64,7 @@ class LogFacility {
     
     static std::ostream*  RemoveStream    ( const std::string & name );
     
+
     static void           CloseLogFacility();
 
     

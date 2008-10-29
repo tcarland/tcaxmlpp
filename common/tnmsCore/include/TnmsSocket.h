@@ -46,10 +46,11 @@ class TnmsSocket {
     virtual int         connect()  { return this->openConnection(); }
     virtual void        close()    { return this->closeConnection(); }
 
-    int                 send();
-    int                 send       ( const time_t  & now );
-    int                 receive();
-    int                 receive    ( const time_t  & now );
+    virtual int         send();
+    virtual int         send       ( const time_t  & now );
+
+    virtual int         receive();
+    virtual int         receive    ( const time_t  & now );
 
     ssize_t             flush();
     size_t              txBytesBuffered();
@@ -61,47 +62,48 @@ class TnmsSocket {
     bool                isConnecting();
 
     sockfd_t            getDescriptor() const;
-    sockfd_t            getSockFD() const    { return this->getDescriptor(); }
+    sockfd_t            getSockFD() const  { return this->getDescriptor(); }
 
-    void                setMessageHandler    ( MessageHandler * msgHandler );
+    void                setMessageHandler  ( MessageHandler * msgHandler );
     MessageHandler*     getMessageHandler();
 
-    void                reconnectTime        ( const time_t & secs );
+    void                reconnectTime    ( const time_t & secs );
     const time_t&       reconnectTime() const;
 
-    void                compression          ( bool    compress );
+    void                compression      ( bool    compress );
     bool                compression() const;
 
-    void                setTxQueueSize       ( size_t  bytes );
+    void                setTxQueueSize   ( size_t  bytes );
     size_t              getTxQueueSize() const;
 
     std::string         getClientLogin() const;
-    std::string         getHostStr() const;
-    std::string         getAddrStr() const;
+
+    std::string         getHostStr()  const;
+    std::string         getAddrStr()  const;
     std::string         getHostname() const;
     uint16_t            getHostPort() const;
-    uint32_t            getVersion() const;
+    uint32_t            getVersion()  const;
 
     std::string         getErrorStr() const;
-    void                setDebug            ( bool debug );
+    void                setDebug        ( bool debug );
 
 
     /*  Additional attributes */
 
-    void                enableFlush         ( bool  flush );
+    void                enableFlush     ( bool  flush );
     bool                flushEnabled();
-    void                flushLimit          ( uint32_t limit );
+    void                flushLimit      ( uint32_t limit );
     uint32_t            flushLimit();
 
-    void                enableTimeout       ( bool   timeout );
-    void                setTimeout          ( const time_t & secs );
+    void                enableTimeout   ( bool   timeout );
+    void                setTimeout      ( const time_t & secs );
     const time_t&       getTimeout() const;
 
 
     /*  Subscriptions  */
 
-    void                login                ( const std::string &  user,
-                                               const std::string &  pw );
+    void                login           ( const std::string &  user,
+                                          const std::string &  pw );
 
     bool                isAuthorized() const;
     bool                isSubscribed() const;
@@ -112,34 +114,34 @@ class TnmsSocket {
     virtual bool        subscribeAll();
     virtual bool        unsubscribeAll();
 
-    virtual bool        subscribe           ( const std::string & name );
-    virtual bool        subscribe           ( const TnmsOid     & oid );
-    virtual bool        unsubscribe         ( const std::string & oid );
-    virtual bool        unsubscribe         ( const TnmsOid     & oid );
+    virtual bool        subscribe         ( const std::string & name );
+    virtual bool        subscribe         ( const TnmsOid     & oid );
+    virtual bool        unsubscribe       ( const std::string & oid );
+    virtual bool        unsubscribe       ( const TnmsOid     & oid );
 
-    virtual bool        subscribeLevel      ( const std::string & oid );
-    virtual bool        unsubscribeLevel    ( const std::string & oid );
+    virtual bool        subscribeLevel    ( const std::string & oid );
+    virtual bool        unsubscribeLevel  ( const std::string & oid );
 
     int                 subscribeCount();
     void                resubscribe();
 
     /*  send message handling / packing  */
 
-    bool                sendMessage         ( Serializable  * message );
+    bool                sendMessage       ( Serializable  * message );
 
   protected:
 
     /*  receive message handling / extraction  */
-    int                 receiveMessages     ( tnmsHeader  & hdr );
+    int                 receiveMessages   ( tnmsHeader  & hdr );
 
-    int                 rcvAuthRequest      ( tnmsHeader  & hdr );
-    int                 rcvAuthReply        ( tnmsHeader  & hdr );
-    int                 rcvMetrics          ( tnmsHeader  & hdr );
-    int                 rcvAdds             ( tnmsHeader  & hdr );
-    int                 rcvRemoves          ( tnmsHeader  & hdr );
-    int                 rcvRequests         ( tnmsHeader  & hdr );
-    int                 rcvSubscribes       ( tnmsHeader  & hdr );
-    int                 rcvUnsubscribes     ( tnmsHeader  & hdr );
+    int                 rcvAuthRequest    ( tnmsHeader  & hdr );
+    int                 rcvAuthReply      ( tnmsHeader  & hdr );
+    int                 rcvMetrics        ( tnmsHeader  & hdr );
+    int                 rcvAdds           ( tnmsHeader  & hdr );
+    int                 rcvRemoves        ( tnmsHeader  & hdr );
+    int                 rcvRequests       ( tnmsHeader  & hdr );
+    int                 rcvSubscribes     ( tnmsHeader  & hdr );
+    int                 rcvUnsubscribes   ( tnmsHeader  & hdr );
 
   private:
 
@@ -148,9 +150,9 @@ class TnmsSocket {
     void                closeConnection();
     void                setHostStr();
 
-    bool                initHeader          ( uint16_t type, size_t size );
-    ssize_t             uncompress          ( uint32_t size );
-    void                authReply           ( const TnmsAuthReply & reply );
+    bool                initHeader        ( uint16_t type, size_t size );
+    ssize_t             uncompress        ( uint32_t size );
+    void                authReply         ( const TnmsAuthReply & reply );
     //bool                checkStall();
     //void                clearStall() {}
 

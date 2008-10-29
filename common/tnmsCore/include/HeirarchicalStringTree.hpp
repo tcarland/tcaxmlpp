@@ -23,7 +23,7 @@ class HeirarchicalStringTreeNode {
 
     HeirarchicalStringTreeNode ( const std::string & nodeName,
                                  TreeNode          * parent,
-                                 char                delimiter = '.' );
+                                 char                delimiter = '/' );
 
     virtual ~HeirarchicalStringTreeNode();
 
@@ -103,16 +103,15 @@ class HeirarchicalStringTree {
     void            clear();
 
 
-    template<typename BranchIterator_, typename OutputIterator_>
-    bool            nodesFromBranches   ( BranchIterator_ begin,
-                                          BranchIterator_ end,
-                                          OutputIterator_ outIter );
-
-
     template<typename Predicate_>
     void            depthFirstTraversal ( Node       * node,
                                           Predicate_ & predicate );
 
+
+    template<typename BranchIterator_, typename OutputIterator_>
+    bool            nodesFromBranches   ( BranchIterator_ begin,
+                                          BranchIterator_ end,
+                                          OutputIterator_ outIter );
 
   public:
 

@@ -431,7 +431,7 @@ LogFacility::GetTimeString ( const time_t & now )
 void
 LogFacility::InitLogMessage()
 {
-    LogMsg       logMsg;
+    Message      logMsg;
     std::string  tstr;
     time_t       now;
 

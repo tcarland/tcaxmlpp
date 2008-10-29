@@ -62,8 +62,17 @@ struct TnmsClientConfig
     std::string  hostname;
     ipv4addr_t   hostaddr;
     uint16_t     port;
+    uint32_t     holddown_interval;
+    uint32_t     reconnect_interval;
 
     StringList   subs;
+
+    TnmsClientConfig()
+        : hostaddr(0),
+          port(0),
+          holddown_interval(0),
+          reconnect_interval(0)
+    {}
 };
 
 typedef std::list<TnmsClientConfig>  ClientList;
@@ -75,6 +84,13 @@ struct TnmsServerConfig
     uint16_t     client_listenport;
     uint32_t     holddown_interval;
     uint32_t     reconnect_interval;
+
+    TnmsServerConfig()
+        : agent_listenport(0),
+          client_listenport(0),
+          holddown_interval(0),
+          reconnect_interval(0)
+    {}
 };
 
 typedef std::list<TnmsServerConfig>  ServerList;
@@ -91,9 +107,10 @@ struct TnmsConfig
     bool          syslog;
     bool          debug;
 
-    TnmsServerConfig  svrconfig;
+    TnmsServerConfig  serverConfig;
     ClientList        clients;
 
+    TnmsConfig() : auth_port(0) {}
 };
 
 
@@ -111,7 +128,6 @@ class TnmsConfigHandler {
 
 
     virtual ~TnmsConfigHandler() {}
-
 
 
     virtual bool        parse();

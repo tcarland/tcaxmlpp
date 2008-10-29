@@ -23,11 +23,11 @@ class Socket;
 
 
 
-class TimerHandler {
+class EventTimerHandler {
     
   public:
   
-    virtual ~TimerHandler() {}
+    virtual ~EventTimerHandler() {}
   
     virtual void timeout  ( const EventTimer * timer ) = 0;
     virtual void finished ( const EventTimer * timer ) {}
@@ -35,11 +35,11 @@ class TimerHandler {
 
 
 
-class IOHandler {
+class EventIOHandler {
     
   public:
 
-    virtual ~IOHandler() {}
+    virtual ~EventIOHandler() {}
 
     virtual void handle_accept  ( const EventIO * io ) {}
     virtual void handle_read    ( const EventIO * io ) {}
