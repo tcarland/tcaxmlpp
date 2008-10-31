@@ -4,19 +4,24 @@
 #include <map>
 #include <string>
 
+#include "TnmsTree.h"
+#include "AgentIOHandler.h"
+#include "ClientIOHandler.h"
 
 #include "EventManager.h"
+#include "Socket.h"
 using namespace tcanetpp;
 
 
 namespace tnmsd {
-
 
 #define LOG_ROTATE_INTERVAL        86400
 #define DEFAULT_STARTUP_DELAY      30
 #define DEFAULT_HOLDDOWN_INTERVAL  30
 
 #define TNMSD_ROOT  "tnmsd"
+
+class TnmsClient;
 
 typedef std::map<evid_t, TnmsClient*>  ClientMap;
 
@@ -26,7 +31,7 @@ class TnmsManager : public EventTimerHandler {
   public:
 
     TnmsManager ( const std::string & configfile );
-    virtual ~TnmsManager() {}
+    virtual ~TnmsManager();
 
     // EventTimerHandler
     virtual void timeout ( const EventTimer * timer );
@@ -43,12 +48,12 @@ class TnmsManager : public EventTimerHandler {
   protected:
 
     void         createClients();
-    void         verifyClients ( const time_t & now );
+    void         verifyClients ( const time_t      & now );
     bool         parseConfig   ( const std::string & cfg,
                                  const time_t      & now );
 
-    void         logRotate ( std::string    logfile,
-                             const time_t & now );
+    void         logRotate     ( std::string    logfile,
+                                 const time_t & now );
 
 
   private:
@@ -65,13 +70,13 @@ class TnmsManager : public EventTimerHandler {
 
     AgentIOHandler      _agentHandler;
     ClientIOHandler     _clientHandler;
-    TnmsMessageHandler  _msgHandler;
+    //TnmsMessageHandler  _msgHandler;
 
     TnmsConfig          _tconfig;
 
     time_t              _lastTouched;
     time_t              _logRotate;
-    time_t              _startupDelay, _startup;
+    time_t              _startDelay, _startat;
     int                 _today;
 
     std::string         _errstr;

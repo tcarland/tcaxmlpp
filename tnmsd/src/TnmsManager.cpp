@@ -4,6 +4,7 @@
 
 
 #include "TnmsManager.h"
+#include "TnmsClient.h"
 
 #include "LogFacility.h"
 using namespace tcanetpp;
@@ -23,8 +24,8 @@ TnmsManager::TnmsManager()
       _clid(0),
       _lastTouched(0),
       _logRotate(0),
-      _startupDelay(DEFAULT_STARTUP_DELAY),
-      _startup(0),
+      _startDelay(DEFAULT_STARTUP_DELAY),
+      _startat(0),
       _today(0),
       _hup(false),
       _usr(false),
@@ -80,7 +81,9 @@ TnmsManager::timeout ( const EventTimer * timer )
 
     if ( _hup ) {
         // parse config
-        //
+        this->parseConfig(now);
+        //if ( ! this->parseConfig(now) )
+            //log error
         _hup = false;
     }
 
@@ -89,11 +92,11 @@ TnmsManager::timeout ( const EventTimer * timer )
     }
 
     //check for logrotate
-    //if ( ! syslog && _logRotate <= now )
-    //    this->logRotate(logfile, now);
+    if ( ! _tconfig.syslog && _logRotate <= now )
+        this->logRotate(logfile, now);
 
     // do timeouts
-    _auth->timeout(timer);
+    //_auth->timeout(timer);
     _agentHandler.timeout(timer);
     _clientHandler.timeout(timer);
 
@@ -121,8 +124,7 @@ TnmsManager::run()
     _evmgr->addTimerEvent( (EventTimerHandler*) this, 5, 0);
 
     if ( ! this->parseConfig(now) ) {
-        // error parsing config;
-        // log error?
+        // error parsing config
         return;
     }
 
@@ -224,7 +226,8 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
             return false;
         }
 
-        _svrid = _evmgr->addIOEvent(&_agentHandler, _server->getFD(), _server, true);
+        _svrid = _evmgr->addIOEvent(&_agentHandler, _server->getFD(), 
+                                     _server, true);
     } 
 
     // client server startup
