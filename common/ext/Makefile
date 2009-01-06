@@ -61,17 +61,17 @@ distclean:
 	if [ -f libxml2/Makefile ]; then\
 		( cd libxml2; make distclean ) \
 	fi
-	( cd openssl; make clean )
+	#( cd openssl; make clean )
 	if [ -f mysql++-1.7.40/Makefile ]; then \
 		( cd mysql++-1.7.40; make distclean ) \
 	fi
 	@echo
 
 install:
-ifdef SHAMON_PREFIX
-	@echo "Installing external auth binaries to $(SOEMON3_PREFIX)/bin"
-	if [ ! -d $(SOEMON3_PREFIX)/bin ]; then \
-		( mkdir $(SOEMON3_PREFIX)/bin ) \
+ifdef SOME_PREFIX
+	@echo "Installing external auth binaries to $(SOME_PREFIX)/bin"
+	if [ ! -d $(SOME_PREFIX)/bin ]; then \
+		( mkdir $(SOME_PREFIX)/bin ) \
 	fi
 endif
 
