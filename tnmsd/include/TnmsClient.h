@@ -1,31 +1,65 @@
 #ifndef _TNMSD_TNMSCLIENT_H_
 #define _TNMSD_TNMSCLIENT_H_
 
+#include <set>
+
+#include "TnmsTree.h"
+
+
 #include "TnmsSocket.h"
 using namespace tnmsCore;
 
+
 namespace tnmsd {
+
+class TnmsMessageHandler;
+
 
 class TnmsClient : public TnmsSocket {
 
   public:
 
     TnmsClient ( TnmsTree * tree );
+    TnmsClient ( TnmsTree * tree, BufferedSocket * sock, 
+                 bool isAgent = false );
 
     virtual ~TnmsClient();
 
-    bool            isMirrorClient();
-    
-    void            queueAdd();
-    void            queueUpdate();
-    void            queueRemove();
-
+    // TnmsSocket
+    virtual int     send();
     virtual void    close();
 
-  private:
+
+    void            queueAdd     ( TnmsTree::Node * node );
+    void            queueUpdate  ( TnmsTree::Node * node );
+    void            queueRemove  ( TnmsTree::Node * node );
+
+
+    bool            isAgent();
+    bool            isMirrorClient();
+    
+    bool            inTreeSend() const;
+    void            inTreeSend   ( bool insend );
+
+
+  public:
+
+    typedef std::set<TnmsTree::Node*>  UpdateSet;
+    typedef std::set<std::string>      RemoveSet;
+
+  protected:
 
     TnmsTree*            _tree;
     TnmsMessageHandler*  _msgHandler;
+
+    UpdateSet            _adds;
+    UpdateSet            _updates;
+    RemoveSet            _removes;
+
+    bool                 _isAgent;
+    bool                 _isMirror;
+    bool                 _authorized;
+    bool                 _inTreeSend;
 };
 
 

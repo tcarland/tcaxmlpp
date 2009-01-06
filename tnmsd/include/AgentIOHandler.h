@@ -8,10 +8,14 @@ using namespace tcanetpp;
 
 namespace tnmsd {
 
+class TnmsTree;
 
 class AgentIOHandler : public EventIOHandler {
 
   public:
+
+    AgentIOHandler();
+    AgentIOHandler ( TnmsTree * tree );
 
     virtual ~AgentIOHandler();
 
@@ -25,6 +29,14 @@ class AgentIOHandler : public EventIOHandler {
 
     virtual bool readable       ( const EventIO * io );
     virtual bool writeable      ( const EventIO * io );
+
+  protected:
+
+    TnmsTree *  _tree;
+    //auth
+
+    std::set<TnmsClient*>       _clients;
+    std::set<TnmsClient*>       _mirrors;
 
 };
 

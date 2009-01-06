@@ -61,15 +61,15 @@ class TnmsTree {
     bool       unsubStructure ( TnmsClient        * client );
 
     void       updateClients();
+    void       removeClient   ( TnmsClient        * client );
 
     void       sweep();
     void       sweep          ( TnmsTree::Node    * node );
     void       sweep          ( const std::string & name );
 
-    void       removeClient   ( TnmsClient        * client );
 
     size_t     size() const;
-
+    void       debugDump();
   private:
 
     bool       markForRemove  ( TnmsTree::Node    * node );

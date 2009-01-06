@@ -2,11 +2,16 @@
 #define _TNMSD_TNMSMESSAGEHANDLER_H_
 
 #include "MessageHandler.hpp"
+#include "TnmsMessage.h"
+#include "TnmsMetric.h"
 using namespace tnmsCore;
 
 
 namespace tnmsd {
 
+
+class TnmsTree;
+class TnmsClient;
 
 class TnmsMessageHandler : public MessageHandler {
 
@@ -31,7 +36,7 @@ class TnmsMessageHandler : public MessageHandler {
     virtual void  PingHandler() {}
     virtual void  PingReplyHandler() {}
 
-    virtual void  LastMessageHandler ( int   record_type ) {}
+    virtual void  LastMessageHandler ( int   record_type );
 
 
   protected:
