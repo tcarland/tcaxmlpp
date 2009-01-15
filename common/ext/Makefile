@@ -10,7 +10,7 @@ include ${TOPDIR}/common/make/tca
 #BOOST_JAM  = tools/build/jam_src/bin.linuxx86/bjam
 
 
-all: zlib net-snmp
+all: zlib net-snmp libxml2
 
 
 help:
@@ -31,11 +31,16 @@ zlib:
 	( cd zlib; sh ./configure; make )
 	@echo
 
+update-autoconf:
+	( cd libxml2; autoconf; aclocal; libtoolize --copy --force )
+	@echo
+
+# note: if configuration fails with libtool errors use 'make update-libxml2'
+#
 .PHONY: libxml2
 libxml2:
-	( cd libxml2; chmod u+w aclocal.m4; chmod u+w configure; \
-	libtoolize --copy --force; sh ./configure; \
-	chmod u+w python/libxml2-py.c; make )
+	( cd libxml2; chmod u+w aclocal.m4; chmod u+wx configure; \
+	 sh ./configure; chmod u+w python/libxml2-py.c; make )
 	@echo
 
 .PHONY: openssl
@@ -43,7 +48,6 @@ openssl:
 	( cd openssl; ./config no-shared; \
 	chmod u+w crypto/objects/obj_dat.h; make )
 	@echo
-
 
 clean:
 	( cd net-snmp-5.2.3; make clean )

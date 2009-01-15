@@ -4,20 +4,36 @@
 #
 
 PWD=`pwd`
-DOTFILE=".external"
+
+BUILTFILE=".external"
+INITFILE=".init"
 TARGETLIST="all"
 retval=
 
 
 check_state()
 {
-    if [ -e $DOTFILE ]; then
+    if [ -e $BUILTFILE ]; then
         return 0
     fi
 
     return 1
 }
 
+check_autoconf()
+{
+    if [ -e $INITFILE ]; then
+        return 0
+    fi
+
+    make update-autoconf
+    retval=$?
+    if [ $retval -ne 0 ]; then
+        touch ${PWD}/${INITFILE}
+    fi
+
+    return 1
+}
 
 build_targets()
 {
@@ -50,13 +66,13 @@ else
         exit 0
     fi
 
-    build_targets
+    check_autoconf
  
     if [ $retval -ne 0 ]; then
         echo "Error building external libraries."
     else
         echo "External libraries built..."
-        touch ${PWD}/${DOTFILE}
+        touch ${PWD}/${BUILTFILE}
     fi
 
 fi
