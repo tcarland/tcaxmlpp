@@ -68,10 +68,10 @@ distclean:
 	@echo
 
 install:
-ifdef SHAMON_PREFIX
-	@echo "Installing external auth binaries to $(SOEMON3_PREFIX)/bin"
-	if [ ! -d $(SOEMON3_PREFIX)/bin ]; then \
-		( mkdir $(SOEMON3_PREFIX)/bin ) \
+ifdef SOME_PREFIX
+	@echo "Installing external auth binaries to $(SOME_PREFIX)/bin"
+	if [ ! -d $(SOME_PREFIX)/bin ]; then \
+		( mkdir $(SOME_PREFIX)/bin ) \
 	fi
 endif
 
