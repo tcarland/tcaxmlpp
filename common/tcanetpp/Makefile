@@ -13,7 +13,7 @@ INCLUDES =	    -Iinclude
 OBJS =		    src/SocketOption.o src/Socket.o src/BufferedSocket.o \
                     src/CidrUtils.o src/CircularBuffer.o src/StringUtils.o \
                     src/EventManager.o src/Thread.o src/ThreadLock.o \
-                    src/ThreadMutexPool.o src/LogFacility.o \
+                    src/ThreadMutexPool.o src/LogFacility.o src/FileUtils.o \
                     src/random.o src/RandomPrefix.o src/patricia.o \
                     src/DeviceMap.o src/NetworkDevice.o src/NetworkInterface.o
                     
