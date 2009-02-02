@@ -19,7 +19,6 @@ class TnmsTree {
         TnmsMetric  metric;
         ClientSet   nodeSubscribers;
         ClientSet   levelSubscribers;
-        // type?
         bool        erase;
 
         TnmsTreeNode()

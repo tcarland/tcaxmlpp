@@ -15,122 +15,122 @@ namespace tnmsCore {
  *  The Packer is not meant to handle the encryption and/or compression of 
  *  a given buffer, but possibly network order of byte fields where 
  *  appropriate. The current implementation assumes little endian and 
- *  does not change any values to network order (big endian), but if such
+ *  does not change any vals to network order (big endian), but if such
  *  behavior is needed, it would be easily provided here.
 **/
 
 
 int
-Packer::Pack ( char * buffer, size_t buffer_len,
-               const char * value,  size_t val_len )
+Packer::Pack ( char * buffer, size_t buflen,
+               const char * val,  size_t val_len )
 {
-    int pk = Packer::Pack(buffer, buffer_len, val_len);
+    int pk = Packer::Pack(buffer, buflen, val_len);
 
-    if ( pk <= 0 || buffer_len < pk + val_len )
+    if ( pk <= 0 || buflen < pk + val_len )
         return -1;
 
-    ::memcpy(buffer + pk, value, val_len);
+    ::memcpy(buffer + pk, val, val_len);
 
     pk  += val_len;
-    pk  += Packer::Pad(buffer, (buffer_len - pk), pk);
+    pk  += Packer::Pad(buffer, (buflen - pk), pk);
 
     return pk;
 }
 
 int
-Packer::Pack ( char * buffer, size_t buffer_len, const std::string & value )
+Packer::Pack ( char * buffer, size_t buflen, const std::string & val )
 {
-    return Packer::Pack(buffer, buffer_len, value.c_str(), value.length());
+    return Packer::Pack(buffer, buflen, val.c_str(), val.length());
 }
 
 
 int
-Packer::Pack ( char * buffer, size_t buffer_len, int8_t value )
+Packer::Pack ( char * buffer, size_t buflen, int8_t val )
 {
-    if ( buffer_len < sizeof(value) )
+    if ( buflen < sizeof(val) )
         return -1;
 
-    *(int8_t*)buffer = value;
+    *(int8_t*)buffer = val;
 
-    return sizeof(value);
+    return sizeof(val);
 }
 
 int
-Packer::Pack( char * buffer, size_t buffer_len, uint8_t value )
+Packer::Pack( char * buffer, size_t buflen, uint8_t val )
 {
-    if ( buffer_len < sizeof(value) )
+    if ( buflen < sizeof(val) )
         return -1;
 
-    *(uint8_t*)buffer = value;
+    *(uint8_t*)buffer = val;
 
-    return sizeof(value);
+    return sizeof(val);
 }
 
 int
-Packer::Pack( char * buffer, size_t buffer_len, int16_t value )
+Packer::Pack( char * buffer, size_t buflen, int16_t val )
 {
-    if ( buffer_len < sizeof(value) )
+    if ( buflen < sizeof(val) )
         return -1;
 
-    *(int16_t*)buffer = value;
+    *(int16_t*)buffer = val;
 
-    return sizeof(value);
+    return sizeof(val);
 }
 
 int
-Packer::Pack( char * buffer, size_t buffer_len, uint16_t value )
+Packer::Pack( char * buffer, size_t buflen, uint16_t val )
 {
-    if ( buffer_len < sizeof(value) )
+    if ( buflen < sizeof(val) )
         return -1;
 
-    *(uint16_t*)buffer = value;
+    *(uint16_t*)buffer = val;
 
-    return sizeof(value);
+    return sizeof(val);
 }
 
 int
-Packer::Pack( char * buffer, size_t buffer_len, int32_t value )
+Packer::Pack( char * buffer, size_t buflen, int32_t val )
 {
-    if ( buffer_len < sizeof(value) )
+    if ( buflen < sizeof(val) )
         return -1;
 
-    *(int32_t*)buffer = value;
+    *(int32_t*)buffer = val;
 
-    return sizeof(value);
+    return sizeof(val);
 }
 
 int
-Packer::Pack( char * buffer, size_t buffer_len, uint32_t value )
+Packer::Pack( char * buffer, size_t buflen, uint32_t val )
 {
-    if ( buffer_len < sizeof(value) )
+    if ( buflen < sizeof(val) )
         return -1;
 
-    *(uint32_t*)buffer = value;
+    *(uint32_t*)buffer = val;
 
-    return sizeof(value);
+    return sizeof(val);
 }
 
 
 int
-Packer::Pack( char * buffer, size_t buffer_len, int64_t value )
+Packer::Pack( char * buffer, size_t buflen, int64_t val )
 {
-    if ( buffer_len < sizeof(value) )
+    if ( buflen < sizeof(val) )
         return -1;
 
-    *(int64_t*)buffer = value;
+    *(int64_t*)buffer = val;
 
-    return sizeof(value);
+    return sizeof(val);
 }
 
 int
-Packer::Pack( char * buffer, size_t buffer_len, uint64_t value )
+Packer::Pack( char * buffer, size_t buflen, uint64_t val )
 {
-    if ( buffer_len < sizeof(value) )
+    if ( buflen < sizeof(val) )
         return -1;
 
-    *(uint64_t*)buffer = value;
+    *(uint64_t*)buffer = val;
 
-    return sizeof(value);
+    return sizeof(val);
 }
 
 
@@ -138,19 +138,19 @@ Packer::Pack( char * buffer, size_t buffer_len, uint64_t value )
 
 
 int
-Packer::Unpack ( char   * buffer, size_t  buffer_len,
-                 char   * value,  size_t  val_len,
+Packer::Unpack ( const char * buffer, size_t  buflen,
+                 char       * val,    size_t  vallen,
                  size_t & val_written )
 {
     size_t skip = 0;
-    int    upk  = Packer::Unpack(buffer, buffer_len, val_written);
+    int    upk  = Packer::Unpack(buffer, buflen, val_written);
 
-    if ( val_len < val_written )
+    if ( vallen < val_written )
         return -1;
-    else if ( buffer_len < upk + val_written )
+    else if ( buflen < upk + val_written )
         return -1;
 
-    ::memcpy(value, buffer + upk, val_written);
+    ::memcpy(val, buffer + upk, val_written);
 
     skip = val_written % PACKER_WORDSIZE;
 
@@ -158,108 +158,108 @@ Packer::Unpack ( char   * buffer, size_t  buffer_len,
 }
 
 int
-Packer::Unpack ( char * buffer, size_t  buffer_len, std::string & value )
+Packer::Unpack ( const char * buffer, size_t  buflen, std::string & val )
 {
     uint32_t  len  = 0;
     size_t    skip = 0;
 
-    int  upk = Packer::Unpack(buffer, buffer_len, len);
+    int  upk = Packer::Unpack(buffer, buflen, len);
 
-    if ( upk < 0 || buffer_len < (upk + len) )
+    if ( upk < 0 || buflen < (upk + len) )
         return -1;
 
-    value.assign(buffer + upk, len);
+    val.assign(buffer + upk, len);
     skip = Packer::Skip(len);
 
     return (upk + len + skip);
 }
 
 int
-Packer::Unpack ( char * buffer, size_t buffer_len, int8_t & value )
+Packer::Unpack ( const char * buffer, size_t buflen, int8_t & val )
 {
-    if ( buffer_len < sizeof(value) )
+    if ( buflen < sizeof(val) )
         return -1;
 
-    value = *(int8_t*)buffer;
+    val = *(int8_t*)buffer;
 
-    return sizeof(value);
+    return sizeof(val);
 }
 
 int
-Packer::Unpack ( char * buffer, size_t buffer_len, uint8_t & value )
+Packer::Unpack ( const char * buffer, size_t buflen, uint8_t & val )
 {
-    if ( buffer_len < sizeof(value) )
+    if ( buflen < sizeof(val) )
         return -1;
 
-    value = *(uint8_t*)buffer;
+    val = *(uint8_t*)buffer;
 
-    return sizeof(value);
+    return sizeof(val);
 }
 
 int
-Packer::Unpack ( char   * buffer, size_t  buffer_len, int16_t & value )
+Packer::Unpack ( const char * buffer, size_t  buflen, int16_t & val )
 {
-    if ( buffer_len < sizeof(value) )
+    if ( buflen < sizeof(val) )
         return -1;
 
-    value = *(int16_t*)buffer;
+    val = *(int16_t*)buffer;
 
-    return sizeof(value);
+    return sizeof(val);
 }
 
 int
-Packer::Unpack ( char   * buffer, size_t  buffer_len, uint16_t & value )
+Packer::Unpack ( const char * buffer, size_t  buflen, uint16_t & val )
 {
-    if ( buffer_len < sizeof(value) )
+    if ( buflen < sizeof(val) )
         return -1;
 
-    value = *(uint16_t*)buffer;
+    val = *(uint16_t*)buffer;
 
-    return sizeof(value);
+    return sizeof(val);
 }
 
 int
-Packer::Unpack ( char   * buffer, size_t  buffer_len, int32_t & value )
+Packer::Unpack ( const char * buffer, size_t  buflen, int32_t & val )
 {
-    if ( buffer_len < sizeof(value) )
+    if ( buflen < sizeof(val) )
         return -1;
 
-    value = *(int32_t*)buffer;
+    val = *(int32_t*)buffer;
 
-    return sizeof(value);
+    return sizeof(val);
 }
 
 int
-Packer::Unpack ( char   * buffer, size_t  buffer_len, uint32_t & value )
+Packer::Unpack ( const char * buffer, size_t  buflen, uint32_t & val )
 {
-    if ( buffer_len < sizeof(value) )
+    if ( buflen < sizeof(val) )
         return -1;
 
-    value = *(uint32_t*)buffer;
+    val = *(uint32_t*)buffer;
 
-    return sizeof(value);
+    return sizeof(val);
 }
 
 int
-Packer::Unpack ( char   * buffer, size_t  buffer_len, int64_t & value )
+Packer::Unpack ( const char * buffer, size_t  buflen, int64_t & val )
 {
-    if ( buffer_len < sizeof(value) )
+    if ( buflen < sizeof(val) )
         return -1;
 
-    value = *(int64_t*)buffer;
+    val = *(int64_t*)buffer;
 
-    return sizeof(value);
+    return sizeof(val);
 }
 
 int
-Packer::Unpack ( char   * buffer, size_t  buffer_len, uint64_t & value )
+Packer::Unpack ( const char * buffer, size_t  buflen, uint64_t & val )
 {
-    if ( buffer_len < sizeof(value) )
+    if ( buflen < sizeof(val) )
         return -1;
 
-    value = *(uint64_t*)buffer;
+    val = *(uint64_t*)buffer;
 
-    return sizeof(value);
+    return sizeof(val);
 }
 
 

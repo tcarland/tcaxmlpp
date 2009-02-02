@@ -32,19 +32,20 @@ public:
     template<typename T>
     const T&            getValue() const;
 
-    bool                setValue    ( eValueTypes valtype,
+    bool                setValue    ( eValueTypes         valtype,
                                       const std::string & value );
     template< typename T >
-    bool                setValue    ( eValueTypes valtype, T & value );
+    bool                setValue    ( eValueTypes  valtype, 
+                                      T &          value );
 
 
     const std::string&  getPvtData() const;
-    bool                setPvtData ( const std::string &  data );
+    bool                setPvtData ( const std::string & data );
 
     /*  Serializable */
 
     virtual ssize_t serialize   ( char * buffer, size_t buffer_len );
-    virtual ssize_t deserialize ( char * buffer, size_t buffer_len );
+    virtual ssize_t deserialize ( const char * buffer, size_t buffer_len );
     virtual size_t  size() const;
 
 

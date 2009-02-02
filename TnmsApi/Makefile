@@ -1,6 +1,5 @@
-TOPDIR = ../../
+TOPDIR = ..
 NEED_PTHREADS = 1
-NEED_TCANETPP = 1
 NEED_TNMSCORE = 1
 NEED_ZLIB = 1
 
@@ -11,7 +10,7 @@ endif
 LIBS =
 INCLUDES =              -I.
 
-OBJS =                  TcaNmsAPI.o TcaNmsBase.o
+OBJS =                  TnmsAPI.o TnmsBase.o
 
 BIN =                        
 ALL_OBJS =              $(OBJS)

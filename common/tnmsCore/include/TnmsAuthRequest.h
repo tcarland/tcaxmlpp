@@ -27,7 +27,7 @@ public:
 
     // serializable
     virtual ssize_t  serialize   ( char * buffer, size_t buffer_len );
-    virtual ssize_t  deserialize ( char * buffer, size_t buffer_len );
+    virtual ssize_t  deserialize ( const char * buffer, size_t buffer_len );
     virtual size_t   size() const;
 
 protected:

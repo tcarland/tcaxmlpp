@@ -143,11 +143,11 @@ TnmsMetric::serialize ( char * buffer, size_t  buffer_len )
 
 
 ssize_t
-TnmsMetric::deserialize ( char * buffer, size_t  buffer_len )
+TnmsMetric::deserialize ( const char * buffer, size_t  buffer_len )
 {
-    char     * rptr;
-    size_t     rsz, rd = 0;
-    ssize_t    upk;
+    const char * rptr;
+    size_t       rsz, rd = 0;
+    ssize_t      upk;
 
     if ( buffer_len < this->size() )
         return -1;

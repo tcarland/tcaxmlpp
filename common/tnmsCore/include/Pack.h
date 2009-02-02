@@ -15,38 +15,38 @@ class Packer {
 
   public:
 
-    static int  Pack   ( char * buffer, size_t buffer_len, 
-                         const char * value, size_t value_len );
+    static int  Pack   ( char * buffer, size_t buflen, 
+                         const char * val, size_t val_len );
 
-    static int  Pack   ( char * buffer, size_t buffer_len,
-                         const std::string & value );
+    static int  Pack   ( char * buffer, size_t buflen,
+                         const std::string & val );
 
-    static int  Pack   ( char * buffer, size_t buffer_len, int8_t   value );
-    static int  Pack   ( char * buffer, size_t buffer_len, uint8_t  value );
-    static int  Pack   ( char * buffer, size_t buffer_len, int16_t  value );
-    static int  Pack   ( char * buffer, size_t buffer_len, uint16_t value );
-    static int  Pack   ( char * buffer, size_t buffer_len, int32_t  value );
-    static int  Pack   ( char * buffer, size_t buffer_len, uint32_t value );
-    static int  Pack   ( char * buffer, size_t buffer_len, int64_t  value );
-    static int  Pack   ( char * buffer, size_t buffer_len, uint64_t value );
+    static int  Pack   ( char * buffer, size_t buflen, int8_t   val );
+    static int  Pack   ( char * buffer, size_t buflen, uint8_t  val );
+    static int  Pack   ( char * buffer, size_t buflen, int16_t  val );
+    static int  Pack   ( char * buffer, size_t buflen, uint16_t val );
+    static int  Pack   ( char * buffer, size_t buflen, int32_t  val );
+    static int  Pack   ( char * buffer, size_t buflen, uint32_t val );
+    static int  Pack   ( char * buffer, size_t buflen, int64_t  val );
+    static int  Pack   ( char * buffer, size_t buflen, uint64_t val );
 
     //---------------------------------------------------------------------
 
-    static int  Unpack ( char * buffer, size_t buffer_len, 
-                         char * value,  size_t value_len, 
-                         size_t  & val_written );
+    static int  Unpack ( const char  * buffer, size_t buflen, 
+                         char        * val,    size_t val_len, 
+                         size_t      & val_written );
 
-    static int  Unpack ( char * buffer, size_t buffer_len,
-                         std::string & value );
+    static int  Unpack ( const char  * buffer, size_t buflen,
+                         std::string & val );
 
-    static int  Unpack ( char * buffer, size_t buffer_len, int8_t   & value );
-    static int  Unpack ( char * buffer, size_t buffer_len, uint8_t  & value );
-    static int  Unpack ( char * buffer, size_t buffer_len, int16_t  & value );
-    static int  Unpack ( char * buffer, size_t buffer_len, uint16_t & value );
-    static int  Unpack ( char * buffer, size_t buffer_len, int32_t  & value );
-    static int  Unpack ( char * buffer, size_t buffer_len, uint32_t & value );
-    static int  Unpack ( char * buffer, size_t buffer_len, int64_t  & value );
-    static int  Unpack ( char * buffer, size_t buffer_len, uint64_t & value );
+    static int  Unpack ( const char  * buffer, size_t buflen, int8_t   & val );
+    static int  Unpack ( const char  * buffer, size_t buflen, uint8_t  & val );
+    static int  Unpack ( const char  * buffer, size_t buflen, int16_t  & val );
+    static int  Unpack ( const char  * buffer, size_t buflen, uint16_t & val );
+    static int  Unpack ( const char  * buffer, size_t buflen, int32_t  & val );
+    static int  Unpack ( const char  * buffer, size_t buflen, uint32_t & val );
+    static int  Unpack ( const char  * buffer, size_t buflen, int64_t  & val );
+    static int  Unpack ( const char  * buffer, size_t buflen, uint64_t & val );
 
     //---------------------------------------------------------------------
     
@@ -65,13 +65,13 @@ class Packer {
 
     //----------------------------------------------------------------------
 
-    static inline size_t Pad ( char * buffer, size_t  buffer_len,
+    static inline size_t Pad ( char * buffer, size_t  buflen,
                                const size_t & wtlen )
     {
         size_t  pad = Packer::PadLen(wtlen);
 
-        if ( pad > buffer_len )
-            return buffer_len;
+        if ( pad > buflen )
+            return buflen;
 
         return pad;
     }

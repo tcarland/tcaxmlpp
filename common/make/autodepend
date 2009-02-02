@@ -150,17 +150,17 @@ LFLAGS    += -L$(TCASNMP_HOME)/lib
 LIBS      += -ltcasnmp
 endif
 
-ifdef NEED_MONAPI3
-MONAPI  = $(TOPDIR)/monapi
-INCLUDES  += -I$(MONAPI) -I$(TOPDIR)/common/tnmsCore -I$(TOPDIR)/common/tcanetpp/include -I$(TOPDIR)/common/tcaxml++
+ifdef NEED_TNMSAPI
+TNMSAPI  = $(TOPDIR)/TnmsAPI
+INCLUDES  += -I$(TNMSAPI) -I$(TOPDIR)/common/tnmsCore/include -I$(TOPDIR)/common/tcanetpp/include -I$(TOPDIR)/common/tcaxml++/include
 LFLAGS    += -L$(MONAPI)/lib
-LIBS      += -lMonApi3 
+LIBS      += -ltnmsapi 
 endif
 
 ifdef NEED_TNMSCORE
 TNMSCORE  = $(TOPDIR)/common/tnmsCore
-INCLUDES   += -I$(TNMSCORE) -I$(TOPDIR)/common/libtcapp/include \
-              -I$(TOPDIR)/common/tcaxml++
+INCLUDES   += -I$(TNMSCORE)/include -I$(TOPDIR)/common/libtcapp/include \
+              -I$(TOPDIR)/common/tcaxml++/include
 LFLAGS     += -L$(TNMSCORE)/lib
 LIBS       += -ltnmsCore
 endif

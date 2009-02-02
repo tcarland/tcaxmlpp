@@ -199,12 +199,12 @@ TnmsOid::serialize ( char * buffer, size_t buffer_len )
 
 
 ssize_t
-TnmsOid::deserialize ( char * buffer, size_t buffer_len )
+TnmsOid::deserialize ( const char * buffer, size_t buffer_len )
 {
-    char     * rptr;
-    size_t     rsz, rd = 0;
-    ssize_t    upk;
-    uint32_t   oid_len, i;
+    const char * rptr;
+    size_t       rsz, rd = 0;
+    ssize_t      upk;
+    uint32_t     oid_len, i;
 
     if ( buffer_len < this->size() )
         return -1;
