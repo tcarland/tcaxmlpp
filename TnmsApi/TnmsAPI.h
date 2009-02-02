@@ -1,11 +1,14 @@
-#ifndef _TNMSCORE_TCANMSAPI_H_
-#define _TNMSCORE_TCANMSAPI_H_
+#ifndef _TNMSCORE_TNMSAPI_H_
+#define _TNMSCORE_TNMSAPI_H_
 
 #include <stdint.h>
 
+#include <string>
+
+
 #ifndef DLLOPT
-#  if defined (WIN32) && ! define (TCANMSAPI_NODLL)
-#    ifdef EXPORT_DELL
+#  if defined (WIN32) && ! defined (TNMSAPI_NODLL)
+#    ifdef EXPORT_DLL
 #      define DLLOPT __declspec(dllexport)
 #    else
 #      define DLLOPT  __declspec(dllimport)
@@ -20,17 +23,17 @@
 namespace tnmsCore {
 
 
-class DLLOPT TcaNmsAPI {
+class DLLOPT TnmsAPI {
 
   public:
 
-    TcaNmsAPI ( const std::string & agent_name );
+    TnmsAPI ( const std::string & agent_name );
 
-    TcaNmsAPI ( const std::string & agent_name,
-                const std::string & host_name,
-                uint16_t     host_port );
+    TnmsAPI ( const std::string & agent_name,
+              const std::string & host_name,
+              uint16_t            host_port );
 
-    ~TcaNmsAPI();
+    ~TnmsAPI();
 
 
     int     send    ( const time_t  & now );
@@ -86,5 +89,5 @@ class DLLOPT TcaNmsAPI {
 
 }  // namespace
 
-#endif  // _TNMSCORE_TCANMSAPI_H_
+#endif  // _TNMSCORE_TNMSAPI_H_
 

@@ -1,7 +1,7 @@
-#define _TNMSCORE_TCANMSBASE_CPP_
+#define _TNMSCORE_TNMSBASE_CPP_
 
 
-#include "TcaNmsBase.h"
+#include "TnmsBase.h"
 
 
 namespace tnmsCore {
@@ -30,7 +30,7 @@ TnmsBase::TnmsBase ( const std::string & name )
     : _agentName(name)
 {}
 
-TcaNmsBase::TcaNmsBase (  const std::string & name,
+TnmsBase::TnmsBase (  const std::string & name,
                           const std::string & host,
                           uint16_t            port )
     : _agentName(name),
@@ -39,12 +39,12 @@ TcaNmsBase::TcaNmsBase (  const std::string & name,
 {}
 
 
-TcaNmsBase::~TcaNmsBase() {}
+TnmsBase::~TnmsBase() {}
 
 
 
 bool
-TcaNmsBase::add ( const std::string & name, time_t now )
+TnmsBase::add ( const std::string & name, time_t now )
 {
     if ( first_out_of_range(name.begin(), name.end(), LOW_CHAR, HIGH_CHAR) != name.end() )
     {
@@ -107,7 +107,7 @@ TcaNmsBase::add ( const std::string & name, time_t now )
 
 
 bool
-TcaNmsBase::remove ( const std::string & name )
+TnmsBase::remove ( const std::string & name )
 {
     HeirarchicalStringTree<TreeMetric>::Node  * node = NULL;
 
@@ -139,7 +139,7 @@ TcaNmsBase::remove ( const std::string & name )
 
 
 bool
-TcaNmsBase::update ( const std::string & name, time_t  now, uint64_t value, 
+TnmsBase::update ( const std::string & name, time_t  now, uint64_t value, 
                      eValueTypes type, const std::string & data )
 {
     HeirarchicalStringTree<TreeMetric>::Node  * node = NULL;
@@ -159,7 +159,7 @@ TcaNmsBase::update ( const std::string & name, time_t  now, uint64_t value,
 
 
 bool
-TcaNmsBase::update ( const std::string & name, time_t  now,
+TnmsBase::update ( const std::string & name, time_t  now,
                      const std::string & value, const std::string & data )
 {
     HeirarchicalStringTree<TreeMetric>::Node  * node = NULL;
@@ -179,7 +179,7 @@ TcaNmsBase::update ( const std::string & name, time_t  now,
 
 
 void
-TcaNmsBase::clear()
+TnmsBase::clear()
 {
     //_tree->clear();
     // remove _agentName
@@ -187,80 +187,80 @@ TcaNmsBase::clear()
 
 
 bool
-TcaNmsBase::setConfig ( const std::string & filename )
+TnmsBase::setConfig ( const std::string & filename )
 {
     _configName = filename;
 }
 
 
 void
-TcaNmsBase::holddown  ( time_t secs )
+TnmsBase::holddown  ( time_t secs )
 {
     _holddown = secs;
 }
 
 
 time_t
-TcaNmsBase::holddown()
+TnmsBase::holddown()
 {
     return _holddown;
 }
 
 
 void    
-TcaNmsBase::reconnect ( time_t secs )
+TnmsBase::reconnect ( time_t secs )
 {
     _reconTime = secs;
 }
 
 
 time_t  
-TcaNmsBase::reconnect()
+TnmsBase::reconnect()
 {
     return _reconTime;
 }
 
 void    
-TcaNmsBase::max_messages ( int max )
+TnmsBase::max_messages ( int max )
 {
     _maxMessages = max;
 }
 
 
 int     
-TcaNmsBase::max_messages()
+TnmsBase::max_messages()
 {
     return _maxMessages;
 }
 
 void    
-TcaNmsBase::debug ( bool debug )
+TnmsBase::debug ( bool debug )
 {
     _debug = debug;
 }
 
 
 void    
-TcaNmsBase::syslog ( int facility )
+TnmsBase::syslog ( int facility )
 {}
 
 
 void    
-TcaNmsBase::logfile ( const std::string & logfilename )
+TnmsBase::logfile ( const std::string & logfilename )
 {}
 
 
 bool    
-TcaNmsBase::need_flush()
+TnmsBase::need_flush()
 {}
 
 
 size_t  
-TcaNmsBase::flushsize()
+TnmsBase::flushsize()
 {}
 
 
 
 }  // namespace
 
-// _TNMSCORE_TCANMSBASE_CPP_
+// _TNMSCORE_TNMSBASE_CPP_

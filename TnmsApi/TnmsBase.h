@@ -1,8 +1,11 @@
-#ifndef _TNMSCORE_TCANMSBASE_H_
-#define _TNMSCORE_TCANMSBASE_H_
+#ifndef _TNMSCORE_TNMSBASE_H_
+#define _TNMSCORE_TNMSBASE_H_
 
 #include <string>
 #include <map>
+
+#include "TnmsMetric.h"
+#include "TnmsOid.h"
 
 
 namespace tnmsCore {
@@ -39,17 +42,17 @@ typedef std::set<std::string>                StringSet;
 
 
 
-class TcaNmsBase {
+class TnmsBase {
 
   public:
 
-    TcaNmsBase ( const std::string & name );
+    TnmsBase ( const std::string & name );
 
-    TcaNmsBase ( const std::string & name,
+    TnmsBase ( const std::string & name,
                  const std::string & host,
                  uint16_t            port );
 
-    ~TcaNmsBase();
+    ~TnmsBase();
 
 
     int     send      ( time_t  now );
@@ -137,4 +140,4 @@ class TcaNmsBase {
 }  // namespace
 
 
-#endif  // _TNMSCORE_TCANMSBASE_H_
+#endif  // _TNMSCORE_TNMSBASE_H_
