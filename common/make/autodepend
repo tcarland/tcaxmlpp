@@ -159,7 +159,7 @@ endif
 
 ifdef NEED_TNMSCORE
 TNMSCORE  = $(TOPDIR)/common/tnmsCore
-INCLUDES   += -I$(TNMSCORE)/include -I$(TOPDIR)/common/libtcapp/include \
+INCLUDES   += -I$(TNMSCORE)/include -I$(TOPDIR)/common/tcanetpp/include \
               -I$(TOPDIR)/common/tcaxml++/include
 LFLAGS     += -L$(TNMSCORE)/lib
 LIBS       += -ltnmsCore

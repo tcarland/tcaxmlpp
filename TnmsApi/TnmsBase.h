@@ -3,38 +3,20 @@
 
 #include <string>
 #include <map>
+#include <set>
 
 #include "TnmsMetric.h"
 #include "TnmsOid.h"
+#include "HeirarchicalStringTree.hpp"
 
+
+using namespace tnmsCore;
 
 namespace tnmsCore {
 
 
-struct TreeMetric
-{
-    TnmsMetric   metric;
-    uint16_t     lastId;
 
-
-    TreeMetric() : lastId(0) {}
-
-    TreeMetric ( const std::string & name )
-        : metric(TnmsMetric(name)),
-          lastId(0)
-    {}
-
-    ~TreeMetric() {}
-
-    void setLastId ( uint16_t id )
-    {
-        if ( id > lastId )
-            lastId = id;
-    }
-};
-
-
-typedef HeirarchicalStringTree<TreeMetric>   MetricStringTree;
+typedef HeirarchicalStringTree<TnmsMetric*>  MetricTree;
 
 typedef std::map<std::string, TnmsOid*>      OidMap;
 typedef std::set<TnmsMetric*>                UpdateSet;
@@ -58,15 +40,20 @@ class TnmsBase {
     int     send      ( time_t  now );
 
 
-    bool    add       ( const std::string & name, time_t  now );
+    bool    add       ( const std::string & name, 
+                        const time_t      & now,
+                        const std::string & data = 0 );
 
     bool    remove    ( const std::string & name );
     
-    bool    update    ( const std::string & name, time_t  now,
-                        uint64_t value, eValueTypes type,
+    bool    update    ( const std::string & name, 
+                        const time_t      & now,
+                        uint64_t          & value, 
+                        eValueTypes         type,
                         const std::string & data = 0 );
 
-    bool    update    ( const std::string & name, time_t  now,
+    bool    update    ( const std::string & name, 
+                        const time_t      & now,
                         const std::string & value,
                         const std::string & data = 0 );
 
@@ -110,15 +97,12 @@ class TnmsBase {
 
   private:
 
-
     std::string          _agentName;
-    TnmsOid              _agentOid;
 
-    MetricStringTree     _tree;
+    MetricTree           _tree;
     UpdateSet            _updates;
     StringSet            _removes;
 
-    OidMap               _oidMap;
     std::string          _xmlConfig;
     std::string          _configName;
     std::string          _hostName;
@@ -127,9 +111,10 @@ class TnmsBase {
     time_t               _holddown;
     time_t               _reconTime;
     time_t               _configTime;
-    bool                 _subtree;
     int                  _maxMessages;
     int                  _today;
+    bool                 _subtree;
+    bool                 _debug;
 
     static 
     const std::string    ApiVersion;

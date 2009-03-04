@@ -1,5 +1,7 @@
 #define _TNMSCORE_TNMSBASE_CPP_
 
+#include <iostream>
+
 
 #include "TnmsBase.h"
 
@@ -17,7 +19,8 @@ Iterator first_out_of_range( Iterator  begin,
                              Value     low,
                              Value     high )
 {
-    for ( ; begin != end; ++begin ) {
+    for ( ; begin != end; ++begin ) 
+    {
         if ( *begin < low || *begin > high )
             return begin;
     }
@@ -30,12 +33,14 @@ TnmsBase::TnmsBase ( const std::string & name )
     : _agentName(name)
 {}
 
-TnmsBase::TnmsBase (  const std::string & name,
-                          const std::string & host,
-                          uint16_t            port )
+TnmsBase::TnmsBase ( const std::string & name,
+                     const std::string & host,
+                     uint16_t            port )
     : _agentName(name),
       _hostName(host),
-      _hostPort(port)
+      _hostPort(port),
+      _subtree(false),
+      _debug(false)
 {}
 
 
@@ -44,7 +49,9 @@ TnmsBase::~TnmsBase() {}
 
 
 bool
-TnmsBase::add ( const std::string & name, time_t now )
+TnmsBase::add ( const std::string & name, 
+                const time_t      & now, 
+                const std::string & data )
 {
     if ( first_out_of_range(name.begin(), name.end(), LOW_CHAR, HIGH_CHAR) != name.end() )
     {
@@ -52,15 +59,16 @@ TnmsBase::add ( const std::string & name, time_t now )
         return false;
     }
 
-    HeirarchicalStringTree<TreeMetric>::Node  * node = NULL;
-    HeirarchicalStringTree::BranchNodeList       nodelist;
+    MetricTree::Node           * node;
+    MetricTree::BranchNodeList   nodelist;
 
-    node  = _tree.find(name);
+    node = _tree.find(name);
     if ( node != NULL ) {
         // already exists
         return false;
     }
-    node =  _tree.insert(name, std::inserter(nodelist, nodelist.begin()));
+
+    node = _tree.insert(name, std::inserter(nodelist, nodelist.begin()));
     if ( node == NULL ) {
         // error inserting
         return false;
@@ -69,25 +77,25 @@ TnmsBase::add ( const std::string & name, time_t now )
     /*  Now to dynamically create new oids */
     TnmsOid      newOid;
 
-    TreeMetric & rootMetric = nodelist.front()->getParent()->getValue();
-    TreeMetric & metric     = node->getValue();
+    TnmsMetric * rootMetric = nodelist.front()->getParent()->getValue();
+    TnmsMetric * metric     = node->getValue();
 
-    if ( rootMetric.metric.getElementOid().lastValue() == 0 ) {
+    if ( rootMetric.getElementOid().lastValue() == 0 ) {
         // error determining Oid
         return false;
     }
 
-    OidList oidlist = rootMetric.metric.getElementOid().getOidList(); // intentional copy
+    OidList  oidlist = rootMetric.getElementOid().getOidList(); // intentional copy
+    MetricTree::BranchNodeList::iterator   nIter;
 
-    HeirarchicalStringTree::BranchNodeList::iterator  nIter;
     for ( nIter = nodelist.begin(); nIter != nodelist.end(); ++nIter ) {
-        TreeMetric & nodemetric = (*nIter)->getValue();
+        TnmsMetric * nodemetric = (*nIter)->getValue();
         nodemetric.lastId++;
         oidlist.push_back(nodemetric.lastId);
         newOid = TnmsOid(oidlist);
         std::cout << "New oid " << newOid.toString() << " for " 
             << (*nIter)->getAbsoluteName() << std::endl;
-        nodemetric.metric = TnmsMetric((*nIter)->getAbsoluteName(), newoid);
+        nodemetric.metric = TnmsMetric((*nIter)->getAbsoluteName(), newOid);
     }
 
     /* Now that our parents have oids, we create the leaf oid */
@@ -109,16 +117,16 @@ TnmsBase::add ( const std::string & name, time_t now )
 bool
 TnmsBase::remove ( const std::string & name )
 {
-    HeirarchicalStringTree<TreeMetric>::Node  * node = NULL;
+    MetricTree::Node  * node = NULL;
 
     node = _tree.find(name);
     if ( node == NULL )
         return false;
 
-    TreeMetric  & metric = node->getValue();
+    TnmsMetric * metric = node->getValue();
 
     UpdateSet::iterator  uIter;
-    uIter = std::find(_updates.begin(), updates.end(), &metric);
+    uIter = std::find(_updates.begin(), _updates.end(), &metric);
 
     if ( uIter != _updates.end() ) {
         // withdraw queued update
@@ -132,26 +140,26 @@ TnmsBase::remove ( const std::string & name )
     StringSet            strings;
     StringSet::iterator  sIter;
 
-    tree.erase(node, std::inserter(strings, strings.begin()));
+    _tree.erase(node, std::inserter(strings, strings.begin()));
 
     return true;
 }
 
 
 bool
-TnmsBase::update ( const std::string & name, time_t  now, uint64_t value, 
-                     eValueTypes type, const std::string & data )
+TnmsBase::update ( const std::string & name, 
+                   const time_t      & now, 
+                   uint64_t          & value, 
+                   eValueTypes         type, 
+                   const std::string & data )
 {
-    HeirarchicalStringTree<TreeMetric>::Node  * node = NULL;
-
-    node = _tree.find(name);
+    MetricTree::Node  * node = _tree.find(name);
+    
     if ( node == NULL )
         return false;
 
-    TreeMetric  & metric = node->getValue();
-
-    metric.metric.setValue(value);
-
+    TnmsMetric  * metric = node->getValue();
+    metric.metric.setValue(type, value);
     _updates.insert(&metric);
 
     return true;
@@ -159,19 +167,20 @@ TnmsBase::update ( const std::string & name, time_t  now, uint64_t value,
 
 
 bool
-TnmsBase::update ( const std::string & name, time_t  now,
-                     const std::string & value, const std::string & data )
+TnmsBase::update ( const std::string & name, 
+                   const time_t      & now,
+                   const std::string & value, 
+                   const std::string & data )
 {
-    HeirarchicalStringTree<TreeMetric>::Node  * node = NULL;
+    MetricTree::Node  * node = NULL;
 
     node = _tree.find(name);
     if ( node == NULL )
         return false;
 
-    TreeMetric  & metric = node->getValue();
+    TnmsMetric * metric = node->getValue();
 
     metric.metric.setValue(value);
-
     _updates.insert(&metric);
 
     return true;
