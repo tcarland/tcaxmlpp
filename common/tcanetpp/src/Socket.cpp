@@ -47,7 +47,7 @@ Socket::Socket ( ipv4addr_t ipaddr, uint16_t port, SocketType type, int protocol
     
     Socket::ResetDescriptor(this->_fd);
     
-    if ( _socktype <= SOCKET_NONE || _socktype > SOCKET_RAW )
+    if ( _socktype <= SOCKET_NONE || _socktype > SOCKET_SERVER_CLIENT )
         throw SocketException("Socket error: Invalid Socket type");
     
     if ( _proto < 0 || _proto > 255 )

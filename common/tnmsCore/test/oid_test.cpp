@@ -41,7 +41,7 @@ int main()
     std::cout << "to oid array: " << std::endl;
     uint16_t* oida = toid1.toArray();
     uint16_t* t    = oida;
-    for ( u_int i = 0; i != toid1.size(); ++i, ++t ) {
+    for ( uint32_t i = 0; i != toid1.size(); ++i, ++t ) {
         std::cout << "array[" << i << "] = " << *t << std::endl;
     }
 
