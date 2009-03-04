@@ -43,8 +43,7 @@ typedef enum SocketType
     SOCKET_NONE = 0,
     SOCKET_CLIENT = 1,
     SOCKET_SERVER = 2,
-    SOCKET_SERVER_CLIENT = 3,
-    SOCKET_RAW = 4
+    SOCKET_SERVER_CLIENT = 3
 } sockType_t;
 
 

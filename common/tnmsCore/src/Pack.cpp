@@ -24,7 +24,7 @@ int
 Packer::Pack ( char * buffer, size_t buflen,
                const char * val,  size_t val_len )
 {
-    int pk = Packer::Pack(buffer, buflen, val_len);
+    int pk = Packer::Pack(buffer, (uint32_t)buflen, (uint32_t)val_len);
 
     if ( pk <= 0 || buflen < pk + val_len )
         return -1;
@@ -142,8 +142,12 @@ Packer::Unpack ( const char * buffer, size_t  buflen,
                  char       * val,    size_t  vallen,
                  size_t & val_written )
 {
-    size_t skip = 0;
-    int    upk  = Packer::Unpack(buffer, buflen, val_written);
+    size_t   skip = 0;
+    uint32_t valw = 0;
+
+    int  upk  = Packer::Unpack(buffer, buflen, valw);
+
+    val_written = valw;
 
     if ( vallen < val_written )
         return -1;

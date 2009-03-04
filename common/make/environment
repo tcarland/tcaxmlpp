@@ -39,6 +39,26 @@ ifeq ($(TCA_PORT_IDENTIFIER), "Linux_x86_64")
   PTHREAD_CFLAGS = -pthread
 endif
 
+ifeq ($(TCA_PORT_IDENTIFIER), "Linux_ia64")
+  # set defaults for linux intel
+  CFLAGS_ADD = -DTCA_PORT_LINUX_IA64
+  EMANATE_OS = -DLINUX
+  EMANATE_os = linux
+  LIB_PTHREAD = -lpthread
+  LIB_DL = -ldl
+  PTHREAD_CFLAGS = -pthread
+endif
+
+ifeq ($(TCA_PORT_IDENTIFIER), "Darwin_i386")
+  # set defaults for linux intel
+  CFLAGS_ADD = -DTCA_PORT_DARWIN_I386
+  EMANATE_OS = -DDARWIN
+  EMANATE_os = darwin
+  LIB_PTHREAD = -lpthread
+  #LIB_DL = -ldl
+  PTHREAD_CFLAGS = -pthread
+endif
+
 ifeq ($(TCA_PORT_IDENTIFIER), "FreeBSD_i386")
   CFLAGS_ADD = -DTCA_PORT_FREEBSD_INTEL
   PTHREAD_CFLAGS = -pthread
