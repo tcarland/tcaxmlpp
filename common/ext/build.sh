@@ -67,6 +67,8 @@ else
     fi
 
     check_autoconf
+    build_targets
+    retval=$?
  
     if [ $retval -ne 0 ]; then
         echo "Error building external libraries."
