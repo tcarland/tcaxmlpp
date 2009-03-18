@@ -1088,6 +1088,15 @@ TnmsSocket::clearState()
 // ------------------------------------------------------------------- //
 
 void
+TnmsSocket::setLastRecord()
+{
+    if ( _hdr )
+        _hdr->options |= LAST_MESSAGE;
+}
+
+// ------------------------------------------------------------------- //
+
+void
 TnmsSocket::setHostStr()
 {
     if ( _sock == NULL )
@@ -1102,6 +1111,14 @@ TnmsSocket::setHostStr()
     strbuf << _hostname << "(" << _sock->getAddrString() << "):" << _port;
     _hoststr = strbuf.str();
     return;
+}
+
+// ------------------------------------------------------------------- //
+
+size_t
+TnmsSocket::txBytesBuffered()
+{
+    return _sock->flushAvailable();
 }
 
 // ------------------------------------------------------------------- //

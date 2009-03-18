@@ -22,7 +22,7 @@ public:
         : TnmsMessage(agent_name, oid, AUTH_REPLY)
     {}
 
-    eAuthTypes      authResult() const;
+    eAuthType       authResult() const;
     std::string     authReason() const;
     std::string     authData()   const;
 
@@ -33,7 +33,7 @@ public:
 
 protected:
 
-    eAuthTypes     _auth_result;
+    eAuthType      _auth_result;
     std::string    _auth_reason;
     std::string    _auth_data;
 };

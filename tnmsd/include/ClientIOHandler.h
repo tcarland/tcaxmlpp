@@ -10,6 +10,7 @@ using namespace tcanetpp;
 namespace tnmsd {
 
 class TnmsTree;
+class TnmsClient;
 
 
 class ClientIOHandler : public EventIOHandler {

@@ -3,6 +3,8 @@
 
 #include <list>
 
+#include "tcanetpp_types.h"
+
 #include "XmlDocument.h"
 using namespace tcaxmlplus;
 
@@ -127,13 +129,13 @@ class TnmsConfigHandler {
                         const std::string & rootname );
 
 
-    virtual ~TnmsConfigHandler() {}
+    virtual ~TnmsConfigHandler();
 
 
     virtual bool        parse();
 
 
-    bool                setDebug ( bool d ) { this->_debug = d; }
+    void                setDebug ( bool d ) { this->_debug = d; }
     std::string         getErrorStr() const { return _errstr; }
 
 
@@ -156,10 +158,10 @@ class TnmsConfigHandler {
     std::string         _xmlcfg;
     bool                _isXML;
     bool                _debug;
+
     std::string         _rootname;
     std::string         _errstr;
 
-    bool                _debug;
 };
 
 

@@ -1,11 +1,18 @@
 #ifndef _TNMSD_TNMSTREE_H_
 #define _TNMSD_TNMSTREE_H_
 
+#include <set>
+#include <list>
+#include <map>
+
+#include "TnmsMetric.h"
 #include "HeirarchicalStringTree.hpp"
 using namespace tnmsCore;
 
 
 namespace tnmsd {
+
+class TnmsClient;
 
 
 class TnmsTree {
@@ -28,17 +35,17 @@ class TnmsTree {
 
     typedef HeirarchicalStringTree<TnmsTreeNode>        Tree;
     typedef Tree::Node                                  Node;
-    typedef Tree::Node::NodeMap;                        NodeChildMap;
+    typedef Tree::NodeMap                               NodeChildMap;
 
     typedef std::set<Node*>                             NodeSet;
-    typedef std::list<std::string>                      StringList;
+    typedef std::set<std::string>                       StringSet;
     typedef std::map<std::string, Node*>                NameNodeMap;
 
 
   public:
 
     TnmsTree();
-    ~TnmsTree();
+    virtual ~TnmsTree();
 
     bool       add            ( const std::string & name );
     bool       remove         ( const std::string & name );
@@ -69,9 +76,10 @@ class TnmsTree {
 
     size_t     size() const;
     void       debugDump();
-  private:
 
-    bool       markForRemove  ( TnmsTree::Node    * node );
+  protected:
+
+    bool       markForRemove  ( const std::string & name );
     void       clearNodeErase ( TnmsTree::Node    * node );
 
     void       resetMetric    ( TnmsMetric        & metric );

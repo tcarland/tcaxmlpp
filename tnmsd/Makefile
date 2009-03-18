@@ -1,6 +1,9 @@
 TOPDIR = ..
 NEED_TCANETPP = 1
 NEED_TCAXML = 1
+NEED_TNMSCORE = 1
+NEED_ZLIB = 1
+NEED_LIBXML2 = 1
 
 
 OPT_FLAGS= 	-g
@@ -12,8 +15,8 @@ INCLUDES=       -Iinclude
 BIN=
 
 OBJS=		src/TnmsManager.o src/TnmsTree.o src/TnmsClient.o \
-		src/TnmsMessageHandler.o \
-		src/AgentIOHandler.o src/ClientIOHandler.o
+		src/TnmsMessageHandler.o  src/AgentIOHandler.o \
+		src/ClientIOHandler.o src/tnmsd.o
 
 ALL_OBJS=	$(OBJS)
 ALL_BINS=	$(BIN)

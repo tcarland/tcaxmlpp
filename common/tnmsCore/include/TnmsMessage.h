@@ -20,17 +20,17 @@ class TnmsMessage : public Serializable {
 
 public:
 
-    TnmsMessage ( int message_type = NO_RECORD );
+    TnmsMessage ( eMessageType         message_type = NO_RECORD );
 
     TnmsMessage ( const std::string  & name,
-                  int message_type = REQUEST_MESSAGE );
+                  eMessageType         message_type = REQUEST_MESSAGE );
 
     TnmsMessage ( const TnmsOid      & oid,
-                  int message_type = REQUEST_MESSAGE );
+                  eMessageType         message_type = REQUEST_MESSAGE );
 
     TnmsMessage ( const std::string  & name,
                   const TnmsOid      & oid,
-                  int message_type = REQUEST_MESSAGE );
+                  eMessageType         message_type = REQUEST_MESSAGE );
 
     virtual ~TnmsMessage();
 
@@ -42,14 +42,14 @@ public:
     virtual ssize_t     deserialize ( const char * buffer, size_t buffer_len );
     virtual size_t      size() const;
     virtual uint16_t    message_type() const;
-    virtual void        message_type ( eValueTypes msgtype );
+    virtual void        message_type ( eMessageType  msgtype );
 
 
 protected:
 
     std::string         _element_name;
     TnmsOid             _element_oid;
-    uint16_t            _message_type;
+    eMessageType        _message_type;
 };
 
 
@@ -62,6 +62,9 @@ class TnmsAdd : public TnmsMessage {
 
     TnmsAdd() : TnmsMessage(ADD_MESSAGE) {}
 
+    TnmsAdd ( const std::string &  element_name )
+        : TnmsMessage(element_name, ADD_MESSAGE)
+    {}
     TnmsAdd ( const std::string &  element_name,
               const TnmsOid     &  oid )
         : TnmsMessage(element_name, oid, ADD_MESSAGE)

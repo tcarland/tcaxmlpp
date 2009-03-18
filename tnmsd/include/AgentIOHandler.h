@@ -1,6 +1,7 @@
 #ifndef _TNMSD_AGENTIOHANDLER_H_
 #define _TNMSD_AGENTIOHANDLER_H_
 
+#include <set>
 
 #include "EventHandlers.hpp"
 using namespace tcanetpp;
@@ -9,6 +10,7 @@ using namespace tcanetpp;
 namespace tnmsd {
 
 class TnmsTree;
+class TnmsClient;
 
 class AgentIOHandler : public EventIOHandler {
 
@@ -18,6 +20,9 @@ class AgentIOHandler : public EventIOHandler {
     AgentIOHandler ( TnmsTree * tree );
 
     virtual ~AgentIOHandler();
+
+    void timeout ( const EventTimer * timer );
+    void addMirrorConnection ( TnmsClient * client );
 
     virtual void handle_accept  ( const EventIO * io );
     virtual void handle_read    ( const EventIO * io );

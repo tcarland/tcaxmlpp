@@ -6,35 +6,39 @@
 #include "XmlDocument.h"
 using namespace tcaxmlplus;
 
+#include "StringUtils.h"
+#include "CidrUtils.h"
+using namespace tcanetpp;
+
 
 
 namespace tnmsCore {
 
 
-TnmsConfig::TnmsConfig ( const std::string & xmlfilename,
-                         const std::string & rootname )
+TnmsConfigHandler::TnmsConfigHandler ( const std::string & xmlfilename,
+                                       const std::string & rootname )
     : _xmlcfg(xmlfilename),
       _isXML(false),
-      _rootname(rootname),
-      _debug(false)
+      _debug(false),
+      _rootname(rootname)
 {}
 
 
-TnmsConfig::TnmsConfig ( const char * xmlblob, size_t len,
-                         const std::string & rootname )
+TnmsConfigHandler::TnmsConfigHandler ( const char * xmlblob, size_t len,
+                                       const std::string & rootname )
     : _isXML(true),
-      _rootname(rootname),
-      _debug(false)
+      _debug(false),
+      _rootname(rootname)
 {}
 
 
 
-TnmsConfig::~TnmsConfig() {}
+TnmsConfigHandler::~TnmsConfigHandler() {}
 
 
 
 bool
-TnmsConfig::parse()
+TnmsConfigHandler::parse()
 {
     XmlDocument   doc;
     XmlNode     * node = NULL;
@@ -75,7 +79,7 @@ TnmsConfig::parse()
 
 
 XmlNode*
-TnmsConfig::findRootNode ( XmlNode * node, std::string & name )
+TnmsConfigHandler::findRootNode ( XmlNode * node, std::string & name )
 {
     XmlNode     * root = NULL;
 
@@ -106,7 +110,7 @@ TnmsConfig::findRootNode ( XmlNode * node, std::string & name )
 
 
 bool
-TnmsConfig::parseRoot ( XmlNode * node )
+TnmsConfigHandler::parseRoot ( XmlNode * node )
 {
     XmlNode  * root   = NULL;
     bool       result = false;
@@ -126,6 +130,7 @@ TnmsConfig::parseRoot ( XmlNode * node )
     XmlNodeList::iterator  nIter;
     XmlAttrMap::iterator   aIter;
 
+/*
     // our root config node can have any number of dynamic or custom attributes
     // specific to our app, so we blindly parse them out here.
     for ( aIter = attrmap.begin(); aIter != attrmap.end(); ++aIter ) {
@@ -136,7 +141,7 @@ TnmsConfig::parseRoot ( XmlNode * node )
 
         this->_attrs[attr->getKey()] = attr->getValue();
     }
-
+*/
     // now parse our expected config subsections
     for ( nIter = nlist.begin(); nIter != nlist.end(); ++nIter ) {
         n = (XmlNode*) *nIter;
@@ -144,9 +149,9 @@ TnmsConfig::parseRoot ( XmlNode * node )
         if ( n == NULL )
             continue;
 
-        if ( n.getNodeName().compare("server") == 0 ) 
+        if ( n->getNodeName().compare("server") == 0 ) 
             result = this->parseServer(n);
-        else if ( n.getNodeName().compare("client") == 0 )
+        else if ( n->getNodeName().compare("client") == 0 )
             result = this->parseClient(n);
 
         if ( ! result )
@@ -158,46 +163,46 @@ TnmsConfig::parseRoot ( XmlNode * node )
 
 
 bool
-TnmsConfig::parseServer ( XmlNode * node )
+TnmsConfigHandler::parseServer ( XmlNode * node )
 {
     if ( node == NULL )
         return false;
 
-    if ( node->hasAttribute("agent_listenport") )
-        config.svrconfig.agent_listenport = StringUtils::fromString<uint16_t>(node->getAttribute("agent_listenport"));
+    if ( node->haveAttribute("agent_listenport") )
+        config.serverConfig.agent_listenport = StringUtils::fromString<uint16_t>(node->getAttribute("agent_listenport"));
 
-    if ( node->hasAttribute("client_listenport") )
-        config.svrconfig.agent_listenport = StringUtils::fromString<uint16_t>(node->getAttribute("client_listenport"));
+    if ( node->haveAttribute("client_listenport") )
+        config.serverConfig.agent_listenport = StringUtils::fromString<uint16_t>(node->getAttribute("client_listenport"));
     else   // required? all of our server instances have a client port
         return false;
     
-    if ( node->hasAttribute("holddown_interval") )
-        config.svrconfig.holddown_interval = StringUtils::fromString<uint32_t>(node->getAttribute("holddown_interval"));
+    if ( node->haveAttribute("holddown_interval") )
+        config.serverConfig.holddown_interval = StringUtils::fromString<uint32_t>(node->getAttribute("holddown_interval"));
     
-    if ( node->hasAttribute("reconnect_interval") )
-        config.svrconfig.reconnect_interval = StringUtils::fromString<uint32_t>(node->getAttribute("reconnect_interval"));
+    if ( node->haveAttribute("reconnect_interval") )
+        config.serverConfig.reconnect_interval = StringUtils::fromString<uint32_t>(node->getAttribute("reconnect_interval"));
 
     return true;
 }
 
 
 bool
-TnmsConfig::parseClient ( XmlNode * node )
+TnmsConfigHandler::parseClient ( XmlNode * node )
 {
     TnmsClientConfig  clientcfg;
 
     if ( node == NULL )
         return false;
 
-    if ( node->hasAttribute("name") )
+    if ( node->haveAttribute("name") )
         clientcfg.connection_name = node->getAttribute("name");
 
-    if ( node->hasAttribute("host") ) {
+    if ( node->haveAttribute("host") ) {
         clientcfg.hostname = node->getAttribute("host");
         clientcfg.hostaddr = CidrUtils::getHostAddr(clientcfg.hostname);
     }
 
-    if ( node->hasAttribute("port") )
+    if ( node->haveAttribute("port") )
         clientcfg.port = StringUtils::fromString<uint16_t>(node->getAttribute("port"));
 
     // subscribes
@@ -216,8 +221,5 @@ TnmsConfig::parseClient ( XmlNode * node )
     return true;
 }
 
-
-
-
-
+} // namespace
 

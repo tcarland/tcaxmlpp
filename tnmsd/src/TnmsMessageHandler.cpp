@@ -1,13 +1,15 @@
 #define _TNMSD_TNMSMESSAGEHANDLER_CPP_
 
 #include "TnmsMessageHandler.h"
+#include "TnmsClient.h"
+#include "TnmsTree.h"
+
 
 namespace tnmsd {
 
 TnmsMessageHandler::TnmsMessageHandler ( TnmsTree * tree, TnmsClient * client )
     : _tree(tree), 
-      _client(client),
-      _isapi(false) 
+      _client(client)
 {}
 
 TnmsMessageHandler::~TnmsMessageHandler()
@@ -17,10 +19,11 @@ TnmsMessageHandler::~TnmsMessageHandler()
 void
 TnmsMessageHandler::AddHandler ( const TnmsAdd & add )
 {
-    if ( ! _client->isAPI() )
+    if ( _client == NULL || ! _client->isAgent() )
         return;
 
     _tree->add(add.getElementName());
+
     return;
 }
 
@@ -28,10 +31,11 @@ TnmsMessageHandler::AddHandler ( const TnmsAdd & add )
 void  
 TnmsMessageHandler::RemoveHandler ( const TnmsRemove  & remove )
 {
-    if ( ! _client->isAPI() )
+    if ( _client == NULL || ! _client->isAgent() )
         return;
 
     _tree->remove(remove.getElementName());
+
     return;
 }
 
@@ -39,16 +43,17 @@ TnmsMessageHandler::RemoveHandler ( const TnmsRemove  & remove )
 void
 TnmsMessageHandler::MetricHandler ( const TnmsMetric & metric )
 {
-    if ( ! _client->isAPI() )
+    if ( _client == NULL || ! _client->isAgent() )
         return;
 
-    if ( client->inTreeSend() )
+    if ( _client->inTreeSend() )
         this->LastMessageHandler(ADD_MESSAGE);
 
-    if ( metric->getElementName().empty() ) // || > max strlength
+    if ( metric.getElementName().empty() ) // || > max strlength
         return;
 
     _tree->update(metric);
+
     return;
 }
 
@@ -56,10 +61,13 @@ TnmsMessageHandler::MetricHandler ( const TnmsMetric & metric )
 void  
 TnmsMessageHandler::RequestHandler ( const TnmsRequest & request )
 {
+    if ( _client == NULL ) 
+        return;
+
     TnmsMetric  metric;
 
     if ( _tree->request(request.getElementName(), metric) )
-        _client->queueUpdate(metric);
+        _client->sendMessage(&metric);
 
     return;
 }
@@ -67,8 +75,8 @@ TnmsMessageHandler::RequestHandler ( const TnmsRequest & request )
 void  
 TnmsMessageHandler::SubscribeHandler   ( const std::string & name )
 {
-    //if ( ! _client->authorized() )
-    //    return;
+    if ( _client == NULL ) // ||  ! _client->authorized() )
+        return;
 
     if ( ! _tree->subscribe(name, _client) )
         _client->unsubscribe(name);
@@ -80,6 +88,8 @@ TnmsMessageHandler::SubscribeHandler   ( const std::string & name )
 void 
 TnmsMessageHandler::UnsubscribeHandler ( const std::string & name )
 {
+    if ( _client == NULL ) 
+        return;
     _tree->unsubscribe(name, _client);
 }
 
@@ -87,7 +97,8 @@ TnmsMessageHandler::UnsubscribeHandler ( const std::string & name )
 void  
 TnmsMessageHandler::StructureHandler ( bool  subscribe )
 {
-    // if not authorized; return;
+    if ( _client == NULL ) // ||  not authorized; 
+        return;
 
     if ( subscribe )
         _tree->subStructure(_client);
@@ -121,7 +132,10 @@ TnmsMessageHandler::PingReplyHandler()
 void  
 TnmsMessageHandler::LastMessageHandler ( int record_type ) 
 {
-    if ( _client->inTreeSend() && (type == ADD_MESSAGE || type == METRIC_MESSAGE) )
+    if ( _client == NULL ) 
+        return;
+
+    if ( _client->inTreeSend() && (record_type == ADD_MESSAGE || record_type == METRIC_MESSAGE) )
         _client->inTreeSend(false);
 
     return;

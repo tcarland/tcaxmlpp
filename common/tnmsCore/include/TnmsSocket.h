@@ -55,6 +55,7 @@ class TnmsSocket {
     ssize_t             flush();
     size_t              txBytesBuffered();
 
+    void                setLastRecord();
 
     /*  Attributes  */
 

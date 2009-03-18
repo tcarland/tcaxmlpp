@@ -2,13 +2,14 @@
 
 
 #include "TnmsClient.h"
+#include "TnmsMessageHandler.h"
+
 
 namespace tnmsd {
 
 TnmsClient::TnmsClient ( TnmsTree * tree )
-    : TnmsSocket(),
+    : TnmsSocket(new TnmsMessageHandler(tree, this)),
       _tree(tree),
-      _msgHandler(new TnmsMessageHandler(tree, this)),
       _isAgent(false),
       _isMirror(true)
 {
@@ -16,9 +17,8 @@ TnmsClient::TnmsClient ( TnmsTree * tree )
 
 
 TnmsClient::TnmsClient ( TnmsTree * tree, BufferedSocket * sock, bool isAgent )
-    : TnmsSocket(sock),
+    : TnmsSocket(sock, new TnmsMessageHandler(tree, this)),
       _tree(tree),
-      _msgHandler(new TnmsMessageHandler(tree, this)),
       _isAgent(isAgent),
       _isMirror(false)
 {}
@@ -26,7 +26,6 @@ TnmsClient::TnmsClient ( TnmsTree * tree, BufferedSocket * sock, bool isAgent )
 
 TnmsClient::~TnmsClient()
 {
-    delete _msgHandler;
 }
 
 
@@ -44,16 +43,18 @@ TnmsClient::send()
         return wt;
 
     // ADDs
+    TnmsAdd  add;
     int addsz = _adds.size();
     for ( uIter = _adds.begin(); uIter != _adds.end(); ) {
         TnmsTree::Node * node = *uIter;
 
-        if ( node->getValue().erase() ) {
+        if ( node->getValue().erase ) {
             _adds.erase(uIter++);
             continue;
         }
 
-        if ( queued = this->queueAdd(node->getValue().metric.getElementName()) )
+        add = TnmsAdd(node->getValue().metric.getElementName());
+        if ( (queued = this->sendMessage(&add)) == true )
             _adds.erase(uIter++);
         else
             break;
@@ -62,10 +63,12 @@ TnmsClient::send()
     if ( addsz && _adds.size() == 0 )
         this->setLastRecord();
 
+    TnmsRemove remove;
     if ( queued && _adds.size() == 0 ) {
 
         for ( rIter = _removes.begin(); rIter != _removes.end(); ) {
-            queued = this->queueRemove(*rIter);
+            remove = TnmsRemove(*rIter);
+            queued = this->sendMessage(&remove);
 
             if ( queued )
                 _removes.erase(rIter++);
@@ -84,7 +87,7 @@ TnmsClient::send()
                 continue;
             }
 
-            queued = this->queueMetric(node->getValue().metric);
+            queued = this->sendMessage(&node->getValue().metric);
 
             if ( queued )
                 _updates.erase(uIter++);
@@ -112,7 +115,7 @@ TnmsClient::close()
 void
 TnmsClient::queueAdd ( TnmsTree::Node * node )
 {
-    if ( _removes.erase(node.getValue().metric.getElementName()) )
+    if ( _removes.erase(node->getValue().metric.getElementName()) )
         return;
 
     _adds.insert(node);
@@ -124,7 +127,7 @@ TnmsClient::queueRemove ( TnmsTree::Node * node )
 {
     _adds.erase(node);
     _updates.erase(node);
-    _removes.insert(node);
+    _removes.insert(node->getValue().metric.getElementName());
 }
 
 
@@ -141,7 +144,7 @@ TnmsClient::isAgent() const
 }
 
 bool
-TnmsClient::isMirrorClient() const
+TnmsClient::isMirror() const
 {
     return _isMirror;
 }

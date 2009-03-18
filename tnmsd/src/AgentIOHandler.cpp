@@ -1,6 +1,10 @@
 #define _TNMSD_AGENTIOHANDLER_CPP_
 
+#include "EventManager.h"
+
 #include "AgentIOHandler.h"
+#include "TnmsTree.h"
+#include "TnmsClient.h"
 
 
 namespace tnmsd {
@@ -20,9 +24,17 @@ AgentIOHandler::~AgentIOHandler() {}
 void
 AgentIOHandler::timeout ( const EventTimer * timer )
 {
-    int  rd, wt;
+    //int  rd, wt;
 
-    
+}
+
+
+void
+AgentIOHandler::addMirrorConnection ( TnmsClient * client )
+{
+    _mirrors.insert(client);
+}
+
 
 void
 AgentIOHandler::handle_accept ( const EventIO * io )
@@ -36,7 +48,7 @@ AgentIOHandler::handle_accept ( const EventIO * io )
         return;
 
     TnmsClient * client = new TnmsClient(_tree, sock);
-    io->evmgr->addIOEvent(this, client->getFD(), (void*) client);
+    io->evmgr->addIOEvent(this, client->getSockFD(), (void*) client);
 
     // if compression; enable it
     // client->enableCompression();

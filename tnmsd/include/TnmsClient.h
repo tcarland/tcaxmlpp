@@ -35,8 +35,9 @@ class TnmsClient : public TnmsSocket {
     void            queueRemove  ( TnmsTree::Node * node );
 
 
-    bool            isAgent();
-    bool            isMirrorClient();
+    bool            isAgent() const;
+    bool            isMirror() const;
+    bool            isMirrorClient() const { return this->isMirror(); }
     
     bool            inTreeSend() const;
     void            inTreeSend   ( bool insend );
@@ -50,7 +51,6 @@ class TnmsClient : public TnmsSocket {
   protected:
 
     TnmsTree*            _tree;
-    TnmsMessageHandler*  _msgHandler;
 
     UpdateSet            _adds;
     UpdateSet            _updates;

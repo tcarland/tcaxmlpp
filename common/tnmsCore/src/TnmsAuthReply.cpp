@@ -7,7 +7,7 @@
 namespace tnmsCore {
 
 
-eAuthTypes
+eAuthType
 TnmsAuthReply::authResult() const
 {
     return _auth_result;
@@ -98,7 +98,7 @@ TnmsAuthReply::deserialize ( const char * buffer, size_t buffer_len )
     rd   += upk;
     rptr += upk;
 
-    _auth_result = (eAuthTypes) result;
+    _auth_result = (eAuthType) result;
 
     upk   = Packer::Unpack(rptr, (rsz-rd), _auth_reason);
     if ( upk < 0 )

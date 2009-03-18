@@ -7,23 +7,23 @@
 namespace tnmsCore {
 
 
-TnmsMessage::TnmsMessage ( int type )
+TnmsMessage::TnmsMessage ( eMessageType  type )
     : _message_type(type)
 {}
 
-TnmsMessage::TnmsMessage ( const std::string & name, int type )
+TnmsMessage::TnmsMessage ( const std::string & name, eMessageType type )
     : _element_name(name),
       _message_type(type)
 {}
 
-TnmsMessage::TnmsMessage ( const TnmsOid & oid, int type )
+TnmsMessage::TnmsMessage ( const TnmsOid & oid, eMessageType type )
     : _element_oid(oid),
       _message_type(type)
 {}
 
 TnmsMessage::TnmsMessage ( const std::string & name,
                            const TnmsOid     & oid,
-                           int                 type )
+                           eMessageType        type )
     : _element_name(name),
       _element_oid(oid),
       _message_type(type)
@@ -89,11 +89,13 @@ TnmsMessage::deserialize ( const char * buffer, size_t buffer_len )
     rptr  = buffer;
     rsz   = buffer_len;
 
-    upk   = Packer::Unpack(rptr, (rsz - rd), _message_type);
+    uint16_t type;
+    upk   = Packer::Unpack(rptr, (rsz - rd), type);
     if ( upk < 0 )
         return -1;
     rd   += upk;
     rptr += upk;
+    _message_type = (eMessageType) type;
 
     upk   = this->_element_oid.deserialize(rptr, (rsz - rd));
     if ( upk < 0 )
@@ -132,7 +134,7 @@ TnmsMessage::message_type() const
 }
 
 void
-TnmsMessage::message_type ( eValueTypes msgtype )
+TnmsMessage::message_type ( eMessageType msgtype )
 {
     this->_message_type = msgtype;
 }

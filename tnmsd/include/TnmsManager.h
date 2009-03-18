@@ -12,6 +12,9 @@
 #include "Socket.h"
 using namespace tcanetpp;
 
+#include "TnmsConfig.h"
+using namespace tnmsCore;
+
 
 namespace tnmsd {
 
@@ -22,6 +25,7 @@ namespace tnmsd {
 #define TNMSD_ROOT  "tnmsd"
 
 class TnmsClient;
+class TnmsAuthClient;
 
 typedef std::map<evid_t, TnmsClient*>  ClientMap;
 
@@ -79,6 +83,7 @@ class TnmsManager : public EventTimerHandler {
     time_t              _startDelay, _startat;
     int                 _today;
 
+    std::string         _configfile;
     std::string         _errstr;
 
     bool                _hup;

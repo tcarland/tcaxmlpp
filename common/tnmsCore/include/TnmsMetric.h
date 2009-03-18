@@ -20,6 +20,7 @@ class TnmsMetric : public TnmsMessage {
 public:
 
     TnmsMetric();
+    TnmsMetric ( const std::string & name, int message_type = METRIC_MESSAGE );
     TnmsMetric ( const std::string & name, const TnmsOid & oid );
 
     virtual ~TnmsMetric();
@@ -32,10 +33,10 @@ public:
     template<typename T>
     const T&            getValue() const;
 
-    bool                setValue    ( eValueTypes         valtype,
+    bool                setValue    ( eValueType          valtype,
                                       const std::string & value );
     template< typename T >
-    bool                setValue    ( eValueTypes  valtype, 
+    bool                setValue    ( eValueType   valtype, 
                                       T &          value );
 
 
@@ -51,7 +52,7 @@ public:
 
 protected:
 
-    eValueTypes         _valType;
+    eValueType          _valType;
     uint64_t            _value;
     std::string         _valueStr;
     std::string         _pvt;

@@ -19,6 +19,10 @@ TnmsMetric::TnmsMetric()
     : TnmsMessage(METRIC_MESSAGE)
 {}
 
+TnmsMetric::TnmsMetric ( const std::string & name, int message_type )
+    : TnmsMessage(name, message_type)
+{}
+
 TnmsMetric::TnmsMetric ( const std::string & name,
                          const TnmsOid     & oid )
     : TnmsMessage(name, oid, METRIC_MESSAGE)
@@ -55,7 +59,7 @@ TnmsMetric::getValueType() const
 
 
 bool
-TnmsMetric::setValue ( eValueTypes valtype, const std::string & value )
+TnmsMetric::setValue ( eValueType valtype, const std::string & value )
 {
     _valType  = TNMS_STRING;
     _valueStr = value;
@@ -65,7 +69,7 @@ TnmsMetric::setValue ( eValueTypes valtype, const std::string & value )
 
 template<typename T>
 bool
-TnmsMetric::setValue ( eValueTypes valtype, T  & value )
+TnmsMetric::setValue ( eValueType valtype, T  & value )
 {
     if ( valtype > TNMS_NONE && valtype < TNMS_STRING ) {
         _valType = valtype;
@@ -173,7 +177,7 @@ TnmsMetric::deserialize ( const char * buffer, size_t  buffer_len )
         return -1;
     rd   += upk;
     rptr += upk;
-    this->_valType = (eValueTypes) value_type;
+    this->_valType = (eValueType) value_type;
 
     uint32_t  vallen = 0;
     if ( _valType == TNMS_STRING ) {

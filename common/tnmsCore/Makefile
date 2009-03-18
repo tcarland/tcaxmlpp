@@ -3,6 +3,7 @@ NEED_PTHREADS = 1
 NEED_TCAXML = 1
 NEED_TCANETPP = 1
 NEED_ZLIB = 1
+NEED_LIBXML2_INCLUDE = 1
 
 ifdef DEBUG
 OPT_FLAGS =  -g
@@ -13,7 +14,8 @@ INCLUDES =              -Iinclude
 
 OBJS =                  src/Pack.o src/TnmsOid.o src/TnmsSocket.o \
 			src/TnmsMessage.o src/TnmsMetric.o \
-			src/TnmsAuthRequest.o src/TnmsAuthReply.o
+			src/TnmsAuthRequest.o src/TnmsAuthReply.o \
+			src/TnmsConfig.o
 
 BIN =                        
 ALL_OBJS =              $(OBJS)

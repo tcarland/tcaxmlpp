@@ -10,7 +10,7 @@ namespace tnmsCore {
 
 
 
-typedef enum eValueTypes {
+typedef enum eValueType {
     TNMS_NONE    = 0,
     TNMS_INT32   = 1,
     TNMS_UINT32  = 2,
@@ -21,7 +21,7 @@ typedef enum eValueTypes {
 } e_valueTypes_t;
 
 
-typedef enum eMessageTypes {
+typedef enum eMessageType {
     NO_RECORD,
     AUTH_REQUEST,
     AUTH_REPLY,
@@ -46,7 +46,7 @@ typedef enum eMessageOptions {
 } e_msgOptions_t;
 
 
-typedef enum eAuthTypes {
+typedef enum eAuthType {
     AUTH_NO_RESULT,
     AUTH_SUCCESS,
     AUTH_INVALID,

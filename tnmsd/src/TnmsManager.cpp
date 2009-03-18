@@ -5,6 +5,7 @@
 
 #include "TnmsManager.h"
 #include "TnmsClient.h"
+#include "TnmsAuthClient.h"
 
 #include "LogFacility.h"
 using namespace tcanetpp;
@@ -14,7 +15,7 @@ using namespace tcanetpp;
 namespace tnmsd {
 
 
-TnmsManager::TnmsManager()
+TnmsManager::TnmsManager ( const std::string & configfile )
     : _evmgr(new EventManager()),
       _tree(new TnmsTree()),
       _server(NULL),
@@ -27,6 +28,7 @@ TnmsManager::TnmsManager()
       _startDelay(DEFAULT_STARTUP_DELAY),
       _startat(0),
       _today(0),
+      _configfile(configfile),
       _hup(false),
       _usr(false),
       _debug(false)
@@ -69,19 +71,19 @@ TnmsManager::timeout ( const EventTimer * timer )
     LogFacility::SetLogTime(now);
 
     // if startup_delay is expired; then add IOHandler for clients
-    if ( _startupDelay > 0 ) {
-        if ( _startup == 0 )
-            _startup = now + _startupDelay;
+    if ( _startDelay > 0 ) {
+        if ( _startat == 0 )
+            _startat = now + _startDelay;
 
-        if ( _startup < now ) {
+        if ( _startat < now ) {
             _clid = _evmgr->addIOEvent(&_clientHandler, _client->getFD(), _client, true);
-            _startupDelay = 0;
+            _startDelay = 0;
         }
     }
 
     if ( _hup ) {
         // parse config
-        this->parseConfig(now);
+        this->parseConfig(_configfile, now);
         //if ( ! this->parseConfig(now) )
             //log error
         _hup = false;
@@ -93,7 +95,7 @@ TnmsManager::timeout ( const EventTimer * timer )
 
     //check for logrotate
     if ( ! _tconfig.syslog && _logRotate <= now )
-        this->logRotate(logfile, now);
+        this->logRotate(_tconfig.logfile, now);
 
     // do timeouts
     //_auth->timeout(timer);
@@ -116,14 +118,14 @@ TnmsManager::run()
     LogFacility::SetLogTime(now);
 
     if ( _debug )
-        LogFacility::InitLogFacility("stdout", &std::cout);
+        LogFacility::OpenLogStream("stdout", &std::cout);
 
     _logRotate = now + LOG_ROTATE_INTERVAL;
     //updates = now + HOLDDOWN_INTERVAL;
     
     _evmgr->addTimerEvent( (EventTimerHandler*) this, 5, 0);
 
-    if ( ! this->parseConfig(now) ) {
+    if ( ! this->parseConfig(_configfile, now) ) {
         // error parsing config
         return;
     }
@@ -131,7 +133,7 @@ TnmsManager::run()
     //  Enter Main Loop
     _evmgr->eventLoop();
 
-    LogFacility::Close();
+    LogFacility::CloseLogFacility();
 
     return;
 }
@@ -158,10 +160,10 @@ TnmsManager::createClients()
         //client->setReconnectInterval(cIter->reconnect_interval);
         _agentHandler.addMirrorConnection(client);
 
-        if ( client->OpenConnection(cIter->hostaddr, cIter->port)  < 0 )
+        if ( client->openConnection(cIter->hostname, cIter->port)  < 0 )
             continue;
 
-        _evmgr->addIOEvent(&_agentHandler, client->getFD(), client);
+        _evmgr->addIOEvent(&_agentHandler, client->getDescriptor(), client);
 
         // client->login();
     }
@@ -173,19 +175,20 @@ TnmsManager::createClients()
 bool
 TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
 {
-    TnmsConfig  config(cfg, TNMSD_ROOT);
+    TnmsConfigHandler  cfgmgr(cfg, TNMSD_ROOT);
     std::string prefix = TNMSD_ROOT;
 
-    if ( ! config.parse() ) {
-        if ( LogFacility::isOpen() ) {
+    if ( ! cfgmgr.parse() ) {
+        if ( LogFacility::IsOpen() ) {
             LogFacility::LogMessage("TnmsManager::parseConfig() error: " 
-                    + config.getErrorStr());
+                    + cfgmgr.getErrorStr());
         } else {
             fprintf(stderr, "TnmsManager::parseConfig() error: %s\n",
-                    config.getErrorStr());
+                    cfgmgr.getErrorStr().c_str());
         }
         return false;
     }
+    TnmsConfig & config = cfgmgr.config;
 
     prefix.append(".").append(config.agent_name);
 
@@ -201,14 +204,14 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
     // (re)initialize our tree?
 
 
-    TnmsServerConfig & nsvrcfg = config.serverConfig;
+    TnmsServerConfig & nsvrcfg = cfgmgr.config.serverConfig;
     TnmsServerConfig & svrcfg  = _tconfig.serverConfig;
 
     // agent server startup
     if ( nsvrcfg.agent_listenport != svrcfg.agent_listenport 
             && nsvrcfg.agent_listenport > 0 )
     {
-        LogFacility::Message  logmsg;
+        Message  logmsg;
         logmsg << "Agent server listen port set to " 
                << nsvrcfg.agent_listenport;
         LogFacility::LogMessage(logmsg.str());
@@ -218,7 +221,7 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
             _evmgr->removeEvent(_svrid);
         }
 
-        _server = new Socket(0, nsvrcfg.agent_listenport, SOCKET_SERVER, TCP);
+        _server = new Socket(0, nsvrcfg.agent_listenport, SOCKET_SERVER, SOCKET_TCP);
 
         if ( ! _server->init(false) ) {
             LogFacility::LogMessage("Error creating agent server socket" 
@@ -234,7 +237,7 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
     if ( nsvrcfg.client_listenport != svrcfg.client_listenport 
             && nsvrcfg.client_listenport > 0 )
     {
-        LogFacility::Message  logmsg;
+        Message  logmsg;
         logmsg << "Client server listen port set to " 
                << nsvrcfg.client_listenport;
         LogFacility::LogMessage(logmsg.str());
@@ -244,7 +247,7 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
             _evmgr->removeEvent(_clid);
         }
 
-        _client = new Socket(0, nsvrcfg.client_listenport, SOCKET_SERVER, TCP);
+        _client = new Socket(0, nsvrcfg.client_listenport, SOCKET_SERVER, SOCKET_TCP);
 
         if ( ! _client->init(false) ) {
             LogFacility::LogMessage("Error creating agent server socket" 
@@ -258,7 +261,7 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
     // init auth client 
 
     // assign the new config
-    _tconfig = config;
+    _tconfig = cfgmgr.config;
 
     // init mirror connections
     if ( _tconfig.clients.size() > 0 )
@@ -281,7 +284,7 @@ TnmsManager::logRotate ( std::string logfile, const time_t & now )
     if ( _today != today ) {
         ::strftime(datestr, 64, ".%Y%02m%02d", ltm);
         logfile.append(datestr);
-        Logger::OpenLogFile(logfile, true);
+        LogFacility::OpenLogFile(LogFacility::GetLogPrefix(), logfile, true);
         _today = today;
     }
 

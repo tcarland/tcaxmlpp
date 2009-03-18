@@ -1,6 +1,10 @@
 #define _TNMSD_CLIENTIOHANDLER_CPP_
 
+#include "EventManager.h"
+
 #include "ClientIOHandler.h"
+#include "TnmsTree.h"
+#include "TnmsClient.h"
 
 
 namespace tnmsd {
@@ -58,7 +62,7 @@ ClientIOHandler::handle_accept ( const EventIO * io )
         return;
 
     TnmsClient  * client = new TnmsClient(_tree, sock);
-    io->evmgr->addIOEvent(this, client->getFD(), (void*) client);
+    io->evmgr->addIOEvent(this, client->getSockFD(), (void*) client);
 
     // if compression; enable it
     // client->enableCompression();
