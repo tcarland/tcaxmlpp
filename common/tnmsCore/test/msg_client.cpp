@@ -7,7 +7,7 @@ extern "C" {
 # include <time.h>
 }
 
-
+#include "LogFacility.h"
 #include "CidrUtils.h"
 #include "TnmsSocket.h"
 #include "TestMessageHandler.hpp"
@@ -49,8 +49,6 @@ int main ( int argc, char **argv )
 
     port = atoi(argv[1]);
 
-    //sock = new BufferedSocket(addr, port, SOCKET_CLIENT, IPPROTO_TCP);
-    //sock->setDebug(true);
     sock = new TnmsSocket(new TestMessageHandler());
 
     if ( sock->openConnection(host, port) < 0 ) {
@@ -58,16 +56,19 @@ int main ( int argc, char **argv )
         return -1;
     }
 
-    //sock->setNonBlocking();
-
     signal(SIGINT, &sigHandler);
     signal(SIGTERM, &sigHandler);
     signal(SIGPIPE, SIG_IGN);
 
-    //bzero(&foo, sizeof(foo_t));
-    //foo.client = addr;
+    LogFacility::OpenLogFile("msgclient", "msgclient.log", false);
 
+    TnmsMetric metric1("foo/bar");
     TnmsAdd add("foo");
+
+    int i = 5;
+
+    metric1.setValue(TNMS_INT32, i);
+
     sock->subscribeStructure();
     sock->sendMessage(&add);
     sock->send();
@@ -76,7 +77,7 @@ int main ( int argc, char **argv )
 	
 	//foo.timestamp = (uint32_t) time(NULL);
 	//foo.count     += 1;
-        //
+        sock->sendMessage(&metric1);
 
         if ( (wt = sock->send()) < 0 ) {
 	    printf("msgclient: Write error\n");
@@ -90,7 +91,7 @@ int main ( int argc, char **argv )
 	    printf("msgclient: Wrote %d bytes\n", wt);
 	}
 	sleep(5);
-
+        i++;
     }
     printf("Terminating..\n");
 

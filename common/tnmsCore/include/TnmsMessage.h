@@ -1,8 +1,8 @@
 /*
  * TnmsMessage.h
  *
- *  Created on: Oct 12, 2008
- *      Author: tca
+ *  Copyright(c) 2008, Charlton Technology LLC
+ *      Author: tcarland@gmail.com
  */
 #ifndef _TNMSCORE_TNMSMESSAGE_H_
 #define _TNMSCORE_TNMSMESSAGE_H_

@@ -38,19 +38,6 @@ TnmsMetric::getValue() const
 }
 
 
-template<typename T>
-const T&
-TnmsMetric::getValue() const
-{
-    if ( _valType == TNMS_STRING )
-        return 0;
-
-    T  val = static_cast<T>(_value);
-
-    return val;
-}
-
-
 int
 TnmsMetric::getValueType() const
 {
@@ -64,20 +51,6 @@ TnmsMetric::setValue ( eValueType valtype, const std::string & value )
     _valType  = TNMS_STRING;
     _valueStr = value;
     return true;
-}
-
-
-template<typename T>
-bool
-TnmsMetric::setValue ( eValueType valtype, T  & value )
-{
-    if ( valtype > TNMS_NONE && valtype < TNMS_STRING ) {
-        _valType = valtype;
-        _value   = static_cast<uint64_t>(value);
-        return true;
-    }
-
-    return false;
 }
 
 

@@ -1,8 +1,8 @@
 /*
  * TnmsMetric.h
  *
- *  Created on: Oct 12, 2008
- *      Author: tca
+ *  Copyright(c) 2008, Charlton Technology LLC
+ *      Author: tcarland@gmail.com
  */
 
 #ifndef _TNMSCORE_TNMSMETRIC_H_
@@ -11,13 +11,12 @@
 #include "TnmsMessage.h"
 
 
-
 namespace tnmsCore {
 
 
 class TnmsMetric : public TnmsMessage {
 
-public:
+  public:
 
     TnmsMetric();
     TnmsMetric ( const std::string & name, int message_type = METRIC_MESSAGE );
@@ -30,27 +29,42 @@ public:
 
 
     const std::string&  getValue() const;
-    template<typename T>
-    const T&            getValue() const;
-
     bool                setValue    ( eValueType          valtype,
                                       const std::string & value );
+
+    template<typename T>
+    const T&            getValue() const
+    {
+        if ( _valType == TNMS_STRING ) 
+            return 0;
+        T  val = static_cast<T>(_value);
+        return val;
+    }
+
     template< typename T >
     bool                setValue    ( eValueType   valtype, 
-                                      T &          value );
+                                      T &          value )
+    {
+        if ( valtype > TNMS_NONE && valtype < TNMS_STRING ) {
+            _valType = valtype;
+            _value   = static_cast<uint64_t>(value);
+            return true;
+        }
+        return false;
+    }
 
 
     const std::string&  getPvtData() const;
-    bool                setPvtData ( const std::string & data );
+    bool                setPvtData  ( const std::string & data );
 
     /*  Serializable */
 
-    virtual ssize_t serialize   ( char * buffer, size_t buffer_len );
-    virtual ssize_t deserialize ( const char * buffer, size_t buffer_len );
-    virtual size_t  size() const;
+    virtual ssize_t     serialize   ( char * buffer, size_t buffer_len );
+    virtual ssize_t     deserialize ( const char * buffer, size_t buffer_len );
+    virtual size_t      size() const;
 
 
-protected:
+  protected:
 
     eValueType          _valType;
     uint64_t            _value;

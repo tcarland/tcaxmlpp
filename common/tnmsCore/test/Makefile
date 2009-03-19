@@ -47,7 +47,7 @@ msgclient: msg_client.o
 
 clean:
 	$(RM) $(OBJS) \
-	*.D *.d *.bd *.o lib/*.bd *.bd
+	*.D *.d *.bd *.o lib/*.bd *.bd *.log
 
 distclean: clean
 	$(RM) $(BIN)
