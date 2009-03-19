@@ -25,6 +25,7 @@ TnmsSocket::TnmsSocket ( MessageHandler * msgHandler )
       _rxbuff(NULL),
       _zxbuff(NULL),
       _zipper(NULL),
+      _zipout(NULL),
       _wxcbuff(NULL),
       _wptr(NULL),
       _loginAttempts(0),
@@ -40,7 +41,7 @@ TnmsSocket::TnmsSocket ( MessageHandler * msgHandler )
 }
 
 
-TnmsSocket::TnmsSocket ( ipv4addr_t ip, uint16_t port,
+TnmsSocket::TnmsSocket ( const std::string & host, uint16_t port,
                          MessageHandler * msgHandler )
     : _authFunctor(new AuthAllFunctor(_authorizations)),
       _msgHandler(msgHandler),
@@ -50,11 +51,14 @@ TnmsSocket::TnmsSocket ( ipv4addr_t ip, uint16_t port,
       _subscribed(false),
       _subtree(false),
       _compression(COMPRESSION_ENABLE),
+      _hostname(host),
+      _port(port),
       _sock(NULL),
       _hdr(NULL),
       _rxbuff(NULL),
       _zxbuff(NULL),
       _zipper(NULL),
+      _zipout(NULL),
       _wxcbuff(NULL),
       _wptr(NULL),
       _loginAttempts(0),
@@ -75,15 +79,16 @@ TnmsSocket::TnmsSocket ( BufferedSocket * sock, MessageHandler * msgHandler )
       _msgHandler(msgHandler),
       _connecting(false),
       _authorizing(false),
-      _authorized(false),
+      _authorized(true),
       _subscribed(false),
       _subtree(false),
       _compression(COMPRESSION_ENABLE),
-      _sock(NULL),
+      _sock(sock),
       _hdr(NULL),
       _rxbuff(NULL),
       _zxbuff(NULL),
       _zipper(NULL),
+      _zipout(NULL),
       _wxcbuff(NULL),
       _wptr(NULL),
       _loginAttempts(0),
@@ -195,8 +200,10 @@ TnmsSocket::openConnection ( const std::string & host, uint16_t port )
 int
 TnmsSocket::openConnection()
 {
-    if ( _sock == NULL )
+    if ( _sock == NULL ) {
+        _errstr = "No socket";
         return -1;
+    }
 
     if ( ! _connecting && _sock->isConnected() ) {
         _errstr = "Socket already connected";

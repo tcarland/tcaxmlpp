@@ -1,9 +1,10 @@
 TOPDIR = ../..
-NEED_PTHREADS = 1
-NEED_TCAXML = 1
-NEED_TCANETPP = 1
-NEED_ZLIB = 1
+
+NEED_ZLIB_INCLUDE = 1
 NEED_LIBXML2_INCLUDE = 1
+NEED_TCANETPP = 1
+NEED_TCAXML = 1
+NEED_ZIPSTREAM = 1
 
 ifdef DEBUG
 OPT_FLAGS =  -g
@@ -40,7 +41,8 @@ solib:	lib/libtnmsCore.so.0.0.1
 
 lib/libtnmsCore.a:  ${OBJS}
 	( $(MKDIR) lib )
-	$(make-lib-rule)
+	#$(make-lib-rule)
+	ld -r -o $@ ${OBJS} ${LFLAGS} ${LIBS}
 	@echo
 
 lib/libtnmsCore.so.0.0.1: ${OBJS}

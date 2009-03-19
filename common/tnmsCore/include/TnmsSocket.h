@@ -29,7 +29,7 @@ class TnmsSocket {
 
     TnmsSocket  ( MessageHandler * msgHandler = NULL );
 
-    TnmsSocket  ( ipv4addr_t ip, uint16_t port,
+    TnmsSocket  ( const std::string & host, uint16_t port,
                   MessageHandler * msgHandler );
 
     TnmsSocket  ( tcanetpp::BufferedSocket * sock,
@@ -64,6 +64,7 @@ class TnmsSocket {
 
     sockfd_t            getDescriptor() const;
     sockfd_t            getSockFD() const  { return this->getDescriptor(); }
+    sockfd_t            getFD() const      { return this->getDescriptor(); }
 
     void                setMessageHandler  ( MessageHandler * msgHandler );
     MessageHandler*     getMessageHandler();
