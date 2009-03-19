@@ -5,15 +5,16 @@
 #include <map>
 #include <set>
 
-#include "TnmsMetric.h"
-#include "TnmsOid.h"
+//#include "TnmsMetric.h"
+//#include "TnmsOid.h"
 #include "HeirarchicalStringTree.hpp"
 
 
-using namespace tnmsCore;
-
 namespace tnmsCore {
 
+class TnmsMetric;
+class TnmsOid;
+class TnmsAgent;
 
 
 typedef HeirarchicalStringTree<TnmsMetric*>  MetricTree;
@@ -31,13 +32,14 @@ class TnmsBase {
     TnmsBase ( const std::string & name );
 
     TnmsBase ( const std::string & name,
-                 const std::string & host,
-                 uint16_t            port );
+               const std::string & host,
+               uint16_t            port );
 
     ~TnmsBase();
 
 
     int     send      ( time_t  now );
+    int     receive();
 
 
     bool    add       ( const std::string & name, 
@@ -66,11 +68,11 @@ class TnmsBase {
     void    holddown  ( time_t  secs );
     time_t  holddown();
 
-    void    reconnect ( time_t  secs );
-    time_t  reconnect();
+    void    reconnect_interval ( time_t  secs );
+    time_t  reconnect_interval();
 
-    void    max_messages ( int  max );
-    int     max_messages();
+    void    flush_limit ( int  max );
+    int     flush_limit();
 
     void    debug     ( bool debug );
     void    syslog    ( int facility );
@@ -85,9 +87,9 @@ class TnmsBase {
 
   private:
 
-    bool    doInput   ( const time_t & now );
-    bool    doOutput  ( const time_t & now );
-    bool    sendTree  ( const time_t & now);
+    bool    doInput   ( const time_t  & now );
+    bool    doOutput  ( const time_t  & now );
+    bool    sendTree  ( const time_t  & now );
 
     void    openLog   ( const std::string & logfile );
 
@@ -103,17 +105,20 @@ class TnmsBase {
     UpdateSet            _updates;
     StringSet            _removes;
 
+    TnmsConfig           _config;
+    TnmsAgent            _conn;
+
     std::string          _xmlConfig;
     std::string          _configName;
     std::string          _hostName;
     uint16_t             _hostPort;
 
     time_t               _holddown;
-    time_t               _reconTime;
+    time_t               _reconnect;
     time_t               _configTime;
-    int                  _maxMessages;
+    int                  _flushLimit;
     int                  _today;
-    bool                 _subtree;
+    bool                 _subscribed;
     bool                 _debug;
 
     static 
