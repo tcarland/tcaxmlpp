@@ -13,7 +13,7 @@ namespace tnmsCore {
 
 TnmsSocket::TnmsSocket ( MessageHandler * msgHandler )
     : _authFunctor(new AuthAllFunctor(_authorizations)),
-      _msgHandler(msgHandler),
+      _msgHandler(NULL),
       _connecting(false),
       _authorizing(false),
       _authorized(false),
@@ -37,6 +37,7 @@ TnmsSocket::TnmsSocket ( MessageHandler * msgHandler )
       _flushLimit(TNMS_FLUSH_LIMIT),
       _maxMessages(TNMS_RECORD_LIMIT)
 {
+    this->_msgHandler = msgHandler;
     this->init();
 }
 
@@ -600,6 +601,28 @@ TnmsSocket::getClientLogin() const
 
 // ------------------------------------------------------------------- //
 
+void
+TnmsSocket::setHostStr()
+{
+    if ( _sock == NULL )
+        return;
+
+    if ( _hostname.length() == 0 )
+        _hostname = _sock->getAddrString();
+    if ( _port == 0 )
+        _port = _sock->getPort();
+
+    _addrstr = _sock->getAddrString();
+
+    std::ostringstream strbuf;
+    strbuf << _hostname << "(" << _addrstr << "):" << _port;
+    _hoststr = strbuf.str();
+
+    return;
+}
+
+// ------------------------------------------------------------------- //
+
 std::string
 TnmsSocket::getHostStr() const
 {
@@ -1099,25 +1122,6 @@ TnmsSocket::setLastRecord()
 {
     if ( _hdr )
         _hdr->options |= LAST_MESSAGE;
-}
-
-// ------------------------------------------------------------------- //
-
-void
-TnmsSocket::setHostStr()
-{
-    if ( _sock == NULL )
-        return;
-
-    if ( _hostname.length() == 0 )
-        _hostname = _sock->getAddrString();
-    if ( _port == 0 )
-        _port = _sock->getPort();
-
-    std::ostringstream strbuf;
-    strbuf << _hostname << "(" << _sock->getAddrString() << "):" << _port;
-    _hoststr = strbuf.str();
-    return;
 }
 
 // ------------------------------------------------------------------- //

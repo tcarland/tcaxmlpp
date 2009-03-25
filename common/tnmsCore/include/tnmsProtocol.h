@@ -1,13 +1,16 @@
+/*
+ * tnmsProtocol.h
+ *
+ *  Copyright(c) 2008, Charlton Technology LLC
+ *      Author: tcarland@gmail.com
+ */
 #ifndef _TNMSCORE_TNMSPROTOCOL_H_
 #define _TNMSCORE_TNMSPROTOCOL_H_
 
 #include "tcanetpp_types.h"  // tcanetpp
 
-//#include "tnmsCore.h"
-
 
 namespace tnmsCore {
-
 
 
 typedef enum eValueType {
@@ -18,7 +21,7 @@ typedef enum eValueType {
     TNMS_UINT64  = 4,
     TNMS_FLOAT   = 5,
     TNMS_STRING  = 6
-} e_valueTypes_t;
+} e_valueType_t;
 
 
 typedef enum eMessageType {
@@ -36,7 +39,7 @@ typedef enum eMessageType {
     UNSUBSCRIBE_STRUCTURE,
     PING_REQUEST,
     PING_REPLY
-} e_msgTypes_t;
+} e_msgType_t;
 
 
 typedef enum eMessageOptions {
@@ -54,7 +57,7 @@ typedef enum eAuthType {
     AUTH_AGENT_INVALID,
     AUTH_AGENT_DENIED_IP,
     AUTH_BAD_VERSION
-} e_authTypes_t;
+} e_authType_t;
 
 
 typedef struct tnmsHeader

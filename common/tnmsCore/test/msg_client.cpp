@@ -35,8 +35,7 @@ int main ( int argc, char **argv )
     ipv4addr_t   addr; 
 
     std::string  host = "localhost";
-
-    TnmsSocket        * sock = NULL;
+    TnmsSocket * sock = NULL;
 
     CidrUtils::pton("127.0.0.1", addr);
 
@@ -45,15 +44,19 @@ int main ( int argc, char **argv )
 	exit(0);
     }
 
-    printf("Connecting to %s\n", CidrUtils::ntop(addr).c_str());
-
     port = atoi(argv[1]);
+    sock = new TnmsSocket((new TestMessageHandler()));
 
-    sock = new TnmsSocket(new TestMessageHandler());
+    printf("Connecting to %s:%d\n", host.c_str(), port);
 
-    if ( sock->openConnection(host, port) < 0 ) {
+    int c = sock->openConnection(host, port);
+
+    if ( c < 0 ) {
         printf("Error connecting to server: %s\n", sock->getErrorStr().c_str());
         return -1;
+    } else if ( c == 0 ) {
+        printf("..connecting..");
+        c = sock->connect();
     }
 
     signal(SIGINT, &sigHandler);
@@ -63,9 +66,9 @@ int main ( int argc, char **argv )
     LogFacility::OpenLogFile("msgclient", "msgclient.log", false);
 
     TnmsMetric metric1("foo/bar");
-    TnmsAdd add("foo");
+    TnmsAdd add("foo/bar");
 
-    int i = 5;
+    int i = 1;
 
     metric1.setValue(TNMS_INT32, i);
 
@@ -74,29 +77,42 @@ int main ( int argc, char **argv )
     sock->send();
     
     while ( ! _Alarm ) {
-	
-	//foo.timestamp = (uint32_t) time(NULL);
-	//foo.count     += 1;
-        sock->sendMessage(&metric1);
 
-        if ( (wt = sock->send()) < 0 ) {
-	    printf("msgclient: Write error\n");
-	    sock->close();
-	    sock->openConnection();
-        } else if ( (rd = sock->receive()) < 0 ) {
-	    printf("msgclient: Read error\n");
-	    sock->close();
-	    sock->openConnection();
-	} else {
-	    printf("msgclient: Wrote %d bytes\n", wt);
-	}
-	sleep(5);
-        i++;
+        if ( ! sock->isConnected() ) {
+            printf("Not connected...");
+            c = sock->connect();
+            if ( c < 0 ) {
+                printf("Error connecting to server: %s\n", sock->getErrorStr().c_str());
+                sock->close();
+            } else if ( c == 0 ) {
+                printf("..connecting..\n");
+                sock->connect();
+            } 
+        } else {
+
+            if ( c == 1 ) {
+                printf("Connected.\n");
+                c = 0;
+            }
+            sock->sendMessage(&metric1);
+
+            if ( (wt = sock->send()) < 0 ) {
+                printf("msgclient: Write error %s\n", sock->getErrorStr().c_str());
+                sock->close();
+            } else if ( (rd = sock->receive()) < 0 ) {
+                printf("msgclient: Read error %s\n", sock->getErrorStr().c_str());
+                sock->close();
+            } else {
+                printf("msgclient: Wrote %d bytes\n", wt);
+            }
+            i++;
+        }
+        sleep(5);
     }
-    printf("Terminating..\n");
-
     if ( sock->isConnected() )
 	sock->close();
+
+    printf("Terminating..\n");
 
     delete sock;
 

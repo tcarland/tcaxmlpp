@@ -45,6 +45,9 @@ msgsvr: msg_server.o
 msgclient: msg_client.o
 	$(make-cxxbin-rule)
 
+ver: vertest.o
+	$(make-cxxbin-rule)
+
 clean:
 	$(RM) $(OBJS) \
 	*.D *.d *.bd *.o lib/*.bd *.bd *.log

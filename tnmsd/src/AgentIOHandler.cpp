@@ -24,15 +24,72 @@ AgentIOHandler::~AgentIOHandler() {}
 void
 AgentIOHandler::timeout ( const EventTimer * timer )
 {
-    //int  rd, wt;
+    int  rd, wt;
 
+    ClientSet::iterator  cIter;
+
+    for ( cIter = _clients.begin(); cIter != _clients.end(); cIter++ ) {
+        TnmsClient * client = (TnmsClient*) *cIter;
+        LogFacility::Message  logmsg;
+
+        logmsg << "AgentIOHandler timeout (" << (*cIter)->getHostStr() << ")";
+
+        if ( client->isMirrorClient() ) {
+            if ( ! client->isConnected() || client->isConnecting() ) {
+                int c = 0;
+
+                if ( (c = client->connect()) < 0 ) {
+                    logmsg << " mirror disconnected.";
+                    LogFacility::LogMessage(logmsg.str());
+                    continue;
+                } else if ( c >=0 ) {
+                    timer->evmgr->addIOEvent(this, client->getSockFD(), (*cIter));
+                    continue;
+                }
+
+                if ( c > 0 ) {
+                    logmsg << " mirror connected.";
+                    LogFacility::LogMessage(logmsg.str());
+                }
+            } else {
+                if ( client->authorized && ! client->subscribed() )
+                    // suball?
+                else if ( ! client->authorized() )
+                    //login
+                    ;
+            }
+        }
+
+        if ( rd = client->receive() < 0 ) {
+            logmsg << "AgentIOHandler::timeout error in receive() " << client->getHostStr();
+            LogFacility::LogMessage(logmsg.str());
+            client->close();
+            continue;
+        } else {
+            // rd = ?
+            ;
+        }
+
+        if ( (sd = client->send()) < 0 ) {
+            logmsg << "AgentIOHandler::timeout error in send() " << client->getHostStr();
+            LogFacility::LogMessage(logmsg.str());
+            client->close();
+            continue;
+        } else {
+            // sd is our count
+            ;
+        }
+
+    }
+
+    return;
 }
 
 
 void
 AgentIOHandler::addMirrorConnection ( TnmsClient * client )
 {
-    _mirrors.insert(client);
+    _clients.insert(client);
 }
 
 
@@ -101,6 +158,7 @@ AgentIOHandler::handle_close ( const EventIO * io )
         return;
 
     if ( client->isMirror() ) {
+        ;
     } else {
         _clients.erase(client);
         _tree->removeClient(client);

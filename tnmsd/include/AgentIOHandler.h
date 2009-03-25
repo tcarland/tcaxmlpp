@@ -12,6 +12,9 @@ namespace tnmsd {
 class TnmsTree;
 class TnmsClient;
 
+typedef std::set<TnmsClient*>  ClientSet;
+
+
 class AgentIOHandler : public EventIOHandler {
 
   public:

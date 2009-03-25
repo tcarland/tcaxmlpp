@@ -33,19 +33,6 @@ TnmsMessage::TnmsMessage ( const std::string & name,
 TnmsMessage::~TnmsMessage() {}
 
 
-const std::string&
-TnmsMessage::getElementName() const
-{
-    return this->_element_name;
-}
-
-const TnmsOid&
-TnmsMessage::getElementOid() const
-{
-    return this->_element_oid;
-}
-
-
 ssize_t
 TnmsMessage::serialize ( char * buffer, size_t buffer_len )
 {

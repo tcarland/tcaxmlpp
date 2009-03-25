@@ -13,8 +13,7 @@ extern "C" {
 #include <string>
 
 
-//#include "foo.h"
-
+#include "LogFacility.h"
 #include "CidrUtils.h"
 #include "TnmsSocket.h"
 #include "TestMessageHandler.hpp"
@@ -51,6 +50,7 @@ createServer ( int port )
 	    } else {
 		server->setNonBlocking();
 		server->setSocketOption(SocketOption::SetRcvBuf(65535));
+                printf("Server listening: %s\n", server->getAddrStr().c_str());
 		return server;
 	    }
 	} catch ( SocketException err ) {
@@ -74,15 +74,18 @@ recvClientData ( TnmsSocket * client )
     
     now = time(NULL);
 
-
     do {
 	rd = client->receive(now);
 
 	if ( rd < 0 ) {
+            printf("recvClient error for %s : %s\n", 
+                client->getHostStr().c_str(), client->getErrorStr().c_str());
 	    return -1;
 	} else if ( rd == 0 ) {
+            printf("no data\n");
 	    return 0;
 	}
+
 	printf("bytes read = %d\n", rd);
 
     } while ( rd > 0 );
@@ -117,7 +120,9 @@ int main ( int argc, char **argv )
 	exit(0);
     }
     
-    int port = atoi(argv[1]);
+    
+    int port   = atoi(argv[1]);
+    int maxfdp = 128;
 
     signal(SIGINT, &sigHandler);
     signal(SIGTERM, &sigHandler);
@@ -125,21 +130,12 @@ int main ( int argc, char **argv )
 
     FD_ZERO(&rset);
 
-    int maxfdp = 128;
-
     if ( (server = createServer(port)) == NULL ) {
 	printf("Fatal error creating server socket\n");
 	exit(-1);
     }
-
-    /*
-    buffer = (char*) malloc(sizeof(foo_t));
-
-    if ( buffer == NULL ) {
-	printf("Fatal: buffer malloc failed\n");
-	exit(-1);
-    }
-    */
+    
+    LogFacility::OpenLogFile("msgsvr", "msgsvr.log", false);
 
     while ( ! _Alarm ) {
 	struct timeval to;
@@ -163,8 +159,8 @@ int main ( int argc, char **argv )
 	    if ( (client = (BufferedSocket*) server->accept(BufferedSocket::factory)) != NULL ) {
                 TnmsSocket * svrclient = new TnmsSocket(client, new TestMessageHandler());
 		clist.push_back(svrclient);
-		printf("Client connection accepted from %s\n",
-		    svrclient->getAddrStr().c_str());
+		printf("Client accepted from %s\n",
+		    svrclient->getHostStr().c_str());
                 continue;
 	    }
 	}
@@ -179,17 +175,21 @@ int main ( int argc, char **argv )
             }
 
 	    if ( FD_ISSET(c->getFD(), &rset) ) {
+
 		if ( recvClientData(c) < 0 ) {
-		    printf("Closing client %s\n", c->getAddrStr().c_str());
+		    printf("Read Error: Closing client %s\n", c->getHostStr().c_str());
 		    FD_CLR(c->getFD(), &rset);
 		    delete c;
 		    clist.erase(clist.begin() + i);
 		}
+
 	    }
 	}
     }
 
     printf("Alarm received, cleaning up\n");
+
+    LogFacility::CloseLogFacility();
 
     for ( cIter = clist.begin(); cIter != clist.end(); cIter++ )
 	delete *cIter;

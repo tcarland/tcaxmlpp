@@ -16,6 +16,13 @@
 namespace tnmsCore {
 
 
+
+/**  TnmsMessage is the base message type of all system messages. The 
+  *  default TnmsMessage object is of the 'Request' type. Other messages
+  *  are simply a TnmsMessage object with a different message_type set, 
+  *  such as Add and Remove. The 'TnmsMetric' message, is the only 
+  *  specialized version of a TnmsMessage object.
+ **/
 class TnmsMessage : public Serializable {
 
 public:
@@ -34,15 +41,18 @@ public:
 
     virtual ~TnmsMessage();
 
-    const std::string&  getElementName() const;
-    const TnmsOid&      getElementOid()  const;
+
+    const std::string&  getElementName() const { return this->_element_name; }
+    const TnmsOid&      getElementOid()  const { return this->_element_oid; }
+    const eMessageType& getMessageType() const { return this->_message_type; }
+
+    virtual uint16_t    message_type()   const;
+    virtual void        message_type  ( eMessageType  msgtype );
 
     // Serializable
-    virtual ssize_t     serialize   ( char * buffer, size_t buffer_len );
-    virtual ssize_t     deserialize ( const char * buffer, size_t buffer_len );
+    virtual ssize_t     serialize     ( char * buffer, size_t buffer_len );
+    virtual ssize_t     deserialize   ( const char * buffer, size_t buffer_len );
     virtual size_t      size() const;
-    virtual uint16_t    message_type() const;
-    virtual void        message_type ( eMessageType  msgtype );
 
 
 protected:
@@ -52,10 +62,12 @@ protected:
     eMessageType        _message_type;
 };
 
-
 typedef class TnmsMessage TnmsRequest;
 
 
+/**  The TnmsAdd class is simply a conveniece class that inherits 
+  *  the TnmsMessage class and sets the message_type accordingly.
+ **/
 class TnmsAdd : public TnmsMessage {
 
   public:
@@ -63,17 +75,19 @@ class TnmsAdd : public TnmsMessage {
     TnmsAdd() : TnmsMessage(ADD_MESSAGE) {}
 
     TnmsAdd ( const std::string &  element_name )
-        : TnmsMessage(element_name, ADD_MESSAGE)
-    {}
+        : TnmsMessage(element_name, ADD_MESSAGE) {}
     TnmsAdd ( const std::string &  element_name,
               const TnmsOid     &  oid )
-        : TnmsMessage(element_name, oid, ADD_MESSAGE)
-    {}
+        : TnmsMessage(element_name, oid, ADD_MESSAGE) {}
 
     virtual ~TnmsAdd() {}
 };
 
 
+/**  The TnmsRemove class is simply a conveniece class that 
+  *  inherits the TnmsMessage class and sets the message_type 
+  *  accordingly.
+ **/
 class TnmsRemove : public TnmsMessage {
 
   public:
@@ -81,22 +95,23 @@ class TnmsRemove : public TnmsMessage {
     TnmsRemove() : TnmsMessage(REMOVE_MESSAGE) {}
 
     TnmsRemove ( const std::string  & element_name )
-        : TnmsMessage(element_name, REMOVE_MESSAGE )
-    {}
+        : TnmsMessage(element_name, REMOVE_MESSAGE ) {}
 
     TnmsRemove ( const TnmsOid      & oid )
-        : TnmsMessage(oid, REMOVE_MESSAGE )
-    {}
+        : TnmsMessage(oid, REMOVE_MESSAGE ) {}
 
     TnmsRemove ( const std::string  & element_name,
                  const TnmsOid      & oid )
-        : TnmsMessage(element_name, oid, REMOVE_MESSAGE)
-    {}
+        : TnmsMessage(element_name, oid, REMOVE_MESSAGE) {}
 
     virtual ~TnmsRemove() {}
 };
 
 
+/**  The TnmsSubscribe class is simply a conveniece class that 
+  *  inherits the TnmsMessage class and sets the message_type 
+  *  accordingly.
+ **/
 class TnmsSubscribe : public TnmsMessage {
 
   public:
@@ -104,43 +119,39 @@ class TnmsSubscribe : public TnmsMessage {
     TnmsSubscribe() : TnmsMessage(SUBSCRIBE) {}
 
     TnmsSubscribe ( const std::string  & element_name )
-        : TnmsMessage(element_name, SUBSCRIBE )
-    {}
+        : TnmsMessage(element_name, SUBSCRIBE ) {}
 
     TnmsSubscribe ( const TnmsOid      & oid )
-        : TnmsMessage(oid, SUBSCRIBE )
-    {}
+        : TnmsMessage(oid, SUBSCRIBE ) {}
 
     TnmsSubscribe ( const std::string  & element_name,
                     const TnmsOid      & oid )
-        : TnmsMessage(element_name, oid, SUBSCRIBE)
-    {}
+        : TnmsMessage(element_name, oid, SUBSCRIBE) {}
 
     virtual ~TnmsSubscribe() {}
 };
 
 
-
+/**  The TnmsUnsubscribe class is simply a conveniece class that 
+  *  inherits the TnmsMessage class and sets the message_type 
+  *  accordingly.
+ **/
 class TnmsUnsubscribe : public TnmsMessage {
 
   public:
 
     TnmsUnsubscribe()
-        : TnmsMessage(UNSUBSCRIBE)
-    {}
+        : TnmsMessage(UNSUBSCRIBE) {}
 
     TnmsUnsubscribe ( const std::string  & element_name )
-        : TnmsMessage(element_name, UNSUBSCRIBE )
-    {}
+        : TnmsMessage(element_name, UNSUBSCRIBE ) {}
 
     TnmsUnsubscribe ( const TnmsOid      & oid )
-        : TnmsMessage(oid, UNSUBSCRIBE )
-    {}
+        : TnmsMessage(oid, UNSUBSCRIBE ) {}
 
     TnmsUnsubscribe ( const std::string  & element_name,
                       const TnmsOid      & oid )
-        : TnmsMessage(element_name, oid, UNSUBSCRIBE)
-    {}
+        : TnmsMessage(element_name, oid, UNSUBSCRIBE) {}
 
     virtual ~TnmsUnsubscribe() {}
 };

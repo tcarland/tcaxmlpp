@@ -121,13 +121,11 @@ class TnmsConfigHandler {
   public:
 
     TnmsConfigHandler() {}
-
     TnmsConfigHandler ( const std::string & xmlfilename,
                         const std::string & rootname );
 
     TnmsConfigHandler ( const char * xmlblob, size_t len,
                         const std::string & rootname );
-
 
     virtual ~TnmsConfigHandler();
 
@@ -146,11 +144,10 @@ class TnmsConfigHandler {
 
   protected:
 
-    bool                parseRoot   ( XmlNode * node );
-    bool                parseServer ( XmlNode * node );
-    bool                parseClient ( XmlNode * node );
-
-    XmlNode*            findRootNode   ( XmlNode * node, std::string & name );
+    bool                parseRoot    ( XmlNode * node );
+    bool                parseServer  ( XmlNode * node );
+    bool                parseClient  ( XmlNode * node );
+    XmlNode*            findRootNode ( XmlNode * node, std::string & name );
 
 
   protected:

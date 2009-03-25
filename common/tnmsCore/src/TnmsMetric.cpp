@@ -6,6 +6,8 @@
  */
 #define _TNMSCORE_TNMSMETRIC_CPP_
 
+#include "LogFacility.h"
+using namespace tcanetpp;
 
 #include "TnmsMetric.h"
 #include "Pack.h"
@@ -78,18 +80,21 @@ TnmsMetric::serialize ( char * buffer, size_t  buffer_len )
     wptr = buffer;
     wsz  = buffer_len;
 
+    // oidlen + oid
     pk    = _element_oid.serialize(wptr, (wsz-wt));
     if ( pk < 0 )
         return -1;
     wt   += pk;
     wptr += pk;
 
+    // element name
     pk    = Packer::Pack(wptr, (wsz-wt), _element_name);
     if ( pk < 0 )
         return -1;
     wt   += pk;
     wptr += pk;
 
+    // value type
     uint16_t  type = _valType;
     pk  = Packer::Pack(wptr, (wsz-wt), type);
     if ( pk < 0 )
@@ -97,6 +102,7 @@ TnmsMetric::serialize ( char * buffer, size_t  buffer_len )
     wt   += pk;
     wptr += pk;
 
+    // val len + value
     if ( _valType == TNMS_STRING )
         pk = Packer::Pack(wptr, (wsz-wt), _valueStr);
     else
@@ -114,6 +120,8 @@ TnmsMetric::serialize ( char * buffer, size_t  buffer_len )
         return -1;
 
     wt += pk;
+
+    LogFacility::LogMessage("TnmsMetric::serialize()");
 
     return wt;
 }
@@ -181,6 +189,8 @@ TnmsMetric::deserialize ( const char * buffer, size_t  buffer_len )
     if ( upk < 0 )
         return -1;
     rd   += upk;
+
+    LogFacility::LogMessage("TnmsMetric::deserialize()");
 
     return rd;
 }

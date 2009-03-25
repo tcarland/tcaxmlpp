@@ -1,3 +1,9 @@
+/*
+ * TnmsOid.h
+ *
+ *  Copyright(c) 2008, Charlton Technology LLC
+ *      Author: tcarland@gmail.com
+ */
 #ifndef _TNMSCORE_TNMSOID_H_
 #define _TNMSCORE_TNMSOID_H_
 

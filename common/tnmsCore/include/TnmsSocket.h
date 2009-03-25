@@ -10,24 +10,30 @@
 #include <sstream>
 #include <set>
 
+
 #include "BufferedSocket.h"
 #include "CircularBuffer.h"
 using namespace tcanetpp;
 
+
 #include "tnmsCore.h"
+
 #include "TreeAuthorizations.hpp"
 #include "MessageHandler.hpp"
-#include "TnmsOid.h"
+#include "TnmsMetric.h"
+#include "TnmsAuthRequest.h"
+#include "TnmsAuthReply.h"
+
 
 #include "zipstream.hpp"
 using namespace zlib_stream;
-
 
 
 namespace tnmsCore {
 
 
 typedef std::set<std::string>  SubscriptionList;
+
 
 class TnmsSocket {
 
