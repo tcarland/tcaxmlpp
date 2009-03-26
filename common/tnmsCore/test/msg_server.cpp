@@ -32,8 +32,6 @@ bool    _Alarm = false;
 
 
 
-
-
 BufferedSocket*
 createServer ( int port )
 {
