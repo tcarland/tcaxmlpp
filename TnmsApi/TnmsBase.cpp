@@ -16,6 +16,8 @@ namespace tnmsCore {
 // for accepting only human readable strings
 #define LOW_CHAR  32
 #define HIGH_CHAR 126
+
+
 const
 std::string TnmsBase::ApiVersion = "0.1";
 

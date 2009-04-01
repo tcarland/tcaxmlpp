@@ -211,7 +211,7 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
     if ( nsvrcfg.agent_listenport != svrcfg.agent_listenport 
             && nsvrcfg.agent_listenport > 0 )
     {
-        Message  logmsg;
+        LogFacility::Message  logmsg;
         logmsg << "Agent server listen port set to " 
                << nsvrcfg.agent_listenport;
         LogFacility::LogMessage(logmsg.str());
@@ -237,7 +237,7 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
     if ( nsvrcfg.client_listenport != svrcfg.client_listenport 
             && nsvrcfg.client_listenport > 0 )
     {
-        Message  logmsg;
+        LogFacility::Message  logmsg;
         logmsg << "Client server listen port set to " 
                << nsvrcfg.client_listenport;
         LogFacility::LogMessage(logmsg.str());

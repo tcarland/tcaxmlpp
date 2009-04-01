@@ -1,6 +1,7 @@
 #define _TNMSD_AGENTIOHANDLER_CPP_
 
 #include "EventManager.h"
+#include "LogFacility.h"
 
 #include "AgentIOHandler.h"
 #include "TnmsTree.h"
@@ -24,7 +25,7 @@ AgentIOHandler::~AgentIOHandler() {}
 void
 AgentIOHandler::timeout ( const EventTimer * timer )
 {
-    int  rd, wt;
+    int  rd, sd;
 
     ClientSet::iterator  cIter;
 
@@ -52,15 +53,16 @@ AgentIOHandler::timeout ( const EventTimer * timer )
                     LogFacility::LogMessage(logmsg.str());
                 }
             } else {
-                if ( client->authorized && ! client->subscribed() )
+                if ( client->isAuthorized() && ! client->isSubscribed() )
                     // suball?
-                else if ( ! client->authorized() )
+                    ;
+                else if ( ! client->isAuthorized() )
                     //login
                     ;
             }
         }
 
-        if ( rd = client->receive() < 0 ) {
+        if ( (rd = client->receive()) < 0 ) {
             logmsg << "AgentIOHandler::timeout error in receive() " << client->getHostStr();
             LogFacility::LogMessage(logmsg.str());
             client->close();

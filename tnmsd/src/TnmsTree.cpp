@@ -551,7 +551,7 @@ TnmsTree::debugDump()
     LogFacility::LogMessage("TnmsTree::debugDump() ");
 
     for ( nIter = flattenedTree.nodes.begin(); nIter != flattenedTree.nodes.end(); ++nIter ) {
-        Message msg;
+        LogFacility::Message  msg;
         msg << "  " << (*nIter)->getValue().metric.getElementName();
         if ( (*nIter)->getValue().erase )
             msg << " <ERASED>";

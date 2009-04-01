@@ -38,12 +38,14 @@ typedef enum LogLevel
 
 
 
-typedef std::ostringstream   Message;
 
 
 class LogFacility {
 
   public:
+
+    typedef std::ostringstream   Message;
+
 
     static bool           InitThreaded    ( bool trylock = false );
     
@@ -144,4 +146,5 @@ private:
 
 } // namespace
 
-#endif /*_TCANETPP_LOGGER_H_*/
+#endif  // _TCANETPP_LOGFACILITY_H_
+
