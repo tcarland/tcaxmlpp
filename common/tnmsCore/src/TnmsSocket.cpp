@@ -14,12 +14,7 @@ namespace tnmsCore {
 TnmsSocket::TnmsSocket ( MessageHandler * msgHandler )
     : _authFunctor(new AuthAllFunctor(_authorizations)),
       _msgHandler(NULL),
-      _connecting(false),
-      _authorizing(false),
-      _authorized(false),
-      _subscribed(false),
-      _subtree(false),
-      _compression(COMPRESSION_ENABLE),
+      _compression(TNMS_COMPRESSION_ENABLE),
       _sock(NULL),
       _hdr(NULL),
       _rxbuff(NULL),
@@ -33,7 +28,7 @@ TnmsSocket::TnmsSocket ( MessageHandler * msgHandler )
       _reconTime(TNMS_CLIENT_TIMEOUT),
       _lastWxTime(0),
       _wxTimeout(TNMS_CLIENT_TIMEOUT),
-      _flush(FLUSH_ENABLE),
+      _flush(TNMS_FLUSH_ENABLE),
       _flushLimit(TNMS_FLUSH_LIMIT),
       _maxMessages(TNMS_RECORD_LIMIT)
 {
@@ -46,12 +41,7 @@ TnmsSocket::TnmsSocket ( const std::string & host, uint16_t port,
                          MessageHandler * msgHandler )
     : _authFunctor(new AuthAllFunctor(_authorizations)),
       _msgHandler(msgHandler),
-      _connecting(false),
-      _authorizing(false),
-      _authorized(false),
-      _subscribed(false),
-      _subtree(false),
-      _compression(COMPRESSION_ENABLE),
+      _compression(TNMS_COMPRESSION_ENABLE),
       _hostname(host),
       _port(port),
       _sock(NULL),
@@ -67,7 +57,7 @@ TnmsSocket::TnmsSocket ( const std::string & host, uint16_t port,
       _reconTime(TNMS_CLIENT_TIMEOUT),
       _lastWxTime(0),
       _wxTimeout(TNMS_CLIENT_TIMEOUT),
-      _flush(FLUSH_ENABLE),
+      _flush(TNMS_FLUSH_ENABLE),
       _flushLimit(TNMS_FLUSH_LIMIT),
       _maxMessages(TNMS_RECORD_LIMIT)
 {
@@ -78,12 +68,7 @@ TnmsSocket::TnmsSocket ( const std::string & host, uint16_t port,
 TnmsSocket::TnmsSocket ( BufferedSocket * sock, MessageHandler * msgHandler )
     : _authFunctor(new AuthAllFunctor(_authorizations)),
       _msgHandler(msgHandler),
-      _connecting(false),
-      _authorizing(false),
-      _authorized(true),
-      _subscribed(false),
-      _subtree(false),
-      _compression(COMPRESSION_ENABLE),
+      _compression(TNMS_COMPRESSION_ENABLE),
       _sock(sock),
       _hdr(NULL),
       _rxbuff(NULL),
@@ -97,7 +82,7 @@ TnmsSocket::TnmsSocket ( BufferedSocket * sock, MessageHandler * msgHandler )
       _reconTime(TNMS_CLIENT_TIMEOUT),
       _lastWxTime(0),
       _wxTimeout(TNMS_CLIENT_TIMEOUT),
-      _flush(FLUSH_ENABLE),
+      _flush(TNMS_FLUSH_ENABLE),
       _flushLimit(TNMS_FLUSH_LIMIT),
       _maxMessages(TNMS_RECORD_LIMIT)
 {
@@ -138,14 +123,13 @@ TnmsSocket::init()
     _authorized     = false;
     _subscribed     = false;
     _subtree        = false;
-    _compression    = COMPRESSION_ENABLE;
     _reconTime      = TNMS_CLIENT_TIMEOUT;      // reconnect
     _loginAttempts  = 0;
 
     // buffers
     _wxcbuff        = new CircularBuffer(TNMS_PACKET_SIZE * 2);
     _rxbuff         = (char*) malloc((size_t) TNMS_PACKET_SIZE);
-    //_zxbuff         = (char*) malloc((size_t) TNMS_PACKET_SIZE);
+    _zxbuff         = (char*) malloc((size_t) TNMS_PACKET_SIZE);
     _rxbuffsz       = (size_t) TNMS_PACKET_SIZE;
     _zxbuffsz       = (size_t) TNMS_PACKET_SIZE;
     _lastWxTime     = 0;
