@@ -32,6 +32,7 @@ bool               LogFacility::_InitLock   = false;
 bool               LogFacility::_TryLock    = false;
 bool               LogFacility::_Syslog     = false;
 bool               LogFacility::_Enabled    = false;
+bool               LogFacility::_Broadcast  = false;
 bool               LogFacility::_Debug      = false;
 std::ostream*      LogFacility::_LogStream  = NULL;
 std::string        LogFacility::_FileName   = "";
@@ -57,8 +58,7 @@ LogFacility::InitThreaded ( bool trylock )
 // ----------------------------------------------------------------------
 
 bool
-LogFacility::OpenLogFile ( const std::string & prefix, 
-                      const std::string & filename, bool append )
+LogFacility::OpenLogFile ( const std::string & prefix, const std::string & filename, bool append )
 {
     std::ofstream       * fstrm = NULL;
     StreamMap::iterator   sIter;
@@ -128,7 +128,7 @@ LogFacility::OpenLogStream ( const std::string & prefix, std::ostream * stream )
      
      if ( r )
          LogFacility::_Enabled = true;
-     
+
      return r;
 }
 
@@ -192,6 +192,13 @@ LogFacility::GetEnabled()
     return LogFacility::_Enabled;
 }
 
+void
+LogFacility::SetLogToAllStreams ( bool broadcast )
+{
+    LogFacility::_Broadcast = broadcast;
+}
+
+// ----------------------------------------------------------------------
 
 void
 LogFacility::SetDebug ( bool d )
@@ -232,8 +239,8 @@ LogFacility::LogMessage ( const std::string & entry, int level )
 
 void
 LogFacility::LogMessage ( const std::string & prefix, 
-                     const std::string & entry, 
-                     int level )
+                          const std::string & entry, 
+                          int level )
 {
     if ( ! LogFacility::_Enabled )
         return;
@@ -244,8 +251,11 @@ LogFacility::LogMessage ( const std::string & prefix,
         LogFacility::_Lock.unlock();
     }
 #   endif
-
-    LogFacility::LogToStream(LogFacility::_FileName, prefix, entry);
+               
+    if ( LogFacility::_FileName.empty() || LogFacility::_Broadcast )
+        LogFacility::LogToAllStreams(prefix, entry);
+    else
+        LogFacility::LogToStream(LogFacility::_FileName, prefix, entry);
 
     return;
 }

@@ -1,6 +1,7 @@
 <tnms version="0.1">
     <tnmsd
         agent_name="my agent"
+        description=""
         logfile="mylogfile"
         syslog="false"
         debug="true"

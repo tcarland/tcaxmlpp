@@ -18,16 +18,19 @@ using namespace tnmsCore;
 
 namespace tnmsd {
 
+
 #define LOG_ROTATE_INTERVAL        86400
 #define DEFAULT_STARTUP_DELAY      30
 #define DEFAULT_HOLDDOWN_INTERVAL  30
 
 #define TNMSD_ROOT  "tnmsd"
 
+
 class TnmsClient;
 class TnmsAuthClient;
 
 typedef std::map<evid_t, TnmsClient*>  ClientMap;
+
 
 
 class TnmsManager : public EventTimerHandler {
@@ -56,8 +59,8 @@ class TnmsManager : public EventTimerHandler {
     bool         parseConfig   ( const std::string & cfg,
                                  const time_t      & now );
 
-    void         logRotate     ( std::string    logfile,
-                                 const time_t & now );
+    void         logRotate     ( std::string         logfile,
+                                 const time_t      & now );
 
 
   private:

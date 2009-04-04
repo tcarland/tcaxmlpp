@@ -99,6 +99,8 @@ class LogFacility {
     static void           SetEnabled      ( bool enable );
     static bool           GetEnabled();
 
+    static void           SetLogToAllStreams ( bool broadcast );
+
     static void           SetLogPrefix    ( const std::string & prefix );
     static std::string    GetLogPrefix();
 
@@ -138,6 +140,7 @@ private:
     static bool                  _InitLock;
     static bool                  _TryLock;
     static bool                  _Enabled;
+    static bool                  _Broadcast;
     static bool                  _Syslog;
     static bool                  _Debug;
 

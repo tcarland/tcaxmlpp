@@ -64,11 +64,47 @@ TnmsManager::~TnmsManager()
 
 
 void
+TnmsManager::run()
+{
+    time_t  now = ::time(NULL);
+
+    LogFacility::SetLogTime(now);
+
+    if ( _debug ) {
+        LogFacility::OpenLogStream("stdout", &std::cout);
+        LogFacility::LogMessage("TnmsManager::run()");
+    }
+
+    _logRotate = now + LOG_ROTATE_INTERVAL;
+    //updates = now + HOLDDOWN_INTERVAL;
+    
+    _evmgr->addTimerEvent( (EventTimerHandler*) this, 5, 0);
+
+    if ( ! this->parseConfig(_configfile, now) ) {
+        // error parsing config
+        if ( _debug )
+            LogFacility::LogMessage("Error parsing config");
+        return;
+    }
+
+    //  Enter Main Loop
+    _evmgr->eventLoop();
+
+    LogFacility::CloseLogFacility();
+
+    return;
+}
+
+
+void
 TnmsManager::timeout ( const EventTimer * timer )
 {
     const time_t & now = timer->abstime.tv_sec;
 
     LogFacility::SetLogTime(now);
+
+    if ( _debug )
+        LogFacility::LogMessage("TnmsManager::timeout()");
 
     // if startup_delay is expired; then add IOHandler for clients
     if ( _startDelay > 0 ) {
@@ -111,35 +147,6 @@ TnmsManager::timeout ( const EventTimer * timer )
 
 
 void
-TnmsManager::run()
-{
-    time_t  now = ::time(NULL);
-
-    LogFacility::SetLogTime(now);
-
-    if ( _debug )
-        LogFacility::OpenLogStream("stdout", &std::cout);
-
-    _logRotate = now + LOG_ROTATE_INTERVAL;
-    //updates = now + HOLDDOWN_INTERVAL;
-    
-    _evmgr->addTimerEvent( (EventTimerHandler*) this, 5, 0);
-
-    if ( ! this->parseConfig(_configfile, now) ) {
-        // error parsing config
-        return;
-    }
-
-    //  Enter Main Loop
-    _evmgr->eventLoop();
-
-    LogFacility::CloseLogFacility();
-
-    return;
-}
-
-
-void
 TnmsManager::verifyClients ( const time_t & now )
 {
 }
@@ -176,7 +183,7 @@ bool
 TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
 {
     TnmsConfigHandler  cfgmgr(cfg, TNMSD_ROOT);
-    std::string prefix = TNMSD_ROOT;
+    std::string  prefix = TNMSD_ROOT;
 
     if ( ! cfgmgr.parse() ) {
         if ( LogFacility::IsOpen() ) {
