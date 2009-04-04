@@ -118,7 +118,7 @@ TnmsConfigHandler::parseRoot ( XmlNode * node )
     root = this->findRootNode(node, _rootname);
 
     if ( root == NULL ) {
-        _errstr = "Error finding xml config for: " + _rootname;
+        _errstr = "Error finding xml config for " + _rootname;
         return false;
     }
 
@@ -130,18 +130,27 @@ TnmsConfigHandler::parseRoot ( XmlNode * node )
     XmlNodeList::iterator  nIter;
     XmlAttrMap::iterator   aIter;
 
-/*
-    // our root config node can have any number of dynamic or custom attributes
-    // specific to our app, so we blindly parse them out here.
+    // first collect our known root elements
+    config.agent_name  = root->getAttribute("agent_name");
+    config.logfile     = root->getAttribute("logfile");
+    config.auth_server = root->getAttribute("auth_server"); 
+
+    if ( root->haveAttribute("auth_port") )
+        config.auth_port = StringUtils::fromString<uint16_t>(root->getAttribute("auth_port"));
+
+    if ( root->hasAttr("syslog") && root->getAttr("syslog").compare("true") == 0 )
+        config.syslog = true;
+    if ( root->hasAttr("debug") && root->getAttr("debug").compare("true") == 0 )
+        config.debug = true;
+
+    // map out all the root elements so we keep any custom attributes in hand.
     for ( aIter = attrmap.begin(); aIter != attrmap.end(); ++aIter ) {
         attr = aIter->second;
-
         if ( attr == NULL ) 
             continue;
-
-        this->_attrs[attr->getKey()] = attr->getValue();
+        this->_rootAttrs[attr->getKey()] = attr->getValue();
     }
-*/
+
     // now parse our expected config subsections
     for ( nIter = nlist.begin(); nIter != nlist.end(); ++nIter ) {
         n = (XmlNode*) *nIter;
@@ -168,19 +177,19 @@ TnmsConfigHandler::parseServer ( XmlNode * node )
     if ( node == NULL )
         return false;
 
-    if ( node->haveAttribute("agent_listenport") )
-        config.serverConfig.agent_listenport = StringUtils::fromString<uint16_t>(node->getAttribute("agent_listenport"));
+    if ( node->haveAttribute("agent_port") )
+        config.serverConfig.agent_port = StringUtils::fromString<uint16_t>(node->getAttribute("agent_port"));
 
-    if ( node->haveAttribute("client_listenport") )
-        config.serverConfig.agent_listenport = StringUtils::fromString<uint16_t>(node->getAttribute("client_listenport"));
+    if ( node->haveAttribute("client_port") )
+        config.serverConfig.agent_port = StringUtils::fromString<uint16_t>(node->getAttribute("client_port"));
     else   // required? all of our server instances have a client port
         return false;
     
-    if ( node->haveAttribute("holddown_interval") )
-        config.serverConfig.holddown_interval = StringUtils::fromString<uint32_t>(node->getAttribute("holddown_interval"));
+    if ( node->haveAttribute("holddown") )
+        config.serverConfig.holddown_interval = StringUtils::fromString<uint32_t>(node->getAttribute("holddown"));
     
-    if ( node->haveAttribute("reconnect_interval") )
-        config.serverConfig.reconnect_interval = StringUtils::fromString<uint32_t>(node->getAttribute("reconnect_interval"));
+    if ( node->haveAttribute("reconnect") )
+        config.serverConfig.reconnect_interval = StringUtils::fromString<uint32_t>(node->getAttribute("reconnect"));
 
     return true;
 }
@@ -196,12 +205,10 @@ TnmsConfigHandler::parseClient ( XmlNode * node )
 
     if ( node->haveAttribute("name") )
         clientcfg.connection_name = node->getAttribute("name");
-
     if ( node->haveAttribute("host") ) {
         clientcfg.hostname = node->getAttribute("host");
         clientcfg.hostaddr = CidrUtils::getHostAddr(clientcfg.hostname);
     }
-
     if ( node->haveAttribute("port") )
         clientcfg.port = StringUtils::fromString<uint16_t>(node->getAttribute("port"));
 
@@ -209,9 +216,9 @@ TnmsConfigHandler::parseClient ( XmlNode * node )
     XmlNode   * snode = NULL;
     XmlNodeList nlist = node->getNodeList();
     XmlNodeList::iterator  nIter;
+
     for ( nIter = nlist.begin(); nIter != nlist.end(); ++nIter ) {
         snode = (XmlNode*) *nIter;
-
         if ( snode->getNodeName().compare("subscribe") == 0 )
             clientcfg.subs.push_back(snode->getAttribute("name"));
     }

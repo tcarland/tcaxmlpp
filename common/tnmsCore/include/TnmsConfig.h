@@ -82,20 +82,20 @@ typedef std::list<TnmsClientConfig>  ClientList;
 
 struct TnmsServerConfig
 {
-    uint16_t     agent_listenport;
-    uint16_t     client_listenport;
+    uint16_t     agent_port;
+    uint16_t     client_port;
     uint32_t     holddown_interval;
     uint32_t     reconnect_interval;
 
     TnmsServerConfig()
-        : agent_listenport(0),
-          client_listenport(0),
+        : agent_port(0),
+          client_port(0),
           holddown_interval(0),
           reconnect_interval(0)
     {}
 };
 
-typedef std::list<TnmsServerConfig>  ServerList;
+typedef std::list<TnmsServerConfig>         ServerList;
 
 
 struct TnmsConfig
@@ -116,6 +116,9 @@ struct TnmsConfig
 };
 
 
+typedef std::map<std::string, std::string>  AttributeMap;
+
+
 class TnmsConfigHandler {
 
   public:
@@ -132,6 +135,9 @@ class TnmsConfigHandler {
 
     virtual bool        parse();
 
+
+    std::string         getAttribute ( const std::string & key );
+    bool                haveAttribue ( const std::string & key );
 
     void                setDebug ( bool d ) { this->_debug = d; }
     std::string         getErrorStr() const { return _errstr; }
@@ -151,6 +157,8 @@ class TnmsConfigHandler {
 
 
   protected:
+
+    AttributeMap        _rootAttrs;
 
     std::string         _xmlcfg;
     bool                _isXML;
