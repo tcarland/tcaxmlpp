@@ -117,11 +117,9 @@ TnmsManager::timeout ( const EventTimer * timer )
         }
     }
 
-    if ( _hup ) {
-        // parse config
-        this->parseConfig(_configfile, now);
-        //if ( ! this->parseConfig(now) )
-            //log error
+    if ( _hup ) {  // parse config
+        if ( ! this->parseConfig(_configfile, now) )
+            LogFacility::LogMessage("Config error");
         _hup = false;
     }
 
@@ -183,7 +181,7 @@ bool
 TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
 {
     TnmsConfigHandler  cfgmgr(cfg, TNMSD_ROOT);
-    std::string  prefix = TNMSD_ROOT;
+    std::string        prefix = TNMSD_ROOT;
 
     if ( ! cfgmgr.parse() ) {
         if ( LogFacility::IsOpen() ) {
@@ -209,7 +207,6 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
     }
 
     // (re)initialize our tree?
-
 
     TnmsServerConfig & nsvrcfg = cfgmgr.config.serverConfig;
     TnmsServerConfig & svrcfg  = _tconfig.serverConfig;
