@@ -23,7 +23,7 @@ namespace tnmsd {
 #define DEFAULT_STARTUP_DELAY      30
 #define DEFAULT_HOLDDOWN_INTERVAL  30
 
-#define TNMSD_ROOT  "tnmsd"
+#define TNMSD_CONFIG_ROOT          "tnmsd"
 
 
 class TnmsClient;
@@ -75,8 +75,8 @@ class TnmsManager : public EventTimerHandler {
     ClientMap           _clientMap;
     evid_t              _svrid, _clid;
 
-    AgentIOHandler      _agentHandler;
-    ClientIOHandler     _clientHandler;
+    AgentIOHandler*     _agentHandler;
+    ClientIOHandler*    _clientHandler;
     //TnmsMessageHandler  _msgHandler;
 
     TnmsConfig          _tconfig;

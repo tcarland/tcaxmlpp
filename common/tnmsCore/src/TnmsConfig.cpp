@@ -119,7 +119,7 @@ TnmsConfigHandler::parseRoot ( XmlNode * node )
 
     if ( root == NULL ) {
         _errstr = "Error finding xml config for " + _rootname;
-        return false;
+        return result;
     }
 
     XmlNodeList  nlist   = root->getNodeList();
@@ -151,10 +151,10 @@ TnmsConfigHandler::parseRoot ( XmlNode * node )
         this->_rootAttrs[attr->getKey()] = attr->getValue();
     }
 
+    result = true;
     // now parse our expected config subsections
     for ( nIter = nlist.begin(); nIter != nlist.end(); ++nIter ) {
         n = (XmlNode*) *nIter;
-
         if ( n == NULL )
             continue;
 

@@ -99,7 +99,7 @@ class LogFacility {
     static void           SetEnabled      ( bool enable );
     static bool           GetEnabled();
 
-    static void           SetLogToAllStreams ( bool broadcast );
+    static void           SetBroadcast    ( bool broadcast );
 
     static void           SetLogPrefix    ( const std::string & prefix );
     static std::string    GetLogPrefix();

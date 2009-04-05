@@ -11,13 +11,12 @@
 namespace tnmsd {
 
 
-AgentIOHandler::AgentIOHandler()
-    : _tree(NULL)
-{}
-
-AgentIOHandler::AgentIOHandler ( TnmsTree * tree )
+AgentIOHandler::AgentIOHandler ( TnmsTree * tree ) throw ( Exception )
     : _tree(tree)
-{}
+{
+    if ( NULL == _tree )
+        throw Exception("AgentIOHandler() TnmsTree is NULL");
+}
 
 AgentIOHandler::~AgentIOHandler() {}
 

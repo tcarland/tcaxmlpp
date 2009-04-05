@@ -4,6 +4,7 @@
 #include <set>
 
 #include "EventHandlers.hpp"
+#include "Exception.hpp"
 using namespace tcanetpp;
 
 
@@ -19,8 +20,7 @@ class AgentIOHandler : public EventIOHandler {
 
   public:
 
-    AgentIOHandler();
-    AgentIOHandler ( TnmsTree * tree );
+    AgentIOHandler ( TnmsTree * tree ) throw ( Exception );
 
     virtual ~AgentIOHandler();
 

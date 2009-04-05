@@ -193,7 +193,7 @@ LogFacility::GetEnabled()
 }
 
 void
-LogFacility::SetLogToAllStreams ( bool broadcast )
+LogFacility::SetBroadcast ( bool broadcast )
 {
     LogFacility::_Broadcast = broadcast;
 }

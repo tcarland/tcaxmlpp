@@ -4,6 +4,7 @@
 #include <set>
 
 #include "EventHandlers.hpp"
+#include "Exception.hpp"
 using namespace tcanetpp;
 
 
@@ -17,8 +18,7 @@ class ClientIOHandler : public EventIOHandler {
 
   public:
 
-    ClientIOHandler();
-    ClientIOHandler ( TnmsTree * tree );
+    ClientIOHandler ( TnmsTree * tree ) throw ( Exception );
 
     virtual ~ClientIOHandler();
 

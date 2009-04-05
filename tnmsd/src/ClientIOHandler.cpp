@@ -10,13 +10,12 @@
 namespace tnmsd {
 
 
-ClientIOHandler::ClientIOHandler()
-    : _tree(NULL)
-{}
-
-ClientIOHandler::ClientIOHandler ( TnmsTree * tree )
+ClientIOHandler::ClientIOHandler ( TnmsTree * tree ) throw ( Exception )
     : _tree(tree)
-{}
+{
+    if ( NULL == _tree )
+        throw Exception("ClientIOHandler() TnmsTree is NULL");
+}
 
 
 ClientIOHandler::~ClientIOHandler()
@@ -45,7 +44,9 @@ ClientIOHandler::timeout ( const EventTimer * timer )
 
     }
 
-    _tree->updateClients();
+    if ( _tree )
+        _tree->updateClients();
+
     return;
 }
 
@@ -114,8 +115,9 @@ ClientIOHandler::handle_close ( const EventIO * io )
     if ( client == NULL )
         return;
 
+    if ( _tree ) 
+        _tree->removeClient(client);
     _clients.erase(client);
-    _tree->removeClient(client);
     client->close();
     io->evmgr->removeEvent(io->evid);
 
