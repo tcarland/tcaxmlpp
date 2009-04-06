@@ -430,12 +430,14 @@ TnmsSocket::receiveMessages ( tnmsHeader & hdr )
 }
 
 // ------------------------------------------------------------------- //
-
+/**  Note that the TnmsSocket object claims no ownership of a given
+ *   message handler. Since the message handlers could potentially be 
+ *   used as a singleton, deleting is left to implementation using this
+ *   class
+ **/
 void
 TnmsSocket::setMessageHandler ( MessageHandler * msgHandler )
 {
-    if ( this->_msgHandler )
-        delete _msgHandler;
     _msgHandler = msgHandler;
 }
 

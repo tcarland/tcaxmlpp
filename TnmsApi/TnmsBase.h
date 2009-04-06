@@ -81,20 +81,20 @@ class TnmsBase {
     bool    need_flush();
     size_t  flushsize();
 
-
     static 
     const std::string&  Version();
 
   private:
 
-    bool    doInput   ( const time_t  & now );
-    bool    doOutput  ( const time_t  & now );
-    bool    sendTree  ( const time_t  & now );
-
-    void    openLog   ( const std::string & logfile );
-
     int     checkConfig();
     void    reconfigure();
+
+    bool    doInput   ( const time_t      & now );
+    bool    doOutput  ( const time_t      & now );
+    bool    sendTree  ( const time_t      & now );
+    void    openLog   ( const std::string & logfile,
+                        const time_t      & now);
+
 
 
   private:

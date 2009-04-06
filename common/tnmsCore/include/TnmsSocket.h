@@ -42,10 +42,10 @@ class TnmsSocket {
     TnmsSocket  ( MessageHandler * msgHandler = NULL );
 
     TnmsSocket  ( const std::string & host, uint16_t port,
-                  MessageHandler * msgHandler );
+                  MessageHandler * msgHandler = NULL );
 
     TnmsSocket  ( tcanetpp::BufferedSocket * sock,
-                  MessageHandler * msgHandler );
+                  MessageHandler * msgHandler = NULL );
 
     virtual ~TnmsSocket();
 

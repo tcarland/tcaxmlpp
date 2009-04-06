@@ -1,4 +1,11 @@
-#define _TNMSOID_CPP_
+/*
+ * TnmsOid.h
+ *
+ *  Copyright(c) 2008,2009  Timothy Charlton Arland
+ *  Charlton Technology LLC
+ *  tcarland@gmail.com
+ */
+#define _TNMSCORE_TNMSOID_CPP_
 #include <list>
 
 #include "TnmsOid.h"
@@ -148,7 +155,7 @@ TnmsOid::getOidList()
 }
 
 
-uint32_t
+size_t
 TnmsOid::getOidLength() const
 {
     return _oidlist.size();
@@ -234,10 +241,10 @@ TnmsOid::deserialize ( const char * buffer, size_t buffer_len )
 }
 
 
-size_t
+uint64_t
 TnmsOid::size() const
 {
-    return(sizeof(uint32_t) + (_oidlist.size() * sizeof(uint16_t)));
+    return(sizeof(uint64_t) + (_oidlist.size() * sizeof(uint32_t)));
 }
 
 
@@ -311,5 +318,5 @@ TnmsOid::OidFromOidIndex ( const TnmsOid & oid, OidList::size_type & index )
 
 } // namespace
 
-// _TNMSOID_CPP_
+// _TNMSCORE_TNMSOID_CPP_
 

@@ -59,42 +59,29 @@ TnmsBase::~TnmsBase() {}
 int
 TnmsBase::send ( time_t  now )
 {
+    struct tm  * t;
+
     if ( now == 0 )
         now = ::time(NULL);
-
+    
+    t = ::localtime(&now);
     LogFacility::SetLogTime(now);
 
-    if ( _configTime <= now )
+    if ( this->checkConfig() != 0 )
     {
-        _configTime = now + _checkConfigTime;
-
-        if ( this->checkConfig() != 0 )
-        {
-            LogFacility::Message  msg;
-            msg << "Invalid Config";
-            LogFacility::LogMessage(msg.str());
-            std::cerr << logMsg.str() << std::endl;
-            return TNMSERR_CONFIG;
-        }
+        LogFacility::LogMessage("TnmsAPI: Invalid Configuration");
+        return TNMSERR_CONFIG;
     }
 
-    // if new day, reopen logstream
-    struct tm * t = ::localtime(&now);
-
-
-    // if logger is opan and day is not current day
-    // then 
-    // mycurrentday = currentday
-    // LogFacility::CloseLog(_config.logfile);
-    // this->openLog(_config.logfile);
+    if ( ! _config.logfile.empty() )
+        this->openLog(_config.logfile, now);
 
     // Maintain connection
-
     if ( ! _conn.IsConnected() || _conn.IsConnecting() ) {
         int  con = 0;
         _subscribed = false;
 
-        if ( _reconn > now )
+        if ( _reconnect > now )
             return TNMSERR_NO_CONN;
 
         if ( _conn.IsConnecting() )
@@ -103,19 +90,22 @@ TnmsBase::send ( time_t  now )
             con = _conn.Open(_hostName.c_str(), _hostPort);
 
         if ( con < 0 ) {
+            LogFacility::LogMessage("TnmsAPI: failed to establish connection.");
+            _reconnect = now + _config.reconnect_interval;
             return TNMSERR_CONN_FAIL;
-        } else if ( con > 0 ) {
-            // LOGIN
-            //
+        } else if ( con > 0 ) {   // login
+            LogFacility::LogMessage("TnmsAPI: connection established.");
+            _conn.login(_config.agent_name);
             return TNMSERR_NONE;
-        } else {
-            // in progress
+        } else {                  // in progress
+            LogFacility::LogMessage("TnmsAPI: connection in progress.");
             return TNMSERR_NO_CONN;
         }
     }
 
-    // Recieve messages
+    // Receive messages
     if ( _conn.receive() < 0 ) {
+        LogFacility::LogMessage("TnmsAPI: connection lost in receive().");
         _conn.close();
         return TNMSERR_CONN_LOST;
     }
@@ -123,22 +113,30 @@ TnmsBase::send ( time_t  now )
     // dump oids
     if ( _conn.authorized() && ! this->_subscribed )
     {
-        // check for network config
-        //
+        std::string  xmlstr = client.getConfig();
+        if ( ! xmlstr.empty() && _xmlConfig.compare(xmlstr) != 0 ) {
+            _xmlConfig = xmlstr;
+            this->reconfigure();
+            return TNMSERR_NONE;
+        }
 
         if ( ! this->sendTree(now) ) {
+            LogFacility::LogMessage("TnmsAPI: Connection lost sending tree.");
             return TNMSERR_CONN_LOST;
         } else {
+            LogFacility::LogMessage("TnmsAPI: Tree sent.");
             _subscribed = true;
             return TNMSERR_NONE;
         }
     } else if ( ! _conn.authorized() ) {
-        if ( _reconTime > now )
+        if ( _reconTime > now ) {
             return TNMSERR_CONN_DENIED;
+        }
 
-        _reconTime = now + _config.connect;
+        _reconTime = now + 30; // need proper val from config here
         _subscribed = false;
 
+        LogFacility::LogMessage("TnmsAPI: sending credentials.");
         _conn.login(_config.agent_name);
 
         return TNMSERR_NONE;
@@ -148,12 +146,13 @@ TnmsBase::send ( time_t  now )
     if ( _conn.flushAvailable() > 0 ) 
     {
         if ( _conn.send() < 0 ) {
+            LogFacility::LogMessage("TnmsAPI: connection lost in send().");
             _conn.close();
             return TNMSERR_CONN_LOST;
         }
     }
 
-    // do our own flush
+    // current interval flush
     if ( _holddown <= now ) {
         _holddown = now + _config.holddown;
         this->flush();
@@ -209,9 +208,9 @@ TnmsBase::add ( const std::string & name,
         return false;
     }
 
-    /*  Now to dynamically create new oids */
+#ifdef USE_OIDS 
+    //  Now to dynamically create new oids
     TnmsOid      newOid;
-
     TnmsMetric * rootMetric = nodelist.front()->getParent()->getValue();
     TnmsMetric * metric     = node->getValue();
 
@@ -233,7 +232,7 @@ TnmsBase::add ( const std::string & name,
         nodemetric.metric = TnmsMetric((*nIter)->getAbsoluteName(), newOid);
     }
 
-    /* Now that our parents have oids, we create the leaf oid */
+    // Now that our parents have oids, we create the leaf oid 
     metric.lastId++;
     oidlist.push_back(metric.lastId);
 
@@ -242,6 +241,7 @@ TnmsBase::add ( const std::string & name,
 
     std::cout << "New oid " << newOid.toString() << " for " 
         << node->getAbsoluteName() << std::endl;
+#endif 
 
     _updates.insert(&metric);
 
@@ -332,24 +332,30 @@ TnmsBase::clear()
 int
 TnmsBase::checkConfig()
 {
-    if ( _config.agent_name.empty() && _agentName.empty() )
-        return 1;
+    if ( _configTime <= now )
+    {
+        _configTime = now + _checkConfigTime;
 
-    if ( _agentName.empty() && _xmlConfig.empty() ) {
-
-        if ( ! _client.authorized() ) 
-            return 0;
-        else if ( _config.agent_name.empty() && _client.getNetworkConfig().empty() )
+        
+        if ( _config.agent_name.empty() && _agentName.empty() )
             return 1;
 
-    } else if ( _xmlConfig.empty() ) {
-        struct stat  configStat;
+        if ( _agentName.empty() && _xmlConfig.empty() ) {
 
-        if ( ::stat(_configName.c_str(), &configStat) != 0 )
-            return 0;
+            if ( ! _client.authorized() ) 
+                return 0;
+            else if ( _config.agent_name.empty() && _client.getNetworkConfig().empty() )
+                return 1;
 
-        if ( configStat.st_mtime != _configTime ) {
-            this->reconfigure();
+        } else if ( _xmlConfig.empty() ) {
+            struct stat  configStat;
+
+            if ( ::stat(_configName.c_str(), &configStat) != 0 )
+                return 0;
+
+            if ( configStat.st_mtime != _configTime ) {
+                this->reconfigure();
+            }
         }
     }
 
@@ -362,10 +368,15 @@ TnmsBase::reconfigure() {}
 
 
 void
-TnmsBase::openLog ( const std::string & logfile )
+TnmsBase::openLog ( const std::string & logfile, const time_t & now )
 {
+    struct tm * t  = ::localtime(&now);
+
     if ( LogFacility::IsOpen() && _config.logfile.compare(logfile) == 0 )
-        return;
+    {
+        if ( _t->tm_yday == _today )
+            return;
+    }
 
     if ( LogFacility::IsOpen() ) {
         LogFacility::Message  msg;
@@ -381,11 +392,12 @@ TnmsBase::openLog ( const std::string & logfile )
 
     _config.logfile = logfile;
 
+    if ( _config.logfile.empty() )
+        return;
+
     char         line[60];
     std::string  file = config.logfile;
-    time_t       now  = ::time(NULL);
-    struct tm  * t    = ::localtime(&now);
-    currentDay        = t->tm_yday;
+    _today            = t->tm_yday;
 
     strftime(line, 60, ".%Y%m%d", t);
     file.append(line);

@@ -1,10 +1,10 @@
 /*
  * TnmsMetric.h
  *
- *  Copyright(c) 2008, Charlton Technology LLC
- *      Author: tcarland@gmail.com
+ *  Copyright(c) 2008,2009  Timothy Charlton Arland
+ *  Charlton Technology LLC
+ *  tcarland@gmail.com
  */
-
 #ifndef _TNMSCORE_TNMSMETRIC_H_
 #define _TNMSCORE_TNMSMETRIC_H_
 

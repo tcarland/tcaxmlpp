@@ -6,15 +6,21 @@ namespace tnmsCore {
 
 
 
-TnmsAgent::TnmsAgent() {}
+TnmsAgent::TnmsAgent()
+    : TnmsSocket() 
+{}
 
-TnmsAgent::~TnmsAgent() {}
+
+TnmsAgent::~TnmsAgent() 
+{}
+
 
 void
 TnmsAgent::flushLimit ( uint32_t flush ) 
 {
     _flushLimit = flush;
 }
+
 
 uint32_t
 TnmsAgent::flushLimit()
@@ -24,17 +30,29 @@ TnmsAgent::flushLimit()
 
 
 void
-TnmsAgent::login() {}
+TnmsAgent::login ( const std::string & agentname ) 
+{
+    std::string  login = TNMS_AGENT_ID;
+
+    login.append(":").append(agentname);
+    TnmsSocket::login(login, "");
+    
+    return;
+}
+
 
 void
-TnmsAgent::clear() {}
+TnmsAgent::clear ( const std::string & metric )
+{
+    this->queueRemove(metric);
+}
+
 
 int
 TnmsAgent::flush()
 {
     return 0;
 }
-
 
 
 

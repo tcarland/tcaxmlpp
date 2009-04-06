@@ -6,7 +6,7 @@
 
 namespace tnmsCore {
 
-
+#define 
 class TnmsAgent : public TnmsSocket {
 
   public:

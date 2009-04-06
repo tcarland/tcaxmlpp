@@ -1,8 +1,9 @@
 /*
  * TnmsOid.h
  *
- *  Copyright(c) 2008, Charlton Technology LLC
- *      Author: tcarland@gmail.com
+ *  Copyright(c) 2008,2009  Timothy Charlton Arland
+ *  Charlton Technology LLC
+ *  tcarland@gmail.com
  */
 #ifndef _TNMSCORE_TNMSOID_H_
 #define _TNMSCORE_TNMSOID_H_
@@ -18,8 +19,8 @@
 namespace tnmsCore {
 
 
-typedef std::vector<uint16_t>    OidList;
-typedef uint16_t*                tOid;
+typedef std::vector<uint32_t>    OidList;
+typedef uint32_t*                tOid;
 
 
 
@@ -39,7 +40,7 @@ public:
 
     virtual ~TnmsOid();
 
-    uint16_t         operator[] ( OidList::size_type indx ) const;
+    uint32_t         operator[] ( OidList::size_type indx ) const;
     bool             operator<  ( const TnmsOid    & toid ) const;
     void             operator=  ( const TnmsOid    & toid );
 
@@ -55,14 +56,14 @@ public:
     const_iterator   end()   const;
     bool             empty() const;
 
-    uint16_t         lastValue()    const;
-    uint32_t         getOidLength() const;
-    uint32_t         length() const { return this->getOidLength(); }
+    uint32_t         lastValue()    const;
+    size_t           getOidLength() const;
+    size_t           length() const { return this->getOidLength(); }
 
     // Serializable
     virtual ssize_t  serialize       ( char * buffer, size_t len );
     virtual ssize_t  deserialize     ( const char * buffer, size_t len );
-    virtual size_t   size() const;
+    virtual uint32_t size() const;
     virtual uint16_t message_type() const { return 0; }
 
 public:
