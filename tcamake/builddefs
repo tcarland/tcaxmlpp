@@ -1,7 +1,42 @@
-# The top-level Makefile
-# includes the dependency and platform macros here.
+# tcamake/builddefs - includes the dependency and platform macros.
+# This should be included by sub-level Makefiles.
 #
 # $(TOPDIR) must be set by source Makefile
+#
+# Definitions provided by Makefile before including this file.
+#
+# NOTE: *** The 'all' target should be defined before including this file.
+#
+#   L_TARGET:    A library target
+#   L_OBJS:      Objects that make up L_TARGET
+#   T_TARGETS:   C programs that use L_TARGET
+#   TXX_TARGETS: C++ programs that use L_TARGET
+#   OPT_FLAGS:   Optimization settings (-g, -g -O2, -O, ...)
+#   INCLUDES:    Include flags
+#   MACROS:      Definitions
+#   LFLAGS:      Link flags
+#   LIBS:        Link libraries
+#   ALL_OBJS:    All object files (*.o) outside of the L_OBJS files and
+#                the *_TARGETS.o files.  These are defined to know what
+#                dependency files should be read.
+#   ALL_BINS:    All binary targets outside of T_TARGETS and TXX_TARGETS
+#                that dependencies should be read for.
+#
+# Macros the Makefile should use when defining custom rules:
+#
+#   makebindep-cmd: Use after a link rule.  Expects $(LFLAGS) and $(LIBS)
+#                   to include all the libraries that go into the build.
+#                   The library dependencies will be written out to a
+#                   <target>.bd.
+#   makedep-prefix:
+#   makedep-precmd: These two are used in combination when building a .o
+#                   file.  See the '%.o: %.c' definition for how to use.
+#                   The header file dependencies will be written out to
+#                   <target>.d.  The only trouble that occurs is if you
+#                   delete a header file entirely.  You'll need to remove
+#                   the affected .d files to rebuild.
+#
 
-include $(TOPDIR)/common/make/environment
-include $(TOPDIR)/common/make/autodepend
+include $(TOPDIR)/tcamake/environment
+include $(TOPDIR)/tcamake/depends
+

@@ -1,7 +1,7 @@
 # tcamake/autodepend
 #   This file is included internally
 #------------------------------------------------------------------------
-#  Don't edit below this line unless prepared to deal with the breakage.
+#  Do not edit below this line unless prepared to deal with the breakage.
 #------------------------------------------------------------------------
 ifndef TCAMAKE_AUTODEPEND
 TCAMAKE_AUTODEPEND=1
@@ -122,3 +122,5 @@ $(TXX_TARGETS): $(TXX_TARGETS:=.o) $(L_TARGET)
 	$(CXX) $(CFLAGS) -o $@ $(@:=.o) $(L_TARGET) $(LFLAGS) $(LIBS)
 	@$(makebindep-cmd)
 endif
+
+
