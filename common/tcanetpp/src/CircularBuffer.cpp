@@ -1,3 +1,25 @@
+/**
+  *   CircularBuffer.cpp
+  *
+  * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
+  *  @Author  tca@charltontechnology.net
+  *
+  * This file is part of tcanetpp.
+  *
+  * tcanetpp is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU Lesser General Public License as 
+  * published by the Free Software Foundation, either version 3 of 
+  * the License, or (at your option) any later version.
+  *
+  * tcanetpp is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Lesser General Public License for more details.
+  *
+  * You should have received a copy of the GNU Lesser General Public 
+  * License along with tcanetpp.  
+  * If not, see <http://www.gnu.org/licenses/>.
+**/
 #define _TCANETPP_CIRCULARBUFFER_CPP_
 
 extern "C" {
@@ -14,7 +36,7 @@ extern "C" {
 namespace tcanetpp {
 
 std::string 
-CircularBuffer::_Version = "$Id: CircularBuffer.cpp 4.2 2007/09/16  tca";
+CircularBuffer::_Version = "$Id: CircularBuffer.cpp 4.2 2008/08/18  tca";
 
 
 // ----------------------------------------------------------------------
@@ -601,3 +623,4 @@ CircularBuffer::Version()
 
 
 //   _TCANETPP_CIRCULARBUFFER_CPP_
+

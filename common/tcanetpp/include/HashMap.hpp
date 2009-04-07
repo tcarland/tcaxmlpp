@@ -1,4 +1,5 @@
-/**
+/**   $Id: HashMap.hpp,v 0.1 2007/09/16 14:13:00 Exp $
+  *
   *  HashMap - A wrapper to the SGI hash_map<> class that 
   *  provides a default hasher implementation for using string keys.
   *  As of the time of this writing, the hash_map implementation is 
@@ -7,11 +8,25 @@
   *  the newer GNU STL releases, but as a result this code may 
   *  not cross-compile or function properly on WIN32 platforms (or 
   *  non-Gnu stdc++)
+  *  
+  * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
+  *  @Author  tca@charltontechnology.net
   *
-  *  @Author   tcarland@gmail.com
-  *  @Version  0.2
+  * This file is part of tcanetpp.
   *
-  *  $Id: HashMap.hpp,v 0.1 2007/09/16 14:13:00 Exp $
+  * tcanetpp is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU Lesser General Public License as 
+  * published by the Free Software Foundation, either version 3 of 
+  * the License, or (at your option) any later version.
+  *
+  * tcanetpp is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Lesser General Public License for more details.
+  *
+  * You should have received a copy of the GNU Lesser General Public 
+  * License along with tcanetpp.  
+  * If not, see <http://www.gnu.org/licenses/>.
  **/
 #ifndef _TCANETPP_HASHMAP_HPP_
 #define _TCANETPP_HASHMAP_HPP_
@@ -100,3 +115,4 @@ class HashMap {
 } // namespace
     
 #endif  // _TCANETPP_HASHMAP_HPP_
+

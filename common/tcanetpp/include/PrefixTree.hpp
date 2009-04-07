@@ -1,9 +1,25 @@
-/**  PrefixTree
+/**  $Id: PrefixTree.hpp,v 1.9 2003/10/03 21:27:19 tca Exp $
   *
-  *  @Author   tcarland@gmail.com
-  *  @Version  0.3
+  *   PrefixTree - stl wrapper to a patricia tree
+  *    
+  * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
+  *  @Author  tca@charltontechnology.net
   *
-  *  $Id: PrefixTree.hpp,v 1.9 2003/10/03 21:27:19 tca Exp $
+  * This file is part of tcanetpp.
+  *
+  * tcanetpp is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU Lesser General Public License as 
+  * published by the Free Software Foundation, either version 3 of 
+  * the License, or (at your option) any later version.
+  *
+  * tcanetpp is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Lesser General Public License for more details.
+  *
+  * You should have received a copy of the GNU Lesser General Public 
+  * License along with tcanetpp.  
+  * If not, see <http://www.gnu.org/licenses/>.
  **/
 #ifndef _TCANETPP_PREFIXTREE_HPP_
 #define _TCANETPP_PREFIXTREE_HPP_
@@ -225,3 +241,4 @@ class PrefixTree {
 
 
 #endif  //  _TCANETPP_PREFIXTREE_HPP_
+
