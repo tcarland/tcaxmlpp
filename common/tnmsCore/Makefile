@@ -10,8 +10,8 @@ ifdef DEBUG
 OPT_FLAGS =  -g
 endif
 
-LIBS =
 INCLUDES =              -Iinclude
+LIBS =
 
 OBJS =                  src/Pack.o src/TnmsOid.o src/TnmsSocket.o \
 			src/TnmsMessage.o src/TnmsMetric.o \
@@ -26,7 +26,7 @@ ALL_BINS =              $(BIN)
 all: lib test
 
 
-include ${TOPDIR}/common/make/tca
+include ${TOPDIR}/tcamake/builddefs
 
 .PHONY: test
 test:

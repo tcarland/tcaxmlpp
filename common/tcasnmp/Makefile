@@ -1,32 +1,33 @@
+ifdef TCAMAKE_PROJECT
 TOPDIR = ../..
+else
+TOPDIR = .
+endif
 NEED_PTHREADS = 1
 NEED_LIBDL = 1
 NEED_TCANETPP = 1
 NEED_NET_SNMP = 1
+
 
 ifdef DEBUG
 OPT_FLAGS =	-g
 endif
 
 INCLUDES =	-Iinclude
+LIBS =
 
 BIN =		snmptest
-
 OBJS =		src/SnmpSession.o src/SnmpOid.o src/SnmpPdu.o \
 		src/SnmpUtils.o 
-
 TOBJS = 	test/snmp_test.o
 
 ALL_OBJS =	$(OBJS)
-
 ALL_BINS = 	$(BIN)
-
 
 
 all: lib
 
-
-include ${TOPDIR}/common/make/tca
+include ${TOPDIR}/tcamake/builddefs
 
 
 lib: arlib

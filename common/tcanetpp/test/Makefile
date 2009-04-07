@@ -1,4 +1,8 @@
+ifdef TCAMAKE_PROJECT
 TOPDIR = ../../..
+else
+TOPDIR = ..
+endif
 NEED_PTHREADS = 1
 NEED_LIBDL = 1
 NEED_SOCKET = 1
@@ -7,12 +11,10 @@ NEED_TCANETPP = 1
 
 OPT_FLAGS =	-g -DASWHO_MAIN
 
+INCLUDES=	-I. -I../include
 LIBS=
 
-INCLUDES=	-I. -I../include
-
 BIN=		client server asnwho pttest strtest bufftest cidrtest ipconvert
-
 OBJS=		client.o server.o
 ASOBJ=          ../src/CmdBuf.o ../src/ASWho.o
 CBUFF_OBJS=     cirbuffer_test.o
@@ -28,7 +30,7 @@ ALL_BINS= 	$(BIN)
 all: client server cidrtest strtest bufftest pttest ipconvert
 
 
-include ${TOPDIR}/common/make/tca
+include ${TOPDIR}/tcamake/builddefs
 
 
 

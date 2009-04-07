@@ -1,4 +1,5 @@
 TOPDIR = ..
+
 NEED_PTHREADS = 1
 NEED_TNMSCORE = 1
 NEED_ZLIB = 1
@@ -20,7 +21,7 @@ ALL_BINS =              $(BIN)
 all: lib
 
 
-include ${TOPDIR}/common/make/tca
+include ${TOPDIR}/tcamake/builddefs
 
 lib:	arlib
 

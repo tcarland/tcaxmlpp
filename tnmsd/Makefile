@@ -19,7 +19,7 @@ ALL_BINS=	$(BIN)
 
 all: tnmsd
 
-include $(TOPDIR)/common/make/tca
+include $(TOPDIR)/tcamake/builddefs
 
 
 tnmsd: $(OBJS)

@@ -1,4 +1,8 @@
+ifdef TCAMAKE_PROJECT
 TOPDIR = ../..
+else
+TOPDIR = .
+endif
 NEED_PTHREADS = 1
 NEED_LIBDL = 1
 
@@ -6,9 +10,8 @@ ifdef DEBUG
 OPT_FLAGS =	-g
 endif
 
-LIBS =
 INCLUDES =	    -Iinclude
-
+LIBS =
 
 OBJS =		    src/SocketOption.o src/Socket.o src/BufferedSocket.o \
                     src/CidrUtils.o src/CircularBuffer.o src/StringUtils.o \
@@ -33,7 +36,7 @@ ALL_BINS = 	    $(BIN)
 all: lib
 
 
-include ${TOPDIR}/common/make/tca
+include ${TOPDIR}/tcamake/builddefs
 
 
 lib: arlib
