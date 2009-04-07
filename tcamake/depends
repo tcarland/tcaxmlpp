@@ -9,6 +9,7 @@ RM = rm -rf
 CP = cp
 MKDIR = mkdir -p
 RSYNC = rsync -av
+RDIST = rsync -avL --delete --exclude=.cvs --exclude=.svn --exclude=.hg
 
 CXX = g++
 CC = gcc
