@@ -1,0 +1,124 @@
+# tcamake/autodepend
+#   This file is included internally
+#------------------------------------------------------------------------
+#  Don't edit below this line unless prepared to deal with the breakage.
+#------------------------------------------------------------------------
+ifndef TCAMAKE_AUTODEPEND
+TCAMAKE_AUTODEPEND=1
+endif
+
+DEPFILES = $(ALL_OBJS:.o=.d) $(ALL_BINS:=.bd)
+
+# We could just do an -include *.d, but if the .d files are in different
+# directories, that wouldn't work.  This requires more info to be provided,
+# however, so that is a different issue.  We include *.d *.bd
+-include $(DEPFILES) *.d *.bd /dev/null
+
+#
+# How to make .o's from src files.
+#
+# SUNPRO_DEPENDENCIES is an undocumented environment var consulted
+# by GNU and Sun compilers to generate a file containing file dependencies.
+# It is of the form "OUTPUTFILE DEPFILE(S)" where OUTPUTFILE is where to
+# write the deps, and DEPFILE(S) is what to put before the colon.
+# We include the .d files below.
+#
+# It is IMPORTANT to remove the .d files first otherwise they get appended to
+# (to support a single "depend" file).
+#
+# These should specify SUNPRO_DEPENDENCIES='$*.d $*.o $*.po'
+# but newer gcc quotes the space between the .o and .po and makes gmake
+# 3.78 crash.  So we have to postprocess the .d file instead.
+#
+# To speed make up, we strip out dependencies for /usr/include and
+# other system dirs.  This is less fragile than using gcc's -MM option since
+# we do <tcl.h> in places, for example, and use lots of -I directives.
+#
+makedep-prefix = \
+	$(RM) $@ $*.d; $(MKDIR) $(@D); SUNPRO_DEPENDENCIES='$*.D @TARGET@'
+makedep-postcmd = \
+	@sed 's,@TARGET@,$*.o $*.po,g;s,/usr/include/[^ ]* ,,g;s,/usr/lib/gcc-lib/[^ ]* ,,g;/^ \\$$/d' $*.D > $*.d && $(RM) $*.D
+%.o: %.cc
+	$(makedep-prefix) \
+	$(CXX) -o $@ -c $(CPPFLAGS) $(CFLAGS) $<
+	$(makedep-postcmd)
+%.o: %.cpp
+	$(makedep-prefix) \
+	$(CXX) -o $@ -c $(CPPFLAGS) $(CFLAGS) $<
+	$(makedep-postcmd)
+%.o: %.c
+	$(makedep-prefix) \
+	$(CC) -o $@ -c $(CPPFLAGS) $(CFLAGS) $<
+	$(makedep-postcmd)
+%.o: %.S
+	$(makedep-prefix) \
+	$(CC) -o $@ -c $(CPPFLAGS) $(CFLAGS) $<
+	$(makedep-postcmd)
+
+# .to objects are thread safe versions of objects in libraries that suppport
+# both threaded and non-threaded versions.
+%.to: %.cc
+	$(makedep-prefix) \
+	$(CXX) -o $@ -c $(CPPFLAGS) $(CPPFLAGS_THR) $(CFLAGS) $<
+	$(makedep-postcmd)
+%.to: %.cpp
+	$(makedep-prefix) \
+	$(CXX) -o $@ -c $(CPPFLAGS) $(CPPFLAGS_THR) $(CFLAGS) $<
+	$(makedep-postcmd)
+%.to: %.c
+	$(makedep-prefix) \
+	$(CC) -o $@ -c $(CPPFLAGS) $(CPPFLAGS_THR) $(CFLAGS) $<
+	$(makedep-postcmd)
+%.to: %.S
+	$(makedep-prefix) \
+	$(CC) -o $@ -c $(CPPFLAGS) $(CPPFLAGS_THR) $(CFLAGS) $<
+	$(makedep-postcmd)
+
+#
+# This rule generates a binary dependency file that represents the *.a
+# files that go into the binary.  It writes these out to a <binary>.bd
+# file.  The *.bd files should then be picked up to get the dependencies.
+# It currently strips out libraries from /usr/lib, /usr/local/lib, and
+# /usr/X11R6/lib so we won't have trouble when building on different
+# machines.
+#
+makebindep-cmd = \
+	tmpldirs=`echo $(LFLAGS) $(LIBS) | sed 's/-l[^ ]*//g;s/-L//g'`; \
+	tmplibs=`echo $(LFLAGS) $(LIBS) | sed 's/-L[^ ]*//g;s/-l//g'`; \
+	DEPS=""; \
+	for lib in $$tmplibs; do \
+	  found=0; \
+	  if [ -f $$lib ] && test $@ != $$lib ; then \
+	    found=1; DEPS="$$DEPS $$lib"; \
+	  fi; \
+	  for dir in $$tmpldirs ; do \
+	    if test $$found = 0 && [ -f $$dir/lib$$lib.a ] ; then \
+	      found=1; DEPS="$$DEPS $$dir/lib$$lib.a"; \
+	    fi; \
+	  done; \
+	done; \
+	echo $@: $$DEPS | sed 's,/usr/lib/[^ ]* ,,g;s,/usr/local/lib/[^ ]* ,,g;s,/usr/X11R6/lib/[^ ]* ,,g' > $@.bd
+
+make-cbin-rule = $(CC) -o $@ $(CFLAGS) $^ $(LFLAGS) $(LIBS)
+
+make-cxxbin-rule = $(CXX) -o $@ $(CFLAGS) $^ $(LFLAGS) $(LIBS)
+
+make-so-rule = $(CC) -shared -o $@ $(CCSHARED) $(CFLAGS) $^ $(LFLAGS) $(LIBS); $(makebindep-cmd)
+make-lib-rule = ld -r -o $@ $^; $(makebindep-cmd)
+
+ifdef L_TARGET
+$(L_TARGET): $(L_OBJS)
+	ar cr $@ $(L_OBJS)
+endif
+
+ifdef T_TARGETS
+$(T_TARGETS): $(T_TARGETS:=.o) $(L_TARGET)
+	$(CC) $(CFLAGS) -o $@ $(@:=.o) $(L_TARGET) $(LFLAGS) $(LIBS)
+	@$(makebindep-cmd)
+endif
+
+ifdef TXX_TARGETS
+$(TXX_TARGETS): $(TXX_TARGETS:=.o) $(L_TARGET)
+	$(CXX) $(CFLAGS) -o $@ $(@:=.o) $(L_TARGET) $(LFLAGS) $(LIBS)
+	@$(makebindep-cmd)
+endif

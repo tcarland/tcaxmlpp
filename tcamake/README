@@ -1,0 +1,32 @@
+
+
+'tcamake' is a build environment for code projects using GNU make. 
+It is not its own make system, but instead trys to provide a clean and 
+simple method of managing a large project dependencies. 
+I have used this system reliably for years and serves as my excuse to 
+avoid the GNU autoconf toolset.
+
+The build environment is specific to a directory structure starting with 
+a root directory that is referred to as $TOPDIR. This can be for a 
+specific project or group of projects as needed.  The term project is 
+used loosely to define the encompassing environment that may, in fact, 
+contain many projects. The 'tcamake' build environment should exist in
+'$TOPDIR/tcamake'. 
+
+Each Makefile beneath the top-level defines the TOPDIR variable to point 
+to the relative root of the project/environment tree.
+Additionally, each Makefile 'includes' $TOPDIR/tcamake/buildenv.
+
+The Files:
+
+  projectdefs 
+        - This should be included once by a top-level Makefile.
+  build    
+        - This is included by sub-level Makefiles and pulls in the 
+        needed dependencies.
+  depends
+        - Defines all of our project dependencies
+  autodepend
+        - defines our dependency and build commands, included by depends.
+
+
