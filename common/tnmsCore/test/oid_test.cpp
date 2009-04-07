@@ -39,13 +39,11 @@ int main()
     std::cout << std::endl;
 
     std::cout << "to oid array: " << std::endl;
-    uint16_t* oida = toid1.toArray();
-    uint16_t* t    = oida;
+    uint32_t* oida = toid1.toArray();
+    uint32_t* t    = oida;
     for ( uint32_t i = 0; i != toid1.size(); ++i, ++t ) {
         std::cout << "array[" << i << "] = " << *t << std::endl;
     }
-
-
 
     return 0;
 }

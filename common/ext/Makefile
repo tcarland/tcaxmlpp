@@ -3,11 +3,7 @@
 #
 TOPDIR = ../..
 
-include ${TOPDIR}/common/make/tca
-
-#BOOST_ROOT = "boost_1_33_1"
-# for now, this is not so cross platform
-#BOOST_JAM  = tools/build/jam_src/bin.linuxx86/bjam
+include ${TOPDIR}/tcamake/builddefs
 
 
 all: zlib net-snmp libxml2
@@ -43,15 +39,8 @@ libxml2:
 	 sh ./configure; chmod u+w python/libxml2-py.c; make )
 	@echo
 
-.PHONY: openssl
-openssl:
-	( cd openssl; ./config no-shared; \
-	chmod u+w crypto/objects/obj_dat.h; make )
-	@echo
-
 clean:
 	( cd net-snmp-5.2.3; make clean )
-	( cd mysqlpp/mysql++-1.7.40; make clean )
 	@echo
 
 distclean:
@@ -65,17 +54,13 @@ distclean:
 	if [ -f libxml2/Makefile ]; then\
 		( cd libxml2; make distclean ) \
 	fi
-	#( cd openssl; make clean )
-	if [ -f mysql++-1.7.40/Makefile ]; then \
-		( cd mysql++-1.7.40; make distclean ) \
-	fi
 	@echo
 
 install:
-ifdef SOME_PREFIX
-	@echo "Installing external auth binaries to $(SOME_PREFIX)/bin"
-	if [ ! -d $(SOME_PREFIX)/bin ]; then \
-		( mkdir $(SOME_PREFIX)/bin ) \
+ifdef PREFIX
+	@echo "Installing external auth binaries to $(PREFIX)/bin"
+	if [ ! -d $(PREFIX)/bin ]; then \
+		( mkdir $(PREFIX)/bin ) \
 	fi
 endif
 

@@ -47,7 +47,7 @@ TnmsOid::~TnmsOid()
 
 
 /** should probably throw */
-uint16_t
+uint32_t
 TnmsOid::operator[] ( OidList::size_type  indx ) const
 {
     if ( indx >= _oidlist.size() )
@@ -127,10 +127,10 @@ TnmsOid::toString() const
 tOid
 TnmsOid::toArray() const
 {
-    uint16_t * oid = NULL;
-    uint16_t * rid = NULL;
+    uint32_t * oid = NULL;
+    uint32_t * rid = NULL;
 
-    oid = (uint16_t*) ::calloc(_oidlist.size(), sizeof(uint16_t));
+    oid = (uint32_t*) ::calloc(_oidlist.size(), sizeof(uint32_t));
     rid = oid;
 
     OidList::const_iterator  tIter;
@@ -162,7 +162,7 @@ TnmsOid::getOidLength() const
 }
 
 
-uint16_t
+uint32_t
 TnmsOid::lastValue() const
 {
     if ( this->_oidlist.size() == 0 )
@@ -229,10 +229,10 @@ TnmsOid::deserialize ( const char * buffer, size_t buffer_len )
     rd   += upk;
     rptr += upk;
 
-    rsz   = sizeof(uint16_t);
+    rsz   = sizeof(uint32_t);
 
     for (  i = 0; i < oid_len; ++i ) {
-        _oidlist.push_back( *((uint16_t*) rptr) );
+        _oidlist.push_back( *((uint32_t*) rptr) );
         rptr += rsz;
         rd   += rsz;
     }
@@ -241,10 +241,10 @@ TnmsOid::deserialize ( const char * buffer, size_t buffer_len )
 }
 
 
-uint64_t
+size_t
 TnmsOid::size() const
 {
-    return(sizeof(uint64_t) + (_oidlist.size() * sizeof(uint32_t)));
+    return(sizeof(uint32_t) + (_oidlist.size() * sizeof(uint32_t)));
 }
 
 
@@ -257,7 +257,7 @@ TnmsOid::StringToOidList ( const std::string & str, OidList & oidlist )
     std::list<std::string>::iterator sIter;
 
     for ( sIter = branchNames.begin(); sIter != branchNames.end(); ++sIter )
-        oidlist.push_back(StringUtils::fromString<uint16_t>(*sIter));
+        oidlist.push_back(StringUtils::fromString<uint32_t>(*sIter));
 
     return;
 }
@@ -283,7 +283,7 @@ TnmsOid::OidFromString ( const std::string & str )
 
     std::list<std::string>::iterator   sIter;
     for ( sIter = branchNames.begin(); sIter != branchNames.end(); ++sIter )
-        oidlist.push_back(StringUtils::fromString<uint16_t>(*sIter));
+        oidlist.push_back(StringUtils::fromString<uint32_t>(*sIter));
 
     return oid;
 }

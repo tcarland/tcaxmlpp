@@ -1,4 +1,6 @@
+
 TOPDIR = ../../..
+
 NEED_PTHREADS = 1
 NEED_TNMSCORE = 1
 NEED_ZLIB = 1
@@ -8,8 +10,8 @@ ifdef DEBUG
 OPT_FLAGS =  -g
 endif
 
-LIBS =
 INCLUDES = 	-I.
+LIBS =
 
 OBJS =		        
 
@@ -24,7 +26,7 @@ ALL_BINS =      $(BIN)
 all: treetest packtest oidtest msgtest msgsvr msgclient
 
 
-include ${TOPDIR}/common/make/tca
+include ${TOPDIR}/tcamake/builddefs
 
 
 treetest: tree_test.o
@@ -49,10 +51,10 @@ ver: vertest.o
 	$(make-cxxbin-rule)
 
 clean:
-	$(RM) $(OBJS) \
+	$(RM) $(ALL_OBJS) \
 	*.D *.d *.bd *.o lib/*.bd *.bd *.log
 
 distclean: clean
-	$(RM) $(BIN)
+	$(RM) $(ALL_BINS)
 
 install:

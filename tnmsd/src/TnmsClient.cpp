@@ -8,24 +8,22 @@
 namespace tnmsd {
 
 TnmsClient::TnmsClient ( TnmsTree * tree )
-    : TnmsSocket(NULL),
-      _messageHandler(new TnmsMessageHandler(tree, this)),
+    : _messageHandler(new TnmsMessageHandler(tree, this)),
       _tree(tree),
       _isAgent(false),
       _isMirror(true)
 {
-    this->setMessageHnadler(this->_messageHandler);
+    this->setMessageHandler(this->_messageHandler);
 }
 
 
 TnmsClient::TnmsClient ( TnmsTree * tree, BufferedSocket * sock, bool isAgent )
-    : TnmsSocket(sock, NULL),
-      _messageHandler(new TnmsMessageHandler(tree, this)),
+    : _messageHandler(new TnmsMessageHandler(tree, this)),
       _tree(tree),
       _isAgent(isAgent),
       _isMirror(false)
 {
-    this->setMessageHnadler(this->_messageHandler);
+    this->setMessageHandler(this->_messageHandler);
 }
 
 

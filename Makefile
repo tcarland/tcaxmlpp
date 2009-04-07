@@ -1,7 +1,6 @@
 # ------------------------
 #  Top-level Makefile
 #
-
 include ./tcamake/projectdefs
 
 # ------------------------
@@ -10,14 +9,17 @@ all: print-env external common tnmsd
 
 
 print-env:
-	@gcc -v
 	@uname -a
+	@echo
+	@gcc -v
+	@echo
 
 .PHONY: common
 common:
 	( cd common; make all )
 	@echo
 
+.PHONY: tnmsd
 tnmsd:
 	( cd tnmsd; make all )
 	@echo
@@ -39,4 +41,8 @@ distclean: external-clean
 	( cd tnmsd; make distclean )
 
 install:
+ifdef PREFIX
+	( cd common; make install )
+	( cd tnmsd; make install )
+endif
 

@@ -20,7 +20,6 @@ OBJS =		    src/SocketOption.o src/Socket.o src/BufferedSocket.o \
                     src/random.o src/RandomPrefix.o src/patricia.o \
                     src/DeviceMap.o src/NetworkDevice.o src/NetworkInterface.o
                     
-                #src/ConfigOpts.o src/FileUtils.o 
                     
 CMDBUF_OBJS =       src/CmdBuf.o
 
@@ -84,19 +83,22 @@ doc-clean:
 	@echo
 
 clean:
-	$(RM) $(OBJS) \
+	$(RM) $(ALL_OBJS) \
 	src/*.d src/*.D src/*.bd src/*.o lib/*.bd *.bd
+	@echo
 	
 test-clean:
 	( cd test; $(MAKE) distclean )
 	@echo
 
 distclean: clean libclean doc-clean test-clean
-	$(RM) $(BIN)
+	$(RM) $(ALL_BINS)
+	@echo
 
 install:
-ifdef TCANMS_PREFIX
-	@echo "Installing libtcanetpp to $(SOEMON3_PREFIX)/lib"
-	$(RSYNC) --delete include/ $(SOEMON3_PREFIX)/include/tcanetpp/
-	$(RSYNC) lib/ $(SOEMON3_PREFIX)/lib/
+ifdef PREFIX
+	@echo "Installing libtcanetpp to $(PREFIX)/lib"
+	$(RSYNC) --delete include/ $(PREFIX)/include/tcanetpp/
+	$(RSYNC) lib/ $(PREFIX)/lib/
+	@echo
 endif
