@@ -1,0 +1,15 @@
+# tcamake/projectdefs
+#   To be included by the Top-Level Makefile or TOPDIR.
+#
+export TCAMAKE_PROJECT="true"
+
+# these are used by the build system and are here
+# for reference. They can be set in ones .profile 
+# or simply uncommented here.
+#USE_DEBUG = 1
+# for db support, define only one type.
+#USE_MYSQL = 1
+#USE_POSTGRESQL = 1
+#USE_ORACLE = 1
+
+

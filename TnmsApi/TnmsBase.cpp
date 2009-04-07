@@ -208,6 +208,7 @@ TnmsBase::add ( const std::string & name,
         return false;
     }
 
+/*
 #ifdef USE_OIDS 
     //  Now to dynamically create new oids
     TnmsOid      newOid;
@@ -242,6 +243,7 @@ TnmsBase::add ( const std::string & name,
     std::cout << "New oid " << newOid.toString() << " for " 
         << node->getAbsoluteName() << std::endl;
 #endif 
+*/
 
     _updates.insert(&metric);
 

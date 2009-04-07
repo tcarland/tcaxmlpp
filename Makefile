@@ -1,4 +1,10 @@
+# ------------------------
+#  Top-level Makefile
+#
 
+include ./tcamake/projectdefs
+
+# ------------------------
 
 all: print-env external common tnmsd
 
