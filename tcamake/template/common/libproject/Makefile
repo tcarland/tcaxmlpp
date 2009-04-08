@@ -3,20 +3,19 @@
 
 # this ifdef allows the library to be a standalone distribution
 # (this requires ./tcamake/ to exist (use a symlink)
-
-ifdef TCAMAKE_PROJECT
-TOPDIR = ../..
-else
-TOPDIR = .
+#
+ifndef TOPDIR
+  TOPDIR = ../..
 endif
 
 # build requirements
 NEED_PTHREADS = 1
 NEED_LIBDL = 1
 
+#-------------------#
 
 ifdef DEBUG
-OPT_FLAGS =	-g
+  OPT_FLAGS = -g
 endif
 
 # custom include/libs
@@ -82,8 +81,8 @@ distclean: clean libclean docclean testclean
 
 dist:
 ifdef DISTDIR
-	( make distclean )
-	( $(RDIST) ./ $(DISTDIR)/ )
+	@echo "sync'ing to $(DISTDIR)/mylib"
+	( make distclean; $(RDIST) ./ $(DISTDIR)/ )
 	@echo
 endif
 

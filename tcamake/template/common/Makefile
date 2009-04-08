@@ -1,5 +1,6 @@
-# common Makefile
+# common top-level Makefile
 #
+include ../tcamake/projectdefs
 
 
 all: libproject
@@ -9,6 +10,7 @@ all: libproject
 libproject:
 	( cd libproject; make all )
 	@echo
+
 clean:
 	( cd libproject; make clean )
 	@echo
@@ -18,8 +20,6 @@ distclean:
 	@echo
 
 install:
-ifdef PREFIX
 	( cd libproject; make install )
 	@echo
-endif
 

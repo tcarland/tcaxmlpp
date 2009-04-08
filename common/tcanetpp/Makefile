@@ -1,13 +1,19 @@
+# Makefile for tcanetpp
+#
+#
 ifdef TCAMAKE_PROJECT
-TOPDIR = ../..
+  TOPDIR = ../..
 else
-TOPDIR = .
+  TOPDIR = .
 endif
+
 NEED_PTHREADS = 1
 NEED_LIBDL = 1
 
+#-------------------#
+
 ifdef DEBUG
-OPT_FLAGS =	-g
+  OPT_FLAGS = -g
 endif
 
 INCLUDES =	    -Iinclude
@@ -43,7 +49,7 @@ lib: arlib
 
 arlib: lib/libtcanetpp.a
 
-solib: lib/libtcanetpp.so.0.0.1
+solib: lib/libtcanetpp.so.1.0.1
 
 libtcapt: lib/libtcapt.a
 
