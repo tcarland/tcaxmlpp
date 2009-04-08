@@ -1,6 +1,3 @@
-/**  SnmpSession - This derives from SnmpSessionInterface and implements 
-  *   the SNMP layer via the net-snmp library.
- **/
 #ifndef _TCASNMP_SNMPSESSION_H_
 #define _TCASNMP_SNMPSESSION_H_
 
@@ -111,4 +108,5 @@ private:
 
 }  // namespace
 
-#endif /*_TCASNMP_NETSNMPSESSION_H_*/
+#endif // _TCASNMP_SNMPSESSION_H_
+

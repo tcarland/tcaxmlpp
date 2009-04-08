@@ -15,6 +15,7 @@ public:
     
     SnmpPdu();
     SnmpPdu ( struct snmp_pdu * pdu_ );
+
     virtual ~SnmpPdu();
 
     /**  Converts the snmp_pdu objectId to a string on success and 
@@ -43,5 +44,6 @@ public:
 
 } // namespace
 
-#endif /*_TCASNMP_SNMPPDU_H_*/
+#endif // _TCASNMP_SNMPPDU_H_
+
 

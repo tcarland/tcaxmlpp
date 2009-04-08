@@ -3,6 +3,7 @@ TOPDIR = ../..
 else
 TOPDIR = .
 endif
+
 NEED_PTHREADS = 1
 NEED_LIBDL = 1
 NEED_TCANETPP = 1
@@ -10,7 +11,7 @@ NEED_NET_SNMP = 1
 
 
 ifdef DEBUG
-OPT_FLAGS =	-g
+OPT_FLAGS = -g
 endif
 
 INCLUDES =	-Iinclude
