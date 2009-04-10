@@ -60,6 +60,7 @@ int
 TnmsBase::send ( time_t  now )
 {
     struct tm  * t;
+    int          rd;
 
     if ( now == 0 )
         now = ::time(NULL);
@@ -77,70 +78,18 @@ TnmsBase::send ( time_t  now )
         this->openLog(_config.logfile, now);
 
     // Maintain connection
-    if ( ! _conn.IsConnected() || _conn.IsConnecting() ) {
-        int  con = 0;
-        _subscribed = false;
-
-        if ( _reconnect > now )
-            return TNMSERR_NO_CONN;
-
-        if ( _conn.IsConnecting() )
-            con = _conn.Open();
-        else
-            con = _conn.Open(_hostName.c_str(), _hostPort);
-
-        if ( con < 0 ) {
-            LogFacility::LogMessage("TnmsAPI: failed to establish connection.");
-            _reconnect = now + _config.reconnect_interval;
-            return TNMSERR_CONN_FAIL;
-        } else if ( con > 0 ) {   // login
-            LogFacility::LogMessage("TnmsAPI: connection established.");
-            _conn.login(_config.agent_name);
-            return TNMSERR_NONE;
-        } else {                  // in progress
-            LogFacility::LogMessage("TnmsAPI: connection in progress.");
-            return TNMSERR_NO_CONN;
-        }
-    }
+    if ( (rd = this->checkConnection()) != 0 )
+        return rd;
 
     // Receive messages
-    if ( _conn.receive() < 0 ) {
+    if ( _conn.receive(now) < 0 ) {
         LogFacility::LogMessage("TnmsAPI: connection lost in receive().");
         _conn.close();
         return TNMSERR_CONN_LOST;
     }
 
-    // dump oids
-    if ( _conn.authorized() && ! this->_subscribed )
-    {
-        std::string  xmlstr = client.getConfig();
-        if ( ! xmlstr.empty() && _xmlConfig.compare(xmlstr) != 0 ) {
-            _xmlConfig = xmlstr;
-            this->reconfigure();
-            return TNMSERR_NONE;
-        }
-
-        if ( ! this->sendTree(now) ) {
-            LogFacility::LogMessage("TnmsAPI: Connection lost sending tree.");
-            return TNMSERR_CONN_LOST;
-        } else {
-            LogFacility::LogMessage("TnmsAPI: Tree sent.");
-            _subscribed = true;
-            return TNMSERR_NONE;
-        }
-    } else if ( ! _conn.authorized() ) {
-        if ( _reconTime > now ) {
-            return TNMSERR_CONN_DENIED;
-        }
-
-        _reconTime = now + 30; // need proper val from config here
-        _subscribed = false;
-
-        LogFacility::LogMessage("TnmsAPI: sending credentials.");
-        _conn.login(_config.agent_name);
-
-        return TNMSERR_NONE;
-    }
+    if ( (rd = this->checkSubscription()) != 0 )
+        return rd;
 
     // check for conn flush
     if ( _conn.flushAvailable() > 0 ) 
@@ -155,11 +104,12 @@ TnmsBase::send ( time_t  now )
     // current interval flush
     if ( _holddown <= now ) {
         _holddown = now + _config.holddown;
+        _tree->updateClients();
         this->flush();
     }
 
-    // process input
-    if ( _conn.receive() < 0 ) {
+    // Receive messages
+    if ( _conn.receive(now) < 0 ) {
         _conn.close();
         return TNMSERR_CONN_LOST;
     }
@@ -167,12 +117,6 @@ TnmsBase::send ( time_t  now )
     return TNMSERR_NONE;
 }
 
-
-int
-TnmsBase::receive()
-{
-    return TNMSERR_NONE;
-}
 
 
 bool
@@ -362,6 +306,74 @@ TnmsBase::checkConfig()
     }
 
     return 0;
+}
+
+int
+TnmsBase::checkConnection()
+{
+    if ( ! _conn.IsConnected() || _conn.IsConnecting() ) {
+        int  con = 0;
+        _subscribed = false;
+
+        if ( _reconnect > now )
+            return TNMSERR_NO_CONN;
+
+        if ( _conn.IsConnecting() )
+            con = _conn.Open();
+        else
+            con = _conn.Open(_hostName.c_str(), _hostPort);
+
+        if ( con < 0 ) {
+            LogFacility::LogMessage("TnmsAPI: failed to establish connection.");
+            _reconnect = now + _config.reconnect_interval;
+            return TNMSERR_CONN_FAIL;
+        } else if ( con > 0 ) {   // login
+            LogFacility::LogMessage("TnmsAPI: connection established.");
+            _conn.login(_config.agent_name);
+            return TNMSERR_NONE;
+        } else {                  // in progress
+            LogFacility::LogMessage("TnmsAPI: connection in progress.");
+            return TNMSERR_NO_CONN;
+        }
+    }
+
+    return TNMSERR_NONE;
+}
+
+int
+TnmsBase::checkSubscription()
+{
+    if ( _conn.authorized() && ! this->_subscribed )
+    {
+        std::string  xmlstr = _conn.getConfig();
+
+        if ( ! xmlstr.empty() && _xmlConfig.compare(xmlstr) != 0 ) {
+            _xmlConfig = xmlstr;
+            this->reconfigure();
+            return TNMSERR_NONE;
+        }
+
+        if ( ! this->sendTree(now) ) {
+            LogFacility::LogMessage("TnmsAPI: Connection lost sending tree.");
+            return TNMSERR_CONN_LOST;
+        } else {
+            LogFacility::LogMessage("TnmsAPI: Tree sent.");
+            _subscribed = true;
+        }
+
+    } else if ( ! _conn.authorized() ) {
+        if ( _reconTime > now ) {
+            return TNMSERR_CONN_DENIED;
+        }
+
+        _reconTime  = now + 30; // need proper val from config here
+        _subscribed = false;
+
+        LogFacility::LogMessage("TnmsAPI: sending credentials.");
+        _conn.login(_config.agent_name);
+    }
+
+    return TNMSERR_NONE;
 }
 
 

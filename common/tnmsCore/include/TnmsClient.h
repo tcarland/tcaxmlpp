@@ -42,6 +42,8 @@ class TnmsClient : public TnmsSocket {
     bool            inTreeSend() const;
     void            inTreeSend   ( bool insend );
 
+    const
+    std::string&    getConfig() const { return _xmlConfig; }
 
   public:
 
@@ -56,6 +58,8 @@ class TnmsClient : public TnmsSocket {
     UpdateSet            _adds;
     UpdateSet            _updates;
     RemoveSet            _removes;
+
+    std::string          _xmlConfig;
 
     bool                 _isAgent;
     bool                 _isMirror;

@@ -17,7 +17,7 @@ class TnmsOid;
 class TnmsAgent;
 
 
-typedef HeirarchicalStringTree<TnmsMetric*>  MetricTree;
+//typedef HeirarchicalStringTree<TnmsMetric*>  MetricTree;
 
 typedef std::map<std::string, TnmsOid*>      OidMap;
 typedef std::set<TnmsMetric*>                UpdateSet;
@@ -39,7 +39,6 @@ class TnmsBase {
 
 
     int     send      ( time_t  now );
-    int     receive();
 
 
     bool    add       ( const std::string & name, 
@@ -87,6 +86,9 @@ class TnmsBase {
   private:
 
     int     checkConfig();
+    int     checkConnection();
+    int     checkSubscription();
+
     void    reconfigure();
 
     bool    doInput   ( const time_t      & now );
@@ -96,17 +98,18 @@ class TnmsBase {
                         const time_t      & now);
 
 
-
   private:
 
     std::string          _agentName;
 
-    MetricTree           _tree;
-    UpdateSet            _updates;
-    StringSet            _removes;
+    //MetricTree           _tree;
+    TnmsTree             _tree;
+    //UpdateSet            _updates;
+    //StringSet            _removes;
 
     TnmsConfig           _config;
-    TnmsAgent            _conn;
+    //TnmsAgent            _conn;
+    TnmsClient           _conn;
 
     std::string          _xmlConfig;
     std::string          _configName;
