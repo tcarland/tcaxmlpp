@@ -29,7 +29,7 @@
 
 
 static const
-char version[] = "$Id: patricia.c,v 1.9 2007/10/03 21:27:19 tca Exp $";
+char version[] = "$Id: patricia.c,v 1.9 2009/04/11 21:27:19 tca Exp $";
 
 
 
@@ -313,7 +313,7 @@ pt_match ( ptNode_t * head, cidr_t cidr )
 //  function to provide an exact match to the provided key
 //  and return the associated void*, or NULL if there was no match
 void*
-pt_matchRock ( ptNode_t * head, cidr_t cidr )
+pt_matchForRock ( ptNode_t * head, cidr_t cidr )
 {
     ptNode_t  * node;
     void      * rock = NULL;
@@ -340,7 +340,7 @@ pt_matchLongest ( ptNode_t * head, cidr_t cidr )
     PT_visitR_node(head->llink, -1, &PT_searchLongHandler);
 
     if ( resultCidr.addr > 0 )
-	rock = pt_matchRock(head, resultCidr);
+	rock = pt_matchForRock(head, resultCidr);
 
     return rock;
 }

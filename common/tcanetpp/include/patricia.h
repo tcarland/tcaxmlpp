@@ -57,26 +57,25 @@ typedef struct ptNode {
 
 
 typedef void (*nodeHandler_t) (uint32_t, uint8_t, void*);
-
 typedef void (*pvtNodeHandler_t)(ptNode_t*);
 
 
 ptNode_t*  pt_init();
 
-int   pt_insert       ( ptNode_t * head, cidr_t cidr, void * rock );
-void* pt_remove       ( ptNode_t * head, cidr_t key );
+int        pt_insert       ( ptNode_t * head, cidr_t cidr, void * rock );
+void*      pt_remove       ( ptNode_t * head, cidr_t key );
 
-int   pt_match        ( ptNode_t * head, cidr_t key );
-void* pt_matchRock    ( ptNode_t * head, cidr_t key );
-void* pt_matchLongest ( ptNode_t * head, cidr_t key );
+int        pt_match        ( ptNode_t * head, cidr_t key );
+void*      pt_matchForRock ( ptNode_t * head, cidr_t key );
+void*      pt_matchLongest ( ptNode_t * head, cidr_t key );
 
-void  pt_visit        ( ptNode_t * head, nodeHandler_t handler );
-void  pt_visit_node   ( ptNode_t * head, pvtNodeHandler_t handler );
+void       pt_visit        ( ptNode_t * head, nodeHandler_t handler );
+void       pt_visit_node   ( ptNode_t * head, pvtNodeHandler_t handler );
+ 
+int        pt_nodes        ( ptNode_t * head );
+int        pt_size         ( ptNode_t * head );
 
-int   pt_nodes        ( ptNode_t * head );
-int   pt_size         ( ptNode_t * head );
-
-int   pt_free         ( ptNode_t * head, nodeHandler_t handler );
+int        pt_free         ( ptNode_t * head, nodeHandler_t handler );
 
 
 # ifdef __cplusplus

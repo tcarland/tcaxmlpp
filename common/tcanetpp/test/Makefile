@@ -54,6 +54,10 @@ bufftest: $(CBUFF_OBJS)
 	$(make-cxxbin-rule)
 	@echo
 
+hashtest: hash_test.o
+	$(make-cxxbin-rule)
+	@echo
+
 pfxtest: pfxtreetest.o
 	$(make-cxxbin-rule)
 	@echo

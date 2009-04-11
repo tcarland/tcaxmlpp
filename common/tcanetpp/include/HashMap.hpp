@@ -58,10 +58,10 @@ class HashMap {
         { return ( strcmp(a, b) == 0 ); }
     };
 
-    typedef hash_map<const char*, ValueType,
-        hash<const char*>, keyeq>              Hash;
-    typedef typename Hash::iterator            iterator;
-    typedef typename Hash::const_iterator      const_iterator;
+    typedef hash_map< const char*, ValueType, 
+                      hash<const char*>, keyeq >    Hash;
+    typedef typename Hash::iterator                 iterator;
+    typedef typename Hash::const_iterator           const_iterator;
 
     
   public:
