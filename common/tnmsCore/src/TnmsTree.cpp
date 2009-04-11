@@ -238,7 +238,7 @@ TnmsTree::request ( const std::string & name, TnmsClient * client )
 
         AddForwarder adds(client);
         for ( nIter = roots.begin(); nIter != roots.end(); ++nIter )
-            _tree->depthFirstTraversal(*nIter, adds);
+            _tree->depthFirstTraversal(nIter->second, adds);
 
     } else {
         Node * node = _tree->find(name);

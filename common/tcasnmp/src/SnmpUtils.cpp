@@ -17,18 +17,17 @@ namespace tcasnmp {
 
 
 void
-SnmpUtils::MapInterfaces ( SnmpSession * session, InterfaceMap & ifmap )
+SnmpUtils::MapInterfaces ( SnmpSession * session, IfaceNameMap & ifmap )
 {
-    SnmpPdu *    response;
-    std::string  desc;
-    int          indx;
-    
-    InterfaceMap  ifMap;
+    IfaceNameMap  ifMap;
+    SnmpPdu *     response;
+    std::string   desc;
+    int           indx;
 
     response = session->getNext(IFINDEX_OID);
 
-    while ( response ) {
-
+    while ( response )
+    {
 	if ( ! response->getInteger(indx) )
 	    break;
 
@@ -48,19 +47,21 @@ SnmpUtils::MapInterfaces ( SnmpSession * session, InterfaceMap & ifmap )
 void
 SnmpUtils::MapInterfaces ( SnmpSession * session, NetworkDevice & device )
 {
-    InterfaceMap      ifmap;
-    IPIndxMap          ipmap;
-    IfList                          ifv;
+    IfaceNameMap      ifmap;
+    IfaceIpMap        ipmap;
+    IfList            ifv;
 
-    InterfaceMap::iterator  fIter;
-    IPIndxMap::iterator   pIter;
+    IfaceNameMap::iterator  fIter;
+    IfaceIpMap::iterator    pIter;
 
     SnmpUtils::MapInterfaces(session, ifmap);
     SnmpUtils::QueryIpTable(session, ipmap);
 
     for ( fIter = ifmap.begin(); fIter != ifmap.end(); fIter++ ) {
-	int         indx  = fIter->first;
 	std::string alias = "";
+	int         indx;
+        
+        indx = fIter->first;
 
 	NetworkInterface iface(device.deviceAddr(), indx);
 	iface.ifName(fIter->second);
@@ -82,7 +83,7 @@ SnmpUtils::MapInterfaces ( SnmpSession * session, NetworkDevice & device )
 
 
 void
-SnmpUtils::QueryIpTable ( SnmpSession * session, IPIndxMap & ipmap )
+SnmpUtils::QueryIpTable ( SnmpSession * session, IfaceIpMap & ipmap )
 {
     SnmpPdu *               response;
     std::vector<ipv4addr_t> ipv;
@@ -93,8 +94,8 @@ SnmpUtils::QueryIpTable ( SnmpSession * session, IPIndxMap & ipmap )
 
     response = session->getNext(toid.c_str());
 
-    while ( response ) {
-
+    while ( response )
+    {
 	if ( response->pdu->variables->type == ASN_APPLICATION ) {
             response->getUnsignedInteger(addr);
 	    ipv.push_back(addr);
@@ -195,14 +196,15 @@ SnmpUtils::GetCDPNeighbors ( SnmpSession * session, DeviceSet & devlist )
 
     response = session->getNext(CDP_DEVICEID_OID);
 
-    while ( response ) {
+    while ( response )
+    {
         NetworkDevice device;
 
         response->getString(rsp);
 
-        if ( !rsp.empty() && device.setDevice(rsp) ) {
+        if ( !rsp.empty() && device.setDevice(rsp) ) 
+        {
             device.community(session->community());
-            
             devlist.insert(device);
             total++;
         }
@@ -219,4 +221,5 @@ SnmpUtils::GetCDPNeighbors ( SnmpSession * session, DeviceSet & devlist )
 
 }  // namespace
 
-/*  _TCASNMP_SNMPUTILS_CPP_  */
+//  _TCASNMP_SNMPUTILS_CPP_ 
+

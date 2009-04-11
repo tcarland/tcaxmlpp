@@ -2,6 +2,8 @@
 #
 #   Build script for one-time building of external libraries.
 #
+#   @Author:  tca@charltontechnology.net
+#
 
 PWD=`pwd`
 
@@ -27,6 +29,7 @@ check_autoconf()
     fi
 
     make update-autoconf
+
     retval=$?
     if [ $retval -ne 0 ]; then
         touch ${PWD}/${INITFILE}

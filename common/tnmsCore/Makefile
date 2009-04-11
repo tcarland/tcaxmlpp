@@ -16,7 +16,8 @@ LIBS =
 OBJS =                  src/Pack.o src/TnmsOid.o src/TnmsSocket.o \
 			src/TnmsMessage.o src/TnmsMetric.o \
 			src/TnmsAuthRequest.o src/TnmsAuthReply.o \
-			src/TnmsConfig.o
+			src/TnmsConfig.o src/TnmsMessageHandler.o \
+			src/TnmsTree.o src/TnmsClient.o
 
 BIN =                        
 ALL_OBJS =              $(OBJS)
@@ -42,6 +43,7 @@ solib:	lib/libtnmsCore.so.0.0.1
 lib/libtnmsCore.a:  ${OBJS}
 	( $(MKDIR) lib )
 	#$(make-lib-rule)
+	# custom link to include all our libs
 	ld -r -o $@ ${OBJS} ${LFLAGS} ${LIBS}
 	@echo
 

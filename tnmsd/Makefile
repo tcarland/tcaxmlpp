@@ -10,12 +10,13 @@ LIBS=
 INCLUDES=       -Iinclude
 
 BIN=		tnmsd
-OBJS=		src/TnmsManager.o src/TnmsTree.o src/TnmsClient.o \
-		src/TnmsMessageHandler.o  src/AgentIOHandler.o \
-		src/ClientIOHandler.o src/tnmsd.o
+OBJS=		src/TnmsManager.o  \
+		src/AgentIOHandler.o src/ClientIOHandler.o \
+		src/tnmsd.o
 
 ALL_OBJS=	$(OBJS)
 ALL_BINS=	$(BIN)
+
 
 all: tnmsd
 
@@ -33,6 +34,7 @@ distclean: clean
 	$(RM) $(ALL_BINS)
 
 install:
-
-
+ifdef PREFIX
+	@echo
+endif
 
