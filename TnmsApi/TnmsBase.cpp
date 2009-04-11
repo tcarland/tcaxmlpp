@@ -198,32 +198,7 @@ TnmsBase::add ( const std::string & name,
 bool
 TnmsBase::remove ( const std::string & name )
 {
-    MetricTree::Node  * node = NULL;
-
-    node = _tree.find(name);
-    if ( node == NULL )
-        return false;
-
-    TnmsMetric * metric = node->getValue();
-
-    UpdateSet::iterator  uIter;
-    uIter = std::find(_updates.begin(), _updates.end(), &metric);
-
-    if ( uIter != _updates.end() ) {
-        // withdraw queued update
-        _updates.erase(uIter);
-    }
-
-    // queue for remove
-    // if connected
-    //    _removes.insert(node->getAbsoluteName());
-    // else
-    StringSet            strings;
-    StringSet::iterator  sIter;
-
-    _tree.erase(node, std::inserter(strings, strings.begin()));
-
-    return true;
+    return _tree->remove(name);
 }
 
 
@@ -234,14 +209,16 @@ TnmsBase::update ( const std::string & name,
                    eValueTypes         type, 
                    const std::string & data )
 {
-    MetricTree::Node  * node = _tree.find(name);
-    
-    if ( node == NULL )
+    TnmsMetric  metric;
+
+    if ( ! _tree->request(name, metric) )
         return false;
 
-    TnmsMetric  * metric = node->getValue();
-    metric.metric.setValue(type, value);
-    _updates.insert(&metric);
+    if ( LogFacility::Debug() )
+        LogFacility::LogMessage("TnmsAPI::update() " + name);
+
+    metric.setValue(type, value);
+    _tree->update(metric);
 
     return true;
 }
@@ -252,17 +229,17 @@ TnmsBase::update ( const std::string & name,
                    const time_t      & now,
                    const std::string & value, 
                    const std::string & data )
-{
-    MetricTree::Node  * node = NULL;
+{    
+    TnmsMetric  metric;
 
-    node = _tree.find(name);
-    if ( node == NULL )
+    if ( ! _tree->request(name, metric) )
         return false;
 
-    TnmsMetric * metric = node->getValue();
+    if ( LogFacility::Debug() )
+        LogFacility::LogMessage("TnmsAPI::update() " + name);
 
-    metric.metric.setValue(value);
-    _updates.insert(&metric);
+    metric.setValue(value);
+    _tree->update(metric);
 
     return true;
 }
@@ -282,31 +259,31 @@ TnmsBase::checkConfig()
     {
         _configTime = now + _checkConfigTime;
 
-        
         if ( _config.agent_name.empty() && _agentName.empty() )
-            return 1;
+            return TNMSERR_CONFIG;
 
-        if ( _agentName.empty() && _xmlConfig.empty() ) {
-
+        if ( _agentName.empty() && _xmlConfig.empty() )
+        {
             if ( ! _client.authorized() ) 
-                return 0;
+                return TNMSERR_NONE;
             else if ( _config.agent_name.empty() && _client.getNetworkConfig().empty() )
-                return 1;
-
-        } else if ( _xmlConfig.empty() ) {
+                return TNMSERR_CONFIG;
+        }
+        else if ( _xmlConfig.empty() ) 
+        {
             struct stat  configStat;
 
             if ( ::stat(_configName.c_str(), &configStat) != 0 )
-                return 0;
+                return TNMSERR_NONE;
 
-            if ( configStat.st_mtime != _configTime ) {
-                this->reconfigure();
-            }
+            if ( configStat.st_mtime != _configTime ) 
+                return this->reconfigure();
         }
     }
 
-    return 0;
+    return TNMSERR_NONE;
 }
+
 
 int
 TnmsBase::checkConnection()
@@ -340,6 +317,7 @@ TnmsBase::checkConnection()
     return TNMSERR_NONE;
 }
 
+
 int
 TnmsBase::checkSubscription()
 {
@@ -349,10 +327,12 @@ TnmsBase::checkSubscription()
 
         if ( ! xmlstr.empty() && _xmlConfig.compare(xmlstr) != 0 ) {
             _xmlConfig = xmlstr;
-            this->reconfigure();
-            return TNMSERR_NONE;
+            return this->reconfigure();
         }
 
+        _subscribed = this->_tree->subscribe("*", _conn);
+
+        /*
         if ( ! this->sendTree(now) ) {
             LogFacility::LogMessage("TnmsAPI: Connection lost sending tree.");
             return TNMSERR_CONN_LOST;
@@ -360,6 +340,7 @@ TnmsBase::checkSubscription()
             LogFacility::LogMessage("TnmsAPI: Tree sent.");
             _subscribed = true;
         }
+        */
 
     } else if ( ! _conn.authorized() ) {
         if ( _reconTime > now ) {
@@ -377,8 +358,76 @@ TnmsBase::checkSubscription()
 }
 
 
-void
-TnmsBase::reconfigure() {}
+int
+TnmsBase::reconfigure()
+{
+    TnmsConfigHandler  configHandler;
+
+    if ( ! _xmlConfig.empty() ) {
+        configHandler = TnmsConfigHandler(_xmlConfig.c_str(), _xmlConfig.length(), TNMS_CONFIG_ROOT);
+        LogFacility::LogMessage("TnmsAPI::reconfigure using 'network' config.");
+    } else {
+        configHandler = TnmsConfigHandler(_configName, TNMS_CONFIG_ROOT);
+        LogFacility::LogMessage("TnmsAPI::reconfigure using 'local' config.");
+    }
+
+    TnmsConfig oldconfig = _config;
+
+    if ( ! configHandler.parse() )
+        return TNMSERR_CONFIG;
+
+    _config = configHandler.config;
+
+    //log name
+    if ( _config.logfile.compare(oldconfig.logfile) != 0 ) {
+        LogFacility::Message  logmsg;
+
+        if ( _config.logfile.empty() ) {
+            msg << "TnmsAPI::reconfigure closing log to file by request.";
+        } else {
+            msg << "TnmsAPI::reconfigure moving to logfile name " << _config.logfile;
+        }
+
+        LogFacility::LogMessage(logmsg.str());
+        LogFacility::Close();
+    }
+
+    this->openLog(_config.logfile);
+
+    if ( _config.clients.size() == 0 ) {
+        LogFacility::LogMessage("TnmsAPI::reconfigure() ERROR: no connection config");
+        return TNMSERR_CONFIG;
+    }
+
+    TnmsClientConfig & clientnew = _config.clients.front();
+    TnmsClientConfig & clientold = oldconfig.clients.front();
+
+    // agent name
+    if ( _config.agent_name.compare(oldconfig.agent_name) != 0 ) {
+        if ( _conn->isConnected() )
+            LogFacility::LogMessage("TnmsAPI::reconfigure() agent name modified, resetting.");
+        _tree->remove(oldconfig.agent_name);
+        _conn->close();
+        _subscribed = false;
+        _agentName = _config.agent_name;
+        _tree->add(_agentName);
+    }
+
+    // server
+    if ( clientcfg.hostname.compare(clientold.hostname) != 0 || clientcfg.port != clientold.port )
+    {
+        if ( _conn->isConnected() )
+            LogFacility::LogMessage("TnmsAPI::reconfigure connection state change");
+        _conn.close();
+        _hostName = clientcfg.hostname;
+        _hostPort = clientcfg.port;
+    }
+
+    _conn->flushLimit(clientcfg.flush_limit);
+    _conn->compression(_config.compression);
+
+    return TNMSERR_NONE;
+}
 
 
 void

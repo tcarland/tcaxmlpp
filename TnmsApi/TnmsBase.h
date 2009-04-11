@@ -88,8 +88,7 @@ class TnmsBase {
     int     checkConfig();
     int     checkConnection();
     int     checkSubscription();
-
-    void    reconfigure();
+    int     reconfigure();
 
     bool    doInput   ( const time_t      & now );
     bool    doOutput  ( const time_t      & now );
@@ -102,14 +101,14 @@ class TnmsBase {
 
     std::string          _agentName;
 
-    //MetricTree           _tree;
     TnmsTree             _tree;
+    //MetricTree           _tree;
     //UpdateSet            _updates;
     //StringSet            _removes;
 
     TnmsConfig           _config;
-    //TnmsAgent            _conn;
     TnmsClient           _conn;
+    //TnmsAgent            _conn;
 
     std::string          _xmlConfig;
     std::string          _configName;

@@ -327,6 +327,9 @@ template<typename Predicate_>
 void
 HeirarchicalStringTree<ValueType>::depthFirstTraversal ( Node * node, Predicate_ & predicate )
 {
+    if ( node == NULL )
+        return;
+
     NodeMap & children = node->getChildren();
 
     NodeMapIter  nIter;

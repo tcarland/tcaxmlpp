@@ -66,6 +66,7 @@ struct TnmsClientConfig
     uint16_t     port;
     uint32_t     holddown_interval;
     uint32_t     reconnect_interval;
+    uint32_t     flush_limit;
 
     StringList   subs;
 
@@ -73,7 +74,8 @@ struct TnmsClientConfig
         : hostaddr(0),
           port(0),
           holddown_interval(0),
-          reconnect_interval(0)
+          reconnect_interval(0),
+          flush_limit(0)
     {}
 };
 

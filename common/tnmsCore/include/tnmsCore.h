@@ -1,8 +1,9 @@
 /*
  * tnmsCore.h
  *
- *  Copyright(c) 2008, Charlton Technology LLC
- *      Author: tcarland@gmail.com
+ *  Copyright(c) 2008, Timothy Charlton Arland
+ *      tca@charltontechnology.net
+ *
  */
 #ifndef _TNMSCORE_H_
 #define _TNMSCORE_H_

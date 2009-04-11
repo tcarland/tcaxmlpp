@@ -229,13 +229,26 @@ TnmsTree::update ( const TnmsMetric & metric )
 bool
 TnmsTree::request ( const std::string & name, TnmsClient * client )
 {
-    Node * node = _tree->find(name);
+    if ( name.compare("*") == 0 ) {  // requesting tree
+        NodeChildMap  & roots = _tree->getRoots();
+        NodeChildMap::iterator  nIter;
 
-    if ( node == NULL || client == NULL )
-        return false;
+        if ( roots.empty() )
+            return true;
 
-    if ( ! node->getValue().erase )
-        client->queueUpdate(node);
+        AddForwarder adds(client);
+        for ( nIter = roots.begin(); nIter != roots.end(); ++nIter )
+            _tree->depthFirstTraversal(*nIter, adds);
+
+    } else {
+        Node * node = _tree->find(name);
+
+        if ( node == NULL || client == NULL )
+            return false;
+
+        if ( ! node->getValue().erase )
+            client->queueUpdate(node);
+    }
 
     return true;
 }
@@ -273,6 +286,7 @@ TnmsTree::subscribe ( const std::string & name, TnmsClient * client )
         _structureSubs.insert(client);
 
         // trigger tree send?
+        return this->request("*", client);
 
     } else if ( lvl == '/' ) {
         NodeChildMap  * nodemap = NULL;
@@ -294,11 +308,11 @@ TnmsTree::subscribe ( const std::string & name, TnmsClient * client )
         }
 
         NodeChildMap::iterator  nIter;
-
         for ( nIter = nodemap->begin(); nIter != nodemap->end(); ++nIter ) {
             if ( ! nIter->second->getValue().erase )
                 client->queueUpdate(nIter->second);
         }
+
     } else {
         node = _tree->find(name);
 
