@@ -55,14 +55,14 @@ class TnmsSocket {
     int                 openConnection();
 
 
-    virtual int         connect()  { return this->openConnection(); }
-    virtual void        close()    { return this->closeConnection(); }
+    virtual int         connect()      { return this->openConnection(); }
+    virtual void        close()        { return this->closeConnection(); }
 
     virtual int         send();
-    virtual int         send       ( const time_t  & now );
+    virtual int         send           ( const time_t  & now );
 
     virtual int         receive();
-    virtual int         receive    ( const time_t  & now );
+    virtual int         receive        ( const time_t  & now );
 
     ssize_t             flush();
     size_t              txBytesBuffered();
@@ -81,13 +81,13 @@ class TnmsSocket {
     void                setMessageHandler  ( MessageHandler * msgHandler );
     MessageHandler*     getMessageHandler();
 
-    void                reconnectTime    ( const time_t & secs );
+    void                reconnectTime      ( const time_t & secs );
     const time_t&       reconnectTime() const;
 
-    void                compression      ( bool    compress );
+    void                compression        ( bool    compress );
     bool                compression() const;
 
-    void                setTxQueueSize   ( size_t  bytes );
+    void                setTxQueueSize     ( size_t  bytes );
     size_t              getTxQueueSize() const;
 
     std::string         getClientLogin() const;
@@ -99,25 +99,25 @@ class TnmsSocket {
     uint32_t            getVersion()  const;
 
     std::string         getErrorStr() const;
-    void                setDebug        ( bool debug );
+    void                setDebug          ( bool debug );
 
 
     /*  Additional attributes */
 
-    void                enableFlush     ( bool  flush );
+    void                enableFlush       ( bool  flush );
     bool                flushEnabled();
-    void                flushLimit      ( uint32_t limit );
+    void                flushLimit        ( uint32_t limit );
     uint32_t            flushLimit();
 
-    void                enableTimeout   ( bool   timeout );
-    void                setTimeout      ( const time_t & secs );
+    void                enableTimeout     ( bool   timeout );
+    void                setTimeout        ( const time_t & secs );
     const time_t&       getTimeout() const;
 
 
     /*  Subscriptions  */
 
-    void                login           ( const std::string &  user,
-                                          const std::string &  pw );
+    void                login             ( const std::string &  user,
+                                            const std::string &  pw );
 
     bool                isAuthorized() const;
     bool                isSubscribed() const;

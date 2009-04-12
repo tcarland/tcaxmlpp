@@ -5,24 +5,18 @@
 #include <map>
 #include <set>
 
-//#include "TnmsMetric.h"
-//#include "TnmsOid.h"
-#include "HeirarchicalStringTree.hpp"
+
+#include "tnmsCore.h"
+#include "TnmsConfig.h"
 
 
 namespace tnmsCore {
 
-class TnmsMetric;
-class TnmsOid;
-class TnmsAgent;
+#define DEFAULT_RECONFIG_INTERVAL 120
 
 
-//typedef HeirarchicalStringTree<TnmsMetric*>  MetricTree;
-
-typedef std::map<std::string, TnmsOid*>      OidMap;
-typedef std::set<TnmsMetric*>                UpdateSet;
-typedef std::set<std::string>                StringSet;
-
+class TnmsTree;
+class TnmsClient;
 
 
 class TnmsBase {
@@ -50,7 +44,7 @@ class TnmsBase {
     bool    update    ( const std::string & name, 
                         const time_t      & now,
                         uint64_t          & value, 
-                        eValueTypes         type,
+                        eValueType          type,
                         const std::string & data = 0 );
 
     bool    update    ( const std::string & name, 
@@ -61,21 +55,23 @@ class TnmsBase {
 
     void    clear();
     
-    bool    setConfig ( const std::string & filename );
 
-
-    void    holddown  ( time_t  secs );
-    time_t  holddown();
+    void    holddown_interval  ( time_t  secs );
+    time_t  holddown_interval() const;
 
     void    reconnect_interval ( time_t  secs );
-    time_t  reconnect_interval();
+    time_t  reconnect_interval() const;
+
+    void    config_interval    ( time_t  secs );
+    time_t  config_interval() const;
 
     void    flush_limit ( int  max );
-    int     flush_limit();
+    int     flush_limit() const;
 
-    void    debug     ( bool debug );
-    void    syslog    ( int facility );
-    void    logfile   ( const std::string & logfilename );
+    void    set_config    ( const std::string & filename );
+    void    set_debug     ( bool debug );
+    void    set_syslog    ( int facility );
+    void    set_logfile   ( const std::string & logfilename );
 
     bool    need_flush();
     size_t  flushsize();
@@ -85,30 +81,25 @@ class TnmsBase {
 
   private:
 
-    int     checkConfig();
-    int     checkConnection();
-    int     checkSubscription();
-    int     reconfigure();
+    int     checkConfig       ( const time_t  & now );
+    int     checkConnection   ( const time_t  & now );
+    int     checkSubscription ( const time_t  & now );
+    int     reconfigure       ( const time_t  & now );
+    bool    doInput           ( const time_t  & now );
+    bool    doOutput          ( const time_t  & now );
+    bool    sendTree          ( const time_t  & now );
 
-    bool    doInput   ( const time_t      & now );
-    bool    doOutput  ( const time_t      & now );
-    bool    sendTree  ( const time_t      & now );
-    void    openLog   ( const std::string & logfile,
-                        const time_t      & now);
+    void    openLog           ( const std::string & logfile,
+                                const time_t  & now);
 
 
   private:
 
+    TnmsTree*            _tree;
     std::string          _agentName;
 
-    TnmsTree             _tree;
-    //MetricTree           _tree;
-    //UpdateSet            _updates;
-    //StringSet            _removes;
-
+    TnmsClient*          _conn;
     TnmsConfig           _config;
-    TnmsClient           _conn;
-    //TnmsAgent            _conn;
 
     std::string          _xmlConfig;
     std::string          _configName;
@@ -116,8 +107,11 @@ class TnmsBase {
     uint16_t             _hostPort;
 
     time_t               _holddown;
+    time_t               _holddown_interval;
     time_t               _reconnect;
-    time_t               _configTime;
+    time_t               _reconnect_interval;
+    time_t               _reconfig;
+    time_t               _reconfig_interval;
     int                  _flushLimit;
     int                  _today;
     bool                 _subscribed;

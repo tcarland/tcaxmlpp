@@ -69,7 +69,7 @@ bool
 TnmsAPI::update ( const std::string & element_name, 
                   const time_t      & now, 
                   uint64_t          & value,
-                  eValueTypes         type,
+                  eValueType          type,
                   const std::string & data ) 
 {
     return ( ((TnmsBase*)api)->update(element_name, now, value, type, data) );
@@ -91,67 +91,67 @@ TnmsAPI::clear()
     return ( ((TnmsBase*)api)->clear() );
 }
 
-bool
-TnmsAPI::setConfig ( const std::string & filename ) 
+void
+TnmsAPI::set_config ( const std::string & filename ) 
 {
-    return ( ((TnmsBase*)api)->setConfig(filename) );
+    return ( ((TnmsBase*)api)->set_config(filename) );
 }
 
 void
-TnmsAPI::holddown ( time_t  secs )
+TnmsAPI::holddown_interval ( time_t  secs )
 {
-    return ( ((TnmsBase*)api)->holddown(secs) );
+    return ( ((TnmsBase*)api)->holddown_interval(secs) );
 }
 
 time_t
-TnmsAPI::holddown() 
+TnmsAPI::holddown_interval() 
 {
-    return ( ((TnmsBase*)api)->holddown() );
+    return ( ((TnmsBase*)api)->holddown_interval() );
 }
 
 
 void
-TnmsAPI::reconnect ( time_t secs ) 
+TnmsAPI::reconnect_interval ( time_t secs ) 
 {
-    return ( ((TnmsBase*)api)->reconnect(secs) );
+    return ( ((TnmsBase*)api)->reconnect_interval(secs) );
 }
 
 time_t
-TnmsAPI::reconnect() 
+TnmsAPI::reconnect_interval() 
 {
-    return ( ((TnmsBase*)api)->reconnect() );
+    return ( ((TnmsBase*)api)->reconnect_interval() );
 }
 
 void
 TnmsAPI::max_messages ( int max )
 {
-    return ( ((TnmsBase*)api)->max_messages(max) );
+    return ( ((TnmsBase*)api)->flush_limit(max) );
 }
 
 int
 TnmsAPI::max_messages() 
 {
-    return ( ((TnmsBase*)api)->max_messages() );
+    return ( ((TnmsBase*)api)->flush_limit() );
 }
 
 void
-TnmsAPI::debug ( bool d )
+TnmsAPI::set_debug ( bool d )
 {
-    return ( ((TnmsBase*)api)->debug(d) );
-}
-
-
-void
-TnmsAPI::syslog ( int facility )
-{
-    return ( ((TnmsBase*)api)->syslog(facility) );
+    return ( ((TnmsBase*)api)->set_debug(d) );
 }
 
 
 void
-TnmsAPI::logfile ( const std::string & logfilename )
+TnmsAPI::set_syslog ( int facility )
 {
-    return ( ((TnmsBase*)api)->logfile(logfilename) );
+    return ( ((TnmsBase*)api)->set_syslog(facility) );
+}
+
+
+void
+TnmsAPI::set_logfile ( const std::string & logfilename )
+{
+    return ( ((TnmsBase*)api)->set_logfile(logfilename) );
 }
 
 bool

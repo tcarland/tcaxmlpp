@@ -25,16 +25,6 @@
 namespace tnmsCore {
 
 
-typedef enum TnmsErrno {
-    TNMSERR_NONE         = 0,
-    TNMSERR_CONFIG       = 1,
-    TNMSERR_NO_CONN      = 2,
-    TNMSERR_CONN_LOST    = 3,
-    TNMSERR_CONN_FAIL    = 4,
-    TNMSERR_CONN_DENIED  = 5
-} tnmsErrno_t;
-
-
 
 class DLLOPT TnmsAPI {
 
@@ -61,7 +51,7 @@ class DLLOPT TnmsAPI {
     bool    update  ( const std::string & element_name, 
                       const time_t      & now, 
                       uint64_t          & value,
-                      eValueTypes         type,
+                      eValueType          type,
                       const std::string & data = 0 );
 
     bool    update  ( const std::string & element_name, 
@@ -73,21 +63,19 @@ class DLLOPT TnmsAPI {
     void    clear();
 
 
-    bool    setConfig ( const std::string & filename );
+    void    holddown_interval  ( time_t  secs );
+    time_t  holddown_interval();
 
-
-    void    holddown  ( time_t  secs );
-    time_t  holddown();
-
-    void    reconnect ( time_t  secs );
-    time_t  reconnect();
+    void    reconnect_interval ( time_t  secs );
+    time_t  reconnect_interval();
 
     void    max_messages ( int  max );
     int     max_messages();
 
-    void    debug   ( bool debug );
-    void    syslog  ( int facility );
-    void    logfile ( const std::string & logfilename );
+    void    set_config ( const std::string & filename );
+    void    set_debug   ( bool debug );
+    void    set_syslog  ( int facility );
+    void    set_logfile ( const std::string & logfilename );
 
     bool    need_flush();
     size_t  flushsize();

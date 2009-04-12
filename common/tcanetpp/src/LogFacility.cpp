@@ -91,7 +91,7 @@ LogFacility::OpenLogFile ( const std::string & prefix, const std::string & filen
             fstrm->open(filename.c_str(), std::ios::out | std::ios::trunc);
 
     } else {
-        LogFacility::CloseFilelog();
+        LogFacility::CloseLogFile();
         std::auto_ptr<std::ofstream>  newfstrm(new std::ofstream());
 
         if ( append )
@@ -353,7 +353,7 @@ void
 LogFacility::CloseLogFacility()
 {
     LogFacility::CloseSyslog();
-    LogFacility::CloseFilelog();
+    LogFacility::CloseLogFile();
 
     LogFacility::_Enabled = false;
     LogFacility::_Syslog  = false;
@@ -383,7 +383,7 @@ LogFacility::CloseSyslog()
 
 
 void
-LogFacility::CloseFilelog()
+LogFacility::CloseLogFile()
 {
     std::ofstream  * fstrm = NULL;
 

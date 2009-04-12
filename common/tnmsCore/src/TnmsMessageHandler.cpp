@@ -5,7 +5,8 @@
 #include "TnmsTree.h"
 
 
-namespace tnmsd {
+namespace tnmsCore {
+
 
 TnmsMessageHandler::TnmsMessageHandler ( TnmsTree * tree, TnmsClient * client )
     : _tree(tree), 

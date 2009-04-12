@@ -1,14 +1,13 @@
 #define _TNMSCORE_TNMSBASE_CPP_
 
+#include <sys/stat.h>
 #include <iostream>
 
 
 #include "TnmsBase.h"
-#include "TnmsAgent.h"
-
-#include "TnmsMetric.h"
-#include "TnmsOid.h"
-
+#include "TnmsClient.h"
+#include "TnmsTree.h"
+#include "LogFacility.h"
 
 
 namespace tnmsCore {
@@ -39,21 +38,34 @@ Iterator first_out_of_range( Iterator  begin,
 
 
 TnmsBase::TnmsBase ( const std::string & name )
-    : _agentName(name)
+    : _tree(new TnmsTree()),
+      _agentName(name),
+      _conn(new TnmsClient(_tree))
 {}
 
 TnmsBase::TnmsBase ( const std::string & name,
                      const std::string & host,
                      uint16_t            port )
-    : _agentName(name),
+    : _tree(new TnmsTree()),
+      _agentName(name),
+      _conn(new TnmsClient(_tree)),
       _hostName(host),
       _hostPort(port),
-      _subtree(false),
+      _holddown(0),
+      _holddown_interval(30),
+      _reconnect(0),
+      _reconnect_interval(30),
+      _reconfig(0),
+      _reconfig_interval(DEFAULT_RECONFIG_INTERVAL),
+      _subscribed(false),
       _debug(false)
 {}
 
 
-TnmsBase::~TnmsBase() {}
+TnmsBase::~TnmsBase()
+{
+    delete _tree;
+}
 
 
 int
@@ -68,7 +80,7 @@ TnmsBase::send ( time_t  now )
     t = ::localtime(&now);
     LogFacility::SetLogTime(now);
 
-    if ( this->checkConfig() != 0 )
+    if ( this->checkConfig(now) != 0 )
     {
         LogFacility::LogMessage("TnmsAPI: Invalid Configuration");
         return TNMSERR_CONFIG;
@@ -78,39 +90,39 @@ TnmsBase::send ( time_t  now )
         this->openLog(_config.logfile, now);
 
     // Maintain connection
-    if ( (rd = this->checkConnection()) != 0 )
+    if ( (rd = this->checkConnection(now)) != 0 )
         return rd;
 
     // Receive messages
-    if ( _conn.receive(now) < 0 ) {
+    if ( _conn->receive(now) < 0 ) {
         LogFacility::LogMessage("TnmsAPI: connection lost in receive().");
-        _conn.close();
+        _conn->close();
         return TNMSERR_CONN_LOST;
     }
 
-    if ( (rd = this->checkSubscription()) != 0 )
+    if ( (rd = this->checkSubscription(now)) != 0 )
         return rd;
 
     // check for conn flush
-    if ( _conn.flushAvailable() > 0 ) 
+    if ( _conn->txBytesBuffered() > 0 ) 
     {
-        if ( _conn.send() < 0 ) {
+        if ( _conn->send() < 0 ) {
             LogFacility::LogMessage("TnmsAPI: connection lost in send().");
-            _conn.close();
+            _conn->close();
             return TNMSERR_CONN_LOST;
         }
     }
 
     // current interval flush
     if ( _holddown <= now ) {
-        _holddown = now + _config.holddown;
+        _holddown = now + _holddown_interval;
         _tree->updateClients();
-        this->flush();
+        _conn->flush();
     }
 
     // Receive messages
-    if ( _conn.receive(now) < 0 ) {
-        _conn.close();
+    if ( _conn->receive(now) < 0 ) {
+        _conn->close();
         return TNMSERR_CONN_LOST;
     }
 
@@ -135,22 +147,31 @@ TnmsBase::add ( const std::string & name,
         return false;
     }
 
+    TnmsMetric  metric;
+    if ( _tree->add(name) && ! data.empty() )
+    {
+        _tree->request(name, metric);
+        metric.setPvtData(data);
+    }
+        
+/*
     MetricTree::Node           * node;
     MetricTree::BranchNodeList   nodelist;
 
-    node = _tree.find(name);
+    node = _tree->find(name);
     if ( node != NULL ) {
         msg << "TnmsAPI ERROR: node name already exists: '" << name << "'";
         LogFacility::LogMessage(msg.str());
         return false;
     }
 
-    node = _tree.insert(name, std::inserter(nodelist, nodelist.begin()));
+    node = _tree->insert(name, std::inserter(nodelist, nodelist.begin()));
     if ( node == NULL ) {
         msg << "TnmsAPI ERROR: insert failed for '" << name << "'";
         LogFacility::LogMessage(msg.str());
         return false;
     }
+*/
 
 /*
 #ifdef USE_OIDS 
@@ -189,7 +210,7 @@ TnmsBase::add ( const std::string & name,
 #endif 
 */
 
-    _updates.insert(&metric);
+   // _updates.insert(&metric);
 
     return true;
 }
@@ -206,7 +227,7 @@ bool
 TnmsBase::update ( const std::string & name, 
                    const time_t      & now, 
                    uint64_t          & value, 
-                   eValueTypes         type, 
+                   eValueType          type, 
                    const std::string & data )
 {
     TnmsMetric  metric;
@@ -214,7 +235,7 @@ TnmsBase::update ( const std::string & name,
     if ( ! _tree->request(name, metric) )
         return false;
 
-    if ( LogFacility::Debug() )
+    if ( LogFacility::GetDebug() )
         LogFacility::LogMessage("TnmsAPI::update() " + name);
 
     metric.setValue(type, value);
@@ -235,10 +256,10 @@ TnmsBase::update ( const std::string & name,
     if ( ! _tree->request(name, metric) )
         return false;
 
-    if ( LogFacility::Debug() )
+    if ( LogFacility::GetDebug() )
         LogFacility::LogMessage("TnmsAPI::update() " + name);
 
-    metric.setValue(value);
+    metric.setValue(TNMS_STRING, value);
     _tree->update(metric);
 
     return true;
@@ -253,20 +274,20 @@ TnmsBase::clear()
 }
 
 int
-TnmsBase::checkConfig()
+TnmsBase::checkConfig ( const time_t & now )
 {
-    if ( _configTime <= now )
+    if ( _reconfig <= now )
     {
-        _configTime = now + _checkConfigTime;
+        _reconfig = now + _reconfig_interval;
 
         if ( _config.agent_name.empty() && _agentName.empty() )
             return TNMSERR_CONFIG;
 
         if ( _agentName.empty() && _xmlConfig.empty() )
         {
-            if ( ! _client.authorized() ) 
+            if ( ! _conn->isAuthorized() ) 
                 return TNMSERR_NONE;
-            else if ( _config.agent_name.empty() && _client.getNetworkConfig().empty() )
+            else if ( _config.agent_name.empty() && _conn->getConfig().empty() )
                 return TNMSERR_CONFIG;
         }
         else if ( _xmlConfig.empty() ) 
@@ -276,8 +297,8 @@ TnmsBase::checkConfig()
             if ( ::stat(_configName.c_str(), &configStat) != 0 )
                 return TNMSERR_NONE;
 
-            if ( configStat.st_mtime != _configTime ) 
-                return this->reconfigure();
+            if ( configStat.st_mtime != _reconfig ) 
+                return this->reconfigure(now);
         }
     }
 
@@ -286,27 +307,27 @@ TnmsBase::checkConfig()
 
 
 int
-TnmsBase::checkConnection()
+TnmsBase::checkConnection ( const time_t & now )
 {
-    if ( ! _conn.IsConnected() || _conn.IsConnecting() ) {
+    if ( ! _conn->isConnected() || _conn->isConnecting() ) {
         int  con = 0;
         _subscribed = false;
 
         if ( _reconnect > now )
             return TNMSERR_NO_CONN;
 
-        if ( _conn.IsConnecting() )
-            con = _conn.Open();
+        if ( _conn->isConnecting() )
+            con = _conn->openConnection();
         else
-            con = _conn.Open(_hostName.c_str(), _hostPort);
+            con = _conn->openConnection(_hostName.c_str(), _hostPort);
 
         if ( con < 0 ) {
             LogFacility::LogMessage("TnmsAPI: failed to establish connection.");
-            _reconnect = now + _config.reconnect_interval;
+            _reconnect = now + _reconnect_interval;
             return TNMSERR_CONN_FAIL;
         } else if ( con > 0 ) {   // login
             LogFacility::LogMessage("TnmsAPI: connection established.");
-            _conn.login(_config.agent_name);
+            _conn->login(_agentName, "");
             return TNMSERR_NONE;
         } else {                  // in progress
             LogFacility::LogMessage("TnmsAPI: connection in progress.");
@@ -319,15 +340,15 @@ TnmsBase::checkConnection()
 
 
 int
-TnmsBase::checkSubscription()
+TnmsBase::checkSubscription ( const time_t & now )
 {
-    if ( _conn.authorized() && ! this->_subscribed )
+    if ( _conn->isAuthorized() && ! this->_subscribed )
     {
-        std::string  xmlstr = _conn.getConfig();
+        std::string  xmlstr = _conn->getConfig();
 
         if ( ! xmlstr.empty() && _xmlConfig.compare(xmlstr) != 0 ) {
             _xmlConfig = xmlstr;
-            return this->reconfigure();
+            return this->reconfigure(now);
         }
 
         _subscribed = this->_tree->subscribe("*", _conn);
@@ -342,16 +363,16 @@ TnmsBase::checkSubscription()
         }
         */
 
-    } else if ( ! _conn.authorized() ) {
-        if ( _reconTime > now ) {
+    } else if ( ! _conn->isAuthorized() ) {
+        if ( _reconnect > now ) {
             return TNMSERR_CONN_DENIED;
         }
 
-        _reconTime  = now + 30; // need proper val from config here
-        _subscribed = false;
+        _reconnect   = now + 30; // need proper val from config here
+        _subscribed  = false;
 
         LogFacility::LogMessage("TnmsAPI: sending credentials.");
-        _conn.login(_config.agent_name);
+        _conn->login(_agentName, "");
     }
 
     return TNMSERR_NONE;
@@ -359,7 +380,7 @@ TnmsBase::checkSubscription()
 
 
 int
-TnmsBase::reconfigure()
+TnmsBase::reconfigure ( const time_t & now )
 {
     TnmsConfigHandler  configHandler;
 
@@ -383,16 +404,16 @@ TnmsBase::reconfigure()
         LogFacility::Message  logmsg;
 
         if ( _config.logfile.empty() ) {
-            msg << "TnmsAPI::reconfigure closing log to file by request.";
+            logmsg << "TnmsAPI::reconfigure closing log to file by request.";
         } else {
-            msg << "TnmsAPI::reconfigure moving to logfile name " << _config.logfile;
+            logmsg << "TnmsAPI::reconfigure moving to logfile name " << _config.logfile;
         }
 
         LogFacility::LogMessage(logmsg.str());
-        LogFacility::Close();
+        LogFacility::CloseLogFile();
     }
 
-    this->openLog(_config.logfile);
+    this->openLog(_config.logfile, now);
 
     if ( _config.clients.size() == 0 ) {
         LogFacility::LogMessage("TnmsAPI::reconfigure() ERROR: no connection config");
@@ -414,16 +435,19 @@ TnmsBase::reconfigure()
     }
 
     // server
-    if ( clientcfg.hostname.compare(clientold.hostname) != 0 || clientcfg.port != clientold.port )
+    if ( clientnew.hostname.compare(clientold.hostname) != 0 || clientnew.port != clientold.port )
     {
         if ( _conn->isConnected() )
             LogFacility::LogMessage("TnmsAPI::reconfigure connection state change");
-        _conn.close();
-        _hostName = clientcfg.hostname;
-        _hostPort = clientcfg.port;
+        _conn->close();
+        _hostName = clientnew.hostname;
+        _hostPort = clientnew.port;
     }
 
-    _conn->flushLimit(clientcfg.flush_limit);
+    _holddown_interval  = clientnew.holddown_interval;
+    _reconnect_interval = clientnew.reconnect_interval;
+
+    _conn->flushLimit(clientnew.flush_limit);
     _conn->compression(_config.compression);
 
     return TNMSERR_NONE;
@@ -437,7 +461,7 @@ TnmsBase::openLog ( const std::string & logfile, const time_t & now )
 
     if ( LogFacility::IsOpen() && _config.logfile.compare(logfile) == 0 )
     {
-        if ( _t->tm_yday == _today )
+        if ( t->tm_yday == _today )
             return;
     }
 
@@ -450,7 +474,7 @@ TnmsBase::openLog ( const std::string & logfile, const time_t & now )
             msg << "TnmsAPI switching log to " << logfile;
 
         LogFacility::LogMessage(msg.str());
-        LogFacility::Close();
+        LogFacility::CloseLogFile();
     }
 
     _config.logfile = logfile;
@@ -459,33 +483,35 @@ TnmsBase::openLog ( const std::string & logfile, const time_t & now )
         return;
 
     char         line[60];
-    std::string  file = config.logfile;
-    _today            = t->tm_yday;
+    std::string  file   = _config.logfile;
+    std::string  prefix = "TnmsAPI:";
+    _today              = t->tm_yday;
 
     strftime(line, 60, ".%Y%m%d", t);
     file.append(line);
-    LogFacility::OpenLogFile(file);
+    prefix.append(_agentName).append(" : ");
+    LogFacility::OpenLogFile(prefix, file);
 
     return;
 }
 
 
-bool
-TnmsBase::setConfig ( const std::string & filename )
+void
+TnmsBase::set_config ( const std::string & filename )
 {
     _configName = filename;
 }
 
 
 void
-TnmsBase::holddown  ( time_t secs )
+TnmsBase::holddown_interval  ( time_t secs )
 {
     _holddown = secs;
 }
 
 
 time_t
-TnmsBase::holddown()
+TnmsBase::holddown_interval() const
 {
     return _holddown;
 }
@@ -494,15 +520,28 @@ TnmsBase::holddown()
 void    
 TnmsBase::reconnect_interval ( time_t secs )
 {
-    _reconTime = secs;
+    _reconnect = secs;
 }
 
 
 time_t  
-TnmsBase::reconnect_interval()
+TnmsBase::reconnect_interval() const
 {
-    return _reconTime;
+    return _reconnect;
 }
+
+void
+TnmsBase::config_interval ( time_t secs )
+{
+    _reconfig = secs;
+}
+
+time_t
+TnmsBase::config_interval() const
+{
+    return _reconfig;
+}
+
 
 void    
 TnmsBase::flush_limit ( int max )
@@ -512,39 +551,51 @@ TnmsBase::flush_limit ( int max )
 
 
 int     
-TnmsBase::flush_limit()
+TnmsBase::flush_limit() const
 {
     return _flushLimit;
 }
 
 void    
-TnmsBase::debug ( bool debug )
+TnmsBase::set_debug ( bool debug )
 {
     _debug = debug;
 }
 
 
 void    
-TnmsBase::syslog ( int facility )
-{}
+TnmsBase::set_syslog ( int facility )
+{
+    std::string  prefix = "TnmsAPI:";
+
+    prefix.append(_agentName).append(" : ");
+    LogFacility::OpenSyslog(prefix, facility);
+    return;
+}
 
 
 void    
-TnmsBase::logfile ( const std::string & logfilename )
-{}
+TnmsBase::set_logfile ( const std::string & logfilename )
+{
+    _config.logfile = logfilename;
+}
 
 
 bool    
 TnmsBase::need_flush()
-{}
+{
+    return false;
+}
 
 
 size_t  
 TnmsBase::flushsize()
-{}
-
+{
+    return 0;
+}
 
 
 }  // namespace
 
-// _TNMSCORE_TNMSBASE_CPP_
+// _TNMS_TNMSBASE_CPP_
+

@@ -13,6 +13,16 @@
 namespace tnmsCore {
 
 
+typedef enum TnmsErrno {
+    TNMSERR_NONE         = 0,
+    TNMSERR_CONFIG       = 1,
+    TNMSERR_NO_CONN      = 2,
+    TNMSERR_CONN_LOST    = 3,
+    TNMSERR_CONN_FAIL    = 4,
+    TNMSERR_CONN_DENIED  = 5
+} tnmsErrno_t;
+
+
 typedef enum eValueType {
     TNMS_NONE    = 0,
     TNMS_INT32   = 1,

@@ -106,7 +106,7 @@ class LogFacility {
                                         
     
     static void           CloseSyslog();
-    static void           CloseFilelog();
+    static void           CloseLogFile();
     
     static void           SetLogTime      ( const time_t & now );
   

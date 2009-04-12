@@ -4,10 +4,9 @@
 #include "MessageHandler.hpp"
 #include "TnmsMessage.h"
 #include "TnmsMetric.h"
-using namespace tnmsCore;
 
 
-namespace tnmsd {
+namespace tnmsCore {
 
 
 class TnmsTree;

@@ -7,10 +7,9 @@
 
 #include "TnmsMetric.h"
 #include "HeirarchicalStringTree.hpp"
-using namespace tnmsCore;
 
 
-namespace tnmsd {
+namespace tnmsCore {
 
 class TnmsClient;
 

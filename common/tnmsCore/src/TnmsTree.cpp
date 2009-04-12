@@ -8,7 +8,7 @@ using namespace tcanetpp;
 #include "TnmsClient.h"
 
 
-namespace tnmsd {
+namespace tnmsCore {
 
 
 namespace TnmsTreeInternal {
