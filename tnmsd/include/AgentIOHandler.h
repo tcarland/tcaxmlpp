@@ -7,11 +7,13 @@
 #include "Exception.hpp"
 using namespace tcanetpp;
 
+#include "TnmsTree.h"
+#include "TnmsClient.h"
+using namespace tnmsCore;
+
 
 namespace tnmsd {
 
-class TnmsTree;
-class TnmsClient;
 
 typedef std::set<TnmsClient*>  ClientSet;
 
@@ -40,7 +42,7 @@ class AgentIOHandler : public EventIOHandler {
 
   protected:
 
-    TnmsTree *  _tree;
+    TnmsTree *                  _tree;
     //auth
 
     std::set<TnmsClient*>       _clients;

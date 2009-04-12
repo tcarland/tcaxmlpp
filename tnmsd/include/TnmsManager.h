@@ -4,16 +4,16 @@
 #include <map>
 #include <string>
 
-#include "TnmsTree.h"
-#include "AgentIOHandler.h"
-#include "ClientIOHandler.h"
-
 #include "EventManager.h"
 #include "Socket.h"
 using namespace tcanetpp;
 
+#include "tnmsCore.h"
 #include "TnmsConfig.h"
 using namespace tnmsCore;
+
+#include "AgentIOHandler.h"
+#include "ClientIOHandler.h"
 
 
 namespace tnmsd {
@@ -26,7 +26,6 @@ namespace tnmsd {
 #define TNMSD_CONFIG_ROOT          "tnmsd"
 
 
-class TnmsClient;
 class TnmsAuthClient;
 
 typedef std::map<evid_t, TnmsClient*>  ClientMap;

@@ -1,11 +1,9 @@
 #define _TNMSD_AGENTIOHANDLER_CPP_
 
+#include "AgentIOHandler.h"
+
 #include "EventManager.h"
 #include "LogFacility.h"
-
-#include "AgentIOHandler.h"
-#include "TnmsTree.h"
-#include "TnmsClient.h"
 
 
 namespace tnmsd {

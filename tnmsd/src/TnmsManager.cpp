@@ -2,21 +2,17 @@
 
 #include <time.h>
 
-
 #include "TnmsManager.h"
-#include "TnmsClient.h"
 #include "TnmsAuthClient.h"
 
 #include "LogFacility.h"
-using namespace tcanetpp;
-
 
 
 namespace tnmsd {
 
 
 TnmsManager::TnmsManager ( const std::string & configfile )
-    : _evmgr(new EventManager()),
+    : _evmgr(new tcanetpp::EventManager()),
       _tree(new TnmsTree()),
       _server(NULL),
       _client(NULL),

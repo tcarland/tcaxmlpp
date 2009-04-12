@@ -7,10 +7,8 @@ extern "C" {
 #include <sys/stat.h>
 }
 
-
 #include <cstdio>
 #include <cstdlib>
-
 
 #include "FileUtils.h"
 using namespace tcanetpp;

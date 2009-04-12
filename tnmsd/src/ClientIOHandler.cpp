@@ -1,10 +1,8 @@
 #define _TNMSD_CLIENTIOHANDLER_CPP_
 
-#include "EventManager.h"
-
 #include "ClientIOHandler.h"
-#include "TnmsTree.h"
-#include "TnmsClient.h"
+
+#include "EventManager.h"
 
 
 namespace tnmsd {

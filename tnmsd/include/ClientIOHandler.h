@@ -7,11 +7,11 @@
 #include "Exception.hpp"
 using namespace tcanetpp;
 
+#include "TnmsTree.h"
+#include "TnmsClient.h"
+using namespace tnmsCore;
 
 namespace tnmsd {
-
-class TnmsTree;
-class TnmsClient;
 
 
 class ClientIOHandler : public EventIOHandler {
