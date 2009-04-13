@@ -119,10 +119,10 @@ LIBS      += -ltcasnmp
 endif
 
 ifdef NEED_TNMSAPI
-TNMSAPI  = $(TOPDIR)/TnmsAPI
+TNMSAPI  = $(TOPDIR)/TnmsApi
 INCLUDES  += -I$(TNMSAPI) -I$(TOPDIR)/common/tnmsCore/include -I$(TOPDIR)/common/tcanetpp/include -I$(TOPDIR)/common/tcaxml++/include
-LFLAGS    += -L$(MONAPI)/lib
-LIBS      += -ltnmsapi 
+LFLAGS    += -L$(TNMSAPI)/lib
+LIBS      += -lTnmsApi 
 endif
 
 ifdef NEED_TNMSCORE

@@ -27,20 +27,20 @@ include ${TOPDIR}/tcamake/builddefs
 
 lib:	arlib
 
-arlib:	lib/libtnmsAPI.a
+arlib:	lib/libTnmsApi.a
 
-solib:	lib/libtnmsAPI.so.0.0.1
+solib:	lib/libTnmsApi.so.0.0.1
 
-lib/libtnmsAPI.a:  ${OBJS}
+lib/libTnmsApi.a:  ${OBJS}
 	( $(MKDIR) lib )
 	$(make-lib-rule)
 	@echo
 
-lib/libtnmsAPI.so.0.0.1: ${OBJS}
+lib/libTnmsApi.so.0.0.1: ${OBJS}
 	( $(MKDIR) lib )
-	( $(RM) $@ lib/libtnmsAPI.so
+	( $(RM) $@ lib/libTnmsApi.so
 	$(make-so-rule)
-	( cd lib; ln -s $@ libtnmsAPI.so )
+	( cd lib; ln -s $@ libTnmsApi.so )
 	@echo
 
 clean:
