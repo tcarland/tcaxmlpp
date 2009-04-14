@@ -12,6 +12,10 @@ using namespace tcaxmlplus;
 namespace tnmsCore {
 
 #define TNMS_CONFIG_ROOT "tnms"
+#define TNMSAPI_CONFIG_ROOT "tnmsapi"
+
+
+#define DEFAULT_RECONFIG_INTERVAL 120
 
 /*
  *  sample xml config

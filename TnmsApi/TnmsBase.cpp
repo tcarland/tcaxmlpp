@@ -385,7 +385,8 @@ TnmsBase::reconfigure ( const time_t & now )
     TnmsConfigHandler  configHandler;
 
     if ( ! _xmlConfig.empty() ) {
-        configHandler = TnmsConfigHandler(_xmlConfig.c_str(), _xmlConfig.length(), TNMS_CONFIG_ROOT);
+        configHandler = TnmsConfigHandler(_xmlConfig.c_str(), _xmlConfig.length(), 
+                                           TNMSAPI_CONFIG_ROOT);
         LogFacility::LogMessage("TnmsAPI::reconfigure using 'network' config.");
     } else {
         configHandler = TnmsConfigHandler(_configName, TNMS_CONFIG_ROOT);
