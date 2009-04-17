@@ -682,6 +682,22 @@ TnmsSocket::flushEnabled()
 // ------------------------------------------------------------------- //
 
 void
+TnmsSocket::flushLimit ( uint32_t limit )
+{
+    this->_flushLimit = limit;
+}
+
+// ------------------------------------------------------------------- //
+
+uint32_t
+TnmsSocket::flushLimit()
+{
+    return this->_flushLimit;
+}
+
+// ------------------------------------------------------------------- //
+
+void
 TnmsSocket::setTimeout ( const time_t & secs )
 {
     this->_clTimeout = secs;

@@ -2,9 +2,8 @@ TOPDIR = ..
 
 NEED_LIBXML2_INCLUDE = 1
 NEED_ZLIB_INCLUDE = 1
-NEED_PTHREADS = 1
 NEED_TNMSCORE = 1
-NEED_ZLIB = 1
+NEED_ZIPSTREAM = 1
 
 ifdef DEBUG
 OPT_FLAGS =  -g
@@ -33,7 +32,7 @@ solib:	lib/libTnmsApi.so.0.0.1
 
 lib/libTnmsApi.a:  ${OBJS}
 	( $(MKDIR) lib )
-	$(make-lib-rule)
+	ld -r -o $@ ${OBJS} ${LFLAGS} ${LIBS}
 	@echo
 
 lib/libTnmsApi.so.0.0.1: ${OBJS}
