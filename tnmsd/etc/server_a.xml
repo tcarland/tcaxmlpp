@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<tnms version="0.1">
+    <tnmsd
+        agent_name="server_a"
+        logfile="server_a.log"
+        syslog="false"
+        debug="true" >
+
+        <server
+            agent_port="15300"
+            client_port="15600"
+            holddown="30"
+            reconnect="30"/>
+    </tnmsd>
+
+</tnms>
+
+
