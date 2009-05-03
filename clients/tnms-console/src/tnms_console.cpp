@@ -43,14 +43,15 @@ void  displayHelp()
     std::cout << std::endl;
 
     std::cout << "Agent source commands" << std::endl;
-    std::cout << " add [name] <epoch>   = adds a new metric of [name] to the system." << std::endl;
-    std::cout << " remove [name]        = removes a metric of [name]." << std::endl;
-    std::cout << " update [name] [value] <epoch>  =  Updates a metric." << std::endl;
+    std::cout << " add [name] <epoch>              =  adds a new metric of [name] to the system." << std::endl;
+    std::cout << " remove  [name]                  =  removes a metric of [name]." << std::endl;
+    std::cout << " update  [name] [value] <epoch>  =  Updates a metric." << std::endl;
     std::cout << " updates [name] [value] <epoch>  =  Updates a metric with a string value." << std::endl;
     std::cout << " send                            =  Gives time to the API instance to send updates." << std::endl;
 
     std::cout << std::endl;
 }
+
 
 void  sleeps ( int secs )
 {
@@ -116,7 +117,7 @@ int sendUpdates ( TnmsAPI * api, time_t & now )
                 std::cout << std::endl << "Connected.";
             connection = true;
         }
-    } while ( (retval > 0 && errcnt < 20) );
+    } while ( (retval > 0 && errcnt < 8) );
 
     std::cout << std::endl;
 
@@ -139,6 +140,7 @@ int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
     time_t    ts, now;
     char      line[1024];
     size_t    len   = 1024;
+    size_t    lnlen = 0;
     bool      done  = false;
 
     if ( ! istrm ) 
@@ -154,14 +156,23 @@ int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
         if ( echo )
             std::cout << line << std::endl;
 
-        if ( line[0] == '#' )
-            continue;
+        lnlen = ::strnlen(line, 1024);
+        if ( lnlen > 0 ) {
+            if ( line[0] == '#' )
+                continue;
+        }
 
         StringUtils::split(line, ' ', std::back_inserter(cmdlist));
 
-        cmd  = cmdlist[0];
+        if ( cmdlist.size() > 0 )
+            cmd  = cmdlist[0];
+        else
+            cmd  = "";
+
         now  = ::time(NULL);
 
+        // CREATE
+        //
         if ( cmd.compare("create") == 0 )
         {
             // create instance
@@ -192,6 +203,9 @@ int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
             showI = insertR.first;
             prompt = "[tnms : " + showI->first + "]: ";
         }
+        //
+        // DESTROY
+        //
         else if ( cmd.compare("destroy") == 0 )
         {
             // destroy instance
@@ -215,11 +229,17 @@ int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
             delete aIter->second;
             apimap.erase(aIter);
         }
+        //
+        // LIST
+        //
         else if ( cmd.compare("list") == 0 )
         {
             for ( aIter = apimap.begin(); aIter != apimap.end(); ++aIter )
                 std::cout << aIter->first << std::endl;
         } 
+        //
+        // SET
+        //
         else if ( cmd.compare("set") == 0 )
         {
             if ( cmdlist.size() != 2 ) {
@@ -237,6 +257,9 @@ int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
             showI  = aIter;
             prompt = "[tnms : " + showI->first + "]: ";
         }
+        //
+        // ADD
+        //
         else if ( cmd.compare("add") == 0 )
         {
             if ( cmdlist.size() < 2 ) {
@@ -260,6 +283,9 @@ int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
                 continue;
             }
         }
+        //
+        // UPDATE
+        //
         else if ( cmd.compare("update") == 0 )
         {
             if ( cmdlist.size() < 3 ) {
@@ -285,6 +311,9 @@ int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
                 continue;
             }
         }
+        // 
+        // UPDATE_S
+        //
         else if ( cmd.compare("updateS") == 0 )
         {
             if ( cmdlist.size() < 3 ) {
@@ -309,6 +338,9 @@ int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
                 continue;
             }
         }
+        // 
+        // REMOVE
+        //
         else if ( cmd.compare("remove") == 0 )
         {
             if ( cmdlist.size() < 2 ) {
@@ -328,6 +360,9 @@ int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
                 continue;
             }
         }
+        // 
+        // SEND
+        //
         else if ( cmd.compare("send") == 0 )
         {
             // send updates
@@ -339,8 +374,12 @@ int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
             int ret = 0;
             if ( (ret = sendUpdates(showI->second, now)) != 0 ) {
                 std::cout << "no connection" << std::endl;
-                continue;
+                //continue;
             }
+        }
+        else if ( cmd.compare("help") == 0 )
+        {
+            displayHelp();
         }
         else if ( cmd.compare("debug") == 0 )
         {
@@ -358,7 +397,8 @@ int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
         }
         else 
         {
-            std::cout << "Unrecognized command: '" << cmd << "'" << std::endl;
+            if ( lnlen )
+                std::cout << "Unrecognized command: '" << cmd << "'" << std::endl;
         }
 
         if ( ! istrm.good() )

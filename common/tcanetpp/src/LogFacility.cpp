@@ -248,6 +248,13 @@ LogFacility::IsOpen()
 // ----------------------------------------------------------------------
 
 void
+LogFacility::LogMessage ( LogFacility::Message & logmsg, int level )
+{
+    return LogFacility::LogMessage(LogFacility::_LogPrefix, logmsg.str(), level);
+}
+
+
+void
 LogFacility::LogMessage ( const std::string & entry, int level )
 {
     return LogFacility::LogMessage(LogFacility::_LogPrefix, entry, level);

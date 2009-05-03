@@ -87,6 +87,9 @@ class LogFacility {
     static void           CloseLogFacility();
 
     
+    static void           LogMessage      ( LogFacility::Message & logmsg, 
+                                            int level = LOGFAC_NOTICE );
+
     static void           LogMessage      ( const std::string & entry, 
                                             int level = LOGFAC_NOTICE );
 

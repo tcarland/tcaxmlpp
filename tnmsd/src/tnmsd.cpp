@@ -141,7 +141,7 @@ int main ( int argc, char **argv )
     mgr->setDebug(debug);
     //mgr->setVerbose(verbose);
 
-    printf("Starting up...\n");
+    //printf("Starting up...\n");
     // main loop 
     mgr->run();
 

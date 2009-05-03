@@ -67,12 +67,12 @@ class TnmsManager : public EventTimerHandler {
     EventManager*       _evmgr;
     TnmsTree*           _tree;
 
-    Socket*             _server;
-    Socket*             _client;
+    Socket*             _agtsvr;
+    Socket*             _clnsvr;
     TnmsAuthClient*     _auth;
 
     ClientMap           _clientMap;
-    evid_t              _svrid, _clid;
+    evid_t              _agtsvrid, _clnsvrid;
 
     AgentIOHandler*     _agentHandler;
     ClientIOHandler*    _clientHandler;
@@ -82,7 +82,9 @@ class TnmsManager : public EventTimerHandler {
 
     time_t              _lastTouched;
     time_t              _logRotate;
-    time_t              _startDelay, _startat;
+    time_t              _startDelay, _startAt;
+    time_t              _reportAt;
+    time_t              _holddown;
     int                 _today;
 
     std::string         _configfile;

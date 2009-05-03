@@ -8,6 +8,7 @@ using namespace tcaxmlplus;
 
 #include "StringUtils.h"
 #include "CidrUtils.h"
+#include "LogFacility.h"
 using namespace tcanetpp;
 
 
@@ -181,7 +182,7 @@ TnmsConfigHandler::parseServer ( XmlNode * node )
         config.serverConfig.agent_port = StringUtils::fromString<uint16_t>(node->getAttribute("agent_port"));
 
     if ( node->haveAttribute("client_port") )
-        config.serverConfig.agent_port = StringUtils::fromString<uint16_t>(node->getAttribute("client_port"));
+        config.serverConfig.client_port = StringUtils::fromString<uint16_t>(node->getAttribute("client_port"));
     else   // required? all of our server instances have a client port
         return false;
     
@@ -190,6 +191,16 @@ TnmsConfigHandler::parseServer ( XmlNode * node )
     
     if ( node->haveAttribute("reconnect") )
         config.serverConfig.reconnect_interval = StringUtils::fromString<uint32_t>(node->getAttribute("reconnect"));
+
+    if ( this->_debug ) {
+        LogFacility::Message  logmsg;
+        logmsg << "TnmsConfigHandler::parseServer()  agent port: " 
+               << config.serverConfig.agent_port << " client port: " 
+               << config.serverConfig.client_port << " holddown: " 
+               << config.serverConfig.holddown_interval << " reconnect interval: " 
+               << config.serverConfig.reconnect_interval;
+        LogFacility::LogMessage(logmsg.str());
+    }
 
     return true;
 }
@@ -224,6 +235,16 @@ TnmsConfigHandler::parseClient ( XmlNode * node )
     }
 
     config.clients.push_back(clientcfg);
+
+    if ( this->_debug ) {
+        LogFacility::Message  logmsg;
+        logmsg << "TnmsConfigHandler::parseClient()  name: " 
+               << clientcfg.connection_name << " host: " 
+               << clientcfg.hostname << " addr: " 
+               << clientcfg.hostaddr << " port: " 
+               << clientcfg.port;
+        LogFacility::LogMessage(logmsg.str());
+    }
 
     return true;
 }

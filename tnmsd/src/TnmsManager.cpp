@@ -14,23 +14,26 @@ namespace tnmsd {
 TnmsManager::TnmsManager ( const std::string & configfile )
     : _evmgr(new tcanetpp::EventManager()),
       _tree(new TnmsTree()),
-      _server(NULL),
-      _client(NULL),
+      _agtsvr(NULL),
+      _clnsvr(NULL),
       _auth(NULL),
-      _svrid(0),
-      _clid(0),
+      _agtsvrid(0),
+      _clnsvrid(0),
       _agentHandler(new AgentIOHandler(_tree)),
       _clientHandler(new ClientIOHandler(_tree)),
       _lastTouched(0),
       _logRotate(0),
       _startDelay(DEFAULT_STARTUP_DELAY),
-      _startat(0),
+      _startAt(0),
+      _reportAt(0),
+      _holddown(DEFAULT_HOLDDOWN_INTERVAL),
       _today(0),
       _configfile(configfile),
       _hup(false),
       _usr(false),
       _debug(false)
 {}
+
 
 TnmsManager::~TnmsManager()
 {
@@ -50,16 +53,16 @@ TnmsManager::~TnmsManager()
     if ( _auth )
         delete _auth;
 
-    if ( _server )
-        delete _server;
+    if ( _agtsvr )
+        delete _agtsvr;
 
-    if ( _client )
-        delete _client;
+    if ( _clnsvr )
+        delete _clnsvr;
     
     delete _agentHandler;
     delete _clientHandler;
-    delete _evmgr;
     delete _tree;
+    delete _evmgr;
 }
 
 
@@ -77,7 +80,7 @@ TnmsManager::run()
     }
 
     _logRotate = now + LOG_ROTATE_INTERVAL;
-    //updates = now + HOLDDOWN_INTERVAL;
+    _reportAt  = now + _holddown;
     
     _evmgr->addTimerEvent( (EventTimerHandler*) this, 5, 0);
 
@@ -104,20 +107,18 @@ TnmsManager::timeout ( const EventTimer * timer )
 
     LogFacility::SetLogTime(now);
 
-    if ( _debug )
-        LogFacility::LogMessage("TnmsManager::timeout()");
-
     // if startup_delay is expired; then add IOHandler for clients
     if ( _startDelay > 0 ) {
-        if ( _startat == 0 )
-            _startat = now + _startDelay;
+        if ( _startAt == 0 )
+            _startAt = now + _startDelay;
 
-        if ( _startat < now && _client ) {
-            _clid = _evmgr->addIOEvent(_clientHandler, _client->getDescriptor(), _client, true);
+        if ( _startAt <= now && _clnsvr ) {
+            _clnsvrid = _evmgr->addIOEvent(_clientHandler, _clnsvr->getDescriptor(), _clnsvr, true);
             _startDelay = 0;
         }
     }
 
+    // re-parse config signal
     if ( _hup ) { 
         if ( ! this->parseConfig(_configfile, now) )
             LogFacility::LogMessage("Config error");
@@ -132,14 +133,17 @@ TnmsManager::timeout ( const EventTimer * timer )
     if ( ! _tconfig.syslog && _logRotate <= now )
         this->logRotate(_tconfig.logfile, now);
 
-    // do timeouts
+    // give time to our handlers
     //_auth->timeout(timer);
     _agentHandler->timeout(timer);
     _clientHandler->timeout(timer);
 
-    // update our metrics
-    //if ( lastUpdate <= now )
-    //    this->update(now);
+    // internal metrics
+    if ( _reportAt <= now ) {
+        //send internal updates
+        LogFacility::LogMessage("TnmsManager::run()"); // <<add some stats
+        _reportAt = now + _holddown;
+    }
 
     return;
 }
@@ -220,24 +224,24 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
             && nsvrcfg.agent_port > 0 )
     {
         LogFacility::Message  logmsg;
-        logmsg << "TnmsManager::parseConfig(): Agent listen port set to " 
+        logmsg << "TnmsManager::parseConfig(): Agent server listening on port " 
                << nsvrcfg.agent_port;
         LogFacility::LogMessage(logmsg.str());
 
-        if ( _server ) {
-            _server->close();
-            _evmgr->removeEvent(_svrid);
+        if ( _agtsvr ) {
+            _agtsvr->close();
+            _evmgr->removeEvent(_agtsvrid);
         }
 
-        _server = new Socket(0, nsvrcfg.agent_port, SOCKET_SERVER, SOCKET_TCP);
+        _agtsvr = new Socket(0, nsvrcfg.agent_port, SOCKET_SERVER, SOCKET_TCP);
 
-        if ( ! _server->init(false) ) {
+        if ( ! _agtsvr->init(false) ) {
             LogFacility::LogMessage("TnmsManager::parseConfig: Error creating agent server socket" 
-                    + _server->errorStr());
+                    + _agtsvr->errorStr());
             return false;
         }
 
-        _svrid = _evmgr->addIOEvent(_agentHandler, _server->getFD(), _server, true);
+        _agtsvrid = _evmgr->addIOEvent(_agentHandler, _agtsvr->getFD(), _agtsvr, true);
     } 
 
     // client server startup
@@ -245,25 +249,25 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
             && nsvrcfg.client_port > 0 )
     {
         LogFacility::Message  logmsg;
-        logmsg << "TnmsManager::parseConfig() Client listen port set to " 
+        logmsg << "TnmsManager::parseConfig(): Client Server listening on port " 
                << nsvrcfg.client_port;
         LogFacility::LogMessage(logmsg.str());
 
-        if ( _client ) {
-            _client->close();
-            _evmgr->removeEvent(_clid);
+        if ( _clnsvr ) {
+            _clnsvr->close();
+            _evmgr->removeEvent(_clnsvrid);
         }
 
-        _client = new Socket(0, nsvrcfg.client_port, SOCKET_SERVER, SOCKET_TCP);
+        _clnsvr = new Socket(0, nsvrcfg.client_port, SOCKET_SERVER, SOCKET_TCP);
 
-        if ( ! _client->init(false) ) {
+        if ( ! _clnsvr->init(false) ) {
             LogFacility::LogMessage("TnmsManager::parseConfig: Error creating client server socket" 
-                    + _client->errorStr());
+                    + _clnsvr->errorStr());
             return false;
         }
 
         if ( _startDelay == 0 )
-            _clid = _evmgr->addIOEvent(_clientHandler, _client->getFD(), _client, true);
+            _clnsvrid = _evmgr->addIOEvent(_clientHandler, _clnsvr->getFD(), _clnsvr, true);
     }
 
     // init auth client 
