@@ -17,6 +17,9 @@
 #include "TnmsAPI.h"
 using namespace tnmsCore;
 
+#include "LogFacility.h"
+using namespace tcanetpp;
+
 
 typedef std::map<std::string, TnmsAPI*>             ApiMap;
 typedef std::map<std::string, TnmsAPI*>::iterator   ApiIter;
@@ -92,7 +95,12 @@ int sendUpdates ( TnmsAPI * api, time_t & now )
 #   endif
 
         sleeps(1);
-        
+       
+        if ( retval == 1 ) {
+            std::cout << "Invalid configuration" << std::endl;
+            break;
+        }
+
         if ( retval > 0 )
             retval = api->send(now + 1);
         
@@ -139,15 +147,19 @@ int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
     uint64_t  val;
     time_t    ts, now;
     char      line[1024];
-    size_t    len   = 1024;
-    size_t    lnlen = 0;
-    bool      done  = false;
+
+    size_t    len    = 1024;
+    size_t    lnlen  = 0;
+    bool      done   = false;
+
 
     if ( ! istrm ) 
         return -1;
 
-    if ( showprompt )
+    if ( showprompt ) {
         std::cout << prompt;
+        LogFacility::OpenLogStream("stdout", &std::cout);
+    }
 
     while ( ! done && istrm.getline(line, len) )
     {
@@ -377,7 +389,7 @@ int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
                 //continue;
             }
         }
-        else if ( cmd.compare("help") == 0 )
+        else if ( (cmd.compare("help") == 0) || (cmd.compare("?") == 0) )
         {
             displayHelp();
         }

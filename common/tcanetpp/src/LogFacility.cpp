@@ -191,7 +191,7 @@ LogFacility::RemoveStream ( const std::string & name )
 // ----------------------------------------------------------------------
 
 std::string
-LogFacility::GetFileName()
+LogFacility::GetLogFileName()
 {
     return LogFacility::_FileName;
 }

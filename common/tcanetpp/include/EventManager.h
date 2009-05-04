@@ -161,6 +161,7 @@ class EventManager {
 
     void                 setDebug       ( bool d );
     void                 setAlarm();
+    const std::string&   getErrorStr() const { return this->_errstr; }
 
 
   protected:

@@ -337,7 +337,7 @@ TnmsManager::setDebug ( bool d )
 std::string
 TnmsManager::getErrorStr()
 {
-    return _errstr;
+    return this->_errstr;
 }
 
 

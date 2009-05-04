@@ -38,7 +38,7 @@ AgentIOHandler::timeout ( const EventTimer * timer )
 
                 if ( (c = client->connect()) < 0 ) {
                     logmsg << " mirror disconnected.";
-                    LogFacility::LogMessage(logmsg.str());
+                    LogFacility::LogMessage(logmsg);
                     continue;
                 } else if ( c >=0 ) {
                     timer->evmgr->addIOEvent(this, client->getSockFD(), (*cIter));
@@ -47,7 +47,7 @@ AgentIOHandler::timeout ( const EventTimer * timer )
 
                 if ( c > 0 ) {
                     logmsg << " mirror connected.";
-                    LogFacility::LogMessage(logmsg.str());
+                    LogFacility::LogMessage(logmsg);
                 }
             } else {
                 if ( client->isAuthorized() && ! client->isSubscribed() )
@@ -60,8 +60,8 @@ AgentIOHandler::timeout ( const EventTimer * timer )
         }
 
         if ( (rd = client->receive()) < 0 ) {
-            logmsg << "AgentIOHandler::timeout error in receive() " << client->getHostStr();
-            LogFacility::LogMessage(logmsg.str());
+            logmsg << " error in receive() ";
+            LogFacility::LogMessage(logmsg);
             client->close();
             continue;
         } else {
@@ -70,8 +70,8 @@ AgentIOHandler::timeout ( const EventTimer * timer )
         }
 
         if ( (sd = client->send()) < 0 ) {
-            logmsg << "AgentIOHandler::timeout error in send() " << client->getHostStr();
-            LogFacility::LogMessage(logmsg.str());
+            logmsg << " error in send() ";
+            LogFacility::LogMessage(logmsg);
             client->close();
             continue;
         } else {
@@ -103,11 +103,15 @@ AgentIOHandler::handle_accept ( const EventIO * io )
     if ( sock == NULL )
         return;
 
-    TnmsClient * client = new TnmsClient(_tree, sock);
-    io->evmgr->addIOEvent(this, client->getSockFD(), (void*) client);
+    TnmsClient * client = new TnmsClient(_tree, sock, true);
+    evid_t id = io->evmgr->addIOEvent(this, client->getSockFD(), (void*) client);
+
+    if ( id == 0 )
+        LogFacility::LogMessage("AgentIOHandler::handle_accept() event error: " + io->evmgr->getErrorStr());
 
     // if compression; enable it
     // client->enableCompression();
+    LogFacility::LogMessage("AgentIOHandler::handle_accept() " + client->getHostStr());
 
     _clients.insert(client);
     return;
@@ -122,6 +126,7 @@ AgentIOHandler::handle_read ( const EventIO * io )
         return;
 
     TnmsClient * client = (TnmsClient*) io->rock;
+    //LogFacility::LogMessage("AgentIOHandler::handle_read()");
 
     if ( (wt = client->send()) < 0 )
         return this->handle_close(io);
@@ -138,6 +143,7 @@ AgentIOHandler::handle_write ( const EventIO * io )
         return;
 
     TnmsClient * client = (TnmsClient*) io->rock;
+    //LogFacility::LogMessage("AgentIOHandler::handle_write()");
 
     if ( (wt = client->send()) < 0 )
         return this->handle_close(io);
@@ -163,6 +169,7 @@ AgentIOHandler::handle_close ( const EventIO * io )
         _tree->removeClient(client);
     }
 
+    LogFacility::LogMessage("AgentIOHandler::handle_close() " + client->getHostStr());
     client->close();
     io->evmgr->removeEvent(io->evid);
 
@@ -179,6 +186,8 @@ AgentIOHandler::handle_shut ( const EventIO * io )
 void
 AgentIOHandler::handle_destroy ( const EventIO * io )
 {
+    LogFacility::LogMessage("AgentIOHandler::handle_destroy()");
+
     if ( io->isServer ) {
         Socket * svr = (Socket*) io->rock;
         if ( svr )
@@ -218,5 +227,5 @@ AgentIOHandler::writeable ( const EventIO * io )
 } // namespace 
 
 
-/*  _TNMSD_AGENTIOHANDLER_CPP_  */
+//  _TNMSD_AGENTIOHANDLER_CPP_ 
 

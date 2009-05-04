@@ -5,7 +5,7 @@ include ./tcamake/projectdefs
 
 # ------------------------
 
-all: print-env external common tnmsd
+all: print-env external common TnmsApi tnmsd tnms-console
 
 
 print-env:
@@ -19,9 +19,18 @@ common:
 	( cd common; make all )
 	@echo
 
+.PHONY: TnmsApi
+TnmsApi:
+	( cd TnmsApi; make all )
+	@echo
+
 .PHONY: tnmsd
 tnmsd:
 	( cd tnmsd; make all )
+	@echo
+
+tnms-console:
+	( cd clients/tnms-console; make all )
 	@echo
 
 external:
@@ -34,15 +43,20 @@ external-clean:
 
 clean:
 	( cd common; make clean )
+	( cd TnmsApi; make clean )
 	( cd tnmsd; make clean )
+	( cd clients/tnms-console; make clean )
 
 distclean: external-clean
 	( cd common; make distclean )
+	( cd TnmsApi; make distclean )
 	( cd tnmsd; make distclean )
+	( cd clients/tnms-console; make distclean )
 
 install:
 ifdef PREFIX
 	( cd common; make install )
+	( cd TnmsApi; make install )
 	( cd tnmsd; make install )
 endif
 

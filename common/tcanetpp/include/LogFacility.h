@@ -129,7 +129,7 @@ class LogFacility {
     static void           SetDebug        ( bool debug );
     static bool           GetDebug();
 
-    static std::string    GetFileName();
+    static std::string    GetLogFileName();
 
 
 private:

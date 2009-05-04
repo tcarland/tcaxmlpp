@@ -383,22 +383,23 @@ int
 TnmsBase::reconfigure ( const time_t & now )
 {
     TnmsConfigHandler  configHandler;
+    TnmsConfig         oldconfig;
 
     if ( ! _xmlConfig.empty() ) {
         configHandler = TnmsConfigHandler(_xmlConfig.c_str(), _xmlConfig.length(), 
                                            TNMSAPI_CONFIG_ROOT);
         LogFacility::LogMessage("TnmsAPI::reconfigure using 'network' config.");
     } else {
-        configHandler = TnmsConfigHandler(_configName, TNMS_CONFIG_ROOT);
+        configHandler = TnmsConfigHandler(_configName, TNMSAPI_CONFIG_ROOT);
         LogFacility::LogMessage("TnmsAPI::reconfigure using 'local' config.");
     }
 
-    TnmsConfig oldconfig = _config;
 
     if ( ! configHandler.parse() )
         return TNMSERR_CONFIG;
 
-    _config = configHandler.config;
+    oldconfig = _config;
+    _config   = configHandler.config;
 
     //log name
     if ( _config.logfile.compare(oldconfig.logfile) != 0 ) {
@@ -426,25 +427,27 @@ TnmsBase::reconfigure ( const time_t & now )
 
     // agent name
     if ( _config.agent_name.compare(oldconfig.agent_name) != 0 ) {
-        if ( _conn->isConnected() )
-            LogFacility::LogMessage("TnmsAPI::reconfigure() agent name modified, resetting.");
-        _tree->remove(oldconfig.agent_name);
-        _conn->close();
+        _agentName  = _config.agent_name;
         _subscribed = false;
-        _agentName = _config.agent_name;
+        if ( _conn->isConnected() ) {
+            LogFacility::LogMessage("TnmsAPI::reconfigure() agent name modified, resetting.");
+            _conn->close();
+        }
+        _tree->remove(oldconfig.agent_name);
         _tree->add(_agentName);
     }
 
     // server
-    if ( clientnew.hostname.compare(clientold.hostname) != 0 || clientnew.port != clientold.port )
+    if ( (oldconfig.clients.size() > 0) && 
+         (clientnew.hostname.compare(clientold.hostname) != 0 || clientnew.port != clientold.port) )
     {
-        if ( _conn->isConnected() )
+        if ( _conn->isConnected() ) {
             LogFacility::LogMessage("TnmsAPI::reconfigure connection state change");
-        _conn->close();
-        _hostName = clientnew.hostname;
-        _hostPort = clientnew.port;
+            _conn->close();
+        }
     }
-
+    _hostName           = clientnew.hostname;
+    _hostPort           = clientnew.port;
     _holddown_interval  = clientnew.holddown_interval;
     _reconnect_interval = clientnew.reconnect_interval;
 
@@ -466,7 +469,7 @@ TnmsBase::openLog ( const std::string & logfile, const time_t & now )
             return;
     }
 
-    if ( LogFacility::IsOpen() ) {
+    if ( LogFacility::IsOpen() && ! LogFacility::GetLogFileName().empty() ) {
         LogFacility::Message  msg;
 
         if ( logfile.empty() )

@@ -2,7 +2,7 @@
 
 <tnms version="0.1">
     <tnmsapi
-        agent_name="/tcanms/tnms-console"
+        agent_name="tcanms/tnms-console"
         logfile="tcanms-server.log"
         syslog="false"
         debug="true" >
