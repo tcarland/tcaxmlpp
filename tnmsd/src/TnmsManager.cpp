@@ -53,12 +53,6 @@ TnmsManager::~TnmsManager()
     if ( _auth )
         delete _auth;
 
-    if ( _agtsvr )
-        delete _agtsvr;
-
-    if ( _clnsvr )
-        delete _clnsvr;
-    
     delete _agentHandler;
     delete _clientHandler;
     delete _tree;
