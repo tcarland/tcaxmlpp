@@ -13,7 +13,7 @@ namespace tnmsCore {
 
 TnmsSocket::TnmsSocket ( MessageHandler * msgHandler )
     : _authFunctor(new AuthAllFunctor(_authorizations)),
-      _msgHandler(NULL),
+      _msgHandler(msgHandler),
       _compression(TNMS_COMPRESSION_ENABLE),
       _sock(NULL),
       _hdr(NULL),
@@ -96,18 +96,21 @@ TnmsSocket::TnmsSocket ( BufferedSocket * sock, MessageHandler * msgHandler )
 TnmsSocket::~TnmsSocket()
 {
     this->close();
+
     if ( _authFunctor )
         delete _authFunctor;
     if ( _msgHandler )
         delete _msgHandler;
     if ( _sock )
         delete _sock;
+
     if ( _rxbuff )
-        ::free(_zxbuff);
+        ::free(_rxbuff);
     if ( _zxbuff )
         ::free(_zxbuff);
 
-    delete _wxcbuff;
+    if ( _wxcbuff )
+        delete _wxcbuff;
 }
 
 
@@ -438,6 +441,8 @@ TnmsSocket::receiveMessages ( tnmsHeader & hdr )
 void
 TnmsSocket::setMessageHandler ( MessageHandler * msgHandler )
 {
+    if ( _msgHandler )
+        delete _msgHandler;
     _msgHandler = msgHandler;
 }
 

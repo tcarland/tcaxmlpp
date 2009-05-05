@@ -11,8 +11,6 @@
 
 namespace tnmsCore {
 
-class TnmsMessageHandler;
-
 
 class TnmsClient : public TnmsSocket {
 
@@ -51,7 +49,6 @@ class TnmsClient : public TnmsSocket {
 
   protected:
 
-    TnmsMessageHandler*  _messageHandler;
     TnmsTree*            _tree;
 
     UpdateSet            _adds;

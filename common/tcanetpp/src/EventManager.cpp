@@ -106,7 +106,7 @@ EventManager::addTimerEvent ( EventTimerHandler * handler,
     _timers[timer.evid] = timer;
 
 #   ifdef EV_DEBUG
-    printf("id %d:  %u sec - %u msec - %d count\n", timer.evid, sec, msec, count);
+    printf("id %lu:  %u sec - %u msec - %d count\n", timer.evid, sec, msec, count);
 #   endif 
     
     return timer.evid;
@@ -178,7 +178,7 @@ EventManager::addIOEvent ( EventIOHandler * handler, const sockfd_t & sfd,
     printf("EventManager::addIOEvent() adding ");
     if ( io.isServer )
         printf("server ");
-    printf("socket %d id: %d\n", sfd, io.evid);
+    printf("socket %d id: %lu\n", sfd, io.evid);
 #   endif 
 
     _clients[io.evid] = io;
@@ -212,7 +212,7 @@ EventManager::removeEvent ( const evid_t & id )
     EventIOMap::iterator      cIter;
    
 #   ifdef EV_DEBUG
-    printf("EventManager::removeEvent() %u\n", id);	
+    printf("EventManager::removeEvent() %lu\n", id);	
 #   endif
 
     if ( (tIter = _timers.find(id)) != _timers.end() ) {
@@ -224,14 +224,14 @@ EventManager::removeEvent ( const evid_t & id )
     }
 
     if ( (cIter = _clients.find(id)) != _clients.end() ) {
-        if ( tIter->second.enabled ) {
+        if ( cIter->second.enabled ) {
             FD_CLR(cIter->second.sfd, &_rset);
             FD_CLR(cIter->second.sfd, &_wset);
             FD_CLR(cIter->second.sfd, &_xset);
             this->destroyEvent(cIter->second);
         }
         _events.erase(id);
-        _clients.erase(cIter);
+        //_clients.erase(cIter);
     	return true;
     }
 
@@ -261,6 +261,9 @@ EventManager::eventLoop()
 	// set IO events
 	for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter ) {
 	    EventIO & io = cIter->second;
+
+            if ( ! io.enabled )
+                continue;
 
 	    if ( io.handler->readable(&io) )
 		FD_SET(io.sfd, &_rset);
@@ -300,6 +303,9 @@ EventManager::eventLoop()
 	for ( cIter = _clients.begin(); cIter != _clients.end(); cIter++ ) {
 	    EventIO & io = cIter->second;
 
+            if ( ! io.enabled )
+                continue;
+
 	    if ( FD_ISSET(io.sfd, &_rset) ) {
                 io.abstime = now;
 
@@ -315,6 +321,13 @@ EventManager::eventLoop()
 		io.handler->handle_write(&io);
 	    }
 	}
+
+        for ( cIter = _clients.begin(); cIter != _clients.end(); ) {
+            if ( ! cIter->second.enabled )
+                _clients.erase(cIter++);
+            else
+                ++cIter;
+        }
 
         // check for timer events
 	this->checkTimers(now);

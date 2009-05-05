@@ -9,30 +9,25 @@ namespace tnmsCore {
 
 
 TnmsClient::TnmsClient ( TnmsTree * tree )
-    : TnmsSocket(),
-      _messageHandler(new TnmsMessageHandler(tree, this)),
+    : TnmsSocket(new TnmsMessageHandler(tree, this)),
       _tree(tree),
       _isAgent(false),
       _isMirror(true)
 {
-    this->setMessageHandler(this->_messageHandler);
 }
 
 
 TnmsClient::TnmsClient ( TnmsTree * tree, BufferedSocket * sock, bool isAgent )
-    : TnmsSocket(sock),
-      _messageHandler(new TnmsMessageHandler(tree, this)),
+    : TnmsSocket(sock, new TnmsMessageHandler(tree, this)),
       _tree(tree),
       _isAgent(isAgent),
       _isMirror(false)
 {
-    this->setMessageHandler(this->_messageHandler);
 }
 
 
 TnmsClient::~TnmsClient()
 {
-    delete _messageHandler;
 }
 
 

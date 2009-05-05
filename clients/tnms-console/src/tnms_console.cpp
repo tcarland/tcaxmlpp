@@ -1,4 +1,9 @@
 
+extern "C" {
+#include <unistd.h>
+#include <signal.h>
+#include <sys/stat.h>
+}
 
 #include <string>
 #include <sstream>
@@ -55,6 +60,12 @@ void  displayHelp()
     std::cout << std::endl;
 }
 
+void sigHandler ( int signal )
+{
+    if ( signal == SIGINT || signal == SIGTERM )
+        std::cout << "Interrupt caught. Use 'quit' to exit." << std::endl;
+    return;
+}
 
 void  sleeps ( int secs )
 {
@@ -435,6 +446,9 @@ int main ( int argc, char ** argv )
     std::list<std::string>::iterator  fIter;
 
     bool  showprompt = true;
+
+    signal(SIGINT,  &sigHandler);
+    signal(SIGTERM, &sigHandler);
 
     if ( fileslist.empty() )
         runConsole(std::cin, showprompt);
