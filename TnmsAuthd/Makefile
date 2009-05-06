@@ -9,10 +9,12 @@ OPT_FLAGS= 	-g
 LIBS=
 INCLUDES=       -Iinclude
 
-BIN=		tnmsd
-OBJS=		src/TnmsManager.o  \
-		src/AgentIOHandler.o src/ClientIOHandler.o \
-		src/tnmsd.o
+BIN=		tnmsauthd
+OBJS=		src/TnmsAuthdManager.o  \
+		src/SoapIOHandler.o src/AuthIOHandler.o \
+		src/SoapClient.o src/SoapThread.o \
+		src/TnmsAuthThread.o \
+		src/tnmsauthd.o
 
 ALL_OBJS=	$(OBJS)
 ALL_BINS=	$(BIN)
