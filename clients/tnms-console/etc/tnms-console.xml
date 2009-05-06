@@ -3,7 +3,7 @@
 <tnms version="0.1">
     <tnmsapi
         agent_name="tcanms/tnms-console"
-        logfile="tcanms-server.log"
+        logfile="tcanms-console.log"
         syslog="false"
         debug="true" >
 

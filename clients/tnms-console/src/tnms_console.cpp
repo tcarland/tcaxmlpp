@@ -126,7 +126,8 @@ int sendUpdates ( TnmsAPI * api, time_t & now )
             if ( ! connection ) {
                 std::cout << ".";
                 std::cout.flush();
-            } else {
+            } else if ( retval == TNMSERR_CONN_DENIED ) {
+                std::cout << "Not authorized." << std::endl;
                 connection = false;
                 break;
             }

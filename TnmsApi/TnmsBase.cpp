@@ -373,7 +373,7 @@ TnmsBase::checkSubscription ( const time_t & now )
             return TNMSERR_CONN_DENIED;
         }
 
-        _reconnect   = now + 30; // need proper val from config here
+        _reconnect   = now + _reconnect_interval;
         _subscribed  = false;
 
         LogFacility::LogMessage("TnmsAPI: sending credentials.");
