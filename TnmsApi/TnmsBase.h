@@ -91,7 +91,6 @@ class TnmsBase {
     void    openLog           ( const std::string & logfile,
                                 const time_t  & now);
 
-
   private:
 
     TnmsTree*            _tree;

@@ -54,7 +54,7 @@ distclean: external-clean
 	( cd clients/tnms-console; make distclean )
 
 install:
-ifdef PREFIX
+ifdef TCANMS_PREFIX
 	( cd common; make install )
 	( cd TnmsApi; make install )
 	( cd tnmsd; make install )

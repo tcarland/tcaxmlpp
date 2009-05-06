@@ -910,6 +910,11 @@ TnmsSocket::sendMessage ( Serializable * message )
 
     wt = message->serialize(_wptr, (_wtsize-_wtt));
 
+    if ( wt < 0 ) {
+        _errstr = "TnmsSocket::sendMessage() error in message serialization for " + this->getHostStr();
+        return false;
+    }
+
     _wptr += wt;
     _wtt  += wt;
 
@@ -1136,7 +1141,7 @@ TnmsSocket::setLastRecord()
 size_t
 TnmsSocket::txBytesBuffered()
 {
-    return _sock->flushAvailable();
+    return _sock->flushAvailable() + _wxcbuff->readAvailable();
 }
 
 // ------------------------------------------------------------------- //

@@ -273,33 +273,38 @@ TnmsBase::clear()
     // remove _agentName
 }
 
+
+// to-do: - reference xmlconfig from tnmssocket? 
+//        - chksum/version config for quicker check.
+//
 int
 TnmsBase::checkConfig ( const time_t & now )
 {
-    if ( _reconfig <= now )
-    {
-        _reconfig = now + _reconfig_interval;
+    if ( _config.agent_name.empty() && _agentName.empty() )
+        return TNMSERR_CONFIG;
 
-        if ( _config.agent_name.empty() && _agentName.empty() )
+    if ( _agentName.empty() && _xmlConfig.empty() )
+    {
+        if ( ! _conn->isAuthorized() ) 
+            return TNMSERR_NONE;
+        else if ( _config.agent_name.empty() && _conn->getConfig().empty() )
+            return TNMSERR_CONFIG;
+    }
+    else if ( _xmlConfig.empty() ) 
+    {
+        struct stat  configStat;
+
+        if ( ::stat(_configName.c_str(), &configStat) != 0 )
             return TNMSERR_CONFIG;
 
-        if ( _agentName.empty() && _xmlConfig.empty() )
-        {
-            if ( ! _conn->isAuthorized() ) 
-                return TNMSERR_NONE;
-            else if ( _config.agent_name.empty() && _conn->getConfig().empty() )
-                return TNMSERR_CONFIG;
+        if ( configStat.st_mtime != _reconfig ) {
+            _reconfig = configStat.st_mtime;
+            return this->reconfigure(now);
         }
-        else if ( _xmlConfig.empty() ) 
-        {
-            struct stat  configStat;
-
-            if ( ::stat(_configName.c_str(), &configStat) != 0 )
-                return TNMSERR_NONE;
-
-            if ( configStat.st_mtime != _reconfig ) 
-                return this->reconfigure(now);
-        }
+    } else {
+        // validate xmlConfig change?
+        // handle config versioning check. could simply .compare() for now 
+        // if done infrequently.
     }
 
     return TNMSERR_NONE;
@@ -393,7 +398,6 @@ TnmsBase::reconfigure ( const time_t & now )
         configHandler = TnmsConfigHandler(_configName, TNMSAPI_CONFIG_ROOT);
         LogFacility::LogMessage("TnmsAPI::reconfigure using 'local' config.");
     }
-
 
     if ( ! configHandler.parse() )
         return TNMSERR_CONFIG;

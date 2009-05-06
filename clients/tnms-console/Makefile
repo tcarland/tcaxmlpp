@@ -33,7 +33,7 @@ distclean: clean
 	$(RM) $(ALL_BINS)
 
 install:
-ifdef PREFIX
+ifdef TCANMS_PREFIX
 	@echo
 endif
 

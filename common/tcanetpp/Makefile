@@ -110,10 +110,10 @@ ifdef DISTDIR
 endif
 
 install:
-ifdef PREFIX
-	@echo "Installing libtcanetpp to $(PREFIX)/lib"
-	$(RSYNC) --delete include/ $(PREFIX)/include/tcanetpp/
-	$(RSYNC) lib/ $(PREFIX)/lib/
+ifdef TCANMS_PREFIX
+	@echo "Installing libtcanetpp to $(TCANMS_PREFIX)/lib"
+	$(RSYNC) --delete include/ $(TCANMS_PREFIX)/include/tcanetpp/
+	$(RSYNC) lib/ $(TCANMS_PREFIX)/lib/
 	@echo
 endif
 

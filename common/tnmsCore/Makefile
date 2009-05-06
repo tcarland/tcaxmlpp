@@ -75,3 +75,6 @@ distclean: clean lib-clean doc-clean test-clean
 	$(RM) $(BIN)
 
 install:
+ifdef TCANMS_PREFIX
+	@echo
+endif

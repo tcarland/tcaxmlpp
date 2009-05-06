@@ -4,6 +4,8 @@
 #include "TnmsClient.h"
 #include "TnmsTree.h"
 
+#include "LogFacility.h"
+using namespace tcanetpp;
 
 namespace tnmsCore {
 
@@ -23,6 +25,8 @@ TnmsMessageHandler::AddHandler ( const TnmsAdd & add )
     if ( _client == NULL || ! _client->isAgent() )
         return;
 
+    LogFacility::LogMessage("TnmsMessageHandler::AddHandler() " + add.getElementName());
+
     _tree->add(add.getElementName());
 
     return;
@@ -34,6 +38,8 @@ TnmsMessageHandler::RemoveHandler ( const TnmsRemove  & remove )
 {
     if ( _client == NULL || ! _client->isAgent() )
         return;
+    
+    LogFacility::LogMessage("TnmsMessageHandler::RemoveHandler() " + remove.getElementName());
 
     _tree->remove(remove.getElementName());
 
@@ -46,6 +52,8 @@ TnmsMessageHandler::MetricHandler ( const TnmsMetric & metric )
 {
     if ( _client == NULL || ! _client->isAgent() )
         return;
+
+    LogFacility::LogMessage("TnmsMessageHandler::MetricHandler() " + metric.getElementName());
 
     if ( _client->inTreeSend() )
         this->LastMessageHandler(ADD_MESSAGE);
@@ -67,6 +75,8 @@ TnmsMessageHandler::RequestHandler ( const TnmsRequest & request )
 
     TnmsMetric  metric;
 
+    LogFacility::LogMessage("TnmsMessageHandler::RequestHandler() " + request.getElementName());
+
     if ( _tree->request(request.getElementName(), metric) )
         _client->sendMessage(&metric);
 
@@ -78,6 +88,9 @@ TnmsMessageHandler::SubscribeHandler   ( const std::string & name )
 {
     if ( _client == NULL ) // ||  ! _client->authorized() )
         return;
+
+    LogFacility::LogMessage("TnmsMessageHandler::SubscribeHandler() " + name);
+
 
     if ( ! _tree->subscribe(name, _client) )
         _client->unsubscribe(name);
@@ -91,6 +104,9 @@ TnmsMessageHandler::UnsubscribeHandler ( const std::string & name )
 {
     if ( _client == NULL ) 
         return;
+    LogFacility::LogMessage("TnmsMessageHandler::UnsubscribeHandler() " + name);
+
+
     _tree->unsubscribe(name, _client);
 }
 
@@ -100,6 +116,8 @@ TnmsMessageHandler::StructureHandler ( bool  subscribe )
 {
     if ( _client == NULL ) // ||  not authorized; 
         return;
+
+    LogFacility::LogMessage("TnmsMessageHandler::StructureHandler()");
 
     if ( subscribe )
         _tree->subStructure(_client);
@@ -112,22 +130,30 @@ TnmsMessageHandler::StructureHandler ( bool  subscribe )
 
 void  
 TnmsMessageHandler::AuthRequestHandler ( const TnmsAuthRequest & request )
-{}
+{
+    LogFacility::LogMessage("TnmsMessageHandler::AuthRequestHandler() " + request.getElementName());
+}
 
 
 void  
 TnmsMessageHandler::AuthReplyHandler   ( const TnmsAuthReply   & reply )
-{}
+{
+    LogFacility::LogMessage("TnmsMessageHandler::AuthReplyHandler() " + reply.getElementName());
+}
+
 
 void  
 TnmsMessageHandler::PingHandler() 
-{}
+{
+    LogFacility::LogMessage("TnmsMessageHandler::PingHandler() ");
+}
 
 
 void 
 TnmsMessageHandler::PingReplyHandler()
-{}
-
+{
+    LogFacility::LogMessage("TnmsMessageHandler::PingReplyHandler() ");
+}
 
 
 void  
@@ -135,6 +161,8 @@ TnmsMessageHandler::LastMessageHandler ( int record_type )
 {
     if ( _client == NULL ) 
         return;
+
+    LogFacility::LogMessage("TnmsMessageHandler::LastMessageHandler()");
 
     if ( _client->inTreeSend() && (record_type == ADD_MESSAGE || record_type == METRIC_MESSAGE) )
         _client->inTreeSend(false);

@@ -217,7 +217,7 @@ AgentIOHandler::writeable ( const EventIO * io )
 
     TnmsClient * client = (TnmsClient*) io->rock;
 
-    if ( client && client->getTxQueueSize() > 0 )
+    if ( client && client->txBytesBuffered() > 0 )
         return true;
 
     return false;
