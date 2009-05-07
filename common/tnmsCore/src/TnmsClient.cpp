@@ -4,6 +4,9 @@
 #include "TnmsClient.h"
 #include "TnmsMessageHandler.h"
 
+#include "LogFacility.h"
+using namespace tcanetpp;
+
 
 namespace tnmsCore {
 
@@ -113,6 +116,41 @@ TnmsClient::close()
     TnmsSocket::close();
 }
 
+void
+TnmsClient::AuthReplyHandler ( const TnmsAuthReply & reply )
+{
+    this->_authorizing = false;
+    this->_authorizations.clear();
+
+    if ( reply.authResult() == AUTH_SUCCESS ) {
+        this->_authorized = true;
+    } else {
+        this->_authorized = false;
+        return;
+
+    }
+
+    LogFacility::LogMessage("TnmsClient::AuthReplyHandler()");
+
+    if ( reply.authData().length() == 0 )
+        return;
+
+    tcanetpp::StringUtils::split(reply.authData(), ':', std::back_inserter(this->_authorizations));
+
+    if ( this->_authorizations.size() > 2 ) {
+        std::string isInc = _authorizations.front();
+        _authorizations.pop_front();
+
+        if ( isInc.compare("i") == 0 )
+            this->_authFunctor = new AuthIncludeFunctor(_authorizations);
+        else
+            this->_authFunctor = new AuthExcludeFunctor(_authorizations);
+    } else {
+        this->_authFunctor = new AuthAllFunctor(_authorizations);
+    }
+
+    return;
+}
 
 void
 TnmsClient::queueAdd ( TnmsTree::Node * node )

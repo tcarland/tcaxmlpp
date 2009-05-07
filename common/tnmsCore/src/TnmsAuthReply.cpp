@@ -13,13 +13,13 @@ TnmsAuthReply::authResult() const
     return _auth_result;
 }
 
-std::string
+const std::string&
 TnmsAuthReply::authReason() const
 {
     return _auth_reason;
 }
 
-std::string
+const std::string&
 TnmsAuthReply::authData() const
 {
     return _auth_data;

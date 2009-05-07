@@ -26,10 +26,12 @@ class TnmsClient : public TnmsSocket {
     virtual int     send();
     virtual void    close();
 
+    virtual void    AuthReplyHandler    ( const TnmsAuthReply   & reply );
+    virtual void    AuthRequestHandler  ( const TnmsAuthRequest & request ) {}
 
-    void            queueAdd     ( TnmsTree::Node * node );
-    void            queueUpdate  ( TnmsTree::Node * node );
-    void            queueRemove  ( TnmsTree::Node * node );
+    void            queueAdd     ( TnmsTree::Node  * node );
+    void            queueUpdate  ( TnmsTree::Node  * node );
+    void            queueRemove  ( TnmsTree::Node  * node );
 
 
     bool            isAgent() const;
@@ -38,6 +40,8 @@ class TnmsClient : public TnmsSocket {
     
     bool            inTreeSend() const;
     void            inTreeSend   ( bool insend );
+
+
 
     const
     std::string&    getConfig() const { return _xmlConfig; }
