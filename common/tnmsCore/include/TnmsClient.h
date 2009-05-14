@@ -16,7 +16,7 @@ class TnmsClient : public TnmsSocket {
 
   public:
 
-    TnmsClient ( TnmsTree * tree );
+    TnmsClient ( TnmsTree * tree = NULL );
     TnmsClient ( TnmsTree * tree, BufferedSocket * sock, 
                  bool isAgent = false );
 

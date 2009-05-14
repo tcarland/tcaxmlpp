@@ -1,5 +1,14 @@
 #define _TNMSCORE_AUTHIOHANDLER_CPP_
 
+
+#include "AuthIOHandler.h"
+#include "TnmsClient.h"
+
+#include "EventManager.h"
+#include "LogFacility.h"
+using namespace tcanetpp;
+
+
 namespace tnmsCore {
 
 
@@ -37,13 +46,13 @@ AuthIOHandler::handle_close ( const EventIO * io )
     return;
 }
 
-void
+bool
 AuthIOHandler::readable ( const EventIO * io )
 {
     return true;
 }
 
-void
+bool
 AuthIOHandler::writeable ( const EventIO * io )
 {
     TnmsClient * client = (TnmsClient*) io->rock;

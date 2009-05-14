@@ -3,12 +3,16 @@
 
 #include <map>
 
-#include
 #include "TnmsClient.h"
+
+#include "EventManager.h"
+using namespace tcanetpp;
+
 
 
 namespace tnmsCore {
 
+class AuthIOHandler;
 
 
 struct AuthAttempt 
@@ -38,15 +42,22 @@ class AuthClient : public TnmsClient {
   public:
 
     AuthClient ( EventManager * evmgr );
+    AuthClient ( const std::string & authsvr, uint16_t authport,
+                 EventManager * evmgr );
+    
     virtual ~AuthClient();
+
 
   public:   /* TnmsClient */
 
     virtual int    connect();
     virtual void   close();
-    virtual void   AuthReplyHandler ( const TnmsAuthReply & reply );
+
+    virtual void   AuthReplyHandler ( TnmsAuthReply & reply );
 
   public:
+
+    void           timeout          ( const EventTimer * timer );
 
     bool           authClient       ( TnmsClient * client, TnmsAuthRequest & req );
     void           unauthClient     ( TnmsClient * client );
@@ -56,6 +67,7 @@ class AuthClient : public TnmsClient {
     evid_t         getEventId()     { return _evid; }
     void           setIdleTimeout   ( const time_t & secs );
     time_t         getIdleTimeout() const;
+    void           enableAuthBypass ( bool bypass ) { _bypass = bypass; }
 
 
   protected:
@@ -67,8 +79,11 @@ class AuthClient : public TnmsClient {
 
     std::string                 _authsvr;
     uint16_t                    _authport;
-    time_t                      _idleTimeout;
-}
+    time_t                      _idleTimeout, _idlet;
+    time_t                      _authRetryInterval;
+
+    bool                        _bypass;
+};
 
 
 }  // namespace 

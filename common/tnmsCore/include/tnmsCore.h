@@ -28,6 +28,7 @@
 #define TNMS_FLUSH_LIMIT           500         // minimum flush amt
 #define TNMS_CLIENT_TIMEOUT        120         // stall timeout
 #define TNMS_LOGIN_ATTEMPTS        5
+#define TNMS_LOGIN_INTERVAL        15
 #define TNMS_COMPRESSION_ENABLE    1
 #define TNMS_FLUSH_ENABLE          1
 

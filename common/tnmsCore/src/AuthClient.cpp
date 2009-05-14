@@ -1,23 +1,96 @@
 #define _TNMSCORE_AUTHCLIENT_CPP_
 
-
+#include "tnmsCore.h"
 #include "AuthClient.h"
+#include "AuthIOHandler.h"
 
-using namespace tnmsCore {
+#include "LogFacility.h"
+using namespace tcanetpp;
+
+
+
+namespace tnmsCore {
 
 
 AuthClient::AuthClient ( EventManager * evmgr ) 
     : _evmgr(evmgr),
       _evid(0),
-      _authhandler(new AuthIOHandler())
+      _authhandler(new AuthIOHandler()),
+      _authport(0),
+      _idleTimeout(0),
+      _authRetryInterval(TNMS_LOGIN_INTERVAL)
 {}
 
-AuthCLient::~AuthClient()
+AuthClient::AuthClient ( const std::string & authsvr, uint16_t authport, EventManager * evmgr )  
+    : _evmgr(evmgr),
+      _evid(0),
+      _authhandler(new AuthIOHandler()),
+      _authsvr(authsvr),
+      _authport(authport),
+      _idleTimeout(0),
+      _authRetryInterval(TNMS_LOGIN_INTERVAL)
+{}
+
+AuthClient::~AuthClient() 
 {
     this->close();
 
     if ( _authhandler )
         delete _authhandler;
+}
+
+
+void 
+AuthClient::timeout ( const EventTimer * timer )
+{
+    if ( _bypass )
+        return;
+
+    const time_t  & now = timer->abstime.tv_sec;
+    const EventIO * io  = _evmgr->findIOEvent(_evid);
+
+    if ( _authMap.size() == 0 && ! _authhandler->writeable(io) ) {
+        if ( _idleTimeout > 0 && _idlet <= now ) {
+            if ( this->isConnected() )
+                this->close();
+            _idlet = now + _idleTimeout;
+        }
+    } else {
+        _idlet = now + _idleTimeout;
+    }
+
+    if ( ! this->isConnected() || this->isConnecting() )
+        if ( this->connect() <= 0 )
+            return;
+
+    if ( this->receive() < 0 ) {
+        this->close();
+        return;
+    }
+
+    if ( this->send() < 0 ) {
+        this->close();
+        return;
+    }
+
+    AuthRequestMap::iterator  rIter;
+
+    for ( rIter = _authMap.begin(); rIter != _authMap.end(); ++rIter ) {
+        AuthAttempt & authp = rIter->second;
+
+        if ( authp.request.getElementName().empty() || authp.client == NULL )
+            continue;
+
+        if ( authp.sent_at == 0 ) {
+            if ( this->sendMessage(&authp.request) )
+                authp.sent_at = now;
+        } else if ( (authp.sent_at + _authRetryInterval) <= now ) {
+            if ( this->sendMessage(&authp.request) )
+                authp.sent_at = now;
+        }
+    }
+
+    return;
 }
 
 
@@ -27,31 +100,41 @@ AuthClient::authClient ( TnmsClient * client, TnmsAuthRequest & request )
     if ( client == NULL ) 
         return false;
 
-    AuthAttempt  attempt;
+    if ( _bypass ) {
+        TnmsAuthReply  reply(request.getElementName());
+        reply.authResult(AUTH_SUCCESS);
+        this->AuthReplyHandler(reply);
+    }
+
+    AuthAttempt    authp;
     AuthRequestMap::iterator rIter;
 
     rIter = _authMap.find(request.getElementName());
-
     if ( rIter != _authMap.end() )
     {
-        if ( rIter->second.sentat > 0 )
+        if ( rIter->second.sent_at > 0 )
             return true;
     }
 
-    attempt.request = request
-    attempt.client  = client;
+    authp.request = request;
+    authp.client  = client;
 
-    _authMap[request.getElementName()]d = attempt;
+    _authMap[request.getElementName()] = authp;
 
     if ( ! this->isConnected() || this->isConnecting() )
         if ( this->connect() < 0 )
             return false;
 
+    rIter = _authMap.find(request.getElementName());
+    if ( rIter == _authMap.end() )
+        return false;
+
+    AuthAttempt & proxy = rIter->second;
+
     LogFacility::LogMessage("AuthClient handling request for " + request.getElementName());
 
-    if ( this->sendMessage(request) )
-        //sentat = now;
-       ;
+    if ( this->sendMessage(&proxy.request) )
+        proxy.sent_at = ::time(NULL);
     
     return true;
 }
@@ -66,13 +149,14 @@ AuthClient::unauthClient ( TnmsClient * client )
 
     AuthRequestMap::iterator  rIter;
 
-    rIter = _authMap.find(client.getClientLogin());
+    rIter = _authMap.find(client->getClientLogin());
 
     if ( rIter != _authMap.end() )
         _authMap.erase(rIter);
 
     return;
 }
+
 
 int
 AuthClient::connect()
@@ -102,11 +186,10 @@ AuthClient::close()
 }
 
 void
-AuthClient::AuthReplyHandler ( const TnmsAuthReply & reply ) 
+AuthClient::AuthReplyHandler ( TnmsAuthReply & reply ) 
 {
     TnmsClient * client = NULL;
     AuthRequestMap::iterator  rIter;
-
 
     rIter = _authMap.find(reply.getElementName());
 
@@ -115,10 +198,10 @@ AuthClient::AuthReplyHandler ( const TnmsAuthReply & reply )
 
     LogFacility::LogMessage("AuthClient::AuthReplyHandler() " + reply.getElementName());
 
-    client = rIter->second;
+    client = rIter->second.client;
 
     if ( client ) {
-        if ( client->sendMessage(reply) ) {  // forward reply
+        if ( client->sendMessage(&reply) ) {  // forward reply
             client->AuthReplyHandler(reply);
         } else {
             LogFacility::LogMessage("AuthClient::AuthReplyHandler() error forwarding reply to " + client->getHostStr());
@@ -135,16 +218,18 @@ AuthClient::AuthReplyHandler ( const TnmsAuthReply & reply )
 void
 AuthClient::setAuthServer ( const std::string & authsvr, uint16_t port )
 {
-    if ( _authsvr.compare(authserver) !=0 ) {
+    if ( _authsvr.compare(authsvr) !=0 ) {
         this->close();
         _authsvr = authsvr;
     }
 
     if ( _authport != port ) {
-        this->close;
+        this->close();
         _authport = port;
     }
 
     return;
 }
+
+} // namespace
 
