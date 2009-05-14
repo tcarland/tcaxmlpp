@@ -3,7 +3,6 @@
 #include <time.h>
 
 #include "TnmsManager.h"
-#include "TnmsAuthClient.h"
 
 #include "LogFacility.h"
 

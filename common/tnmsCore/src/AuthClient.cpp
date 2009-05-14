@@ -18,7 +18,8 @@ AuthClient::AuthClient ( EventManager * evmgr )
       _authhandler(new AuthIOHandler()),
       _authport(0),
       _idleTimeout(0),
-      _authRetryInterval(TNMS_LOGIN_INTERVAL)
+      _authRetryInterval(TNMS_LOGIN_INTERVAL),
+      _bypass(false)
 {}
 
 AuthClient::AuthClient ( const std::string & authsvr, uint16_t authport, EventManager * evmgr )  
@@ -28,7 +29,8 @@ AuthClient::AuthClient ( const std::string & authsvr, uint16_t authport, EventMa
       _authsvr(authsvr),
       _authport(authport),
       _idleTimeout(0),
-      _authRetryInterval(TNMS_LOGIN_INTERVAL)
+      _authRetryInterval(TNMS_LOGIN_INTERVAL),
+      _bypass(false)
 {}
 
 AuthClient::~AuthClient() 
@@ -104,6 +106,7 @@ AuthClient::authClient ( TnmsClient * client, TnmsAuthRequest & request )
         TnmsAuthReply  reply(request.getElementName());
         reply.authResult(AUTH_SUCCESS);
         this->AuthReplyHandler(reply);
+        return true;
     }
 
     AuthAttempt    authp;

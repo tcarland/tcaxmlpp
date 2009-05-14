@@ -10,6 +10,7 @@ using namespace tcanetpp;
 
 #include "tnmsCore.h"
 #include "TnmsConfig.h"
+#include "AuthClient.h"
 using namespace tnmsCore;
 
 #include "AgentIOHandler.h"
@@ -25,8 +26,6 @@ namespace tnmsd {
 
 #define TNMSD_CONFIG_ROOT          "tnmsd"
 
-
-class TnmsAuthClient;
 
 typedef std::map<evid_t, TnmsClient*>  ClientMap;
 
@@ -69,14 +68,13 @@ class TnmsManager : public EventTimerHandler {
 
     Socket*             _agtsvr;
     Socket*             _clnsvr;
-    TnmsAuthClient*     _auth;
+    AuthClient*         _auth;
 
     ClientMap           _clientMap;
     evid_t              _agtsvrid, _clnsvrid;
 
     AgentIOHandler*     _agentHandler;
     ClientIOHandler*    _clientHandler;
-    //TnmsMessageHandler  _msgHandler;
 
     TnmsConfig          _tconfig;
 
