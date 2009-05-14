@@ -157,6 +157,8 @@ class TnmsSocket {
     int                 rcvSubscribes     ( tnmsHeader  & hdr );
     int                 rcvUnsubscribes   ( tnmsHeader  & hdr );
 
+    void                authReply         ( const TnmsAuthReply & reply );
+
   private:
 
     void                init();
@@ -166,7 +168,6 @@ class TnmsSocket {
 
     bool                initHeader        ( uint16_t type, size_t size );
     ssize_t             uncompress        ( uint32_t size );
-    void                authReply         ( const TnmsAuthReply & reply );
     //bool                checkStall();
     //void                clearStall() {}
 
@@ -189,6 +190,7 @@ class TnmsSocket {
 
     std::string                 _hostname;
     std::string                 _login;
+    std::string                 _authname;
     std::string                 _hoststr;
     std::string                 _addrstr;
     std::string                 _errstr;

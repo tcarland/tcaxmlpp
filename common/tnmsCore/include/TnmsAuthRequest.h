@@ -25,6 +25,8 @@ public:
     ipv4addr_t       ipaddr() const { return _ipaddr; }
     void             ipaddr      ( ipv4addr_t addr ) { _ipaddr = addr; }
 
+    std::string      agent_key() const { return _agent_key; }
+
     // serializable
     virtual ssize_t  serialize   ( char * buffer, size_t buffer_len );
     virtual ssize_t  deserialize ( const char * buffer, size_t buffer_len );

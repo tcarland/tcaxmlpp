@@ -6,7 +6,9 @@
 
 namespace tnmsCore {
 
-#define 
+#define TNMS_AGENT_ID "tnmsagent" 
+
+
 class TnmsAgent : public TnmsSocket {
 
   public:

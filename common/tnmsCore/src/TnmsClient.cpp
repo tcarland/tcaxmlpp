@@ -2,7 +2,11 @@
 
 
 #include "TnmsClient.h"
+
 #include "TnmsMessageHandler.h"
+#include "AuthClient.h"
+#include "TnmsAuthRequest.h"
+#include "TnmsAuthReply.h"
 
 #include "LogFacility.h"
 using namespace tcanetpp;
@@ -20,9 +24,11 @@ TnmsClient::TnmsClient ( TnmsTree * tree )
 }
 
 
-TnmsClient::TnmsClient ( TnmsTree * tree, BufferedSocket * sock, bool isAgent )
+TnmsClient::TnmsClient ( TnmsTree * tree, AuthClient * auth,
+                         BufferedSocket * sock, bool isAgent )
     : TnmsSocket(sock, new TnmsMessageHandler(tree, this)),
       _tree(tree),
+      _auth(auth),
       _isAgent(isAgent),
       _isMirror(false)
 {
@@ -119,38 +125,74 @@ TnmsClient::close()
 void
 TnmsClient::AuthReplyHandler ( const TnmsAuthReply & reply )
 {
-    this->_authorizing = false;
-    this->_authorizations.clear();
+    //time_t  now = ::time(NULL);
 
-    if ( reply.authResult() == AUTH_SUCCESS ) {
-        this->_authorized = true;
-    } else {
-        this->_authorized = false;
-        return;
+    TnmsSocket::authReply(reply);
 
+    if ( this->_isMirror ) {
+        //init client stats
     }
-
-    LogFacility::LogMessage("TnmsClient::AuthReplyHandler()");
-
-    if ( reply.authData().length() == 0 )
-        return;
-
-    tcanetpp::StringUtils::split(reply.authData(), ':', std::back_inserter(this->_authorizations));
-
-    if ( this->_authorizations.size() > 2 ) {
-        std::string isInc = _authorizations.front();
-        _authorizations.pop_front();
-
-        if ( isInc.compare("i") == 0 )
-            this->_authFunctor = new AuthIncludeFunctor(_authorizations);
-        else
-            this->_authFunctor = new AuthExcludeFunctor(_authorizations);
-    } else {
-        this->_authFunctor = new AuthAllFunctor(_authorizations);
-    }
-
-    return;
 }
+
+// agent login credentials should be 
+//    'tnmsagent:/my/agent/id'
+void
+TnmsClient::AuthRequestHandler ( const TnmsAuthRequest & request )
+{
+    std::string  login, authname;
+    std::string::size_type  colon;
+
+    if ( this->_isAgent ) {
+
+        login = request.getElementName();
+
+        colon = login.find_first_of(':', 0);
+
+        if ( colon == std::string::npos ) {
+            this->_login    = login;
+            this->_authname = "tnmsagent";
+        }  else {
+            this->_login     = login.substr(colon+1);
+            this->_authname  = login.substr(0, colon);
+        }
+
+        _authname.append("@").append(this->getAddrStr());
+        _authname.append(":").append(this->_login);
+
+        TnmsAuthRequest req(_authname, "");
+
+        if ( this->_auth ) {
+            _auth->authClient(this, req);
+        } else {
+            LogFacility::LogMessage("TnmsClient::AuthRequestHandler() Invalid Auth handle");
+            // no auth svc, for now let it thru
+            TnmsAuthReply reply(_authname);
+            reply.authResult(AUTH_SUCCESS);
+            this->sendMessage(&reply);
+        }
+    } else {  // client
+        this->_login    = request.getElementName();
+        this->_authname = _login;
+
+        _authname.append("@").append(this->getHostStr());
+        _authname.append(":");
+
+        TnmsAuthRequest req(_authname, request.agent_key());
+
+        // init client stats
+
+        if ( _auth ) {
+            _auth->authClient(this, req);
+        } else {
+            LogFacility::LogMessage("TnmsClient::AuthRequestHandler() Invalid Auth handle");
+            // no auth svc, for now let it thru
+            TnmsAuthReply reply(_authname);
+            reply.authResult(AUTH_SUCCESS);
+            this->sendMessage(&reply);
+        }
+    }
+}
+
 
 void
 TnmsClient::queueAdd ( TnmsTree::Node * node )
