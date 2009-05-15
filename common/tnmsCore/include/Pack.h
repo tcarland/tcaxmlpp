@@ -52,7 +52,7 @@ class Packer {
     
     static inline size_t PadLen ( const size_t & wtlen )
     {
-        size_t  pad = wtlen & PACKER_WORDSIZE;
+        size_t  pad = wtlen % PACKER_WORDSIZE;
         return (pad == 0) ? 0 : PACKER_WORDSIZE - pad;
     }
 

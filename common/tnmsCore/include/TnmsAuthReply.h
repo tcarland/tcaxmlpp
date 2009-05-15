@@ -10,23 +10,26 @@ class TnmsAuthReply : public TnmsMessage {
 public:
 
     TnmsAuthReply()
-        : TnmsMessage(AUTH_REPLY)
+        : TnmsMessage(AUTH_REPLY),
+          _auth_result(AUTH_NO_RESULT)
     {}
 
     TnmsAuthReply ( const std::string & agent_name )
-        : TnmsMessage(agent_name, AUTH_REPLY)
+        : TnmsMessage(agent_name, AUTH_REPLY),
+          _auth_result(AUTH_NO_RESULT)
     {}
 
     TnmsAuthReply ( const std::string & agent_name, 
                     const TnmsOid     & oid )
-        : TnmsMessage(agent_name, oid, AUTH_REPLY)
+        : TnmsMessage(agent_name, oid, AUTH_REPLY),
+          _auth_result(AUTH_NO_RESULT)
     {}
 
     eAuthType           authResult() const;
     const std::string&  authReason() const;
     const std::string&  authData()   const;
 
-    void                authResult  ( eAuthType result ) { _auth_result = result; }
+    void                authResult  ( eAuthType result ) { this->_auth_result = result; }
     void                authReason  ( const std::string & reason ) { _auth_reason = reason; }
     void                authData    ( const std::string & data ) { _auth_data = data; }
 

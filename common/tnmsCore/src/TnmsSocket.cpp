@@ -906,7 +906,7 @@ TnmsSocket::sendMessage ( Serializable * message )
     if ( ! this->initHeader(message->message_type(), msz) )
         return false;
 
-    wt = message->serialize(_wptr, (_wtsize-_wtt));
+    wt = message->serialize(_wptr, (_wtsize - _wtt));
 
     if ( wt < 0 ) {
         _errstr = "TnmsSocket::sendMessage() error in message serialization for " + this->getHostStr();
