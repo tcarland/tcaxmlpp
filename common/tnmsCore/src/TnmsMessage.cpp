@@ -67,6 +67,7 @@ TnmsMessage::deserialize ( const char * buffer, size_t buffer_len )
     const char * rptr;
     size_t       rsz, rd = 0;
     ssize_t      upk;
+    uint16_t     type;
 
     if ( buffer_len < this->size() )
         return -1;
@@ -74,12 +75,12 @@ TnmsMessage::deserialize ( const char * buffer, size_t buffer_len )
     rptr  = buffer;
     rsz   = buffer_len;
 
-    uint16_t type;
     upk   = Packer::Unpack(rptr, (rsz - rd), type);
     if ( upk < 0 )
         return -1;
     rd   += upk;
     rptr += upk;
+
     _message_type = (eMessageType) type;
 
     upk   = this->_element_oid.deserialize(rptr, (rsz - rd));

@@ -119,7 +119,6 @@ TnmsMetric::serialize ( char * buffer, size_t  buffer_len )
     pk   = Packer::Pack(wptr, (wsz-wt), pvt);
     if ( pk < 0 )
         return -1;
-
     wt += pk;
 
     LogFacility::LogMessage("TnmsMetric::serialize() " + StringUtils::toString<ssize_t>(wt));
@@ -132,8 +131,10 @@ ssize_t
 TnmsMetric::deserialize ( const char * buffer, size_t  buffer_len )
 {
     const char * rptr;
-    size_t       rsz, rd = 0;
     ssize_t      upk;
+    size_t       rsz, rd = 0;
+    uint16_t     value_type = 0;
+    uint32_t     vallen = 0;
 
     if ( buffer_len < this->size() )
         return -1;
@@ -153,15 +154,14 @@ TnmsMetric::deserialize ( const char * buffer, size_t  buffer_len )
     rd   += upk;
     rptr += upk;
 
-    uint16_t  value_type;
     upk   = Packer::Unpack(rptr, (rsz-rd), value_type);
     if ( upk < 0 )
         return -1;
     rd   += upk;
     rptr += upk;
+
     this->_valType = (eValueType) value_type;
 
-    uint32_t  vallen = 0;
     if ( _valType == TNMS_STRING ) {
         upk = Packer::Unpack(rptr, (rsz-rd), _valueStr);
         if ( upk < 0 )

@@ -53,16 +53,19 @@ TnmsAuthReply::serialize ( char * buffer, size_t buffer_len )
     if ( pk < 0 )
         return -1;
     wt   += pk;
+    wptr += pk;
 
     pk    = Packer::Pack(wptr, buffer_len - wt, _auth_reason);
     if ( pk < 0 )
         return -1;
     wt   += pk;
+    wptr += pk;
 
     pk    = Packer::Pack(wptr, buffer_len - wt, _auth_data);
     if ( pk < 0 )
         return -1;
     wt   += pk;
+    wptr += pk;
 
     LogFacility::Message   msg;
     msg << "TnmsAuthReply::serialize() result = " << this->_auth_result;
