@@ -138,7 +138,7 @@ TnmsMessageHandler::AuthRequestHandler ( const TnmsAuthRequest & request )
 
 
 void  
-TnmsMessageHandler::AuthReplyHandler   ( const TnmsAuthReply   & reply )
+TnmsMessageHandler::AuthReplyHandler   ( const TnmsAuthReply & reply )
 {
 
     LogFacility::LogMessage("TnmsMessageHandler::AuthReplyHandler() " + reply.getElementName());

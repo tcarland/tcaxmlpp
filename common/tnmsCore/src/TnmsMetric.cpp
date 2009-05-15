@@ -6,6 +6,7 @@
  */
 #define _TNMSCORE_TNMSMETRIC_CPP_
 
+#include "StringUtils.h"
 #include "LogFacility.h"
 using namespace tcanetpp;
 
@@ -121,7 +122,7 @@ TnmsMetric::serialize ( char * buffer, size_t  buffer_len )
 
     wt += pk;
 
-    LogFacility::LogMessage("TnmsMetric::serialize()");
+    LogFacility::LogMessage("TnmsMetric::serialize() " + StringUtils::toString<ssize_t>(wt));
 
     return wt;
 }

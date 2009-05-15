@@ -125,35 +125,43 @@ TnmsClient::close()
 void
 TnmsClient::AuthReplyHandler ( const TnmsAuthReply & reply )
 {
-    //time_t  now = ::time(NULL);
+    LogFacility::Message msg;
 
     TnmsSocket::authReply(reply);
 
+    msg << "TnmsClient::AuthReplyHandler(): " << reply.getElementName();
+
+    if ( this->isAuthorized() )
+        msg << " is authorized";
+    else
+        msg << " is not authorized";
+
+    LogFacility::LogMessage(msg);
+
     if ( this->_isMirror ) {
+        //time_t  now = ::time(NULL);
         //init client stats
     }
 }
 
-// agent login credentials should be 
-//    'tnmsagent:/my/agent/id'
+// agent login credentials:  'tnmsagent@ipaddr:/my/agent/id'
+// client login credentials: 'username@ipaddr:'
 void
 TnmsClient::AuthRequestHandler ( const TnmsAuthRequest & request )
 {
-    std::string  login, authname;
-    std::string::size_type  colon;
+    std::string              login, authname;
+    std::string::size_type   delim;
 
     if ( this->_isAgent ) {
-
         login = request.getElementName();
+        delim = login.find_first_of(':', 0);
 
-        colon = login.find_first_of(':', 0);
-
-        if ( colon == std::string::npos ) {
+        if ( delim == std::string::npos ) {
             this->_login    = login;
             this->_authname = "tnmsagent";
         }  else {
-            this->_login     = login.substr(colon+1);
-            this->_authname  = login.substr(0, colon);
+            this->_login     = login.substr(delim+1);
+            this->_authname  = login.substr(0, delim);
         }
 
         _authname.append("@").append(this->getAddrStr());
@@ -164,10 +172,10 @@ TnmsClient::AuthRequestHandler ( const TnmsAuthRequest & request )
         if ( this->_auth ) {
             _auth->authClient(this, req);
         } else {
-            LogFacility::LogMessage("TnmsClient::AuthRequestHandler() Invalid Auth handle");
             // no auth svc, for now let it thru
+            LogFacility::LogMessage("TnmsClient::AuthRequestHandler() Invalid Auth handle");
             TnmsAuthReply reply(_authname);
-            reply.authResult(AUTH_SUCCESS);
+            reply.authResult(AUTH_NO_RESULT);
             this->sendMessage(&reply);
         }
     } else {  // client
@@ -187,7 +195,7 @@ TnmsClient::AuthRequestHandler ( const TnmsAuthRequest & request )
             LogFacility::LogMessage("TnmsClient::AuthRequestHandler() Invalid Auth handle");
             // no auth svc, for now let it thru
             TnmsAuthReply reply(_authname);
-            reply.authResult(AUTH_SUCCESS);
+            reply.authResult(AUTH_NO_RESULT);
             this->sendMessage(&reply);
         }
     }

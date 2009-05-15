@@ -3,8 +3,13 @@
 #include <time.h>
 
 #include "TnmsManager.h"
+#include "AgentIOHandler.h"
+#include "ClientIOHandler.h"
+
+#include "AuthClient.h"
 
 #include "LogFacility.h"
+
 
 
 namespace tnmsd {
@@ -15,11 +20,11 @@ TnmsManager::TnmsManager ( const std::string & configfile )
       _tree(new TnmsTree()),
       _agtsvr(NULL),
       _clnsvr(NULL),
-      _auth(NULL),
+      _auth(new AuthClient(this->_evmgr)),
       _agtsvrid(0),
       _clnsvrid(0),
-      _agentHandler(new AgentIOHandler(_tree)),
-      _clientHandler(new ClientIOHandler(_tree)),
+      _agentHandler(new AgentIOHandler(_tree, _auth)),
+      _clientHandler(new ClientIOHandler(_tree, _auth)),
       _lastTouched(0),
       _logRotate(0),
       _startDelay(DEFAULT_STARTUP_DELAY),
@@ -205,6 +210,14 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
             LogFacility::CloseSyslog();
         LogFacility::SetLogPrefix(prefix);
         this->logRotate(config.logfile, now);
+    }
+
+    // set auth server
+    if ( cfgmgr.haveAttribute("auth_bypass") ) {
+        LogFacility::LogMessage("TnmsManager: WARNING: Enabling Auth Bypass");
+        this->_auth->enableAuthBypass(true);
+    } else {
+        this->_auth->setAuthServer(config.auth_server, config.auth_port);
     }
 
     // (re)initialize our tree?

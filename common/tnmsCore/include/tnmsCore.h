@@ -9,15 +9,16 @@
 #define _TNMSCORE_H_
 
 
-#define TNMS_VERSION_MAJOR         0x0000
-#define TNMS_VERSION_MINOR         0x0001
+#define TNMS_VERSION_MAJOR         0x0001
+#define TNMS_VERSION_MINOR         0x0002
 #define TNMS_VERSION               ( (((uint32_t)TNMS_VERSION_MAJOR << 16) & 0xffff0000) | \
                                       ((uint32_t)TNMS_VERSION_MINOR) )
 #define TNMS_GET_MAJOR(x)          (  ((uint32_t)x >> 16) & 0x0000ffff )
-#define TNMS_GET_MINOR(x)          (   (uint32_t)x & 0x0000ffff )
+#define TNMS_GET_MINOR(x)          (  (uint32_t)x & 0x0000ffff )
 
 #define TNMS_DELIMITER             "/"
 #define TNMS_DELIMITER_CHAR        '/'
+#define TNMS_AGENT_ID              "tnmsagent"
 
 #define TNMS_RECORD_LIMIT          1000        // max records
 #define TNMS_RECORD_SIZE           1024        // avg rec size

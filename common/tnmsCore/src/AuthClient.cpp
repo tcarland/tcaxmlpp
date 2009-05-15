@@ -105,8 +105,10 @@ AuthClient::authClient ( TnmsClient * client, TnmsAuthRequest & request )
     if ( _bypass ) {
         TnmsAuthReply  reply(request.getElementName());
         reply.authResult(AUTH_SUCCESS);
-        this->AuthReplyHandler(reply);
-        return true;
+        if ( client->sendMessage(&reply) ) {
+            client->AuthReplyHandler(reply);
+            return true;
+        }
     }
 
     AuthAttempt    authp;
@@ -196,8 +198,10 @@ AuthClient::AuthReplyHandler ( TnmsAuthReply & reply )
 
     rIter = _authMap.find(reply.getElementName());
 
-    if ( rIter == _authMap.end() )
+    if ( rIter == _authMap.end() ) {
+        LogFacility::LogMessage("AuthClient::AuthReplyHandler() client not found: " + reply.getElementName());
         return;
+    }
 
     LogFacility::LogMessage("AuthClient::AuthReplyHandler() " + reply.getElementName());
 

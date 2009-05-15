@@ -171,6 +171,7 @@ int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
     if ( showprompt ) {
         std::cout << prompt;
         LogFacility::OpenLogStream("stdout", &std::cout);
+        LogFacility::SetBroadcast(true);
     }
 
     while ( ! done && istrm.getline(line, len) )

@@ -7,13 +7,10 @@
 #include "Exception.hpp"
 using namespace tcanetpp;
 
-#include "TnmsTree.h"
 #include "TnmsClient.h"
 using namespace tnmsCore;
 
-
 namespace tnmsd {
-
 
 typedef std::set<TnmsClient*>  ClientSet;
 
@@ -22,7 +19,8 @@ class AgentIOHandler : public EventIOHandler {
 
   public:
 
-    AgentIOHandler ( TnmsTree * tree ) throw ( Exception );
+    AgentIOHandler ( TnmsTree * tree, AuthClient * auth = NULL ) 
+        throw ( Exception );
 
     virtual ~AgentIOHandler();
 
@@ -43,7 +41,7 @@ class AgentIOHandler : public EventIOHandler {
   protected:
 
     TnmsTree *                  _tree;
-    //auth
+    AuthClient *                _auth;
 
     std::set<TnmsClient*>       _clients;
     std::set<TnmsClient*>       _mirrors;

@@ -95,7 +95,7 @@ TnmsBase::send ( time_t  now )
 
     // Receive messages
     if ( _conn->receive(now) < 0 ) {
-        LogFacility::LogMessage("TnmsAPI: connection lost in receive().");
+        LogFacility::LogMessage("TnmsAPI: connection lost in receive(): " + _conn->getErrorStr());
         _conn->close();
         return TNMSERR_CONN_LOST;
     }
@@ -107,7 +107,7 @@ TnmsBase::send ( time_t  now )
     if ( _conn->txBytesBuffered() > 0 ) 
     {
         if ( _conn->send() < 0 ) {
-            LogFacility::LogMessage("TnmsAPI: connection lost in send().");
+            LogFacility::LogMessage("TnmsAPI: connection lost in send(): " + _conn->getErrorStr());
             _conn->close();
             return TNMSERR_CONN_LOST;
         }
@@ -356,17 +356,13 @@ TnmsBase::checkSubscription ( const time_t & now )
             return this->reconfigure(now);
         }
 
+        LogFacility::LogMessage("TnmsAPI: authorized, subscribing server to tree");
         _subscribed = this->_tree->subscribe("*", _conn);
 
-        /*
-        if ( ! this->sendTree(now) ) {
-            LogFacility::LogMessage("TnmsAPI: Connection lost sending tree.");
-            return TNMSERR_CONN_LOST;
-        } else {
-            LogFacility::LogMessage("TnmsAPI: Tree sent.");
-            _subscribed = true;
-        }
-        */
+        if ( _subscribed ) 
+            LogFacility::LogMessage("TnmsAPI: tree sent");
+        else
+            LogFacility::LogMessage("TnmsAPI: error in tree subscription");
 
     } else if ( ! _conn->isAuthorized() ) {
         if ( _reconnect > now ) {

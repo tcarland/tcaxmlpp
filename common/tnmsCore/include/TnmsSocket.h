@@ -114,10 +114,12 @@ class TnmsSocket {
     const time_t&       getTimeout() const;
 
 
-    /*  Subscriptions  */
+    /*  Authorization / Subscriptions  */
 
-    void                login             ( const std::string &  user,
+    virtual void        login             ( const std::string &  user,
                                             const std::string &  pw );
+
+    virtual void        authReply         ( const TnmsAuthReply & reply );
 
     bool                isAuthorized() const;
     bool                isSubscribed() const;
@@ -157,7 +159,6 @@ class TnmsSocket {
     int                 rcvSubscribes     ( tnmsHeader  & hdr );
     int                 rcvUnsubscribes   ( tnmsHeader  & hdr );
 
-    void                authReply         ( const TnmsAuthReply & reply );
 
   private:
 

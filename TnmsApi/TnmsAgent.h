@@ -2,14 +2,12 @@
 #define _TNMSCORE_TNMSAGENT_H_
 
 #include "tnmsCore.h"
-
+#include "TnmsClient.h"
 
 namespace tnmsCore {
 
-#define TNMS_AGENT_ID "tnmsagent" 
 
-
-class TnmsAgent : public TnmsSocket {
+class TnmsAgent : public TnmsClient {
 
   public:
 
@@ -17,19 +15,16 @@ class TnmsAgent : public TnmsSocket {
 
     virtual ~TnmsAgent();
 
+    //virtual void    AuthReplyHandler    ( const TnmsAuthReply   & reply );
+    virtual void    AuthRequestHandler  ( const TnmsAuthRequest & request ) {}
 
     void        flushLimit  ( uint32_t flush );
     uint32_t    flushLimit();
 
     void        login();
+
     void        clear();
     int         flush();
-
-
-    // queueAdd
-    // queueUpdate
-    // queueRremove
-    // authReply()
 
     std::string getConfig() { return _xmlconfig; }
 

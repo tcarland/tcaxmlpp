@@ -2,8 +2,6 @@
 #define _TNMSD_TNMSMESSAGEHANDLER_H_
 
 #include "MessageHandler.hpp"
-#include "TnmsMessage.h"
-#include "TnmsMetric.h"
 
 
 namespace tnmsCore {

@@ -40,7 +40,7 @@ TnmsMessage::serialize ( char * buffer, size_t buffer_len )
 
     char * wptr = buffer;
 
-    pk    = Packer::Pack(wptr, (buffer_len - wt), _message_type);
+    pk    = Packer::Pack(wptr, (buffer_len - wt), ((uint16_t)_message_type));
     if ( pk < 0 )
         return -1;
     wt   += pk;
@@ -58,8 +58,6 @@ TnmsMessage::serialize ( char * buffer, size_t buffer_len )
     wt   += pk;
     
     return wt;
-
-    return -1;
 }
 
 

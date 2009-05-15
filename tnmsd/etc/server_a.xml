@@ -5,7 +5,8 @@
         agent_name="server_a"
         logfile="server_a.log"
         syslog="false"
-        debug="true" >
+        debug="true"
+        auth_bypass="true" >
 
         <server
             agent_port="15300"

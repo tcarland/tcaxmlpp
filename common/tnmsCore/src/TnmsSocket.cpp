@@ -890,8 +890,6 @@ TnmsSocket::authReply ( const TnmsAuthReply & reply )
         _authFunctor = new AuthAllFunctor(_authorizations);
     }
 
-    _msgHandler->AuthReplyHandler(reply);
-
     return;
 }
 
@@ -977,7 +975,7 @@ TnmsSocket::rcvAuthReply ( tnmsHeader & hdr )
         return -1;
     }
 
-    this->authReply(reply);
+    _msgHandler->AuthReplyHandler(reply);
 
     return 1;
 }

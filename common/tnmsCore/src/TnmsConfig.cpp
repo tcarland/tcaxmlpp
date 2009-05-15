@@ -249,5 +249,36 @@ TnmsConfigHandler::parseClient ( XmlNode * node )
     return true;
 }
 
+
+std::string         
+TnmsConfigHandler::getAttribute  ( const std::string & key )
+{
+    std::string   val;
+
+    AttributeMap::iterator kIter = _rootAttrs.find(key);
+
+    if ( kIter == _rootAttrs.end() )
+        return val;
+
+    val = kIter->second;
+
+    return val;
+}
+
+
+bool                
+TnmsConfigHandler::haveAttribute ( const std::string & key )
+{
+    AttributeMap::iterator kIter = _rootAttrs.find(key);
+
+    if ( kIter == _rootAttrs.end() )
+        return false;
+
+    return true;
+}
+
+
 } // namespace
+
+// _TNMSCORE_TNMSCONFIG_CPP_
 

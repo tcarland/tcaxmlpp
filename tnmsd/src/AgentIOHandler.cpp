@@ -9,8 +9,10 @@
 namespace tnmsd {
 
 
-AgentIOHandler::AgentIOHandler ( TnmsTree * tree ) throw ( Exception )
-    : _tree(tree)
+AgentIOHandler::AgentIOHandler ( TnmsTree * tree, AuthClient * auth ) 
+    throw ( Exception )
+    : _tree(tree),
+      _auth(auth)
 {
     if ( NULL == _tree )
         throw Exception("AgentIOHandler() TnmsTree is NULL");
@@ -103,7 +105,7 @@ AgentIOHandler::handle_accept ( const EventIO * io )
     if ( sock == NULL )
         return;
 
-    TnmsClient * client = new TnmsClient(_tree, sock, true);
+    TnmsClient * client = new TnmsClient(_tree, _auth, sock, true);
     evid_t id = io->evmgr->addIOEvent(this, client->getSockFD(), (void*) client);
 
     if ( id == 0 )

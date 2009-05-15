@@ -6,9 +6,11 @@ namespace tnmsCore {
 
 
 
-TnmsAgent::TnmsAgent()
-    : TnmsSocket() 
-{}
+TnmsAgent::TnmsAgent( TnmsTree * tree )
+    : TnmsClient(tree) 
+{
+    this->_agent = true;
+}
 
 
 TnmsAgent::~TnmsAgent() 
@@ -35,7 +37,7 @@ TnmsAgent::login ( const std::string & agentname )
     std::string  login = TNMS_AGENT_ID;
 
     login.append(":").append(agentname);
-    TnmsSocket::login(login, "");
+    TnmsClient::login(login, "");
     
     return;
 }

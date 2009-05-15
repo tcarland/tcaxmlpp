@@ -10,11 +10,8 @@ using namespace tcanetpp;
 
 #include "tnmsCore.h"
 #include "TnmsConfig.h"
-#include "AuthClient.h"
+#include "TnmsClient.h"
 using namespace tnmsCore;
-
-#include "AgentIOHandler.h"
-#include "ClientIOHandler.h"
 
 
 namespace tnmsd {
@@ -26,6 +23,9 @@ namespace tnmsd {
 
 #define TNMSD_CONFIG_ROOT          "tnmsd"
 
+
+class AgentIOHandler;
+class ClientIOHandler;
 
 typedef std::map<evid_t, TnmsClient*>  ClientMap;
 

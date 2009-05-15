@@ -25,6 +25,7 @@ class TnmsClient : public TnmsSocket {
     virtual int     send();
     virtual void    close();
 
+    // TnmsClient
     virtual void    AuthReplyHandler    ( const TnmsAuthReply   & reply );
     virtual void    AuthRequestHandler  ( const TnmsAuthRequest & request );
 

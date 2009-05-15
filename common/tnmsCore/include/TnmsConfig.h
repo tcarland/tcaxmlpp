@@ -142,8 +142,8 @@ class TnmsConfigHandler {
     virtual bool        parse();
 
 
-    std::string         getAttribute ( const std::string & key );
-    bool                haveAttribue ( const std::string & key );
+    std::string         getAttribute  ( const std::string & key );
+    bool                haveAttribute ( const std::string & key );
 
     void                setDebug ( bool d ) { this->_debug = d; }
     std::string         getErrorStr() const { return _errstr; }

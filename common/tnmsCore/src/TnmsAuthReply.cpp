@@ -47,7 +47,7 @@ TnmsAuthReply::serialize ( char * buffer, size_t buffer_len )
     wt   += pk;
     wptr += pk;
 
-    pk    = Packer::Pack(wptr, buffer_len - wt, _auth_result);
+    pk    = Packer::Pack(wptr, buffer_len - wt, ((uint16_t)_auth_result));
     if ( pk < 0 )
         return -1;
     wt   += pk;
@@ -62,7 +62,7 @@ TnmsAuthReply::serialize ( char * buffer, size_t buffer_len )
         return -1;
     wt   += pk;
 
-    return pk;
+    return wt;
 }
 
 

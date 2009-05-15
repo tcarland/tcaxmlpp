@@ -3,13 +3,16 @@
 #include "ClientIOHandler.h"
 
 #include "EventManager.h"
+#include "LogFacility.h"
 
 
 namespace tnmsd {
 
 
-ClientIOHandler::ClientIOHandler ( TnmsTree * tree ) throw ( Exception )
-    : _tree(tree)
+ClientIOHandler::ClientIOHandler ( TnmsTree * tree, AuthClient * auth ) 
+    throw ( Exception )
+    : _tree(tree),
+      _auth(auth)
 {
     if ( NULL == _tree )
         throw Exception("ClientIOHandler() TnmsTree is NULL");
@@ -60,7 +63,7 @@ ClientIOHandler::handle_accept ( const EventIO * io )
     if ( sock == NULL ) 
         return;
 
-    TnmsClient  * client = new TnmsClient(_tree, sock);
+    TnmsClient  * client = new TnmsClient(_tree, _auth, sock);
     io->evmgr->addIOEvent(this, client->getSockFD(), (void*) client);
 
     // if compression; enable it
