@@ -9,26 +9,13 @@ namespace tnmsCore {
 TnmsAgent::TnmsAgent( TnmsTree * tree )
     : TnmsClient(tree) 
 {
-    this->_agent = true;
+    this->_agent  = true;
+    this->_mirror = false;
 }
 
 
 TnmsAgent::~TnmsAgent() 
 {}
-
-
-void
-TnmsAgent::flushLimit ( uint32_t flush ) 
-{
-    _flushLimit = flush;
-}
-
-
-uint32_t
-TnmsAgent::flushLimit()
-{
-    return _flushLimit; 
-}
 
 
 void
@@ -40,20 +27,6 @@ TnmsAgent::login ( const std::string & agentname )
     TnmsClient::login(login, "");
     
     return;
-}
-
-
-void
-TnmsAgent::clear ( const std::string & metric )
-{
-    this->queueRemove(metric);
-}
-
-
-int
-TnmsAgent::flush()
-{
-    return 0;
 }
 
 

@@ -98,7 +98,7 @@ TnmsBase::send ( time_t  now )
         LogFacility::LogMessage("TnmsAPI: connection lost in receive(): " + _conn->getErrorStr());
         _conn->close();
         return TNMSERR_CONN_LOST;
-    }
+    } 
 
     if ( (rd = this->checkSubscription(now)) != 0 )
         return rd;
@@ -125,10 +125,19 @@ TnmsBase::send ( time_t  now )
         _conn->close();
         return TNMSERR_CONN_LOST;
     }
+    
+    if ( _debug )
+        _tree->debugDump();
 
     return TNMSERR_NONE;
 }
 
+bool
+TnmsBase::add ( const std::string & name, const time_t & now )
+{
+    std::string data = "";
+    return this->add(name, now, data);
+}
 
 
 bool
@@ -227,8 +236,7 @@ bool
 TnmsBase::update ( const std::string & name, 
                    const time_t      & now, 
                    uint64_t          & value, 
-                   eValueType          type, 
-                   const std::string & data )
+                   eValueType          type )
 {
     TnmsMetric  metric;
 
@@ -248,8 +256,7 @@ TnmsBase::update ( const std::string & name,
 bool
 TnmsBase::update ( const std::string & name, 
                    const time_t      & now,
-                   const std::string & value, 
-                   const std::string & data )
+                   const std::string & value )
 {    
     TnmsMetric  metric;
 
@@ -260,6 +267,20 @@ TnmsBase::update ( const std::string & name,
         LogFacility::LogMessage("TnmsAPI::update() " + name);
 
     metric.setValue(TNMS_STRING, value);
+    _tree->update(metric);
+
+    return true;
+}
+
+bool
+TnmsBase::update ( const std::string & name, const std::string & data )
+{
+    TnmsMetric metric;
+
+    if ( ! _tree->request(name, metric) )
+        return false;
+
+    metric.setPvtData(data);
     _tree->update(metric);
 
     return true;
@@ -283,12 +304,14 @@ TnmsBase::checkConfig ( const time_t & now )
     if ( _config.agent_name.empty() && _agentName.empty() )
         return TNMSERR_CONFIG;
 
-    if ( _agentName.empty() && _xmlConfig.empty() )
+    if ( _configName.empty() && _xmlConfig.empty() )
     {
         if ( ! _conn->isAuthorized() ) 
             return TNMSERR_NONE;
         else if ( _config.agent_name.empty() && _conn->getConfig().empty() )
             return TNMSERR_CONFIG;
+        else if ( ! _conn->getConfig().empty() )
+            this->_xmlConfig = _conn->getConfig();
     }
     else if ( _xmlConfig.empty() ) 
     {

@@ -214,6 +214,7 @@ int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
                 continue;
             }
             TnmsAPI * api = new TnmsAPI(agentname);
+            api->set_debug(true);
 
             if ( cmdlist.size() == 4 ) {
                 cfgfile = cmdlist[3];
@@ -329,6 +330,8 @@ int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
                 ts = StringUtils::fromString<time_t>(cmdlist[3]);
             else
                 ts = now;
+
+            std::cout << "Update: '" << name << "' val: " << val << " tstamp: " << ts << std::endl;
 
             // api->update
             if ( ! showI->second->update(name, ts, val, TNMS_UINT64) ) {

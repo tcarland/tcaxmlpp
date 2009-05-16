@@ -52,6 +52,13 @@ TnmsAPI::send ( const time_t & now )
 
 
 bool
+TnmsAPI::add ( const std::string & element_name, const time_t & now ) 
+{
+    return ( ((TnmsBase*)api)->add(element_name, now) );
+}
+
+
+bool
 TnmsAPI::add ( const std::string & element_name, const time_t & now, const std::string & data ) 
 {
     return ( ((TnmsBase*)api)->add(element_name, now, data) );
@@ -69,21 +76,28 @@ bool
 TnmsAPI::update ( const std::string & element_name, 
                   const time_t      & now, 
                   uint64_t          & value,
-                  eValueType          type,
-                  const std::string & data ) 
+                  eValueType          type ) 
 {
-    return ( ((TnmsBase*)api)->update(element_name, now, value, type, data) );
+    return ( ((TnmsBase*)api)->update(element_name, now, value, type) );
 }
 
 
 bool
 TnmsAPI::update ( const std::string   & element_name, 
                     const time_t      & now, 
-                    const std::string & value, 
-                    const std::string & data ) 
+                    const std::string & value ) 
 {    
-    return ( ((TnmsBase*)api)->update(element_name, now, value, data) );
+    return ( ((TnmsBase*)api)->update(element_name, now, value) );
 }
+
+
+bool
+TnmsAPI::update ( const std::string  & element_name,
+                  const std::string  & data )
+{
+    return ( ((TnmsBase*)api)->update(element_name, data) );
+}
+
 
 void
 TnmsAPI::clear() 

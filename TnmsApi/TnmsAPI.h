@@ -43,21 +43,25 @@ class DLLOPT TnmsAPI {
 
 
     bool    add     ( const std::string & element_name, 
+                      const time_t      & now );
+
+    bool    add     ( const std::string & element_name, 
                       const time_t      & now,
-                      const std::string & data = 0 );
+                      const std::string & data );
 
     bool    remove  ( const std::string & element_name );
 
     bool    update  ( const std::string & element_name, 
                       const time_t      & now, 
                       uint64_t          & value,
-                      eValueType          type,
-                      const std::string & data = 0 );
+                      eValueType          type );
 
     bool    update  ( const std::string & element_name, 
                       const time_t      & now,
-                      const std::string & value, 
-                      const std::string & data = 0 );
+                      const std::string & value );
+
+    bool    update  ( const std::string & element_name,
+                      const std::string & data );
 
 
     void    clear();
