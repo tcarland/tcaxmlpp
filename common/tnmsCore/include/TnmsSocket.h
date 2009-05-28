@@ -69,6 +69,9 @@ class TnmsSocket {
 
     void                setLastRecord();
 
+    size_t              getBytesSent();
+    size_t              getBytesReceived();
+
     /*  Attributes  */
 
     bool                isConnected();
@@ -170,7 +173,6 @@ class TnmsSocket {
     bool                initHeader        ( uint16_t type, size_t size );
     ssize_t             uncompress        ( uint32_t size );
     //bool                checkStall();
-    //void                clearStall() {}
 
 
   protected:
@@ -215,11 +217,15 @@ class TnmsSocket {
 
     CircularBuffer*             _wxcbuff;
     size_t                      _wxcbuffsz;
+
     char*                       _wptr;
     size_t                      _wtsize;
     size_t                      _wtt;
     size_t                      _wxstallsz;
-    int                         _loginAttempts;
+
+    size_t                      _rxCtr;
+    size_t                      _txCtr;
+    int                         _loginCtr;
 
     time_t                      _clTimeout;
     time_t                      _reconTime;

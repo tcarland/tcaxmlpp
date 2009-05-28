@@ -122,16 +122,17 @@ AgentIOHandler::handle_accept ( const EventIO * io )
 void
 AgentIOHandler::handle_read ( const EventIO * io )
 {
-    int  wt = 0;
+    int  rd = 0;
 
     if ( io->isServer )
         return;
 
     TnmsClient * client = (TnmsClient*) io->rock;
-    //LogFacility::LogMessage("AgentIOHandler::handle_read()");
 
-    if ( (wt = client->send()) < 0 )
+    if ( (rd = client->receive()) < 0 )
         return this->handle_close(io);
+    else if ( rd > 0 )
+        LogFacility::LogMessage("AgentIOHandler::handle_read() " + StringUtils::toString(client->getBytesReceived()));
 
     return;
 }
@@ -145,10 +146,11 @@ AgentIOHandler::handle_write ( const EventIO * io )
         return;
 
     TnmsClient * client = (TnmsClient*) io->rock;
-    //LogFacility::LogMessage("AgentIOHandler::handle_write()");
 
     if ( (wt = client->send()) < 0 )
         return this->handle_close(io);
+    else if ( wt > 0 )
+        LogFacility::LogMessage("AgentIOHandler::handle_write() " + StringUtils::toString(client->getBytesSent()));
 
     return;
 }

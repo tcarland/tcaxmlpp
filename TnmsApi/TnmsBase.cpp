@@ -71,13 +71,11 @@ TnmsBase::~TnmsBase()
 int
 TnmsBase::send ( time_t  now )
 {
-    struct tm  * t;
-    int          rd;
+    int   rd = 0;
 
     if ( now == 0 )
         now = ::time(NULL);
     
-    t = ::localtime(&now);
     LogFacility::SetLogTime(now);
 
     if ( this->checkConfig(now) != 0 )
@@ -115,9 +113,10 @@ TnmsBase::send ( time_t  now )
 
     // current interval flush
     if ( _holddown <= now ) {
+        LogFacility::LogMessage("TnmsAPI: holddown reached, triggering updates");
         _holddown = now + _holddown_interval;
         _tree->updateClients();
-        _conn->flush();
+        _conn->send();
     }
 
     // Receive messages
@@ -153,7 +152,9 @@ TnmsBase::add ( const std::string & name,
     {
         if ( ! _tree->request(name, metric) )
             return false;
-    }
+        msg << " added element '" << name << "'";
+    } else
+        msg << " add failed for '" << name << "'";
 
     LogFacility::LogMessage(msg);
 
@@ -452,7 +453,7 @@ TnmsBase::openLog ( const std::string & logfile, const time_t & now )
 
     strftime(line, 60, ".%Y%m%d", t);
     file.append(line);
-    prefix.append(_agentName).append(" : ");
+    prefix.append(_agentName);
     LogFacility::OpenLogFile(prefix, file);
 
     return;

@@ -23,7 +23,7 @@ TnmsSocket::TnmsSocket ( MessageHandler * msgHandler )
       _zipout(NULL),
       _wxcbuff(NULL),
       _wptr(NULL),
-      _loginAttempts(0),
+      _loginCtr(0),
       _clTimeout(TNMS_CLIENT_TIMEOUT),
       _reconTime(TNMS_CLIENT_TIMEOUT),
       _lastWxTime(0),
@@ -52,7 +52,7 @@ TnmsSocket::TnmsSocket ( const std::string & host, uint16_t port,
       _zipout(NULL),
       _wxcbuff(NULL),
       _wptr(NULL),
-      _loginAttempts(0),
+      _loginCtr(0),
       _clTimeout(TNMS_CLIENT_TIMEOUT),
       _reconTime(TNMS_CLIENT_TIMEOUT),
       _lastWxTime(0),
@@ -77,7 +77,7 @@ TnmsSocket::TnmsSocket ( BufferedSocket * sock, MessageHandler * msgHandler )
       _zipout(NULL),
       _wxcbuff(NULL),
       _wptr(NULL),
-      _loginAttempts(0),
+      _loginCtr(0),
       _clTimeout(TNMS_CLIENT_TIMEOUT),
       _reconTime(TNMS_CLIENT_TIMEOUT),
       _lastWxTime(0),
@@ -127,7 +127,7 @@ TnmsSocket::init()
     _subscribed     = false;
     _subtree        = false;
     _reconTime      = TNMS_CLIENT_TIMEOUT;      // reconnect
-    _loginAttempts  = 0;
+    _loginCtr       = 0;
 
     // buffers
     _wxcbuff        = new CircularBuffer(TNMS_PACKET_SIZE * 2);
@@ -137,6 +137,8 @@ TnmsSocket::init()
     _zxbuffsz       = (size_t) TNMS_PACKET_SIZE;
     _lastWxTime     = 0;
     _wxstallsz      = 0;
+    _rxCtr          = 0;
+    _txCtr          = 0;
 
     this->clearState();
 
@@ -237,7 +239,9 @@ TnmsSocket::closeConnection()
     this->_authorizing   = false;
     this->_authorized    = false;
     this->_subscribed    = false;
-    this->_loginAttempts = 0;
+    this->_loginCtr      = 0;
+    this->_rxCtr         = 0;
+    this->_txCtr         = 0;
 
     //this->clearStall()
     _sock->close();
@@ -296,6 +300,8 @@ TnmsSocket::send ( const time_t & now )
         _lastWxTime = 0;
         _wxstallsz  = 0;
     }
+
+    this->_txCtr += wt;  // track tx bytes
 
     return wt;
 }
@@ -367,6 +373,8 @@ TnmsSocket::receive ( const time_t & now )
             _sock->reverse(rd + hdrlen);
             return ctr;
         }
+
+        this->_rxCtr += rd;  // track rcv bytes
 
         if ( _msgHandler )
             ctr = this->receiveMessages(hdr);
@@ -547,17 +555,35 @@ TnmsSocket::getTxQueueSize() const
 
 // ------------------------------------------------------------------- //
 
+size_t
+TnmsSocket::getBytesSent()
+{
+    size_t sz = _txCtr;
+    _txCtr = 0;
+    return sz;
+}
+
+size_t
+TnmsSocket::getBytesReceived()
+{
+    size_t sz = _rxCtr;
+    _rxCtr = 0;
+    return sz;
+}
+
+// ------------------------------------------------------------------- //
+
 void
 TnmsSocket::login ( const std::string & user, const std::string & pw )
 {
 
     this->_login = user;
 
-    if ( _authorizing && _loginAttempts > TNMS_LOGIN_ATTEMPTS ) {
+    if ( _authorizing && _loginCtr > TNMS_LOGIN_ATTEMPTS ) {
         this->close();
         return;
     } else {
-        _loginAttempts++;
+        _loginCtr++;
         _authorizing = true;
     }
 

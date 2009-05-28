@@ -16,6 +16,8 @@ namespace tnmsCore {
 
 
 #define DEFAULT_RECONFIG_INTERVAL 120
+#define DEFAULT_HOLDDOWN_INTERVAL 30
+#define DEFAULT_RECONNECT_INTERVAL 30
 
 /*
  *  sample xml config
@@ -77,8 +79,8 @@ struct TnmsClientConfig
     TnmsClientConfig()
         : hostaddr(0),
           port(0),
-          holddown_interval(0),
-          reconnect_interval(0),
+          holddown_interval(DEFAULT_HOLDDOWN_INTERVAL),
+          reconnect_interval(DEFAULT_RECONNECT_INTERVAL),
           flush_limit(0)
     {}
 };
@@ -96,8 +98,8 @@ struct TnmsServerConfig
     TnmsServerConfig()
         : agent_port(0),
           client_port(0),
-          holddown_interval(0),
-          reconnect_interval(0)
+          holddown_interval(DEFAULT_HOLDDOWN_INTERVAL),
+          reconnect_interval(DEFAULT_RECONNECT_INTERVAL)
     {}
 };
 
@@ -118,7 +120,12 @@ struct TnmsConfig
     TnmsServerConfig  serverConfig;
     ClientList        clients;
 
-    TnmsConfig() : auth_port(0) {}
+    TnmsConfig() 
+        : auth_port(0),
+          compression(false),
+          syslog(false),
+          debug(false)
+    {}
 };
 
 

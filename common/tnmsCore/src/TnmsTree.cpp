@@ -484,7 +484,7 @@ TnmsTree::updateClients()
         for ( cIter = nodesubs.begin(); cIter != nodesubs.end(); ++cIter)
             (*cIter)->queueUpdate(node);
 
-        // reset?
+        // reset interval?
     }
     _updates.clear();
 

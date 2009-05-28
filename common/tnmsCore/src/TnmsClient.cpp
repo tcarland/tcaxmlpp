@@ -58,8 +58,6 @@ TnmsClient::send()
 
     if ( wt < 0 )
         return wt;
-    else if ( wt > 0 )
-        LogFacility::LogMessage("TnmsClient::send(): " + StringUtils::toString(wt));
 
     // ADDs
     qsz = _adds.size();
@@ -125,6 +123,8 @@ TnmsClient::send()
 
     if ( wtt < 0 )
         return wtt;
+    else if ( (wt+wtt) > 0 )
+        LogFacility::LogMessage("TnmsClient::send(): " + StringUtils::toString(wt+wtt));
 
     return(wtt + wt);
 }

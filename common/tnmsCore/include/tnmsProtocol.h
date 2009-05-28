@@ -30,7 +30,7 @@ typedef enum eValueType {
     TNMS_INT64   = 3,
     TNMS_UINT64  = 4,
     TNMS_FLOAT   = 5,
-    TNMS_STRING  = 6
+    TNMS_STRING  = 6   // leave string as last/highest
 } e_valueType_t;
 
 
