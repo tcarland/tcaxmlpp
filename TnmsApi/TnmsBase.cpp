@@ -132,18 +132,10 @@ TnmsBase::send ( time_t  now )
     return TNMSERR_NONE;
 }
 
-bool
-TnmsBase::add ( const std::string & name, const time_t & now )
-{
-    std::string data = "";
-    return this->add(name, now, data);
-}
-
 
 bool
 TnmsBase::add ( const std::string & name, 
-                const time_t      & now, 
-                const std::string & data )
+                const time_t      & now )
 {
     LogFacility::Message  msg;
 
@@ -156,70 +148,19 @@ TnmsBase::add ( const std::string & name,
         return false;
     }
 
+    if ( ! data.empty() ) {
+
     TnmsMetric  metric;
-    if ( _tree->add(name) && ! data.empty() )
+    if ( _tree->add(name) )
     {
-        _tree->request(name, metric);
-        metric.setPvtData(data);
-    }
+        if ( ! _tree->request(name, metric) )
+            return false;
         
-/*
-    MetricTree::Node           * node;
-    MetricTree::BranchNodeList   nodelist;
-
-    node = _tree->find(name);
-    if ( node != NULL ) {
-        msg << "TnmsAPI ERROR: node name already exists: '" << name << "'";
-        LogFacility::LogMessage(msg.str());
-        return false;
     }
 
-    node = _tree->insert(name, std::inserter(nodelist, nodelist.begin()));
-    if ( node == NULL ) {
-        msg << "TnmsAPI ERROR: insert failed for '" << name << "'";
-        LogFacility::LogMessage(msg.str());
-        return false;
-    }
-*/
+    LogFacility::LogMessage(msg);
 
-/*
-#ifdef USE_OIDS 
-    //  Now to dynamically create new oids
-    TnmsOid      newOid;
-    TnmsMetric * rootMetric = nodelist.front()->getParent()->getValue();
-    TnmsMetric * metric     = node->getValue();
-
-    if ( rootMetric.getElementOid().lastValue() == 0 ) {
-        // error determining Oid
-        return false;
-    }
-
-    OidList  oidlist = rootMetric.getElementOid().getOidList(); // intentional copy
-    MetricTree::BranchNodeList::iterator   nIter;
-
-    for ( nIter = nodelist.begin(); nIter != nodelist.end(); ++nIter ) {
-        TnmsMetric * nodemetric = (*nIter)->getValue();
-        nodemetric.lastId++;
-        oidlist.push_back(nodemetric.lastId);
-        newOid = TnmsOid(oidlist);
-        std::cout << "New oid " << newOid.toString() << " for " 
-            << (*nIter)->getAbsoluteName() << std::endl;
-        nodemetric.metric = TnmsMetric((*nIter)->getAbsoluteName(), newOid);
-    }
-
-    // Now that our parents have oids, we create the leaf oid 
-    metric.lastId++;
-    oidlist.push_back(metric.lastId);
-
-    newOid = TnmsOid(oidlist);
-    metric.metric = TnmsMetric(node->getAbsoluteName(), newOid);
-
-    std::cout << "New oid " << newOid.toString() << " for " 
-        << node->getAbsoluteName() << std::endl;
-#endif 
-*/
-
-   // _updates.insert(&metric);
+         // _updates.insert(&metric);
 
     return true;
 }
@@ -625,4 +566,64 @@ TnmsBase::flushsize()
 }  // namespace
 
 // _TNMS_TNMSBASE_CPP_
+
+
+
+
+/*
+    MetricTree::Node           * node;
+    MetricTree::BranchNodeList   nodelist;
+
+    node = _tree->find(name);
+    if ( node != NULL ) {
+        msg << "TnmsAPI ERROR: node name already exists: '" << name << "'";
+        LogFacility::LogMessage(msg.str());
+        return false;
+    }
+
+    node = _tree->insert(name, std::inserter(nodelist, nodelist.begin()));
+    if ( node == NULL ) {
+        msg << "TnmsAPI ERROR: insert failed for '" << name << "'";
+        LogFacility::LogMessage(msg.str());
+        return false;
+    }
+*/
+
+/*
+#ifdef USE_OIDS 
+    //  Now to dynamically create new oids
+    TnmsOid      newOid;
+    TnmsMetric * rootMetric = nodelist.front()->getParent()->getValue();
+    TnmsMetric * metric     = node->getValue();
+
+    if ( rootMetric.getElementOid().lastValue() == 0 ) {
+        // error determining Oid
+        return false;
+    }
+
+    OidList  oidlist = rootMetric.getElementOid().getOidList(); // intentional copy
+    MetricTree::BranchNodeList::iterator   nIter;
+
+    for ( nIter = nodelist.begin(); nIter != nodelist.end(); ++nIter ) {
+        TnmsMetric * nodemetric = (*nIter)->getValue();
+        nodemetric.lastId++;
+        oidlist.push_back(nodemetric.lastId);
+        newOid = TnmsOid(oidlist);
+        std::cout << "New oid " << newOid.toString() << " for " 
+            << (*nIter)->getAbsoluteName() << std::endl;
+        nodemetric.metric = TnmsMetric((*nIter)->getAbsoluteName(), newOid);
+    }
+
+    // Now that our parents have oids, we create the leaf oid 
+    metric.lastId++;
+    oidlist.push_back(metric.lastId);
+
+    newOid = TnmsOid(oidlist);
+    metric.metric = TnmsMetric(node->getAbsoluteName(), newOid);
+
+    std::cout << "New oid " << newOid.toString() << " for " 
+        << node->getAbsoluteName() << std::endl;
+#endif 
+*/
+
 

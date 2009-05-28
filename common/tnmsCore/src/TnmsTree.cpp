@@ -165,7 +165,7 @@ TnmsTree::add ( const std::string & name )
 
         for ( nIter = addset.begin(); nIter != addset.end(); ++nIter ) {
             ClientSet::iterator  cIter;
-            std::string          addname;
+            std::string          addname = (*nIter)->getAbsoluteName();
 
             (*nIter)->getValue().metric = TnmsMetric(addname, ADD_MESSAGE);
 
@@ -556,18 +556,18 @@ TnmsTree::debugDump()
 
     if ( roots.empty() )
         return;
-
+    
     BreadthOrdering  flattenedTree;
     for ( rootI = roots.begin(); rootI != roots.end(); ++rootI )
         _tree->depthFirstTraversal( rootI->second, flattenedTree );
 
     std::list<TnmsTree::Node*>::iterator nIter;
 
-    LogFacility::LogMessage("TnmsTree::debugDump() ");
+    LogFacility::LogMessage("TnmsTree::debugDump(): " + StringUtils::toString(_tree->size()));
 
     for ( nIter = flattenedTree.nodes.begin(); nIter != flattenedTree.nodes.end(); ++nIter ) {
         LogFacility::Message  msg;
-        msg << "  " << (*nIter)->getValue().metric.getElementName();
+        msg << "    Node: " << "  " << (*nIter)->getValue().metric.getElementName();
         if ( (*nIter)->getValue().erase )
             msg << " <ERASED>";
         LogFacility::LogMessage(msg.str());

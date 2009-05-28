@@ -9,6 +9,7 @@
 #include "TnmsAuthReply.h"
 
 #include "LogFacility.h"
+#include "StringUtils.h"
 using namespace tcanetpp;
 
 
@@ -54,8 +55,11 @@ TnmsClient::send()
     RemoveSet::iterator  rIter;
 
     wt  = TnmsSocket::send();
+
     if ( wt < 0 )
         return wt;
+    else if ( wt > 0 )
+        LogFacility::LogMessage("TnmsClient::send(): " + StringUtils::toString(wt));
 
     // ADDs
     qsz = _adds.size();
