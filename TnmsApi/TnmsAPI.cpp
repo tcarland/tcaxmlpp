@@ -57,14 +57,6 @@ TnmsAPI::add ( const std::string & element_name, const time_t & now )
     return ( ((TnmsBase*)api)->add(element_name, now) );
 }
 
-
-bool
-TnmsAPI::add ( const std::string & element_name, const time_t & now, const std::string & data ) 
-{
-    return ( ((TnmsBase*)api)->add(element_name, now, data) );
-}
-
-
 bool
 TnmsAPI::remove ( const std::string & element_name ) 
 {

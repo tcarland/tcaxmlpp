@@ -148,19 +148,14 @@ TnmsBase::add ( const std::string & name,
         return false;
     }
 
-    if ( ! data.empty() ) {
-
     TnmsMetric  metric;
     if ( _tree->add(name) )
     {
         if ( ! _tree->request(name, metric) )
             return false;
-        
     }
 
     LogFacility::LogMessage(msg);
-
-         // _updates.insert(&metric);
 
     return true;
 }

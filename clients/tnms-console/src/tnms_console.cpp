@@ -304,7 +304,7 @@ int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
                 ts = now;
 
             //  api->add
-            if ( ! showI->second->add(name, ts, "") ) {
+            if ( ! showI->second->add(name, ts) ) {
                 std::cout << "Error: add failed for '" << name << "'" << std::endl;
                 continue;
             }

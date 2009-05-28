@@ -41,13 +41,8 @@ class DLLOPT TnmsAPI {
 
     int     send    ( const time_t  & now );
 
-
     bool    add     ( const std::string & element_name, 
                       const time_t      & now );
-
-    bool    add     ( const std::string & element_name, 
-                      const time_t      & now,
-                      const std::string & data );
 
     bool    remove  ( const std::string & element_name );
 

@@ -37,10 +37,6 @@ class TnmsBase {
     bool    add       ( const std::string & name, 
                         const time_t      & now );
 
-    bool    add       ( const std::string & name, 
-                        const time_t      & now,
-                        const std::string & data );
-
     bool    remove    ( const std::string & name );
     
     bool    update    ( const std::string & name, 
