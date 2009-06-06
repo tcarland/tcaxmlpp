@@ -2,8 +2,17 @@
 
 #include "SoapClient.h"
 
+#include "CidrUtils.h"
+#include "StringUtils.h"
+#include "LogFacility.h"
+using namespace tcanetpp;
+
+#include "soapStub.h"
+#include "tnms.nsmap"
+
 
 namespace tnmsauth {
+
 
 SoapClient::SoapClientFactory SoapClient::factory;
 
@@ -51,7 +60,6 @@ SoapClient::handle_event()
             + StringUtils::toString(_soap->error));
         return false;
     }
-
     this->close();
 
     return true;
@@ -61,6 +69,7 @@ SoapClient::handle_event()
 void
 SoapClient::close()
 {}
+
 
 int
 SoapClient::bind ( uint16_t port, void * userobj )
@@ -102,14 +111,14 @@ SoapClient::bind ( uint16_t port, void * userobj )
 
 
 const int&
-SoapClient::getFD()
+SoapClient::getFD() const
 {
     return _fd;
 }
 
 
 std::string
-SoapClient::getAddrStr()
+SoapClient::getAddrStr() const
 {
     return _ipaddr;
 }

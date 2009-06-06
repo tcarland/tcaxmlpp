@@ -1,16 +1,19 @@
 #ifndef _TNMSAUTH_SOAPIOHANDLER_H_
 #define _TNMSAUTH_SOAPIOHANDLER_H_
 
-#include <set>
+#include <list>
 
 #include "EventHandlers.hpp"
 using namespace tcanetpp;
 
-#include "SoapClient.h"
 
 namespace tnmsauth {
 
-typedef std::set<SoapThread*>  SoapThreadList;
+class SoapThread;
+typedef std::list<SoapThread*>  SoapThreadList;
+
+#define DEFAULT_EVENT_TIMEOUT 60
+#define DEFAULT_MAX_SOAP_CONNECTIONS  100
 
 
 class SoapIOHandler : public EventIOHandler {
@@ -34,14 +37,14 @@ class SoapIOHandler : public EventIOHandler {
     virtual void   handle_destroy     ( const EventIO * io );
     
     virtual bool   readable           ( const EventIO * io );
+    virtual bool   writeable          ( const EventIO * io );
 
   protected:
 
     SoapThreadList   _sthreads;
 
     int              _max_threads;
-    int              _thread_count;
-    time_t           _thread_timeout;
+    time_t           _event_timeout;
 
 };
 

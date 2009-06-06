@@ -2,6 +2,7 @@
 
 
 #include "SoapThread.h"
+#include "SoapClient.h"
 
 
 namespace tnmsauth {
@@ -12,12 +13,18 @@ SoapThread::SoapThread ( SoapClient * client, const time_t & now )
       _started(now)
 {}
 
-SoapThread::~SoapThread() {}
+SoapThread::~SoapThread()
+{
+    if ( _client )
+        delete _client;
+}
 
 
 void
 SoapThread::run()
 {
+    if ( _client )
+        _client->handle_event();
     return;
 }
 
@@ -28,8 +35,8 @@ SoapThread::started()
     return this->_started;
 }
 
-}  // namespace
 
+}  // namespace
 
 // _TNMSAUTH_SOAPTHREAD_CPP_
 

@@ -1,6 +1,9 @@
 #ifndef _INCLUDE_SOAPCLIENT_H_
 #define _INCLUDE_SOAPCLIENT_H_
 
+#include <string>
+
+
 namespace tnmsauth {
 
 
@@ -36,16 +39,15 @@ class SoapClient {
     virtual ~SoapClient();
 
     virtual bool  handle_event();
-    
     virtual void  close()    {}
 
-    int           bind       ( uint16_t port, void * userobj )
-                                throw ( SoapException );
     const int&    getFD() const;
     std::string   getAddrStr() const;
 
-    SoapClient*   accept();
+    int           bind       ( uint16_t port, void * userobj );
     SoapClient*   accept     ( SoapClientFactory & factory );
+    SoapClient*   accept();
+
 
   protected:
 
@@ -62,6 +64,7 @@ class SoapClient {
     bool                _svr;
 
 };
+
 
 } // namespace
 
