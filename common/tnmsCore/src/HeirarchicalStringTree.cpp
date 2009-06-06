@@ -238,7 +238,8 @@ bool
 HeirarchicalStringTree<ValueType>::erase ( const std::string & absoluteName,
                                            OutputIterator_     outIter )
 {
-    return true;
+    Node * node = this->find(absoluteName);
+    return( this->erase(node, outIter) );
 }
 
 

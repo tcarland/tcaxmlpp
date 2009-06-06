@@ -72,6 +72,7 @@ int
 TnmsBase::send ( time_t  now )
 {
     int   rd = 0;
+    int   wt = 0;
 
     if ( now == 0 )
         now = ::time(NULL);
@@ -92,7 +93,7 @@ TnmsBase::send ( time_t  now )
         return rd;
 
     // Receive messages
-    if ( _conn->receive(now) < 0 ) {
+    if ( (rd = _conn->receive(now)) < 0 ) {
         LogFacility::LogMessage("TnmsAPI: connection lost in receive(): " + _conn->getErrorStr());
         _conn->close();
         return TNMSERR_CONN_LOST;
@@ -104,7 +105,7 @@ TnmsBase::send ( time_t  now )
     // check for conn flush
     if ( _conn->txBytesBuffered() > 0 ) 
     {
-        if ( _conn->send() < 0 ) {
+        if ( (wt = _conn->send()) < 0 ) {
             LogFacility::LogMessage("TnmsAPI: connection lost in send(): " + _conn->getErrorStr());
             _conn->close();
             return TNMSERR_CONN_LOST;
@@ -115,12 +116,13 @@ TnmsBase::send ( time_t  now )
     if ( _holddown <= now ) {
         LogFacility::LogMessage("TnmsAPI: holddown reached, triggering updates");
         _holddown = now + _holddown_interval;
+        _tree->sweep();
         _tree->updateClients();
-        _conn->send();
+        wt = _conn->send();
     }
 
     // Receive messages
-    if ( _conn->receive(now) < 0 ) {
+    if ( (rd = _conn->receive(now)) < 0 ) {
         _conn->close();
         return TNMSERR_CONN_LOST;
     }

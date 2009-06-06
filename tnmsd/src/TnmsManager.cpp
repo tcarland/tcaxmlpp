@@ -125,6 +125,7 @@ TnmsManager::timeout ( const EventTimer * timer )
 
     if ( _usr ) {
         // special function
+        _tree->debugDump();
     }
 
     //check for logrotate
@@ -202,13 +203,13 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
     TnmsConfig & config = cfgmgr.config;
 
     prefix.append(".").append(config.agent_name);
+    LogFacility::SetLogPrefix(prefix);
 
     if ( config.syslog ) {
         LogFacility::OpenSyslog(prefix, LOG_LOCAL3);
     } else {
         if ( _tconfig.syslog )
             LogFacility::CloseSyslog();
-        LogFacility::SetLogPrefix(prefix);
         this->logRotate(config.logfile, now);
     }
 

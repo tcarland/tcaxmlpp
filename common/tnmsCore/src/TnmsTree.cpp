@@ -103,6 +103,10 @@ namespace TnmsTreeInternal {
         {
             if ( node == NULL ) 
                 return;
+
+            TnmsTree::TnmsTreeNode & tnode = node->getValue();
+            tnode.erase = true;
+
             std::set<TnmsClient*>::iterator  cIter;
             for ( cIter = subs.begin(); cIter != subs.end(); ++cIter ) {
                 TnmsClient * client = (TnmsClient*) *cIter;
@@ -525,12 +529,13 @@ TnmsTree::clearNodeErase ( TnmsTree::Node * node )
 
     TnmsTree::Node * nptr = node;
 
-    while ( nptr ){
+    while ( nptr ) {
 
         if ( ! nptr->getValue().erase )
             break;
 
-        nptr->getValue().erase = false;
+        TnmsTree::TnmsTreeNode & tnode = nptr->getValue();
+        tnode.erase = false;
 
         for ( sIter = _structureSubs.begin(); sIter != _structureSubs.end(); ++sIter )
             (*sIter)->queueAdd(nptr);

@@ -136,6 +136,7 @@ int main ( int argc, char **argv )
     signal(SIGINT,  &sigHandler);
     signal(SIGTERM, &sigHandler);
     signal(SIGHUP,  &sigHandler);
+    signal(SIGUSR1, &sigHandler);
 
     mgr = new TnmsManager(cfgfile);
     mgr->setDebug(debug);
