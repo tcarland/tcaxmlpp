@@ -50,6 +50,7 @@ class TnmsManager : public EventTimerHandler {
     void         setDebug  ( bool d = true );
     std::string  getErrorStr();
 
+
   protected:
 
     void         createClients();
@@ -59,7 +60,6 @@ class TnmsManager : public EventTimerHandler {
 
     void         logRotate     ( std::string         logfile,
                                  const time_t      & now );
-
 
   private:
 

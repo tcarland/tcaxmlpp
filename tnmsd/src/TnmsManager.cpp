@@ -293,12 +293,12 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
 void
 TnmsManager::logRotate ( std::string logfile, const time_t & now )
 {
+    if ( logfile.empty() ) 
+        return;
+
     char        datestr[64];
     struct tm  *ltm   = ::localtime(&now);
     int         today = ltm->tm_yday;
-
-    if ( logfile.empty() ) 
-        return;
 
     if ( _today != today ) {
         ::strftime(datestr, 64, ".%Y%02m%02d", ltm);
