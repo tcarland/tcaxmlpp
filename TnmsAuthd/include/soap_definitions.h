@@ -24,7 +24,7 @@ typedef unsigned int xsd__unsignedInt;
 // authenticate
 
 
-class ns1__AuthenticateResult 
+class ns1__AuthResult 
 {
   public:
     xsd__string         ticket;
@@ -33,7 +33,7 @@ class ns1__AuthenticateResult
     xsd__int            timeout;
 };
 
-struct ns1__AuthenticateResponse
+struct ns1__AuthResponse
 {
     ns1__AuthResult     result;
 };
@@ -58,6 +58,7 @@ int  ns1_isAuthentic    ( xsd__string       username,
                           xsd__string       ticket,
                           xsd__string       ipaddress,
                           xsd__boolean    & result );
+
 
 //--------------------------------------------------------------------//
 // authorize
@@ -111,70 +112,24 @@ int  ns1__getCollectorList  ( xsd__string  username,
 
 
 //--------------------------------------------------------------------//
-//  Preferences
+//  AuthTypes
 
-
-#import "stlvector.h"
-
-
-struct ns1__Package
+struct ns1__AuthTypesList
 {
-    xsd__string  pkg;
+    xsd__string * ptr;
+    xsd__int      size;
 };
 
-struct ns1__getPackageResponse
+struct ns1__getAuthTypesListResponse
 {
-    struct ns1__Package _return;
+    struct ns1__AuthTypesList  result;
 };
 
+int  ns1__getAuthTypesList ( xsd__string  username,
+                             xsd__string  ticket,
+                             xsd__string  ipaddress,
+                             struct ns1__getAuthTypesListResponse & result );
 
-class ns1__PackageInfo
-{
-  public:
-    xsd__string     owner;
-    xsd__string     name;
-    xsd__string     desc;
-    xsd__string     version;
-    xsd__dateTime   timestamp;
-    xsd__boolean    is_public;
-};
-
-
-class ns1__getPackageListResponse
-{
-  public:
-    std::vector<ns1__PackageInfo> *entries;
-};
-
-
-int  ns1__getPackage    ( xsd__string  username,
-                          xsd__string  ticket,
-                          xsd__string  ipaddress,
-                          xsd__string  package_owner,
-                          xsd__string  package_name,
-                          struct ns1__getPackageResponse & result );
-
-int ns1__submitPackage  ( xsd__string   username,
-                          xsd__string   ticket,
-                          xsd__string   ipaddress,
-                          xsd__string   package_name,
-                          xsd__string   package_desc,
-                          xsd__string   package_vers,
-                          xsd__dateTime package_time,
-                          xsd__string   package,
-                          xsd__boolean  is_public,
-                          xsd__boolean & result );
-
-int ns1__getPackages    ( xsd__string  username,
-                          xsd__string  ticket,
-                          xsd__string  ipaddress,
-                          ns1__getPackageListResponse & result );
-
-int ns1__removePackage  ( xsd__string  username,
-                          xsd__string  ticket,
-                          xsd__string  ipaddress,
-                          xsd__string  package_name,
-                          xsd__boolean & result );
 
 //--------------------------------------------------------------------//
 
