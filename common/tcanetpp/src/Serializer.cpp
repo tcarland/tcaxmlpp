@@ -1,30 +1,18 @@
-#define _TNMSCORE_PACK_CPP_
+#define _TCANETPP_SERIALIZER_CPP_
+
+#include "Serializer.h"
 
 
-#include "Pack.h"
-
-
-namespace tnmsCore {
+namespace tcanetpp {
 
 
 //---------------------------------------------------------------------
-/** The Packer Class provides a common interface in the overridden Pack() 
- *  function for ensure proper type encoding within our transmit buffers.
- *  This is purely for adherence to the tnmsProtocol spec. that encodes
- *  a length field prior to any variable length fields. 
- *  The Packer is not meant to handle the encryption and/or compression of 
- *  a given buffer, but possibly network order of byte fields where 
- *  appropriate. The current implementation assumes little endian and 
- *  does not change any vals to network order (big endian), but if such
- *  behavior is needed, it would be easily provided here.
-**/
-
 
 int
-Packer::Pack ( char * buffer, size_t buflen,
+Serializer::Pack ( char * buffer, size_t buflen,
                const char * val,  size_t val_len )
 {
-    int pk = Packer::Pack(buffer, (uint32_t)buflen, (uint32_t)val_len);
+    int pk = Serializer::Pack(buffer, (uint32_t)buflen, (uint32_t)val_len);
 
     if ( pk <= 0 || buflen < pk + val_len )
         return -1;
@@ -32,20 +20,20 @@ Packer::Pack ( char * buffer, size_t buflen,
     ::memcpy(buffer + pk, val, val_len);
 
     pk  += val_len;
-    pk  += Packer::Pad(buffer, (buflen - pk), pk);
+    pk  += Serializer::Pad(buffer, (buflen - pk), pk);
 
     return pk;
 }
 
 int
-Packer::Pack ( char * buffer, size_t buflen, const std::string & val )
+Serializer::Pack ( char * buffer, size_t buflen, const std::string & val )
 {
-    return Packer::Pack(buffer, buflen, val.c_str(), val.length());
+    return Serializer::Pack(buffer, buflen, val.c_str(), val.length());
 }
 
 
 int
-Packer::Pack ( char * buffer, size_t buflen, int8_t val )
+Serializer::Pack ( char * buffer, size_t buflen, int8_t val )
 {
     if ( buflen < sizeof(val) )
         return -1;
@@ -56,7 +44,7 @@ Packer::Pack ( char * buffer, size_t buflen, int8_t val )
 }
 
 int
-Packer::Pack( char * buffer, size_t buflen, uint8_t val )
+Serializer::Pack( char * buffer, size_t buflen, uint8_t val )
 {
     if ( buflen < sizeof(val) )
         return -1;
@@ -67,7 +55,7 @@ Packer::Pack( char * buffer, size_t buflen, uint8_t val )
 }
 
 int
-Packer::Pack( char * buffer, size_t buflen, int16_t val )
+Serializer::Pack( char * buffer, size_t buflen, int16_t val )
 {
     if ( buflen < sizeof(val) )
         return -1;
@@ -78,7 +66,7 @@ Packer::Pack( char * buffer, size_t buflen, int16_t val )
 }
 
 int
-Packer::Pack( char * buffer, size_t buflen, uint16_t val )
+Serializer::Pack( char * buffer, size_t buflen, uint16_t val )
 {
     if ( buflen < sizeof(val) )
         return -1;
@@ -89,7 +77,7 @@ Packer::Pack( char * buffer, size_t buflen, uint16_t val )
 }
 
 int
-Packer::Pack( char * buffer, size_t buflen, int32_t val )
+Serializer::Pack( char * buffer, size_t buflen, int32_t val )
 {
     if ( buflen < sizeof(val) )
         return -1;
@@ -100,7 +88,7 @@ Packer::Pack( char * buffer, size_t buflen, int32_t val )
 }
 
 int
-Packer::Pack( char * buffer, size_t buflen, uint32_t val )
+Serializer::Pack( char * buffer, size_t buflen, uint32_t val )
 {
     if ( buflen < sizeof(val) )
         return -1;
@@ -112,7 +100,7 @@ Packer::Pack( char * buffer, size_t buflen, uint32_t val )
 
 
 int
-Packer::Pack( char * buffer, size_t buflen, int64_t val )
+Serializer::Pack( char * buffer, size_t buflen, int64_t val )
 {
     if ( buflen < sizeof(val) )
         return -1;
@@ -123,7 +111,7 @@ Packer::Pack( char * buffer, size_t buflen, int64_t val )
 }
 
 int
-Packer::Pack( char * buffer, size_t buflen, uint64_t val )
+Serializer::Pack( char * buffer, size_t buflen, uint64_t val )
 {
     if ( buflen < sizeof(val) )
         return -1;
@@ -138,14 +126,14 @@ Packer::Pack( char * buffer, size_t buflen, uint64_t val )
 
 
 int
-Packer::Unpack ( const char * buffer, size_t  buflen,
+Serializer::Unpack ( const char * buffer, size_t  buflen,
                  char       * val,    size_t  vallen,
                  size_t & val_written )
 {
     size_t   skip = 0;
     uint32_t valw = 0;
 
-    int  upk  = Packer::Unpack(buffer, buflen, valw);
+    int  upk  = Serializer::Unpack(buffer, buflen, valw);
 
     val_written = valw;
 
@@ -162,24 +150,24 @@ Packer::Unpack ( const char * buffer, size_t  buflen,
 }
 
 int
-Packer::Unpack ( const char * buffer, size_t  buflen, std::string & val )
+Serializer::Unpack ( const char * buffer, size_t  buflen, std::string & val )
 {
     uint32_t  len  = 0;
     size_t    skip = 0;
 
-    int  upk = Packer::Unpack(buffer, buflen, len);
+    int  upk = Serializer::Unpack(buffer, buflen, len);
 
     if ( upk < 0 || buflen < (upk + len) )
         return -1;
 
     val.assign(buffer + upk, len);
-    skip = Packer::Skip(len);
+    skip = Serializer::Skip(len);
 
     return (upk + len + skip);
 }
 
 int
-Packer::Unpack ( const char * buffer, size_t buflen, int8_t & val )
+Serializer::Unpack ( const char * buffer, size_t buflen, int8_t & val )
 {
     if ( buflen < sizeof(val) )
         return -1;
@@ -190,7 +178,7 @@ Packer::Unpack ( const char * buffer, size_t buflen, int8_t & val )
 }
 
 int
-Packer::Unpack ( const char * buffer, size_t buflen, uint8_t & val )
+Serializer::Unpack ( const char * buffer, size_t buflen, uint8_t & val )
 {
     if ( buflen < sizeof(val) )
         return -1;
@@ -201,7 +189,7 @@ Packer::Unpack ( const char * buffer, size_t buflen, uint8_t & val )
 }
 
 int
-Packer::Unpack ( const char * buffer, size_t  buflen, int16_t & val )
+Serializer::Unpack ( const char * buffer, size_t  buflen, int16_t & val )
 {
     if ( buflen < sizeof(val) )
         return -1;
@@ -212,7 +200,7 @@ Packer::Unpack ( const char * buffer, size_t  buflen, int16_t & val )
 }
 
 int
-Packer::Unpack ( const char * buffer, size_t  buflen, uint16_t & val )
+Serializer::Unpack ( const char * buffer, size_t  buflen, uint16_t & val )
 {
     if ( buflen < sizeof(val) )
         return -1;
@@ -223,7 +211,7 @@ Packer::Unpack ( const char * buffer, size_t  buflen, uint16_t & val )
 }
 
 int
-Packer::Unpack ( const char * buffer, size_t  buflen, int32_t & val )
+Serializer::Unpack ( const char * buffer, size_t  buflen, int32_t & val )
 {
     if ( buflen < sizeof(val) )
         return -1;
@@ -234,7 +222,7 @@ Packer::Unpack ( const char * buffer, size_t  buflen, int32_t & val )
 }
 
 int
-Packer::Unpack ( const char * buffer, size_t  buflen, uint32_t & val )
+Serializer::Unpack ( const char * buffer, size_t  buflen, uint32_t & val )
 {
     if ( buflen < sizeof(val) )
         return -1;
@@ -245,7 +233,7 @@ Packer::Unpack ( const char * buffer, size_t  buflen, uint32_t & val )
 }
 
 int
-Packer::Unpack ( const char * buffer, size_t  buflen, int64_t & val )
+Serializer::Unpack ( const char * buffer, size_t  buflen, int64_t & val )
 {
     if ( buflen < sizeof(val) )
         return -1;
@@ -256,7 +244,7 @@ Packer::Unpack ( const char * buffer, size_t  buflen, int64_t & val )
 }
 
 int
-Packer::Unpack ( const char * buffer, size_t  buflen, uint64_t & val )
+Serializer::Unpack ( const char * buffer, size_t  buflen, uint64_t & val )
 {
     if ( buflen < sizeof(val) )
         return -1;
@@ -269,5 +257,5 @@ Packer::Unpack ( const char * buffer, size_t  buflen, uint64_t & val )
 
 } // namespace
 
-// _TNMSCORE_PACK_CPP_
+// _TCANETPP_SERIALIZER_CPP_
 

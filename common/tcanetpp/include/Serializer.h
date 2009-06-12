@@ -1,17 +1,17 @@
-#ifndef _TNMSCORE_PACK_H_
-#define _TNMSCORE_PACK_H_
+#ifndef _TCANETPP_SERIALIZER_H_
+#define _TCANETPP_SERIALIZER_H_
 
 #include <string>
 #include <inttypes.h>
 
 
-namespace tnmsCore {
+namespace tcanetpp {
 
 
-#define PACKER_WORDSIZE 4
+#define SERIALIZER_WORDSIZE 4
 
 
-class Packer {
+class Serializer {
 
   public:
 
@@ -52,15 +52,15 @@ class Packer {
     
     static inline size_t PadLen ( const size_t & wtlen )
     {
-        size_t  pad = wtlen % PACKER_WORDSIZE;
-        return (pad == 0) ? 0 : PACKER_WORDSIZE - pad;
+        size_t  pad = wtlen % SERIALIZER_WORDSIZE;
+        return (pad == 0) ? 0 : SERIALIZER_WORDSIZE - pad;
     }
 
     //----------------------------------------------------------------------
 
     static inline size_t Skip ( const size_t & length )
     {
-        return Packer::PadLen(length);
+        return Serializer::PadLen(length);
     }
 
     //----------------------------------------------------------------------
@@ -68,7 +68,7 @@ class Packer {
     static inline size_t Pad ( char * buffer, size_t  buflen,
                                const size_t & wtlen )
     {
-        size_t  pad = Packer::PadLen(wtlen);
+        size_t  pad = Serializer::PadLen(wtlen);
 
         if ( pad > buflen )
             return buflen;
@@ -82,5 +82,5 @@ class Packer {
 }  // namespace
 
 
-#endif  //  _TNMSCORE_PACK_H_
+#endif  //  _TCANETPP_SERIALIZER_H_
 
