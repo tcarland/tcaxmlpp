@@ -2,9 +2,9 @@
 #include <string>
 
 
-#include "Pack.h"
+#include "Serializer.h"
+using namespace tcanetpp;
 
-using namespace tnmsCore;
 
 
 int main ()
@@ -25,22 +25,22 @@ int main ()
     char * ptr = buff;
     int    r = 0, t = 0;
     
-    t = Packer::Pack(ptr+r, bsize-r, strA, strlen(strA));
+    t = Serializer::Pack(ptr+r, bsize-r, strA, strlen(strA));
     r += t;
     std::cout << "a Pack added " << t << " bytes for '" 
               << strA << "'" << std::endl;
     
-    t = Packer::Pack(ptr+r, bsize-r, strB);
+    t = Serializer::Pack(ptr+r, bsize-r, strB);
     r += t;
     std::cout << "b Pack added " << t << " bytes for '" 
               << strB << "'" << std::endl;
     
-    t = Packer::Pack(ptr+r, bsize-r, intA);
+    t = Serializer::Pack(ptr+r, bsize-r, intA);
     r += t;
     std::cout << "c Pack added " << t << " bytes for '" 
               << intA << "'" << std::endl;
     
-    t = Packer::Pack(ptr+r, bsize-r, intB);
+    t = Serializer::Pack(ptr+r, bsize-r, intB);
     r += t;
     std::cout << "d Pack added " << t << " bytes for '" 
               << intB << "'" << std::endl;
@@ -52,21 +52,21 @@ int main ()
     
     r = 0;
     
-    t = Packer::Unpack(ptr+r, bsize-r, ustr);
+    t = Serializer::Unpack(ptr+r, bsize-r, ustr);
     r += t;
     std::cout << "a Unpacked " << t << " bytes == " 
               << ustr << std::endl;
 
-    t = Packer::Unpack(ptr+r, bsize-r, ustr);
+    t = Serializer::Unpack(ptr+r, bsize-r, ustr);
     r += t;
     std::cout << "b Unpacked " << t << " bytes == " 
               << ustr << std::endl;
 
-    t = Packer::Unpack(ptr+r, bsize-r, a);
+    t = Serializer::Unpack(ptr+r, bsize-r, a);
     r += t;
     std::cout << "c Unpacked " << t << " bytes == " << a << std::endl;
     
-    t = Packer::Unpack(ptr+r, bsize-r, b);
+    t = Serializer::Unpack(ptr+r, bsize-r, b);
     r += t;
     std::cout << "d Unpacked " << t << " bytes == " << b << std::endl;
     
