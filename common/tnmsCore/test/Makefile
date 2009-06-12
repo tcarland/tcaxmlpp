@@ -15,24 +15,21 @@ LIBS =
 
 OBJS =		        
 
-TEST_OBJS =     tree_test.o pack_test.o oid_test.o msg_test.o \
+TEST_OBJS =     tree_test.o oid_test.o msg_test.o \
 		msg_server.o msg_client.o
 
-BIN =           treetest packtest oidtest msgtest msgsvr msgclient
+BIN =           treetest oidtest msgtest msgsvr msgclient
 ALL_OBJS =      $(OBJS) $(TEST_OBJS)
 ALL_BINS =      $(BIN)
 
 
-all: treetest packtest oidtest msgtest msgsvr msgclient
+all: treetest oidtest msgtest msgsvr msgclient
 
 
 include ${TOPDIR}/tcamake/builddefs
 
 
 treetest: tree_test.o
-	$(make-cxxbin-rule)
-
-packtest: pack_test.o
 	$(make-cxxbin-rule)
 
 oidtest: oid_test.o

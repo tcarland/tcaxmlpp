@@ -13,7 +13,7 @@ endif
 INCLUDES =              -Iinclude
 LIBS =
 
-OBJS =                  src/Pack.o src/TnmsOid.o src/TnmsSocket.o \
+OBJS =                  src/TnmsOid.o src/TnmsSocket.o \
 			src/TnmsMessage.o src/TnmsMetric.o \
 			src/TnmsAuthRequest.o src/TnmsAuthReply.o \
 			src/AuthClient.o src/AuthIOHandler.o \

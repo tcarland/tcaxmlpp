@@ -2,15 +2,14 @@
  * TnmsOid.h
  *
  *  Copyright(c) 2008,2009  Timothy Charlton Arland
- *  Charlton Technology LLC
  *  tcarland@gmail.com
  */
 #define _TNMSCORE_TNMSOID_CPP_
 #include <list>
 
 #include "TnmsOid.h"
-#include "Pack.h"
 
+#include "Serializer.h"
 #include "StringUtils.h"
 using namespace tcanetpp;
 
@@ -186,7 +185,7 @@ TnmsOid::serialize ( char * buffer, size_t buffer_len )
     wsz   = buffer_len;
 
     oidsz = (uint32_t) _oidlist.size();
-    pk    = Packer::Pack(wptr, (wsz - wt), oidsz);
+    pk    = Serializer::Pack(wptr, (wsz - wt), oidsz);
     if ( pk < 0 )
         return -1;
     wt   += pk;
@@ -194,7 +193,7 @@ TnmsOid::serialize ( char * buffer, size_t buffer_len )
 
     OidList::iterator  tIter;
     for ( tIter = _oidlist.begin(); tIter != _oidlist.end(); ++tIter ) {
-        pk = Packer::Pack(wptr, (wsz-wt), *tIter);
+        pk = Serializer::Pack(wptr, (wsz-wt), *tIter);
         if ( pk < 0 )
             return -1;
         wt    += pk;
@@ -222,7 +221,7 @@ TnmsOid::deserialize ( const char * buffer, size_t buffer_len )
     rptr  = buffer;
     rsz   = buffer_len;
 
-    upk   = Packer::Unpack(rptr, (rsz-rd), oid_len);
+    upk   = Serializer::Unpack(rptr, (rsz-rd), oid_len);
     if ( upk < 0 )
         return -1;
 

@@ -2,7 +2,6 @@
  * TnmsMetric.h
  *
  *  Copyright(c) 2008,2009  Timothy Charlton Arland
- *  Charlton Technology LLC
  *  tcarland@gmail.com
  */
 #ifndef _TNMSCORE_TNMSMETRIC_H_
@@ -41,6 +40,7 @@ class TnmsMetric : public TnmsMessage {
         return val;
     }
 
+
     template< typename T >
     bool                setValue    ( eValueType   valtype, 
                                       T &          value )
@@ -57,8 +57,8 @@ class TnmsMetric : public TnmsMessage {
     const std::string&  getPvtData() const;
     bool                setPvtData  ( const std::string & data );
 
-    /*  Serializable */
 
+    /*  Serializable */
     virtual ssize_t     serialize   ( char * buffer, size_t buffer_len );
     virtual ssize_t     deserialize ( const char * buffer, size_t buffer_len );
     virtual size_t      size() const;
@@ -75,4 +75,6 @@ class TnmsMetric : public TnmsMessage {
 
 }  // namespace
 
-#endif  /* _TNMSCORE_TNMSMETRIC_H_ */
+
+#endif  // _TNMSCORE_TNMSMETRIC_H_
+

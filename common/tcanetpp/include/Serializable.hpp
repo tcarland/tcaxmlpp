@@ -1,10 +1,10 @@
-#ifndef _TNMSCORE_SERIALIZABLE_HPP_
-#define _TNMSCORE_SERIALIZABLE_HPP_
+#ifndef _TCANETPP_SERIALIZABLE_HPP_
+#define _TCANETPP_SERIALIZABLE_HPP_
 
 #include "tcanetpp_types.h"
 
 
-namespace tnmsCore {
+namespace tcanetpp {
 
 
 class Serializable {
@@ -24,5 +24,5 @@ public:
 
 } // namespace
 
-#endif  //  _TNMSCORE_SERIALIZABLE_HPP_
+#endif  //  _TCANETPP_SERIALIZABLE_HPP_
 

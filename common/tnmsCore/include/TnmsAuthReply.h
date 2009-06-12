@@ -5,6 +5,7 @@
 
 namespace tnmsCore {
 
+
 class TnmsAuthReply : public TnmsMessage {
 
 public:
@@ -33,7 +34,7 @@ public:
     void                authReason  ( const std::string & reason ) { _auth_reason = reason; }
     void                authData    ( const std::string & data ) { _auth_data = data; }
 
-
+    // serializable
     virtual ssize_t     serialize   ( char * buffer, size_t buffer_len );
     virtual ssize_t     deserialize ( const char * buffer, size_t buffer_len );
     virtual size_t      size() const;

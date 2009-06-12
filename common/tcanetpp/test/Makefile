@@ -14,20 +14,22 @@ OPT_FLAGS =	-g -DASWHO_MAIN
 INCLUDES=	-I. -I../include
 LIBS=
 
-BIN=		client server asnwho pttest strtest bufftest cidrtest ipconvert
-OBJS=		client.o server.o
+OBJS=		client.o server.o pack_test.o
 ASOBJ=          ../src/CmdBuf.o ../src/ASWho.o
 CBUFF_OBJS=     cirbuffer_test.o
 CIDR_OBJS=	cidrtest.o
 PT_OBJS=        
 PTT_OBJS=	pt_test.o
 
+BIN=		client server asnwho pttest strtest bufftest cidrtest \
+		ipconvert packtest
+
 ALL_OBJS=	$(OBJS) $(ASOBJ) $(STROBJ) $(CBUFF_OBJS) $(CIDR_OBJS)
 ALL_BINS= 	$(BIN)
 
 
 
-all: client server cidrtest strtest bufftest pttest ipconvert
+all: client server cidrtest strtest bufftest pttest ipconvert packtest
 
 
 include ${TOPDIR}/tcamake/builddefs
@@ -73,6 +75,10 @@ strtest: str_test.o
 ipconvert: ip_convert.o
 	$(make-cxxbin-rule)
 	@echo
+
+packtest: pack_test.o
+	$(make-cxxbin-rule)
+
 
 clean:
 	$(RM) $(ALL_OBJS) $(BIN) \

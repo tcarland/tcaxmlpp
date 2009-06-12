@@ -1,8 +1,8 @@
 /*
  * TnmsMessage.h
  *
- *  Copyright(c) 2008, Charlton Technology LLC
- *      Author: tcarland@gmail.com
+ *  Copyright(c) 2008, Timothy Charlton Arland
+ *  tcarland@gmail.com
  */
 #ifndef _TNMSCORE_TNMSMESSAGE_H_
 #define _TNMSCORE_TNMSMESSAGE_H_
@@ -10,8 +10,9 @@
 #include <string>
 
 #include "tnmsProtocol.h"
-#include "Serializable.hpp"
 #include "TnmsOid.h"
+
+#include "Serializable.hpp"
 
 namespace tnmsCore {
 
@@ -23,7 +24,7 @@ namespace tnmsCore {
   *  such as Add and Remove. The 'TnmsMetric' message, is the only 
   *  specialized version of a TnmsMessage object.
  **/
-class TnmsMessage : public Serializable {
+class TnmsMessage : public tcanetpp::Serializable {
 
 public:
 

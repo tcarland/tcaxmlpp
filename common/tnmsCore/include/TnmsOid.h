@@ -2,7 +2,6 @@
  * TnmsOid.h
  *
  *  Copyright(c) 2008,2009  Timothy Charlton Arland
- *  Charlton Technology LLC
  *  tcarland@gmail.com
  */
 #ifndef _TNMSCORE_TNMSOID_H_
@@ -24,7 +23,7 @@ typedef uint32_t*                tOid;
 
 
 
-class TnmsOid : public Serializable {
+class TnmsOid : public tcanetpp::Serializable {
 
 public:
 

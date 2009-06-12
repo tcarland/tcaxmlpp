@@ -1,10 +1,11 @@
 #define _TNMSCORE_TNMSAUTHREPLY_CPP_
 
 #include "TnmsAuthReply.h"
-#include "Pack.h"
 
+#include "Serializer.h"
 #include "LogFacility.h"
 using namespace tcanetpp;
+
 
 namespace tnmsCore {
 
@@ -37,7 +38,7 @@ TnmsAuthReply::serialize ( char * buffer, size_t buffer_len )
     if ( buffer_len < this->size() )
         return -1;
 
-    pk    = Packer::Pack(wptr, buffer_len - wt, _element_name);
+    pk    = Serializer::Pack(wptr, buffer_len - wt, _element_name);
     if ( pk < 0 )
         return -1;
     wt   += pk;
@@ -49,19 +50,19 @@ TnmsAuthReply::serialize ( char * buffer, size_t buffer_len )
     wt   += pk;
     wptr += pk;
 
-    pk    = Packer::Pack(wptr, buffer_len - wt, ((uint16_t)_auth_result));
+    pk    = Serializer::Pack(wptr, buffer_len - wt, ((uint16_t)_auth_result));
     if ( pk < 0 )
         return -1;
     wt   += pk;
     wptr += pk;
 
-    pk    = Packer::Pack(wptr, buffer_len - wt, _auth_reason);
+    pk    = Serializer::Pack(wptr, buffer_len - wt, _auth_reason);
     if ( pk < 0 )
         return -1;
     wt   += pk;
     wptr += pk;
 
-    pk    = Packer::Pack(wptr, buffer_len - wt, _auth_data);
+    pk    = Serializer::Pack(wptr, buffer_len - wt, _auth_data);
     if ( pk < 0 )
         return -1;
     wt   += pk;
@@ -88,7 +89,7 @@ TnmsAuthReply::deserialize ( const char * buffer, size_t buffer_len )
     rptr  = buffer;
     rsz   = buffer_len;
 
-    upk   = Packer::Unpack(rptr, (rsz-rd), _element_name);
+    upk   = Serializer::Unpack(rptr, (rsz-rd), _element_name);
     if ( upk < 0 )
         return -1;
     rd   += upk;
@@ -101,7 +102,7 @@ TnmsAuthReply::deserialize ( const char * buffer, size_t buffer_len )
     rptr += upk;
 
     uint16_t result;
-    upk   = Packer::Unpack(rptr, (rsz-rd), result);
+    upk   = Serializer::Unpack(rptr, (rsz-rd), result);
     if ( upk < 0 )
         return -1;
     rd   += upk;
@@ -109,13 +110,13 @@ TnmsAuthReply::deserialize ( const char * buffer, size_t buffer_len )
 
     _auth_result = (eAuthType) result;
 
-    upk   = Packer::Unpack(rptr, (rsz-rd), _auth_reason);
+    upk   = Serializer::Unpack(rptr, (rsz-rd), _auth_reason);
     if ( upk < 0 )
         return -1;
     rd   += upk;
     rptr += upk;
 
-    upk   = Packer::Unpack(rptr, (rsz-rd), _auth_data);
+    upk   = Serializer::Unpack(rptr, (rsz-rd), _auth_data);
     if ( upk < 0 )
         return -1;
     rd   += upk;

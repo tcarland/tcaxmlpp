@@ -1,7 +1,9 @@
 #define _TNMSCORE_TNMSMESSAGE_CPP_
 
 #include "TnmsMessage.h"
-#include "Pack.h"
+
+#include "Serializer.h"
+using namespace tcanetpp;
 
 
 namespace tnmsCore {
@@ -40,7 +42,7 @@ TnmsMessage::serialize ( char * buffer, size_t buffer_len )
 
     char * wptr = buffer;
 
-    pk    = Packer::Pack(wptr, (buffer_len - wt), ((uint16_t)_message_type));
+    pk    = Serializer::Pack(wptr, (buffer_len - wt), ((uint16_t)_message_type));
     if ( pk < 0 )
         return -1;
     wt   += pk;
@@ -52,7 +54,7 @@ TnmsMessage::serialize ( char * buffer, size_t buffer_len )
     wt   += pk;
     wptr += pk;
 
-    pk    = Packer::Pack(wptr, (buffer_len - wt), _element_name);
+    pk    = Serializer::Pack(wptr, (buffer_len - wt), _element_name);
     if ( pk < 0 )
         return -1;
     wt   += pk;
@@ -75,7 +77,7 @@ TnmsMessage::deserialize ( const char * buffer, size_t buffer_len )
     rptr  = buffer;
     rsz   = buffer_len;
 
-    upk   = Packer::Unpack(rptr, (rsz - rd), type);
+    upk   = Serializer::Unpack(rptr, (rsz - rd), type);
     if ( upk < 0 )
         return -1;
     rd   += upk;
@@ -89,7 +91,7 @@ TnmsMessage::deserialize ( const char * buffer, size_t buffer_len )
     rd   += upk;
     rptr += upk;
 
-    upk   = Packer::Unpack(rptr, (rsz - rd), _element_name);
+    upk   = Serializer::Unpack(rptr, (rsz - rd), _element_name);
     if ( upk < 0 )
         return -1;
     rd   += upk;

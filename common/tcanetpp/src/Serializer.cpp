@@ -144,7 +144,7 @@ Serializer::Unpack ( const char * buffer, size_t  buflen,
 
     ::memcpy(val, buffer + upk, val_written);
 
-    skip = val_written % PACKER_WORDSIZE;
+    skip = val_written % SERIALIZER_WORDSIZE;
 
     return(upk + val_written + skip);
 }
