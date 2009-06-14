@@ -58,7 +58,22 @@ void  displayHelp()
     std::cout << " send                            =  Gives time to the API instance to send updates." << std::endl;
 
     std::cout << std::endl;
+
+    std::cout << "Client commands" << std::endl;
+    std::cout << " client new [tag] [server] [port]   = creates a new client connection " << std::endl;
+    std::cout << " client del [tag]                   = removes a client connection  " << std::endl;
+    std::cout << " client list                        = lists current clients  " << std::endl;
+    std::cout << " client subscribe [tag] [name]      = subscribes client 'tag' to 'name'  " << std::endl;
+    std::cout << " client unsubscribe [tag] [name]    = unsubscribes client 'tag' to 'name'  " << std::endl;
+    std::cout << " client browse [name]               = lists sections of the current tree by 'name' " << std::endl;
+    std::cout << " client dump   [name]               = dumps sections of the current tree by 'name' " << std::endl;
+    std::cout << " client show   [name]               = shows the current metric for 'name' " << std::endl;
+
+    std::cout << std::endl;
+
+    return;
 }
+
 
 void sigHandler ( int signal )
 {
@@ -428,6 +443,8 @@ int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
             if ( lnlen )
                 std::cout << "Unrecognized command: '" << cmd << "'" << std::endl;
         }
+
+
 
         if ( ! istrm.good() )
         {

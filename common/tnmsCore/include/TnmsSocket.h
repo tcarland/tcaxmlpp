@@ -87,8 +87,8 @@ class TnmsSocket {
     void                reconnectTime      ( const time_t & secs );
     const time_t&       reconnectTime() const;
 
-    void                compression        ( bool    compress );
-    bool                compression() const;
+    void                setCompression     ( bool    compress );
+    bool                getCompression() const;
 
     void                setTxQueueSize     ( size_t  bytes );
     size_t              getTxQueueSize() const;
@@ -109,8 +109,8 @@ class TnmsSocket {
 
     void                enableFlush       ( bool  flush );
     bool                flushEnabled();
-    void                flushLimit        ( uint32_t limit );
-    uint32_t            flushLimit();
+    void                setFlushLimit     ( uint32_t limit );
+    uint32_t            getFlushLimit();
 
     void                enableTimeout     ( bool   timeout );
     void                setTimeout        ( const time_t & secs );
