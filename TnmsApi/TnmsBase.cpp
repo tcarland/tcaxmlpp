@@ -413,8 +413,8 @@ TnmsBase::reconfigure ( const time_t & now )
     _holddown_interval  = clientnew.holddown_interval;
     _reconnect_interval = clientnew.reconnect_interval;
 
-    _conn->flushLimit(clientnew.flush_limit);
-    _conn->compression(_config.compression);
+    _conn->setFlushLimit(clientnew.flush_limit);
+    _conn->setCompression(_config.compression);
 
     return TNMSERR_NONE;
 }

@@ -91,28 +91,34 @@ class LogFacility {
                                             int level = LOGFAC_NOTICE );
 
     static void           LogMessage      ( const std::string & entry, 
-                                            int level = LOGFAC_NOTICE );
+                                            int   level   = LOGFAC_NOTICE,
+                                            bool  newline = true );
 
     static void           LogMessage      ( const std::string & prefix, 
                                             const std::string & entry,
-                                            int level = LOGFAC_NOTICE );
+                                            int   level   = LOGFAC_NOTICE, 
+                                            bool  newline = true );
 
     static void           LogToStream     ( const std::string & streamName,
                                             const std::string & prefix,
-                                            const std::string & entry );
+                                            const std::string & entry,
+                                            bool  newline = true );
 
     static void           LogToStream     ( const std::string & streamName,
-                                            const std::string & entry );
+                                            const std::string & entry,
+                                            bool  newline = true );
 
     static void           LogToAllStreams ( const std::string & prefix,
-                                            const std::string & entry );
+                                            const std::string & entry,
+                                            bool  newline = true );
                                         
     
     static void           CloseSyslog();
     static void           CloseLogFile();
     
     static void           SetLogTime      ( const time_t & now );
-  
+    static time_t         GetLogTime();
+
     static std::string    GetTimeString   ( const time_t & now );
 
 

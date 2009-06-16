@@ -11,7 +11,8 @@ INCLUDES=       -Iinclude
 
 BIN=		tnms-console
 
-OBJS=		src/tnms_console.o
+OBJS=		src/TnmsConsoleManager.o src/ConsoleThread.o \
+		src/ClientIOHandler.o src/tnms_console.o
 
 ALL_OBJS=	$(OBJS)
 ALL_BINS=	$(BIN)

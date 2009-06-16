@@ -512,7 +512,7 @@ TnmsSocket::reconnectTime() const
 // ------------------------------------------------------------------- //
 
 void
-TnmsSocket::compression ( bool compress )
+TnmsSocket::setCompression ( bool compress )
 {
     this->_compression = compress;
 
@@ -530,7 +530,7 @@ TnmsSocket::compression ( bool compress )
 
 
 bool
-TnmsSocket::compression() const
+TnmsSocket::getCompression() const
 {
     return this->_compression;
 }
@@ -713,7 +713,7 @@ TnmsSocket::flushEnabled()
 // ------------------------------------------------------------------- //
 
 void
-TnmsSocket::flushLimit ( uint32_t limit )
+TnmsSocket::setFlushLimit ( uint32_t limit )
 {
     this->_flushLimit = limit;
 }
@@ -721,7 +721,7 @@ TnmsSocket::flushLimit ( uint32_t limit )
 // ------------------------------------------------------------------- //
 
 uint32_t
-TnmsSocket::flushLimit()
+TnmsSocket::getFlushLimit()
 {
     return this->_flushLimit;
 }
@@ -1139,7 +1139,7 @@ TnmsSocket::clearState()
     _wtt     = 0;
     _wtsize  = 0;
 
-    if ( this->compression() ) {
+    if ( this->getCompression() ) {
         if ( _zipper )
             delete _zipper;
         if ( _zipout )

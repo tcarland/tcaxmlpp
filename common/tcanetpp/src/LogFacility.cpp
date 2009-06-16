@@ -255,16 +255,17 @@ LogFacility::LogMessage ( LogFacility::Message & logmsg, int level )
 
 
 void
-LogFacility::LogMessage ( const std::string & entry, int level )
+LogFacility::LogMessage ( const std::string & entry, int level, bool newline )
 {
-    return LogFacility::LogMessage(LogFacility::_LogPrefix, entry, level);
+    return LogFacility::LogMessage(LogFacility::_LogPrefix, entry, level, newline);
 }
 
 
 void
 LogFacility::LogMessage ( const std::string & prefix, 
                           const std::string & entry, 
-                          int level )
+                          int   level,
+                          bool  newline )
 {
     if ( ! LogFacility::_Enabled )
         return;
@@ -287,7 +288,7 @@ LogFacility::LogMessage ( const std::string & prefix,
 // ----------------------------------------------------------------------
 
 void
-LogFacility::LogToAllStreams ( const std::string & prefix, const std::string & entry )
+LogFacility::LogToAllStreams ( const std::string & prefix, const std::string & entry, bool newline )
 {
     StreamMap::iterator     sIter; 
     std::list<std::string>  dead;
@@ -305,7 +306,9 @@ LogFacility::LogToAllStreams ( const std::string & prefix, const std::string & e
         *(sIter->second) << prefix << ": ";
         if ( LogFacility::_LogTime > 0 )
             *(sIter->second) << LogFacility::_LogTimeStr << " : ";
-        *(sIter->second) << entry << std::endl;
+        *(sIter->second) << entry;
+        if ( newline )
+            *(sIter->second) << std::endl;
         sIter->second->flush();
     }
 
@@ -323,16 +326,17 @@ LogFacility::LogToAllStreams ( const std::string & prefix, const std::string & e
 
 void
 LogFacility::LogToStream ( const std::string & streamName, 
-                      const std::string & entry )
+                           const std::string & entry, bool newline )
 {
-    return LogFacility::LogToStream(streamName, streamName, entry);
+    return LogFacility::LogToStream(streamName, streamName, entry, newline);
 }
 
 
 void
 LogFacility::LogToStream ( const std::string & prefix, 
-                      const std::string & streamName, 
-                      const std::string & entry )
+                           const std::string & streamName, 
+                           const std::string & entry,
+                           bool  newline )
 {
     StreamMap::iterator  sIter;
 
@@ -346,7 +350,9 @@ LogFacility::LogToStream ( const std::string & prefix,
     *(sIter->second) << prefix << ": ";
     if ( LogFacility::_LogTime > 0 )
         *(sIter->second) << LogFacility::_LogTimeStr << " : ";
-    *(sIter->second) << entry << std::endl;
+    *(sIter->second) << entry;
+    if ( newline )
+        *(sIter->second) << std::endl;
     sIter->second->flush();
 
     LogFacility::Unlock();
@@ -438,6 +444,19 @@ LogFacility::SetLogTime ( const time_t & now )
     }
 
     return;
+}
+
+time_t
+LogFacility::GetLogTime()
+{
+    time_t  logtime = 0;
+
+    if ( LogFacility::Lock() ) {
+        logtime = LogFacility::_LogTime;
+        LogFacility::Unlock();
+    }
+
+    return logtime;
 }
 
 // ----------------------------------------------------------------------

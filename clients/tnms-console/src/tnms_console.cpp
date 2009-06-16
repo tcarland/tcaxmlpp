@@ -4,14 +4,19 @@ extern "C" {
 #include <signal.h>
 #include <sys/stat.h>
 }
-
 #include <string>
 #include <sstream>
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <list>
 #include <map>
 
+#include "TnmsConsoleManager.h"
+using namespace tnmsconsole;
+
+
+/*
 #ifdef WIN32
 #include <windows.h>
 #else
@@ -51,11 +56,11 @@ void  displayHelp()
     std::cout << std::endl;
 
     std::cout << "Agent source commands" << std::endl;
-    std::cout << " add [name] <epoch>              =  adds a new metric of [name] to the system." << std::endl;
-    std::cout << " remove  [name]                  =  removes a metric of [name]." << std::endl;
-    std::cout << " update  [name] [value] <epoch>  =  Updates a metric." << std::endl;
-    std::cout << " updates [name] [value] <epoch>  =  Updates a metric with a string value." << std::endl;
-    std::cout << " send                            =  Gives time to the API instance to send updates." << std::endl;
+    std::cout << " add [name] <epoch>                 =  adds a new metric of [name] to the system." << std::endl;
+    std::cout << " remove  [name]                     =  removes a metric of [name]." << std::endl;
+    std::cout << " update  [name] [value] <epoch>     =  Updates a metric." << std::endl;
+    std::cout << " updates [name] [value] <epoch>     =  Updates a metric with a string value." << std::endl;
+    std::cout << " send                               =  Gives time to the API instance to send updates." << std::endl;
 
     std::cout << std::endl;
 
@@ -74,13 +79,6 @@ void  displayHelp()
     return;
 }
 
-
-void sigHandler ( int signal )
-{
-    if ( signal == SIGINT || signal == SIGTERM )
-        std::cout << "Interrupt caught. Use 'quit' to exit." << std::endl;
-    return;
-}
 
 void  sleeps ( int secs )
 {
@@ -161,7 +159,7 @@ int sendUpdates ( TnmsAPI * api, time_t & now )
 
 
 
-int  runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
+int runConsole ( std::istream & istrm, bool showprompt, bool echo = false )
 {
     std::string  cmd, name, cfgfile, agentname, desc, timestr;
     std::string  prompt = "[tnms]: ";
@@ -483,6 +481,51 @@ int main ( int argc, char ** argv )
             if ( fstrm.is_open() ) {
                 runConsole(fstrm, false, true);
                 fstrm.close();
+            } else
+                std::cout << "Error reading file '" << *fIter << "'" << std::endl;
+        }
+    }
+
+    return 0;
+}
+
+*/
+
+void sigHandler ( int signal )
+{
+    if ( signal == SIGINT || signal == SIGTERM )
+        std::cout << "Interrupt caught. Use 'quit' to exit." << std::endl;
+    return;
+}
+
+
+
+int main ( int argc, char ** argv )
+{
+    std::list<std::string>  fileslist;
+    std::list<std::string>::iterator  fIter;
+
+    bool  showprompt = true;
+
+    signal(SIGINT,  &sigHandler);
+    signal(SIGTERM, &sigHandler);
+    
+    TnmsConsoleManager * mgr = NULL;
+
+    if ( fileslist.empty() ) {
+         mgr = new TnmsConsoleManager(std::cin, true);
+         mgr->run();
+         delete mgr;
+    } else {
+        for ( fIter = fileslist.begin(); fIter != fileslist.end(); ++fIter ) 
+        {
+            std::ifstream  fstrm;
+            fstrm.open(fIter->c_str());
+            if ( fstrm.is_open() ) {
+                mgr = new TnmsConsoleManager(fstrm, false, true);
+                mgr->run();
+                fstrm.close();
+                delete mgr;
             } else
                 std::cout << "Error reading file '" << *fIter << "'" << std::endl;
         }

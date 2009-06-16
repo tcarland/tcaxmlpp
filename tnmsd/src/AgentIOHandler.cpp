@@ -32,7 +32,7 @@ AgentIOHandler::timeout ( const EventTimer * timer )
         TnmsClient * client = (TnmsClient*) *cIter;
         LogFacility::Message  logmsg;
 
-        logmsg << "AgentIOHandler timeout (" << (*cIter)->getHostStr() << ")";
+        logmsg << "AgentIOHandler timeout (" << client->getHostStr() << ")";
 
         if ( client->isMirrorClient() ) {
             if ( ! client->isConnected() || client->isConnecting() ) {
@@ -42,8 +42,8 @@ AgentIOHandler::timeout ( const EventTimer * timer )
                     logmsg << " mirror disconnected.";
                     LogFacility::LogMessage(logmsg);
                     continue;
-                } else if ( c >=0 ) {
-                    timer->evmgr->addIOEvent(this, client->getSockFD(), (*cIter));
+                } else if ( c >= 0 ) {
+                    timer->evmgr->addIOEvent(this, client->getSockFD(), client);
                     continue;
                 }
 
