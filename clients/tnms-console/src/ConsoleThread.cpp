@@ -35,29 +35,32 @@ void
 ConsoleThread::run()
 {
     std::string  cmd, name, cfgfile, agentname, desc, timestr;
-    std::string  prompt = "[tnms]: ";
+    std::string  prompt = "[tnms]";
 
-    std::vector<std::string>  cmdlist;
-
+    CommandList         cmdlist;
     ApiMap              apimap;
     ApiMap::iterator    showI, aIter;
     
     uint64_t  val;
     time_t    ts, now;
     char      line[1024];
-
     size_t    len    = 1024;
     size_t    lnlen  = 0;
-    bool      done   = false;
-
 
     if ( ! this->_istrm ) 
         return;
+
+    this->sleeps(3);
+
     if ( _prompt ) {
         LogFacility::Message logmsg;
-        logmsg << prompt;
-        LogFacility::LogMessage(logmsg);
+        logmsg << " ";
+        LogFacility::SetLogPrefix(prompt);
+        LogFacility::LogToStream("stdout", logmsg.str(), false);
+        prompt.append(": ");
     }
+
+    showI = apimap.end();
 
     while ( ! this->_Alarm && _istrm.getline(line, len) )
     {
@@ -65,7 +68,7 @@ ConsoleThread::run()
         std::vector<std::string> cmdlist;
 
         if ( _echo )
-            LogFacility::LogMessage(line);
+            LogFacility::LogToStream("stdout", line);
 
         lnlen = ::strnlen(line, 1024);
         if ( lnlen > 0 ) {
@@ -80,8 +83,7 @@ ConsoleThread::run()
         else
             cmd  = "";
         
-        // now = LogFacility::GetLogTime();
-        now  = ::time(NULL);
+        now = LogFacility::GetLogTime();
 
         // CREATE
         //
@@ -89,8 +91,8 @@ ConsoleThread::run()
         {
             // create instance
             if ( cmdlist.size() < 3 ) {
-                msg << "Error: invalid syntax" << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "Error: invalid syntax " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
 
@@ -98,8 +100,8 @@ ConsoleThread::run()
             agentname = cmdlist[2];
 
             if ( apimap.find(name) != apimap.end() ) {
-                msg << "Instance already exists for '" << name << "'" << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "Instance already exists for '" << name << "' " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
             TnmsAPI * api = new TnmsAPI(agentname);
@@ -112,8 +114,8 @@ ConsoleThread::run()
             
             ApiMapInsert  insertR = apimap.insert(ApiMap::value_type(name, api));
             if ( ! insertR.second ) {
-                msg << "Error: Insert failed for '" << name << "'" << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "Error: Insert failed for '" << name << "' " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
             showI = insertR.first;
@@ -126,8 +128,8 @@ ConsoleThread::run()
         {
             // destroy instance
             if ( cmdlist.size() != 2 ) {
-                std:: cout << "Error: invalid syntax" << std::endl;
-                LogFacility::LogMessage(msg);
+                std:: cout << "Error: invalid syntax " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
 
@@ -136,8 +138,8 @@ ConsoleThread::run()
             ApiMap::iterator  aIter = apimap.find(name);
 
             if ( aIter == apimap.end() ) {
-                msg << "Error: '" << name << "' not found." << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "Error: '" << name << "' not found. " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
             if ( aIter == showI ) {
@@ -161,8 +163,8 @@ ConsoleThread::run()
         else if ( cmd.compare("set") == 0 )
         {
             if ( cmdlist.size() != 2 ) {
-                msg << "Error: invalid syntax" << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "Error: invalid syntax " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
 
@@ -170,12 +172,14 @@ ConsoleThread::run()
 
             aIter = apimap.find(name);
             if ( aIter == apimap.end() ) {
-                msg << "Error: '" << name << "' not found." << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "Error: '" << name << "' not found. " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
             showI  = aIter;
-            prompt = "[tnms : " + showI->first + "]: ";
+            prompt = "[tnms : " + showI->first + "]";
+            LogFacility::SetLogPrefix(prompt);
+            prompt.append(": ");
         }
         //
         // ADD
@@ -183,13 +187,13 @@ ConsoleThread::run()
         else if ( cmd.compare("add") == 0 )
         {
             if ( cmdlist.size() < 2 ) {
-                msg << "Error: invalid syntax" << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "Error: invalid syntax " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
             if ( showI == apimap.end() ) {
-                msg << "No valid instance in this context" << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "No valid instance in this context. " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
 
@@ -201,8 +205,8 @@ ConsoleThread::run()
 
             //  api->add
             if ( ! showI->second->add(name, ts) ) {
-                msg << "Error: add failed for '" << name << "'" << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "Error: add failed for '" << name << "'" << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
         }
@@ -212,13 +216,13 @@ ConsoleThread::run()
         else if ( cmd.compare("update") == 0 )
         {
             if ( cmdlist.size() < 3 ) {
-                msg << "Error: invalid syntax" << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "Error: invalid syntax " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
             if ( showI == apimap.end() ) {
-                msg << "No valid instance in this context" << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "No valid instance in this context " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
 
@@ -234,8 +238,8 @@ ConsoleThread::run()
 
             // api->update
             if ( ! showI->second->update(name, ts, val, TNMS_UINT64) ) {
-                msg << "Error: update failed" << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "Error: update failed" << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
         }
@@ -245,13 +249,13 @@ ConsoleThread::run()
         else if ( cmd.compare("updateS") == 0 )
         {
             if ( cmdlist.size() < 3 ) {
-                msg << "Error: invalid syntax" << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "Error: invalid syntax " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
             if ( showI == apimap.end() ) {
-                msg << "No valid instance in this context" << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "No valid instance in this context " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
 
@@ -264,8 +268,8 @@ ConsoleThread::run()
                 ts = ::time(NULL);
 
             if ( ! showI->second->update(name, ts, desc) ) {
-                msg << "Error: update failed" << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "Error: update failed " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
         }
@@ -275,13 +279,13 @@ ConsoleThread::run()
         else if ( cmd.compare("remove") == 0 )
         {
             if ( cmdlist.size() < 2 ) {
-                msg << "Error: invalid syntax" << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "Error: invalid syntax " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
             if ( showI == apimap.end() ) {
-                msg << "No valid instance in this context" << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "No valid instance in this context " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
 
@@ -289,8 +293,8 @@ ConsoleThread::run()
 
             // api->remove
             if ( ! showI->second->remove(name) ) {
-                msg << "Error: remove failed" << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "Error: remove failed " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
         }
@@ -301,16 +305,19 @@ ConsoleThread::run()
         {
             // send updates
             if ( showI == apimap.end() ) {
-                msg << "No valid instance in this context" << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "No valid instance in this context " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
 
             int ret = 0;
             if ( (ret = this->sendAPIUpdates(showI->second, now)) != 0 ) {
-                msg << "no connection" << std::endl;
+                msg << "no connection " << prompt;
                 //continue;
             }
+            prompt = "[tnms : " + showI->first + "]";
+            LogFacility::SetLogPrefix(prompt);
+            prompt.append(": ");
         }
         else if ( (cmd.compare("help") == 0) || (cmd.compare("?") == 0) )
         {
@@ -319,8 +326,8 @@ ConsoleThread::run()
         else if ( cmd.compare("debug") == 0 )
         {
            if ( showI == apimap.end() ) {
-                msg << "No valid instance in this context" << std::endl;
-                LogFacility::LogMessage(msg);
+                msg << "No valid instance in this context " << prompt;
+                LogFacility::LogToStream("stdout", msg.str(), false);
                 continue;
             }
             
@@ -331,13 +338,15 @@ ConsoleThread::run()
             this->setAlarm();
             break;
         }
+        else if ( cmd.compare("client") == 0 )
+        {
+            this->addClient
+        }
         else 
         {
             if ( lnlen )
                 msg << "Unrecognized command: '" << cmd << "'" << std::endl;
         }
-
-
 
         if ( ! this->_istrm.good() )
         {
@@ -348,26 +357,26 @@ ConsoleThread::run()
         }
 
         if ( _prompt )
-            msg << prompt;
-        LogFacility::LogMessage(msg);
- 
+            msg << " ";
+        
+        LogFacility::LogToStream("stdout", msg.str(), false);
     }
 
     return;
 }
 
 bool
-ConsoleThread::addClientCommand ( const std::string & cmd )
+ConsoleThread::addClientCommand ( CommandList & cmdlist )
 {
-    if ( this->_cmdQueue.push(cmd) )
+    if ( this->_cmdQueue.push(cmdlist) )
         return true;
     return false;
 }
 
 bool
-ConsoleThread::getClientCommand ( std::string & cmd )
+ConsoleThread::getClientCommand ( CommandList & cmdlist )
 {
-    if ( this->_cmdQueue.pop(cmd) )
+    if ( this->_cmdQueue.pop(cmdlist) )
         return true;
     return false;
 }
@@ -404,6 +413,8 @@ ConsoleThread::sendAPIUpdates ( TnmsAPI * api, const time_t & now )
         if ( retval == 0 )
             logmsg << "send() took " << (clk2 - clk1) << " tick(s)" << std::endl;
 #       endif
+
+        this->sleeps(1);
        
         if ( retval == 1 ) {
             logmsg << "Invalid configuration" << std::endl;
@@ -435,7 +446,7 @@ ConsoleThread::sendAPIUpdates ( TnmsAPI * api, const time_t & now )
 
     logmsg << std::endl;
 
-    LogFacility::LogMessage(logmsg);
+    LogFacility::LogToStream("stdout", logmsg.str(), false);
 
     return retval;
 }
@@ -463,11 +474,11 @@ ConsoleThread::DisplayHelp()
     logmsg << std::endl;
 
     logmsg << "Agent source commands" << std::endl;
-    logmsg << " add [name] <epoch>              =  adds a new metric of [name] to the system." << std::endl;
-    logmsg << " remove  [name]                  =  removes a metric of [name]." << std::endl;
-    logmsg << " update  [name] [value] <epoch>  =  Updates a metric." << std::endl;
-    logmsg << " updates [name] [value] <epoch>  =  Updates a metric with a string value." << std::endl;
-    logmsg << " send                            =  Gives time to the API instance to send updates." << std::endl;
+    logmsg << " add [name] <epoch>                  =  adds a new metric of 'name'." << std::endl;
+    logmsg << " remove  [name]                      =  removes a metric of 'name'." << std::endl;
+    logmsg << " update  [name] [value] <epoch>      =  Updates a metric." << std::endl;
+    logmsg << " updates [name] [value] <epoch>      =  Updates a metric with a string value." << std::endl;
+    logmsg << " send                                =  Give time to the API instance." << std::endl;
 
     logmsg << std::endl;
 
@@ -477,18 +488,27 @@ ConsoleThread::DisplayHelp()
     logmsg << " client list                        = lists current clients  " << std::endl;
     logmsg << " client subscribe [tag] [name]      = subscribes client 'tag' to 'name'  " << std::endl;
     logmsg << " client unsubscribe [tag] [name]    = unsubscribes client 'tag' to 'name'  " << std::endl;
-    logmsg << " client browse [name]               = lists sections of the current tree by 'name' " << std::endl;
-    logmsg << " client dump   [name]               = dumps sections of the current tree by 'name' " << std::endl;
-    logmsg << " client show   [name]               = shows the current metric for 'name' " << std::endl;
+    logmsg << " client browse [name]               = list subtree by 'name' " << std::endl;
+    logmsg << " client dump   [name]               = dump subtree by 'name' " << std::endl;
+    logmsg << " client show   [name]               = display the current metric for 'name' " << std::endl;
 
     logmsg << std::endl;
 
-    LogFacility::LogMessage(logmsg);
+    LogFacility::LogToStream("stdout", logmsg.str());
 
     return;
 }
 
 
+void
+ConsoleThread::sleeps ( int secs )
+{
+#ifdef WIN32
+    Sleep(secs);
+#else
+    ::sleep(secs);
+#endif
+}
 
 
 } // namespace

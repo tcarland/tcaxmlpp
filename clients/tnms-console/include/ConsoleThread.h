@@ -14,8 +14,8 @@ using namespace tnmsCore;
 
 namespace tnmsconsole {
 
-
-typedef tcanetpp::SynchronizedQueue<std::string>    CommandQueue;
+typedef std::vector<std::string>                    CommandList;
+typedef tcanetpp::SynchronizedQueue< CommandList >  CommandQueue;
 
 typedef std::map<std::string, TnmsAPI*>             ApiMap;
 typedef std::map<std::string, TnmsAPI*>::iterator   ApiIter;
@@ -45,7 +45,7 @@ public:
 protected:
 
     int          sendAPIUpdates   ( TnmsAPI * api, const time_t & now );
-
+    void         sleeps           ( int secs );
 
 private:
 

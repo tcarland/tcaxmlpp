@@ -250,7 +250,7 @@ LogFacility::IsOpen()
 void
 LogFacility::LogMessage ( LogFacility::Message & logmsg, int level )
 {
-    return LogFacility::LogMessage(LogFacility::_LogPrefix, logmsg.str(), level);
+    return LogFacility::LogMessage(LogFacility::_LogPrefix, logmsg.str(), level, false);
 }
 
 
@@ -278,9 +278,9 @@ LogFacility::LogMessage ( const std::string & prefix,
 #   endif
                
     if ( LogFacility::_FileName.empty() || LogFacility::_Broadcast )
-        LogFacility::LogToAllStreams(prefix, entry);
+        LogFacility::LogToAllStreams(prefix, entry, newline);
     else
-        LogFacility::LogToStream(LogFacility::_FileName, prefix, entry);
+        LogFacility::LogToStream(LogFacility::_FileName, prefix, entry, newline);
 
     return;
 }
@@ -328,7 +328,7 @@ void
 LogFacility::LogToStream ( const std::string & streamName, 
                            const std::string & entry, bool newline )
 {
-    return LogFacility::LogToStream(streamName, streamName, entry, newline);
+    return LogFacility::LogToStream(LogFacility::_LogPrefix, streamName, entry, newline);
 }
 
 
@@ -344,16 +344,15 @@ LogFacility::LogToStream ( const std::string & prefix,
         return;
 
     sIter = LogFacility::_StreamMap.find(streamName);
-    if ( sIter == LogFacility::_StreamMap.end() )
-        return;
-
-    *(sIter->second) << prefix << ": ";
-    if ( LogFacility::_LogTime > 0 )
-        *(sIter->second) << LogFacility::_LogTimeStr << " : ";
-    *(sIter->second) << entry;
-    if ( newline )
-        *(sIter->second) << std::endl;
-    sIter->second->flush();
+    if ( sIter != LogFacility::_StreamMap.end() ) {
+        *(sIter->second) << prefix << ": ";
+        if ( LogFacility::_LogTime > 0 )
+            *(sIter->second) << LogFacility::_LogTimeStr << " : ";
+        *(sIter->second) << entry;
+        if ( newline )
+            *(sIter->second) << std::endl;
+        sIter->second->flush();
+    }
 
     LogFacility::Unlock();
 

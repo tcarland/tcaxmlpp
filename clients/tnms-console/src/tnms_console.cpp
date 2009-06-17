@@ -505,8 +505,6 @@ int main ( int argc, char ** argv )
     std::list<std::string>  fileslist;
     std::list<std::string>::iterator  fIter;
 
-    bool  showprompt = true;
-
     signal(SIGINT,  &sigHandler);
     signal(SIGTERM, &sigHandler);
     

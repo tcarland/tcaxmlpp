@@ -100,6 +100,7 @@ class TnmsBase {
 
     std::string          _xmlConfig;
     std::string          _configName;
+    std::string          _logName;
     std::string          _hostName;
     uint16_t             _hostPort;
 

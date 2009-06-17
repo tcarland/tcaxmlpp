@@ -54,6 +54,7 @@ TnmsConsoleManager::run()
     LogFacility::OpenLogStream("stdout", &std::cout);
     LogFacility::LogMessage("TnmsConsoleManager::run()");
     LogFacility::SetBroadcast(true);
+    LogFacility::SetLogPrefix("[tnms] :");
 
     _console->start();
 
@@ -130,12 +131,12 @@ TnmsConsoleManager::timeout ( const EventTimer * timer )
 
     // check for client commands
     std::string  cmd;
-    if ( _console->isRunning() )
+    if ( _console->isRunning() ) {
         if ( _console->getClientCommand(cmd) )
             this->runClientCommand(cmd);
-    else
-        ;
-        //this->setAlarm();
+    } else {
+        this->setAlarm();
+    }
 
     return;
 }
