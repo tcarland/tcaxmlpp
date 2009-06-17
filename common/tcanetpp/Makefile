@@ -13,7 +13,8 @@ NEED_LIBDL = 1
 #-------------------#
 
 ifdef DEBUG
-  OPT_FLAGS = -g -DEV_DEBUG
+  OPT_FLAGS = -g 
+# -DEV_DEBUG
 endif
 
 INCLUDES =	    -Iinclude

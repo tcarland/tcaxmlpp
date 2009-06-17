@@ -21,6 +21,7 @@ TnmsConsoleManager::TnmsConsoleManager ( std::istream & istrm, bool interactive,
 
 TnmsConsoleManager::~TnmsConsoleManager()
 {
+    /*
     ClientMap::iterator  cIter;
 
     for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter ) 
@@ -34,7 +35,7 @@ TnmsConsoleManager::~TnmsConsoleManager()
         }
     }
     _clients.clear();
-
+    */
     delete _evmgr;
     delete _tree;
 
@@ -51,10 +52,11 @@ TnmsConsoleManager::run()
 {
     LogFacility::InitThreaded();
 
-    LogFacility::OpenLogStream("stdout", &std::cout);
-    LogFacility::LogMessage("TnmsConsoleManager::run()");
-    LogFacility::SetBroadcast(true);
-    LogFacility::SetLogPrefix("[tnms] :");
+    LogFacility::OpenLogStream("console", &std::cout);
+    LogFacility::SetLogPrefix("[tnms]:");
+    //LogFacility::SetBroadcast(true);
+    
+    LogFacility::LogMessage("TnmsConsoleManager::run() starting console...");
 
     _console->start();
 
@@ -70,10 +72,11 @@ TnmsConsoleManager::run()
 void
 TnmsConsoleManager::timeout ( const EventTimer * timer )
 {
-    int   rd, sd;
+    //int   rd, sd;
 
     const time_t & now = timer->abstime.tv_sec;
     LogFacility::SetLogTime(now);
+    /*
     ClientMap::iterator  cIter;
 
     for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter ) {
@@ -86,16 +89,18 @@ TnmsConsoleManager::timeout ( const EventTimer * timer )
             int c = 0;
 
             if ( (c = client->connect()) < 0 ) {
-                logmsg << " client disconnected.";
+                logmsg << " client disconnected." << std::endl;
                 LogFacility::LogMessage(logmsg);
                 continue;
             } else if ( c >= 0 ) {
+                logmsg << " client (re)connecting..." << std::endl;
+                LogFacility::LogMessage(logmsg);
                 timer->evmgr->addIOEvent(_clientHandler, client->getDescriptor(), client);
                 continue;
             }
 
             if ( c > 0 ) {
-                logmsg << " client connected.";
+                logmsg << " client connected." << std::endl;
                 LogFacility::LogMessage(logmsg);
             }
         } else {
@@ -108,7 +113,7 @@ TnmsConsoleManager::timeout ( const EventTimer * timer )
         }
 
         if ( (rd = client->receive()) < 0 ) {
-            logmsg << " error in receive() ";
+            logmsg << " error in receive() " << std::endl;
             LogFacility::LogMessage(logmsg);
             client->close();
             continue;
@@ -118,7 +123,7 @@ TnmsConsoleManager::timeout ( const EventTimer * timer )
         }
 
         if ( (sd = client->send()) < 0 ) {
-            logmsg << " error in send() ";
+            logmsg << " error in send() " << std::endl;
             LogFacility::LogMessage(logmsg);
             client->close();
             continue;
@@ -128,12 +133,14 @@ TnmsConsoleManager::timeout ( const EventTimer * timer )
         }
 
     }
+    */
+    _clientHandler->timeout(timer);
 
     // check for client commands
-    std::string  cmd;
+    CommandList   cmdlist;
     if ( _console->isRunning() ) {
-        if ( _console->getClientCommand(cmd) )
-            this->runClientCommand(cmd);
+        while ( _console->getClientCommand(cmdlist) )
+            this->runClientCommand(cmdlist);
     } else {
         this->setAlarm();
     }
@@ -150,7 +157,8 @@ TnmsConsoleManager::createClient ( const std::string & name, const std::string &
     if ( client->openConnection(host, port) < 0 )
         return false;
 
-    _clients[name] = client;
+    //_clients[name] = client;
+    _clientHandler->insert(name, client);
 
     _evmgr->addIOEvent(_clientHandler, client->getDescriptor(), client);
 
@@ -158,8 +166,10 @@ TnmsConsoleManager::createClient ( const std::string & name, const std::string &
 }
 
 bool
-TnmsConsoleManager::closeClient ( const std::string & name )
+TnmsConsoleManager::removeClient ( const std::string & name )
 {
+    _clientHandler->erase(name);
+    /*
     ClientMap::iterator  cIter;
 
     cIter = _clients.find(name);
@@ -174,28 +184,86 @@ TnmsConsoleManager::closeClient ( const std::string & name )
         delete client;
     }
     _clients.erase(cIter);
-
+    */
     return true;
 }
 
 
 void
-TnmsConsoleManager::runClientCommand ( const std::string & cmd )
+TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
 {
+    std::string  cmd, tag, name, val;
 
+    if ( cmdlist.size() < 2 || cmdlist[0].compare("client") != 0 ) {
+        LogFacility::LogToStream("console", "Error in client command");
+        return;
+    }
+
+    cmd = cmdlist[1];
+
+    if ( cmd.compare("new") == 0 ) {
+        LogFacility::LogMessage("client new");
+        
+        if ( cmdlist.size() < 5 ) {
+            LogFacility::LogToStream("console", "Error in client command");
+            return;
+        }
+
+        tag  = cmdlist[2];
+        name = cmdlist[3];
+        val  = cmdlist[4];
+
+        uint16_t port = StringUtils::fromString<uint16_t>(val);
+        
+        if ( ! this->createClient(tag, name, port) )
+            LogFacility::LogMessage("Failed to create new client");
+
+    } else if ( cmd.compare("del") == 0 ) {
+        LogFacility::LogMessage("client del");
+
+        if ( cmdlist.size() < 3 ) {
+            LogFacility::LogToStream("console", "Error in client command");
+            return;
+        }
+
+        tag = cmdlist[2];
+
+        this->removeClient(tag);
+    } else if ( cmd.compare("list") == 0 ) {
+        LogFacility::LogMessage("client list");
+
+        this->listClients();
+    } else if ( cmd.compare("subscribe") == 0 ) {
+        LogFacility::LogMessage("client subscribe");
+    } else {
+        LogFacility::LogMessage("client command not recognized: " + cmd);
+    }
+
+    return;
 }
 
+void
+TnmsConsoleManager::listClients()
+{
+    ClientMap::iterator  cIter;
+
+    LogFacility::LogMessage(" Client List ");
+    
+    for ( cIter = _clientHandler->begin(); cIter != _clientHandler->end(); ++cIter ) {
+        LogFacility::Message  msg;
+
+        msg << "    "  << cIter->first << "    =    " << cIter->second->getHostStr() << std::endl;
+        LogFacility::LogMessage(msg);
+    }
+
+    return;
+}
 
 void
 TnmsConsoleManager::setAlarm()
 {
     _evmgr->setAlarm();
 }
-
-
-//TnmsConsoleManager::TnmsConsoleManager
-//TnmsConsoleManager::TnmsConsoleManager
-
 
 
 }  // namespace

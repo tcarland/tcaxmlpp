@@ -35,8 +35,8 @@ public:
     virtual void run();
 
 
-    bool         addClientCommand ( const std::string & cmd );
-    bool         getClientCommand ( std::string & cmd );
+    bool         addClientCommand ( const CommandList & cmd );
+    bool         getClientCommand ( CommandList & cmd );
 
 
     static void  DisplayHelp();
@@ -47,8 +47,8 @@ protected:
     int          sendAPIUpdates   ( TnmsAPI * api, const time_t & now );
     void         sleeps           ( int secs );
 
-private:
 
+private:
 
     CommandQueue        _cmdQueue;
 

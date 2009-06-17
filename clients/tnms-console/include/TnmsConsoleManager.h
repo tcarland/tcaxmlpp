@@ -17,7 +17,6 @@ using namespace tnmsCore;
 namespace tnmsconsole {
 
 
-typedef std::map<std::string, TnmsClient*>               ClientMap;
 
 
 
@@ -35,21 +34,23 @@ public:
     void         run();
 
 
-    int          runConsole   ( std::istream & istrm,
-                                bool           showprompt,
-                                bool           echo = false );
+    int          runConsole       ( std::istream & istrm,
+                                    bool           showprompt,
+                                    bool           echo = false );
 
-    bool         createClient ( const std::string & name,
-                                const std::string & host,
-                                uint16_t            port );
+    bool         createClient     ( const std::string & name,
+                                    const std::string & host,
+                                    uint16_t            port );
 
-    bool         closeClient  ( const std::string & name );
+    bool         removeClient     ( const std::string & name );
+
+    void         listClients();
     
-    void         runClientCommand  ( const std::string & cmd );
+    void         runClientCommand ( const CommandList & cmdlist );
 
     void         displayHelp();
     void         setAlarm();
-    void         setDebug ( bool d ) { _debug = d; }
+    void         setDebug         ( bool d ) { _debug = d; }
     
 
 private:
