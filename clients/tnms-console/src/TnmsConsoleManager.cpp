@@ -63,6 +63,7 @@ TnmsConsoleManager::run()
     _evmgr->addTimerEvent( (EventTimerHandler*) this, 5, 0);
     _evmgr->eventLoop();
 
+    LogFacility::LogMessage("TnmsConsoleManager shutting down");
     LogFacility::CloseLogFacility();
 
     return;
@@ -72,68 +73,8 @@ TnmsConsoleManager::run()
 void
 TnmsConsoleManager::timeout ( const EventTimer * timer )
 {
-    //int   rd, sd;
-
     const time_t & now = timer->abstime.tv_sec;
     LogFacility::SetLogTime(now);
-    /*
-    ClientMap::iterator  cIter;
-
-    for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter ) {
-        TnmsClient * client = (TnmsClient*) cIter->second;
-        LogFacility::Message  logmsg;
-
-        logmsg << "TnmsConsoleManager::timeout (" << client->getHostStr() << ")";
-
-        if ( ! client->isConnected() || client->isConnecting() ) {
-            int c = 0;
-
-            if ( (c = client->connect()) < 0 ) {
-                logmsg << " client disconnected." << std::endl;
-                LogFacility::LogMessage(logmsg);
-                continue;
-            } else if ( c >= 0 ) {
-                logmsg << " client (re)connecting..." << std::endl;
-                LogFacility::LogMessage(logmsg);
-                timer->evmgr->addIOEvent(_clientHandler, client->getDescriptor(), client);
-                continue;
-            }
-
-            if ( c > 0 ) {
-                logmsg << " client connected." << std::endl;
-                LogFacility::LogMessage(logmsg);
-            }
-        } else {
-            if ( client->isAuthorized() && ! client->isSubscribed() ) {
-                // suball?
-                ;
-            } else if ( ! client->isAuthorized() ) {
-                client->login(_user, _pw);
-            }
-        }
-
-        if ( (rd = client->receive()) < 0 ) {
-            logmsg << " error in receive() " << std::endl;
-            LogFacility::LogMessage(logmsg);
-            client->close();
-            continue;
-        } else {
-            // rd = ?
-            ;
-        }
-
-        if ( (sd = client->send()) < 0 ) {
-            logmsg << " error in send() " << std::endl;
-            LogFacility::LogMessage(logmsg);
-            client->close();
-            continue;
-        } else {
-            // sd is our count
-            ;
-        }
-
-    }
-    */
     _clientHandler->timeout(timer);
 
     // check for client commands
@@ -157,9 +98,7 @@ TnmsConsoleManager::createClient ( const std::string & name, const std::string &
     if ( client->openConnection(host, port) < 0 )
         return false;
 
-    //_clients[name] = client;
     _clientHandler->insert(name, client);
-
     _evmgr->addIOEvent(_clientHandler, client->getDescriptor(), client);
 
     return true;
@@ -169,22 +108,6 @@ bool
 TnmsConsoleManager::removeClient ( const std::string & name )
 {
     _clientHandler->erase(name);
-    /*
-    ClientMap::iterator  cIter;
-
-    cIter = _clients.find(name);
-
-    if ( cIter == _clients.end() )
-        return false;
-
-    TnmsClient * client = cIter->second;
-
-    if ( client ) {
-        client->close();
-        delete client;
-    }
-    _clients.erase(cIter);
-    */
     return true;
 }
 
@@ -192,6 +115,7 @@ TnmsConsoleManager::removeClient ( const std::string & name )
 void
 TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
 {
+    TnmsClient * client = NULL;
     std::string  cmd, tag, name, val;
 
     if ( cmdlist.size() < 2 || cmdlist[0].compare("client") != 0 ) {
@@ -201,9 +125,10 @@ TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
 
     cmd = cmdlist[1];
 
-    if ( cmd.compare("new") == 0 ) {
-        LogFacility::LogMessage("client new");
-        
+    // 
+    //  New Client
+    if ( cmd.compare("new") == 0 ) 
+    {
         if ( cmdlist.size() < 5 ) {
             LogFacility::LogToStream("console", "Error in client command");
             return;
@@ -218,7 +143,10 @@ TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
         if ( ! this->createClient(tag, name, port) )
             LogFacility::LogMessage("Failed to create new client");
 
-    } else if ( cmd.compare("del") == 0 ) {
+    }
+    // Delete Client
+    else if ( cmd.compare("del") == 0 ) 
+    {
         LogFacility::LogMessage("client del");
 
         if ( cmdlist.size() < 3 ) {
@@ -229,31 +157,57 @@ TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
         tag = cmdlist[2];
 
         this->removeClient(tag);
-    } else if ( cmd.compare("list") == 0 ) {
-        LogFacility::LogMessage("client list");
-
-        this->listClients();
-    } else if ( cmd.compare("subscribe") == 0 ) {
-        LogFacility::LogMessage("client subscribe");
-    } else {
-        LogFacility::LogMessage("client command not recognized: " + cmd);
+    } 
+    else if ( cmd.compare("list") == 0 ) 
+    {
+        _clientHandler->listClients();
     }
+    else if ( cmd.compare("subscribe") == 0 ) 
+    {
+        LogFacility::LogMessage("client subscribe");
+        tag    = cmdlist[2];
+        name   = cmdlist[3];
+        client = _clientHandler->find(tag);
+        if ( client )
+            client->subscribe(name);
+    }
+    else if ( cmd.compare("unsubscribe") == 0 ) 
+    {
+        LogFacility::LogMessage("client unsubscribe");
+        tag    = cmdlist[2];
+        name   = cmdlist[3];
+        client = _clientHandler->find(tag);
+        if ( client )
+            client->unsubscribe(name);
+    }
+    else if ( cmd.compare("browse") == 0 ) 
+    {
+         if ( cmdlist.size() < 3 )
+             return;
+         
+         name = cmdlist[2];
+    }
+    else if ( cmd.compare("dump") == 0 ) 
+    {
+        if ( cmdlist.size() < 3 )
+             return;
+         
+        name = cmdlist[2];
 
-    return;
-}
+        _tree->debugDump(name);
+    }
+    else if ( cmd.compare("show") == 0 ) 
+    {
+        TnmsMetric metric;
+        name = cmdlist[2];
+        
+        _tree->request(name, metric);
 
-void
-TnmsConsoleManager::listClients()
-{
-    ClientMap::iterator  cIter;
-
-    LogFacility::LogMessage(" Client List ");
-    
-    for ( cIter = _clientHandler->begin(); cIter != _clientHandler->end(); ++cIter ) {
-        LogFacility::Message  msg;
-
-        msg << "    "  << cIter->first << "    =    " << cIter->second->getHostStr() << std::endl;
-        LogFacility::LogMessage(msg);
+         LogFacility::LogMessage(" Node: " + metric.getElementName());
+    }
+    else
+    {
+        LogFacility::LogMessage("client command not recognized: " + cmd);
     }
 
     return;

@@ -74,7 +74,8 @@ class TnmsTree {
 
 
     size_t     size() const;
-    void       debugDump();
+    void       debugDump() const;
+    void       debugDump        ( const std::string & name ) const;
 
 
   protected:

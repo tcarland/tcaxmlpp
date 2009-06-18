@@ -25,7 +25,8 @@ namespace tnmsconsole {
 ConsoleThread::ConsoleThread ( std::istream & istrm, bool showprompt, bool echo )
     : _istrm(istrm),
       _prompt(showprompt),
-      _echo(echo)
+      _echo(echo),
+      _stop(false)
 {}
 
 ConsoleThread::~ConsoleThread() {}
@@ -336,12 +337,38 @@ ConsoleThread::run()
         } 
         else if ( cmd.compare("quit") == 0 ) 
         {
+            if ( this->_stop )
+                this->startClientProcessing();
             this->setAlarm();
             break;
         }
         else if ( cmd.compare("client") == 0 )
         {
-            this->addClientCommand(cmdlist);
+            if ( cmdlist.size() < 2 ) {
+                msg << "Error: invalid syntax " << prompt;
+                LogFacility::LogToStream("console", msg.str(), false);
+                continue;
+            }
+
+            if ( cmdlist[1].compare("stop") == 0 ) {
+                if ( this->_stop )
+                    this->startClientProcessing();
+                else
+                    this->stopClientProcessing();
+            } else
+                this->addClientCommand(cmdlist);
+        } 
+        else if ( cmd.compare("stop") == 0 )
+        {
+            if ( this->_stop )
+                this->startClientProcessing();
+            else
+                this->stopClientProcessing();
+        }
+        else if ( cmd.compare("start") == 0 ) 
+        {
+            if ( this->_stop )
+                this->startClientProcessing();
         }
         else 
         {
@@ -357,13 +384,28 @@ ConsoleThread::run()
                 this->setAlarm();
         }
 
-        if ( _prompt )
-            msg << " ";
-        
         LogFacility::LogToStream("console", msg.str(), false);
+        
+        //if ( _prompt )
+            //msg << " ";
     }
 
     return;
+}
+
+void
+ConsoleThread::startClientProcessing()
+{
+    _lock.notifyAll();
+}
+
+void
+ConsoleThread::stopClientProcessing()
+{
+    if ( _lock.lock() ) {
+        _stop = true;
+        _lock.unlock();
+    }
 }
 
 bool
@@ -377,6 +419,16 @@ ConsoleThread::addClientCommand ( const CommandList & cmdlist )
 bool
 ConsoleThread::getClientCommand ( CommandList & cmdlist )
 {
+    if ( _lock.lock() ) {
+        if ( _stop ) {
+            LogFacility::LogMessage("Stopping client processing..");
+            _lock.wait();
+            LogFacility::LogMessage("Re-starting client processing");
+            _stop = false;
+        }
+        _lock.unlock();
+    }
+
     if ( this->_cmdQueue.pop(cmdlist) )
         return true;
     return false;

@@ -52,8 +52,6 @@ class ClientIOHandler : public EventIOHandler {
 
     bool           insert         ( const std::string & name,
                                     TnmsClient * client );
-    //void           erase          ( iterator & iter );
-    //void           erase          ( iterator & begin, iterator & end );
     void           erase          ( const std::string & name );
 
     iterator       begin();
@@ -63,7 +61,9 @@ class ClientIOHandler : public EventIOHandler {
     size_t         size()  const;
     void           clear();
 
-    iterator       find ( const std::string & name );
+    TnmsClient*    find ( const std::string & name );
+
+    void           listClients();
 
   protected:
 

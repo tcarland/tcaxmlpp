@@ -554,7 +554,7 @@ TnmsTree::resetMetric   ( TnmsMetric & metric )
 
     
 void
-TnmsTree::debugDump()
+TnmsTree::debugDump() const
 {
     NodeChildMap &   roots = _tree->getRoots();
     NodeChildMap::iterator    rootI;
@@ -570,6 +570,31 @@ TnmsTree::debugDump()
 
     LogFacility::LogMessage("TnmsTree::debugDump(): " + StringUtils::toString(_tree->size()));
 
+    for ( nIter = flattenedTree.nodes.begin(); nIter != flattenedTree.nodes.end(); ++nIter ) {
+        LogFacility::Message  msg;
+        msg << "    Node: " << "  " << (*nIter)->getValue().metric.getElementName();
+        if ( (*nIter)->getValue().erase )
+            msg << " <ERASED>";
+        LogFacility::LogMessage(msg.str());
+    }
+
+    return;
+}
+
+void
+TnmsTree::debugDump ( const std::string & name ) const
+{
+    Node * node = _tree->find(name);
+
+    if ( node == NULL )
+        return;
+
+    BreadthOrdering  flattenedTree;
+    _tree->depthFirstTraversal(node, flattenedTree);
+
+    std::list<TnmsTree::Node*>::iterator nIter;
+    LogFacility::LogMessage("TnmsTree::debugDump() for " + name);
+    
     for ( nIter = flattenedTree.nodes.begin(); nIter != flattenedTree.nodes.end(); ++nIter ) {
         LogFacility::Message  msg;
         msg << "    Node: " << "  " << (*nIter)->getValue().metric.getElementName();

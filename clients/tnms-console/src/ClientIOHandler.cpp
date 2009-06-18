@@ -268,10 +268,36 @@ ClientIOHandler::clear()
     _clientSet.clear();
 }
 
-ClientIOHandler::iterator
+TnmsClient*
 ClientIOHandler::find ( const std::string & name ) 
 {
-    return(_clients.find(name));
+    TnmsClient * client = NULL;
+
+    ClientMap::iterator  cIter;
+
+    cIter = _clients.find(name);
+
+    if ( cIter != _clients.end() )
+        client = cIter->second;
+    
+    return client;
+}
+
+void
+ClientIOHandler::listClients()
+{
+    ClientMap::iterator  cIter;
+
+    LogFacility::LogMessage(" Client List ");
+    
+    for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter ) {
+        LogFacility::Message  msg;
+
+        msg << "    "  << cIter->first << "    =    " << cIter->second->getHostStr() << std::endl;
+        LogFacility::LogMessage(msg);
+    }
+
+    return;
 }
 
 

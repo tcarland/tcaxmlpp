@@ -6,6 +6,7 @@
 #include <map>
 
 #include "Thread.h"
+#include "ThreadLock.h"
 #include "Queue.hpp"
 using namespace tcanetpp;
 
@@ -38,6 +39,8 @@ public:
     bool         addClientCommand ( const CommandList & cmd );
     bool         getClientCommand ( CommandList & cmd );
 
+    void         startClientProcessing();
+    void         stopClientProcessing();
 
     static void  DisplayHelp();
 
@@ -51,10 +54,12 @@ protected:
 private:
 
     CommandQueue        _cmdQueue;
+    ThreadLock          _lock;
 
     std::istream &      _istrm;
     bool                _prompt;
     bool                _echo;
+    bool                _stop;
 
 };
 

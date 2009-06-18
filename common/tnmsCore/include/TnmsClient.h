@@ -11,13 +11,14 @@ namespace tnmsCore {
 
 class AuthClient;
 
+
 class TnmsClient : public TnmsSocket {
 
   public:
 
     TnmsClient ( TnmsTree * tree = NULL );
     TnmsClient ( TnmsTree * tree, AuthClient * auth,
-                 BufferedSocket * sock, bool isAgent = false );
+                 tcanetpp::BufferedSocket * sock, bool isAgent = false );
 
     virtual ~TnmsClient();
 
@@ -71,3 +72,4 @@ class TnmsClient : public TnmsSocket {
 } // namespace
 
 #endif  //  _TNMSD_TNMSCLIENT_H_
+
