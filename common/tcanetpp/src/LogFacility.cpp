@@ -285,9 +285,6 @@ LogFacility::LogMessage ( const std::string & logname,
                           int   level,
                           bool  newline )
 {
-    if ( ! LogFacility::_Enabled )
-        return;
-
 #   ifndef WIN32
     if ( LogFacility::_Syslog && LogFacility::Lock() ) {
         ::syslog(level, "%s:%s", LogFacility::_LogPrefix.c_str(), entry.c_str());
@@ -394,11 +391,6 @@ LogFacility::CloseLogFacility()
 {
     LogFacility::CloseSyslog();
     LogFacility::RemoveLogStreams(true);
-
-    LogFacility::_Enabled = false;
-    LogFacility::_Syslog  = false;
-
-    return;
 }
 
 
@@ -412,9 +404,6 @@ LogFacility::CloseSyslog()
         LogFacility::_Syslog = false;
     }
 #   endif
-
-    if ( LogFacility::_StreamMap.empty() )
-        LogFacility::_Enabled = false;
 
     return;
 }
@@ -436,9 +425,6 @@ LogFacility::CloseLogFile ( const std::string & logname, bool del )
             fstrm = NULL;
         }
     }
-
-    if ( LogFacility::_StreamMap.empty() )
-        LogFacility::_Enabled = false;
 
     return fstrm;
 }
