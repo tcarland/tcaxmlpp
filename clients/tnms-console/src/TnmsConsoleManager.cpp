@@ -21,21 +21,6 @@ TnmsConsoleManager::TnmsConsoleManager ( std::istream & istrm, bool interactive,
 
 TnmsConsoleManager::~TnmsConsoleManager()
 {
-    /*
-    ClientMap::iterator  cIter;
-
-    for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter ) 
-    {
-        TnmsClient * client = (TnmsClient*) cIter->second;
-
-        if ( client ) {
-            if ( client->isConnected() )
-                client->close();
-            delete cIter->second;
-        }
-    }
-    _clients.clear();
-    */
     delete _evmgr;
     delete _tree;
 
@@ -54,13 +39,13 @@ TnmsConsoleManager::run()
 
     LogFacility::OpenLogStream("console", &std::cout);
     LogFacility::SetLogPrefix("[tnms]:");
-    //LogFacility::SetBroadcast(true);
+    LogFacility::SetBroadcast(true);
     
     LogFacility::LogMessage("TnmsConsoleManager::run() starting console...");
 
     _console->start();
 
-    _evmgr->addTimerEvent( (EventTimerHandler*) this, 5, 0);
+    _evmgr->addTimerEvent( (EventTimerHandler*) this, 1, 0);
     _evmgr->eventLoop();
 
     LogFacility::LogMessage("TnmsConsoleManager shutting down");
@@ -100,6 +85,8 @@ TnmsConsoleManager::createClient ( const std::string & name, const std::string &
 
     _clientHandler->insert(name, client);
     _evmgr->addIOEvent(_clientHandler, client->getDescriptor(), client);
+
+    LogFacility::LogMessage("Created new client: " + client->getHostStr());
 
     return true;
 }

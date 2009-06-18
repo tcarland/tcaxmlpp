@@ -102,7 +102,8 @@ ConsoleThread::run()
             agentname = cmdlist[2];
 
             if ( apimap.find(name) != apimap.end() ) {
-                msg << "Instance already exists for '" << name << "' " << prompt;
+                msg << "Instance already exists for '" << name << "' " 
+                    << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
@@ -116,7 +117,8 @@ ConsoleThread::run()
             
             ApiMapInsert  insertR = apimap.insert(ApiMap::value_type(name, api));
             if ( ! insertR.second ) {
-                msg << "Error: Insert failed for '" << name << "' " << prompt;
+                msg << "Error: Insert failed for '" << name << "' "
+                    << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
@@ -130,7 +132,7 @@ ConsoleThread::run()
         {
             // destroy instance
             if ( cmdlist.size() != 2 ) {
-                std:: cout << "Error: invalid syntax " << prompt;
+                msg << "Error: invalid syntax " << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
@@ -140,7 +142,7 @@ ConsoleThread::run()
             ApiMap::iterator  aIter = apimap.find(name);
 
             if ( aIter == apimap.end() ) {
-                msg << "Error: '" << name << "' not found. " << prompt;
+                msg << "Error: '" << name << "' not found. " << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
@@ -165,7 +167,7 @@ ConsoleThread::run()
         else if ( cmd.compare("set") == 0 )
         {
             if ( cmdlist.size() != 2 ) {
-                msg << "Error: invalid syntax " << prompt;
+                msg << "Error: invalid syntax " << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
@@ -174,7 +176,8 @@ ConsoleThread::run()
 
             aIter = apimap.find(name);
             if ( aIter == apimap.end() ) {
-                msg << "Error: '" << name << "' not found. " << prompt;
+                msg << "Error: '" << name << "' not found. "
+                    << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
@@ -189,12 +192,12 @@ ConsoleThread::run()
         else if ( cmd.compare("add") == 0 )
         {
             if ( cmdlist.size() < 2 ) {
-                msg << "Error: invalid syntax " << prompt;
+                msg << "Error: invalid syntax " << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
             if ( showI == apimap.end() ) {
-                msg << "No valid instance in this context. " << prompt;
+                msg << "No valid instance in this context. " << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
@@ -207,7 +210,8 @@ ConsoleThread::run()
 
             //  api->add
             if ( ! showI->second->add(name, ts) ) {
-                msg << "Error: add failed for '" << name << "'" << prompt;
+                msg << "Error: add failed for '" << name << "'"
+                    << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
@@ -218,12 +222,13 @@ ConsoleThread::run()
         else if ( cmd.compare("update") == 0 )
         {
             if ( cmdlist.size() < 3 ) {
-                msg << "Error: invalid syntax " << prompt;
+                msg << "Error: invalid syntax " << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
             if ( showI == apimap.end() ) {
-                msg << "No valid instance in this context " << prompt;
+                msg << "No valid instance in this context "
+                    << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
@@ -240,7 +245,7 @@ ConsoleThread::run()
 
             // api->update
             if ( ! showI->second->update(name, ts, val, TNMS_UINT64) ) {
-                msg << "Error: update failed" << prompt;
+                msg << "Error: update failed" << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
@@ -251,12 +256,13 @@ ConsoleThread::run()
         else if ( cmd.compare("updateS") == 0 )
         {
             if ( cmdlist.size() < 3 ) {
-                msg << "Error: invalid syntax " << prompt;
+                msg << "Error: invalid syntax " << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
             if ( showI == apimap.end() ) {
-                msg << "No valid instance in this context " << prompt;
+                msg << "No valid instance in this context "
+                    << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
@@ -270,7 +276,7 @@ ConsoleThread::run()
                 ts = ::time(NULL);
 
             if ( ! showI->second->update(name, ts, desc) ) {
-                msg << "Error: update failed " << prompt;
+                msg << "Error: update failed " << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
@@ -281,12 +287,13 @@ ConsoleThread::run()
         else if ( cmd.compare("remove") == 0 )
         {
             if ( cmdlist.size() < 2 ) {
-                msg << "Error: invalid syntax " << prompt;
+                msg << "Error: invalid syntax " << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
             if ( showI == apimap.end() ) {
-                msg << "No valid instance in this context " << prompt;
+                msg << "No valid instance in this context "
+                    << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
@@ -295,7 +302,7 @@ ConsoleThread::run()
 
             // api->remove
             if ( ! showI->second->remove(name) ) {
-                msg << "Error: remove failed " << prompt;
+                msg << "Error: remove failed " << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
@@ -307,14 +314,15 @@ ConsoleThread::run()
         {
             // send updates
             if ( showI == apimap.end() ) {
-                msg << "No valid instance in this context " << prompt;
+                msg << "No valid instance in this context "
+                    << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
 
             int ret = 0;
             if ( (ret = this->sendAPIUpdates(showI->second, now)) != 0 ) {
-                msg << "no connection " << prompt;
+                msg << "no connection " << std::endl << prompt;
                 //continue;
             }
             prompt = "[tnms : " + showI->first + "]";
@@ -328,7 +336,8 @@ ConsoleThread::run()
         else if ( cmd.compare("debug") == 0 )
         {
            if ( showI == apimap.end() ) {
-                msg << "No valid instance in this context " << prompt;
+                msg << "No valid instance in this context "
+                    << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
@@ -345,7 +354,7 @@ ConsoleThread::run()
         else if ( cmd.compare("client") == 0 )
         {
             if ( cmdlist.size() < 2 ) {
-                msg << "Error: invalid syntax " << prompt;
+                msg << "Error: invalid syntax " << std::endl << prompt;
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
@@ -446,10 +455,7 @@ ConsoleThread::sendAPIUpdates ( TnmsAPI * api, const time_t & now )
     if ( api == NULL )
         return -1;
 
-    //if ( ! connection )
-        //msg << "Connecting.";
-        //
-
+    LogFacility::LogMessage("Sending API updates");
     LogFacility::Message  logmsg;
     
     do {
