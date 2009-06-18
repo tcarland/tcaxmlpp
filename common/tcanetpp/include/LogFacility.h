@@ -67,22 +67,29 @@ class LogFacility {
     static bool           InitThreaded    ( bool trylock = false );
     
 
-    static bool           OpenLogFile     ( const std::string & prefix,
+    static bool           OpenLogFile     ( const std::string & logname,
+                                            const std::string & prefix, 
                                             const std::string & filename, 
                                             bool append = true );
     
     static bool           OpenSyslog      ( const std::string & prefix, 
                                             int facility );
     
-    static bool           OpenLogStream   ( const std::string & name, 
+    static bool           OpenLogStream   ( const std::string & name,
+                                            const std::string & prefix,
                                             std::ostream * stream );
     
     
     static bool           AddLogStream    ( const std::string & name, 
+                                            const std::string & prefix,
                                             std::ostream * stream );
     
-    static std::ostream*  RemoveStream    ( const std::string & name );
+    static std::ostream*  RemoveLogStream ( const std::string & name );
+    static void           RemoveLogStreams( bool del  = true );
     
+    static void           CloseSyslog();
+    static std::ostream*  CloseLogFile    ( const std::string & logname, 
+                                            bool del  = true );
 
     static void           CloseLogFacility();
 
@@ -94,27 +101,20 @@ class LogFacility {
                                             int   level   = LOGFAC_NOTICE,
                                             bool  newline = true );
 
-    static void           LogMessage      ( const std::string & prefix, 
+    static void           LogMessage      ( const std::string & logname,
                                             const std::string & entry,
                                             int   level   = LOGFAC_NOTICE, 
                                             bool  newline = true );
 
-    static void           LogToStream     ( const std::string & streamName,
-                                            const std::string & prefix,
+
+    static void           LogToAllStreams ( const std::string & entry,
+                                            bool  newline = true );
+   
+    static void           LogToStream     ( const std::string & logname,
                                             const std::string & entry,
                                             bool  newline = true );
 
-    static void           LogToStream     ( const std::string & streamName,
-                                            const std::string & entry,
-                                            bool  newline = true );
 
-    static void           LogToAllStreams ( const std::string & prefix,
-                                            const std::string & entry,
-                                            bool  newline = true );
-                                        
-    
-    static void           CloseSyslog();
-    static void           CloseLogFile();
     
     static void           SetLogTime      ( const time_t & now );
     static time_t         GetLogTime();
@@ -127,8 +127,13 @@ class LogFacility {
 
     static void           SetBroadcast    ( bool broadcast );
 
-    static void           SetLogPrefix    ( const std::string & prefix );
-    static std::string    GetLogPrefix();
+    static void           SetDefaultLogPrefix ( const std::string & prefix );
+    static void           SetLogPrefix        ( const std::string & logname, 
+                                                const std::string & prefix );
+    static std::string    GetLogPrefix        ( const std::string & logname = "" );
+
+    static bool           SetDefaultLogName   ( const std::string & name );
+    static bool           GetDefaultLogName();
 
     static bool           IsOpen();
 
@@ -140,10 +145,8 @@ class LogFacility {
 
 private:
 
-    typedef std::map<std::string, std::ostream*>  StreamMap;
-
     static bool           InitSyslog      ( int facility );
-    static void           InitLogMessage();
+    static void           InitLogMessage  ( const std::string & logname = "" );
 
     static bool           Lock();
     static void           Unlock();
@@ -151,16 +154,37 @@ private:
 
 private:
 
+    struct LogStream 
+    {
+        std::string    logName;
+        std::string    logPrefix;
+        std::ostream*  logStream;
+
+        LogStream ( std::ostream * strm = NULL )
+            : logStream(strm)
+        {}
+
+        LogStream ( const std::string & logName_,
+                    const std::string & logPrefix_,
+                    std::ostream      * strm )
+            : logName(logName_),
+              logPrefix(logPrefix_),
+              logStream(strm)
+        {}
+    };
+
+    typedef std::map<std::string, LogStream>   StreamMap;
+
+
     static StreamMap             _StreamMap;
 
 #   ifndef WIN32
     static tcanetpp::ThreadLock  _Lock;
 #   endif
 
+    static std::string           _LogName;
     static std::string           _LogPrefix;
-    static std::string           _FileName;
     static std::string           _LogTimeStr;
-    static std::ostream *        _LogStream;
     static time_t                _LogTime;
     static bool                  _Init;
     static bool                  _InitLock;
