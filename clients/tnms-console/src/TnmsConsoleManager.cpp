@@ -37,18 +37,17 @@ TnmsConsoleManager::run()
 {
     LogFacility::InitThreaded();
 
-    LogFacility::OpenLogStream("console", &std::cout);
-    LogFacility::SetLogPrefix("[tnms]:");
-    LogFacility::SetBroadcast(true);
+    LogFacility::OpenLogStream("console", "[tnms]:", &std::cout);
+    //LogFacility::SetBroadcast(true);
     
-    LogFacility::LogMessage("TnmsConsoleManager::run() starting console...");
+    LogFacility::LogMessage("console", "TnmsConsoleManager::run() starting console...");
 
     _console->start();
 
     _evmgr->addTimerEvent( (EventTimerHandler*) this, 1, 0);
     _evmgr->eventLoop();
 
-    LogFacility::LogMessage("TnmsConsoleManager shutting down");
+    LogFacility::LogMessage("console", "TnmsConsoleManager shutting down");
     LogFacility::CloseLogFacility();
 
     return;
@@ -86,7 +85,7 @@ TnmsConsoleManager::createClient ( const std::string & name, const std::string &
     _clientHandler->insert(name, client);
     _evmgr->addIOEvent(_clientHandler, client->getDescriptor(), client);
 
-    LogFacility::LogMessage("Created new client: " + client->getHostStr());
+    LogFacility::LogMessage("console", "Created new client: " + client->getHostStr());
 
     return true;
 }
@@ -128,13 +127,13 @@ TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
         uint16_t port = StringUtils::fromString<uint16_t>(val);
         
         if ( ! this->createClient(tag, name, port) )
-            LogFacility::LogMessage("Failed to create new client");
+            LogFacility::LogMessage("console", "Failed to create new client");
 
     }
     // Delete Client
     else if ( cmd.compare("del") == 0 ) 
     {
-        LogFacility::LogMessage("client del");
+        LogFacility::LogMessage("console", "client del");
 
         if ( cmdlist.size() < 3 ) {
             LogFacility::LogToStream("console", "Error in client command");
@@ -151,7 +150,7 @@ TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
     }
     else if ( cmd.compare("subscribe") == 0 ) 
     {
-        LogFacility::LogMessage("client subscribe");
+        LogFacility::LogMessage("console", "client subscribe");
         tag    = cmdlist[2];
         name   = cmdlist[3];
         client = _clientHandler->find(tag);
@@ -160,7 +159,7 @@ TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
     }
     else if ( cmd.compare("unsubscribe") == 0 ) 
     {
-        LogFacility::LogMessage("client unsubscribe");
+        LogFacility::LogMessage("console", "client unsubscribe");
         tag    = cmdlist[2];
         name   = cmdlist[3];
         client = _clientHandler->find(tag);
@@ -194,7 +193,7 @@ TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
     }
     else
     {
-        LogFacility::LogMessage("client command not recognized: " + cmd);
+        LogFacility::LogMessage("console", "client command not recognized: " + cmd);
     }
 
     return;

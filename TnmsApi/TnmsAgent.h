@@ -15,11 +15,10 @@ class TnmsAgent : public TnmsClient {
 
     virtual ~TnmsAgent();
 
-    virtual void    AuthRequestHandler  ( const TnmsAuthRequest & request ) {}
 
+    void          login               ( const std::string & agentname );
 
-    void        login ( const std::string & agentname);
-
+    virtual void  AuthRequestHandler  ( const TnmsAuthRequest & request ) {}
 
 };
 

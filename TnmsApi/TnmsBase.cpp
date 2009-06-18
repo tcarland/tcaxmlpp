@@ -2,6 +2,7 @@
 
 #include <sys/stat.h>
 #include <iostream>
+#include <fstream>
 
 
 #include "TnmsBase.h"
@@ -65,6 +66,7 @@ TnmsBase::TnmsBase ( const std::string & name,
 TnmsBase::~TnmsBase()
 {
     delete _tree;
+    delete _conn;
 }
 
 
@@ -81,7 +83,7 @@ TnmsBase::send ( time_t  now )
 
     if ( this->checkConfig(now) != 0 )
     {
-        LogFacility::LogToStream(_logName, _logName, "TnmsAPI: Invalid Configuration");
+        LogFacility::LogToStream(_logName, "TnmsAPI: Invalid Configuration");
         return TNMSERR_CONFIG;
     }
 
@@ -94,7 +96,7 @@ TnmsBase::send ( time_t  now )
 
     // Receive messages
     if ( (rd = _conn->receive(now)) < 0 ) {
-        LogFacility::LogToStream(_logName, _logName, "TnmsAPI: connection lost in receive(): " + _conn->getErrorStr());
+        LogFacility::LogToStream(_logName, "TnmsAPI: connection lost in receive(): " + _conn->getErrorStr());
         _conn->close();
         return TNMSERR_CONN_LOST;
     } 
@@ -106,7 +108,7 @@ TnmsBase::send ( time_t  now )
     if ( _conn->txBytesBuffered() > 0 ) 
     {
         if ( (wt = _conn->send()) < 0 ) {
-            LogFacility::LogToStream(_logName, _logName, "TnmsAPI: connection lost in send(): " + _conn->getErrorStr());
+            LogFacility::LogToStream(_logName, "TnmsAPI: connection lost in send(): " + _conn->getErrorStr());
             _conn->close();
             return TNMSERR_CONN_LOST;
         }
@@ -114,7 +116,7 @@ TnmsBase::send ( time_t  now )
 
     // current interval flush
     if ( _holddown <= now ) {
-        LogFacility::LogToStream(_logName, _logName, "TnmsAPI: holddown reached, triggering updates");
+        LogFacility::LogToStream(_logName, "TnmsAPI: holddown reached, triggering updates");
         _holddown = now + _holddown_interval;
         _tree->sweep();
         _tree->updateClients();
@@ -145,7 +147,7 @@ TnmsBase::add ( const std::string & name,
         msg << "TnmsAPI ERROR: node name contains invalid characters";
         if ( LogFacility::GetDebug() )
             msg << ": '" << name << "'";
-        LogFacility::LogToStream(_logName, _logName, msg.str());
+        LogFacility::LogToStream(_logName, msg.str());
         return false;
     }
 
@@ -158,7 +160,7 @@ TnmsBase::add ( const std::string & name,
     } else
         msg << " add failed for '" << name << "'";
 
-    LogFacility::LogToStream(_logName, _logName, msg);
+    LogFacility::LogToStream(_logName, msg.str());
 
     return true;
 }
@@ -183,7 +185,7 @@ TnmsBase::update ( const std::string & name,
         return false;
 
     if ( LogFacility::GetDebug() )
-        LogFacility::LogToStream(_logName, _logName, "TnmsAPI::update() " + name);
+        LogFacility::LogToStream(_logName, "TnmsAPI::update() " + name);
 
     metric.setValue(type, value);
     _tree->update(metric);
@@ -203,7 +205,7 @@ TnmsBase::update ( const std::string & name,
         return false;
 
     if ( LogFacility::GetDebug() )
-        LogFacility::LogToStream(_logName, _logName, "TnmsAPI::update() " + name);
+        LogFacility::LogToStream(_logName, "TnmsAPI::update() " + name);
 
     metric.setValue(TNMS_STRING, value);
     _tree->update(metric);
@@ -289,15 +291,15 @@ TnmsBase::checkConnection ( const time_t & now )
             con = _conn->openConnection(_hostName.c_str(), _hostPort);
 
         if ( con < 0 ) {
-            LogFacility::LogToStream(_logName, _logName, "TnmsAPI: failed to establish connection.");
+            LogFacility::LogToStream(_logName, "TnmsAPI: failed to establish connection.");
             _reconnect = now + _reconnect_interval;
             return TNMSERR_CONN_FAIL;
         } else if ( con > 0 ) {   // login
-            LogFacility::LogToStream(_logName, _logName, "TnmsAPI: connection established.");
+            LogFacility::LogToStream(_logName, "TnmsAPI: connection established.");
             _conn->login(_agentName, "");
             return TNMSERR_NONE;
         } else {                  // in progress
-            LogFacility::LogToStream(_logName, _logName, "TnmsAPI: connection in progress.");
+            LogFacility::LogToStream(_logName, "TnmsAPI: connection in progress.");
             return TNMSERR_NO_CONN;
         }
     }
@@ -318,13 +320,13 @@ TnmsBase::checkSubscription ( const time_t & now )
             return this->reconfigure(now);
         }
 
-        LogFacility::LogToStream(_logName, _logName, "TnmsAPI: authorized, subscribing server to tree");
+        LogFacility::LogToStream(_logName, "TnmsAPI: authorized, subscribing server to tree");
         _subscribed = this->_tree->subscribe("*", _conn);
 
         if ( _subscribed ) 
-            LogFacility::LogToStream(_logName, _logName, "TnmsAPI: tree sent");
+            LogFacility::LogToStream(_logName, "TnmsAPI: tree sent");
         else
-            LogFacility::LogToStream(_logName, _logName, "TnmsAPI: error in tree subscription");
+            LogFacility::LogToStream(_logName, "TnmsAPI: error in tree subscription");
 
     } else if ( ! _conn->isAuthorized() ) {
         if ( _reconnect > now ) {
@@ -334,7 +336,7 @@ TnmsBase::checkSubscription ( const time_t & now )
         _reconnect   = now + _reconnect_interval;
         _subscribed  = false;
 
-        LogFacility::LogToStream(_logName, _logName, "TnmsAPI: sending credentials.");
+        LogFacility::LogToStream(_logName, "TnmsAPI: sending credentials.");
         _conn->login(_agentName, "");
     }
 
@@ -351,10 +353,10 @@ TnmsBase::reconfigure ( const time_t & now )
     if ( ! _xmlConfig.empty() ) {
         configHandler = TnmsConfigHandler(_xmlConfig.c_str(), _xmlConfig.length(), 
                                            TNMSAPI_CONFIG_ROOT);
-        LogFacility::LogToStream(_logName, _logName, "TnmsAPI::reconfigure using 'network' config.");
+        LogFacility::LogToStream(_logName, "TnmsAPI::reconfigure using 'network' config.");
     } else {
         configHandler = TnmsConfigHandler(_configName, TNMSAPI_CONFIG_ROOT);
-        LogFacility::LogToStream(_logName, _logName, "TnmsAPI::reconfigure using 'local' config.");
+        LogFacility::LogToStream(_logName, "TnmsAPI::reconfigure using 'local' config.");
     }
 
     if ( ! configHandler.parse() )
@@ -373,14 +375,14 @@ TnmsBase::reconfigure ( const time_t & now )
             logmsg << "TnmsAPI::reconfigure moving to logfile name " << _config.logfile;
         }
 
-        LogFacility::LogToStream(_logName, _logName, logmsg.str());
-        LogFacility::CloseLogFile();
+        LogFacility::LogToStream(_logName, logmsg.str());
+        //LogFacility::CloseLogFile(_logName);
     }
 
     this->openLog(_config.logfile, now);
 
     if ( _config.clients.size() == 0 ) {
-        LogFacility::LogToStream(_logName, _logName, "TnmsAPI::reconfigure() ERROR: no connection config");
+        LogFacility::LogToStream(_logName, "TnmsAPI::reconfigure() ERROR: no connection config");
         return TNMSERR_CONFIG;
     }
 
@@ -392,7 +394,7 @@ TnmsBase::reconfigure ( const time_t & now )
         _agentName  = _config.agent_name;
         _subscribed = false;
         if ( _conn->isConnected() ) {
-            LogFacility::LogToStream(_logName, _logName, "TnmsAPI::reconfigure() agent name modified, resetting.");
+            LogFacility::LogToStream(_logName, "TnmsAPI::reconfigure() agent name modified, resetting.");
             _conn->close();
         }
         _tree->remove(oldconfig.agent_name);
@@ -404,7 +406,7 @@ TnmsBase::reconfigure ( const time_t & now )
          (clientnew.hostname.compare(clientold.hostname) != 0 || clientnew.port != clientold.port) )
     {
         if ( _conn->isConnected() ) {
-            LogFacility::LogToStream(_logName, _logName, "TnmsAPI::reconfigure connection state change");
+            LogFacility::LogToStream(_logName, "TnmsAPI::reconfigure connection state change");
             _conn->close();
         }
     }
@@ -423,7 +425,8 @@ TnmsBase::reconfigure ( const time_t & now )
 void
 TnmsBase::openLog ( const std::string & logfile, const time_t & now )
 {
-    struct tm * t  = ::localtime(&now);
+    struct tm     * t    = ::localtime(&now);
+    std::ofstream * strm = NULL;
 
     if ( LogFacility::IsOpen() && _config.logfile.compare(logfile) == 0 )
     {
@@ -431,7 +434,7 @@ TnmsBase::openLog ( const std::string & logfile, const time_t & now )
             return;
     }
 
-    if ( LogFacility::IsOpen() && ! LogFacility::GetLogFileName().empty() ) {
+    if ( LogFacility::IsOpen() ) {
         LogFacility::Message  msg;
 
         if ( logfile.empty() )
@@ -440,7 +443,11 @@ TnmsBase::openLog ( const std::string & logfile, const time_t & now )
             msg << "TnmsAPI switching log to " << logfile;
 
         LogFacility::LogToStream(_logName, msg.str());
-        LogFacility::CloseLogFile();
+        strm = (std::ofstream*) LogFacility::RemoveLogStream(_logName);
+        if ( strm ) {
+            strm->close();
+            delete strm;
+        }
     }
 
     _config.logfile = logfile;
@@ -457,7 +464,7 @@ TnmsBase::openLog ( const std::string & logfile, const time_t & now )
     file.append(line);
     prefix.append(_agentName);
     _logName = prefix;
-    LogFacility::OpenLogFile(_logName, file);
+    LogFacility::OpenLogFile(_logName, prefix, file);
 
     return;
 }
@@ -549,24 +556,32 @@ TnmsBase::set_logfile ( const std::string & logfilename )
 
 
 bool    
-TnmsBase::need_flush()
+TnmsBase::need_flush() const
 {
+    if ( this->flushsize() > 0 )
+        return true;
     return false;
 }
 
 
 size_t  
-TnmsBase::flushsize()
+TnmsBase::flushsize() const
 {
-    return 0;
+    return _conn->txBytesBuffered();
+}
+
+bool
+TnmsBase::connected() const
+{
+    if ( _conn->isConnected() && this->_subscribed )
+        return true;
+    return false;
 }
 
 
 }  // namespace
 
 // _TNMS_TNMSBASE_CPP_
-
-
 
 
 /*

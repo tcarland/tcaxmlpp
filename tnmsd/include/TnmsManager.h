@@ -86,6 +86,7 @@ class TnmsManager : public EventTimerHandler {
     int                 _today;
 
     std::string         _configfile;
+    std::string         _logname;
     std::string         _errstr;
 
     bool                _hup;

@@ -1,6 +1,6 @@
 /** 
-  *   LogFacility - Logging facility supporting multiple syslog(unix), filelog, or
-  *            log iostreams.
+  *   LogFacility - Logging facility supporting multiple, concurrent logging i/o streams
+  *     in a thread-safe manner. Supports syslog(unix), file logging, or stdc++ iostream*
   *
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
   *  @Author  tca@charltontechnology.net
@@ -201,7 +201,6 @@ private:
     static bool                  _Init;
     static bool                  _InitLock;
     static bool                  _TryLock;
-    static bool                  _Enabled;
     static bool                  _Broadcast;
     static bool                  _Syslog;
     static bool                  _Debug;

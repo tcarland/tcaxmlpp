@@ -2,8 +2,8 @@
 
 #include "TnmsAgent.h"
 
-namespace tnmsCore {
 
+namespace tnmsCore {
 
 
 TnmsAgent::TnmsAgent( TnmsTree * tree )
@@ -12,11 +12,6 @@ TnmsAgent::TnmsAgent( TnmsTree * tree )
     this->_agent  = true;
     this->_mirror = false;
 }
-
-
-TnmsAgent::~TnmsAgent() 
-{}
-
 
 void
 TnmsAgent::login ( const std::string & agentname ) 
@@ -28,7 +23,6 @@ TnmsAgent::login ( const std::string & agentname )
     
     return;
 }
-
 
 
 }  // namespace

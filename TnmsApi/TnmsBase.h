@@ -34,6 +34,8 @@ class TnmsBase {
     int     send      ( time_t  now );
 
 
+    /*  Element manipulation */
+
     bool    add       ( const std::string & name, 
                         const time_t      & now );
 
@@ -53,6 +55,7 @@ class TnmsBase {
 
     void    clear();
     
+    /*  Attributes */
 
     void    holddown_interval  ( time_t  secs );
     time_t  holddown_interval() const;
@@ -71,11 +74,13 @@ class TnmsBase {
     void    set_syslog    ( int facility );
     void    set_logfile   ( const std::string & logfilename );
 
-    bool    need_flush();
-    size_t  flushsize();
+    bool    connected() const;
+    bool    need_flush() const;
+    size_t  flushsize() const;
 
     static 
     const std::string&  Version();
+
 
   private:
 

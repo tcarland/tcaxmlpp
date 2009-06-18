@@ -72,7 +72,7 @@ TnmsManager::run()
     LogFacility::SetLogTime(now);
 
     if ( _debug ) {
-        LogFacility::OpenLogStream("stdout", &std::cout);
+        LogFacility::OpenLogStream("stdout", "", &std::cout);
         LogFacility::LogMessage("TnmsManager::run()");
         LogFacility::SetBroadcast(true);
     }
@@ -203,13 +203,17 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
     TnmsConfig & config = cfgmgr.config;
 
     prefix.append(".").append(config.agent_name);
-    LogFacility::SetLogPrefix(prefix);
+    LogFacility::SetDefaultLogPrefix(prefix);
 
     if ( config.syslog ) {
+        if ( _tconfig.syslog )
+            LogFacility::CloseSyslog();
         LogFacility::OpenSyslog(prefix, LOG_LOCAL3);
     } else {
         if ( _tconfig.syslog )
             LogFacility::CloseSyslog();
+        if ( config.logfile.compare(_tconfig.logfile) != 0 )
+            _today = 0;
         this->logRotate(config.logfile, now);
     }
 
@@ -303,8 +307,11 @@ TnmsManager::logRotate ( std::string logfile, const time_t & now )
     if ( _today != today ) {
         ::strftime(datestr, 64, ".%Y%02m%02d", ltm);
         logfile.append(datestr);
-        LogFacility::OpenLogFile(LogFacility::GetLogPrefix(), logfile, true);
-        _today = today;
+        LogFacility::CloseLogFile(_logname);
+        LogFacility::OpenLogFile(logfile, LogFacility::GetLogPrefix(), logfile, true);
+        _today   = today;
+        _logname = logfile;
+        LogFacility::SetDefaultLogName(_logname);
     }
 
     _logRotate = now + LOG_ROTATE_INTERVAL;

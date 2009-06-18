@@ -57,7 +57,7 @@ ConsoleThread::run()
     if ( _prompt ) {
         LogFacility::Message logmsg;
         logmsg << " ";
-        LogFacility::SetLogPrefix(prompt);
+        LogFacility::SetLogPrefix("console", prompt);
         LogFacility::LogToStream("console", logmsg.str(), false);
         prompt.append(": ");
     }
@@ -183,7 +183,7 @@ ConsoleThread::run()
             }
             showI  = aIter;
             prompt = "[tnms : " + showI->first + "]";
-            LogFacility::SetLogPrefix(prompt);
+            LogFacility::SetLogPrefix("console", prompt);
             prompt.append(": ");
         }
         //
@@ -326,7 +326,7 @@ ConsoleThread::run()
                 //continue;
             }
             prompt = "[tnms : " + showI->first + "]";
-            LogFacility::SetLogPrefix(prompt);
+            LogFacility::SetLogPrefix("console", prompt);
             prompt.append(": ");
         }
         else if ( (cmd.compare("help") == 0) || (cmd.compare("?") == 0) )
