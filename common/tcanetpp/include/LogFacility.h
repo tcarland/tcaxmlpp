@@ -56,7 +56,6 @@ typedef enum LogLevel
 
 
 
-
 class LogFacility {
 
   public:
@@ -115,25 +114,28 @@ class LogFacility {
                                             bool  newline = true );
 
 
+
+    static bool           SetDefaultLogName   ( const std::string & name );
+    static std::string    GetDefaultLogName();
+
+    static void           SetDefaultLogPrefix ( const std::string & prefix );
+    static std::string    GetDefaultLogPrefix() { return LogFacility::GetLogPrefix(); }
+
+    static void           SetLogPrefix    ( const std::string & logname, 
+                                            const std::string & prefix );
+    static std::string    GetLogPrefix    ( const std::string & logname = "" );
     
+
     static void           SetLogTime      ( const time_t & now );
     static time_t         GetLogTime();
 
     static std::string    GetTimeString   ( const time_t & now );
 
 
-    static void           SetEnabled      ( bool enable );
-    static bool           GetEnabled();
+    static bool           SetEnabled      ( const std::string & logname, bool enable );
+    static bool           GetEnabled      ( const std::string & logname, bool & enabled );
 
     static void           SetBroadcast    ( bool broadcast );
-
-    static void           SetDefaultLogPrefix ( const std::string & prefix );
-    static void           SetLogPrefix        ( const std::string & logname, 
-                                                const std::string & prefix );
-    static std::string    GetLogPrefix        ( const std::string & logname = "" );
-
-    static bool           SetDefaultLogName   ( const std::string & name );
-    static bool           GetDefaultLogName();
 
     static bool           IsOpen();
 
@@ -159,21 +161,31 @@ private:
         std::string    logName;
         std::string    logPrefix;
         std::ostream*  logStream;
+        bool           enabled;
 
         LogStream ( std::ostream * strm = NULL )
-            : logStream(strm)
-        {}
+            : logStream(strm),
+              enabled(true)
+        {
+            if ( logStream == NULL )
+                enabled = false;
+        }
 
         LogStream ( const std::string & logName_,
                     const std::string & logPrefix_,
                     std::ostream      * strm )
             : logName(logName_),
               logPrefix(logPrefix_),
-              logStream(strm)
-        {}
+              logStream(strm),
+              enabled(true)
+        {
+            if ( logStream == NULL )
+                enabled = false;
+        }
     };
 
-    typedef std::map<std::string, LogStream>   StreamMap;
+
+    typedef std::map<std::string, LogStream>    StreamMap;
 
 
     static StreamMap             _StreamMap;

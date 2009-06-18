@@ -26,6 +26,7 @@
 #include <memory>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 #include "LogFacility.h"
 
@@ -36,10 +37,10 @@ namespace tcanetpp {
 // ----------------------------------------------------------------------
 //  Initialization
 
-LogFacility::StreamMap  LogFacility::_StreamMap  = StreamMap();
+LogFacility::StreamMap  LogFacility::_StreamMap  = LogFacility::StreamMap();
 
 #ifndef WIN32
-tcanetpp::ThreadLock  LogFacility::_Lock    = tcanetpp::ThreadLock();
+tcanetpp::ThreadLock  LogFacility::_Lock         = tcanetpp::ThreadLock();
 #endif
 
 
@@ -48,7 +49,6 @@ bool               LogFacility::_Init       = false;
 bool               LogFacility::_InitLock   = false;
 bool               LogFacility::_TryLock    = false;
 bool               LogFacility::_Syslog     = false;
-bool               LogFacility::_Enabled    = false;
 bool               LogFacility::_Broadcast  = false;
 bool               LogFacility::_Debug      = false;
 std::string        LogFacility::_LogName   = "";
@@ -57,8 +57,8 @@ std::string        LogFacility::_LogTimeStr = "";
 
 
 // ----------------------------------------------------------------------
-
 /**  Initializes a thread-safe version of the LogFacility. */
+
 bool
 LogFacility::InitThreaded ( bool trylock )
 {
@@ -99,8 +99,6 @@ LogFacility::OpenLogFile ( const std::string & logname,
 
     fstrm  = newfstrm.release();
 
-    LogFacility::_Enabled  = true;
-    
     LogFacility::AddLogStream(logname, prefix, (std::ostream*) fstrm);
     LogFacility::InitLogMessage(logname);
 
@@ -118,8 +116,6 @@ LogFacility::OpenSyslog ( const std::string & prefix, int facility )
 
     ::openlog(prefix.c_str(), LOG_PID, facility);
     LogFacility::_Syslog   = true;
-    LogFacility::_Enabled  = true;
-
     LogFacility::InitLogMessage();
 
     return true;
@@ -132,12 +128,7 @@ LogFacility::OpenSyslog ( const std::string & prefix, int facility )
 bool
 LogFacility::OpenLogStream ( const std::string & name, const std::string & prefix, std::ostream * stream )
 {
-     bool r = LogFacility::AddLogStream(name, prefix, stream);
-     
-     if ( r )
-         LogFacility::_Enabled = true;
-
-     return r;
+     return(LogFacility::AddLogStream(name, prefix, stream));
 }
 
 // ----------------------------------------------------------------------
@@ -146,10 +137,12 @@ bool
 LogFacility::AddLogStream ( const std::string & name, const std::string & prefix, std::ostream * stream )
 {
     bool result = false;
+
     if ( stream == NULL ||  ! LogFacility::Lock() )
         return result;
 
     StreamMap::iterator  sIter = LogFacility::_StreamMap.find(name);
+
     if ( sIter == LogFacility::_StreamMap.end() ) {
         LogStream  lstrm(name, prefix, stream);
         LogFacility::_StreamMap[name] = lstrm;
@@ -206,16 +199,38 @@ LogFacility::RemoveLogStreams ( bool del )
 
 // ----------------------------------------------------------------------
 
-void
-LogFacility::SetEnabled ( bool enabled )
+bool
+LogFacility::SetEnabled ( const std::string & logname, bool enabled )
 {
-    LogFacility::_Enabled = enabled;
+    if ( ! LogFacility::Lock() )
+        return false;
+
+    StreamMap::iterator  sIter = LogFacility::_StreamMap.find(logname);
+    if ( sIter != _StreamMap.end() )
+        sIter->second.enabled = enabled;
+
+    LogFacility::Unlock();
+
+    return true;
 }
 
 bool
-LogFacility::GetEnabled()
+LogFacility::GetEnabled ( const std::string & logname, bool & enabled )
 {
-    return LogFacility::_Enabled;
+    bool result = false;
+
+    if ( ! LogFacility::Lock() )
+        return result;
+
+    StreamMap::iterator  sIter = LogFacility::_StreamMap.find(logname);
+    if ( sIter != _StreamMap.end() ) {
+        enabled = sIter->second.enabled;
+        result  = true;
+    }
+
+    LogFacility::Unlock();
+
+    return result;
 }
 
 void
@@ -244,7 +259,9 @@ LogFacility::IsOpen()
     if ( LogFacility::_StreamMap.size() == 0 )
         return false;
 
-    return LogFacility::_Enabled;
+    // run predicate to ensure not all streams are disabled.
+    
+    return true;
 }
 
 // ----------------------------------------------------------------------
@@ -299,7 +316,6 @@ LogFacility::LogToAllStreams ( const std::string & entry, bool newline )
     if ( ! LogFacility::Lock() )
         return;
 
-    // log to all secondary streams
     for ( sIter = _StreamMap.begin(); sIter != _StreamMap.end(); ++sIter ) {
         std::ostream * strm = sIter->second.logStream;
 
@@ -308,13 +324,10 @@ LogFacility::LogToAllStreams ( const std::string & entry, bool newline )
             continue;
         }
 
-        std::string & prefix = LogFacility::_LogPrefix;
-
         if ( ! sIter->second.logPrefix.empty() )
-            prefix = sIter->second.logPrefix;
-
-        if ( ! prefix.empty() )
-            *(strm) << prefix << ": ";
+            *(strm) << sIter->second.logPrefix << ": ";
+        else if ( ! LogFacility::_LogPrefix.empty() )
+            *(strm) << LogFacility::_LogPrefix << ": ";
 
         if ( LogFacility::_LogTime > 0 )
             *(strm) << LogFacility::_LogTimeStr << " : ";
@@ -352,13 +365,11 @@ LogFacility::LogToStream ( const std::string & logname,
 
     if ( sIter != LogFacility::_StreamMap.end() ) {
         std::ostream * strm = sIter->second.logStream;
-        std::string  prefix = LogFacility::_LogPrefix;
 
         if ( ! sIter->second.logPrefix.empty() )
-            prefix = sIter->second.logPrefix;
-
-        if ( ! prefix.empty() )
-            *(strm) << prefix << ": ";
+            *(strm) <<  sIter->second.logPrefix << ": ";
+        else if ( ! LogFacility::_LogPrefix.empty() )
+            *(strm) << LogFacility::_LogPrefix  << ": ";
 
         if ( LogFacility::_LogTime > 0 )
             *(strm) << LogFacility::_LogTimeStr << " : ";
@@ -435,6 +446,12 @@ LogFacility::CloseLogFile ( const std::string & logname, bool del )
 // ----------------------------------------------------------------------
 
 void
+LogFacility::SetDefaultLogPrefix ( const std::string & prefix )
+{
+    LogFacility::_LogPrefix = prefix;
+}
+
+void
 LogFacility::SetLogPrefix ( const std::string & logname, const std::string & prefix )
 {
     if ( ! LogFacility::Lock() )
@@ -447,12 +464,6 @@ LogFacility::SetLogPrefix ( const std::string & logname, const std::string & pre
     LogFacility::Unlock();
 
     return;
-}
-
-void
-LogFacility::SetDefaultLogPrefix ( const std::string & prefix )
-{
-    LogFacility::_LogPrefix = prefix;
 }
 
 std::string
@@ -473,6 +484,22 @@ LogFacility::GetLogPrefix ( const std::string & logname )
     LogFacility::Unlock();
 
     return prefix;
+}
+
+bool
+LogFacility::SetDefaultLogName ( const std::string & name )
+{
+    if ( name.empty() )
+        return false;
+
+    LogFacility::_LogName = name;
+    return true;
+}
+
+std::string
+LogFacility::GetDefaultLogName()
+{
+    return LogFacility::_LogName;
 }
 
 // ----------------------------------------------------------------------
