@@ -332,7 +332,6 @@ ConsoleThread::run()
             prompt = "[tnms : " + showI->first + "]";
             LogFacility::SetLogPrefix("console", prompt);
             prompt.append(": ");
-            LogFacility::LogToStream("console", prompt, false);
         }
         else if ( (cmd.compare("help") == 0) || (cmd.compare("?") == 0) )
         {
@@ -356,6 +355,9 @@ ConsoleThread::run()
             this->setAlarm();
             break;
         }
+        //
+        // CLIENT
+        //
         else if ( cmd.compare("client") == 0 )
         {
             if ( cmdlist.size() < 2 ) {
@@ -398,13 +400,10 @@ ConsoleThread::run()
                 this->setAlarm();
         }
 
-        if ( ! msg.str().empty() ) {
-            LogFacility::LogToStream("console", msg.str(), false);
-        } else {
-            msg << std::endl << prompt;
-            LogFacility::LogToStream("console", msg.str(), false);
-        }
+        if ( ! msg.str().empty() )
+            LogFacility::LogToStream("console", msg.str());
             
+        LogFacility::LogToStream("console", " ", false);
     }
 
     return;

@@ -20,7 +20,13 @@ ClientIOHandler::ClientIOHandler ( TnmsTree * tree, AuthClient * auth )
 
 
 ClientIOHandler::~ClientIOHandler()
-{}
+{
+    ClientSet::iterator  cIter;
+
+    for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
+        delete *cIter;
+}
+
 
 void
 ClientIOHandler::timeout ( const EventTimer * timer )
@@ -68,8 +74,9 @@ ClientIOHandler::handle_accept ( const EventIO * io )
 
     // if compression; enable it
     // client->enableCompression();
-
+    LogFacility::LogMessage("ClientIOHandler::handle_accept() " + client->getHostStr());
     _clients.insert(client);
+
     return;
 }
 
@@ -79,10 +86,15 @@ ClientIOHandler::handle_read ( const EventIO * io )
 {
     int  rd  = 0;
 
+    if ( io->isServer )
+        return;
+
     TnmsClient * client = (TnmsClient*) io->rock;
 
     if ( (rd = client->receive()) < 0 )
         return this->handle_close(io);
+    else if ( rd > 0 )
+        LogFacility::LogMessage("ClientIOHandler::handle_read()" + StringUtils::toString(client->getBytesReceived()));
     
     return;
 }
@@ -100,6 +112,8 @@ ClientIOHandler::handle_write ( const EventIO * io )
 
     if ( (wt = client->send()) < 0 )
         return this->handle_close(io);
+    else if ( wt > 0 )
+        LogFacility::LogMessage("ClientIOHandler::handle_write() " + StringUtils::toString(client->getBytesSent()));
 
     return;
 }
@@ -118,8 +132,11 @@ ClientIOHandler::handle_close ( const EventIO * io )
 
     if ( _tree ) 
         _tree->removeClient(client);
-    _clients.erase(client);
+
+    LogFacility::LogMessage("ClientIOHandler::handle_close() " + client->getHostStr());
+
     client->close();
+    _clients.erase(client);
     io->evmgr->removeEvent(io->evid);
 
     return;

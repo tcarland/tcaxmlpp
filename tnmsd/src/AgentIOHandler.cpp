@@ -18,7 +18,13 @@ AgentIOHandler::AgentIOHandler ( TnmsTree * tree, AuthClient * auth )
         throw Exception("AgentIOHandler() TnmsTree is NULL");
 }
 
-AgentIOHandler::~AgentIOHandler() {}
+AgentIOHandler::~AgentIOHandler()
+{
+    ClientSet::iterator  cIter;
+
+    for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
+        delete *cIter;
+}
 
 
 void
@@ -109,13 +115,14 @@ AgentIOHandler::handle_accept ( const EventIO * io )
     evid_t id = io->evmgr->addIOEvent(this, client->getSockFD(), (void*) client);
 
     if ( id == 0 )
-        LogFacility::LogMessage("AgentIOHandler::handle_accept() event error: " + io->evmgr->getErrorStr());
+        LogFacility::LogMessage("AgentIOHandler::handle_accept() event error: " 
+            + io->evmgr->getErrorStr());
 
     // if compression; enable it
     // client->enableCompression();
     LogFacility::LogMessage("AgentIOHandler::handle_accept() " + client->getHostStr());
-
     _clients.insert(client);
+
     return;
 }
 

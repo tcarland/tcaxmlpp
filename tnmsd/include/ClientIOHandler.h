@@ -10,7 +10,10 @@ using namespace tcanetpp;
 #include "TnmsClient.h"
 using namespace tnmsCore;
 
+
 namespace tnmsd {
+
+typedef std::set<TnmsClient*>  ClientSet;
 
 
 class ClientIOHandler : public EventIOHandler {
@@ -41,7 +44,7 @@ class ClientIOHandler : public EventIOHandler {
     TnmsTree *               _tree;
     AuthClient *             _auth;
 
-    std::set<TnmsClient*>    _clients;
+    ClientSet                _clients;
 
 };
 
