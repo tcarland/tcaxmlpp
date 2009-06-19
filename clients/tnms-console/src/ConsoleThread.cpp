@@ -22,6 +22,9 @@ extern "C" {
 namespace tnmsconsole {
 
 
+#define MAX_SENDERR_CNT  5
+
+
 ConsoleThread::ConsoleThread ( std::istream & istrm, bool showprompt, bool echo )
     : _istrm(istrm),
       _prompt(showprompt),
@@ -329,6 +332,7 @@ ConsoleThread::run()
             prompt = "[tnms : " + showI->first + "]";
             LogFacility::SetLogPrefix("console", prompt);
             prompt.append(": ");
+            LogFacility::LogToStream("console", prompt, false);
         }
         else if ( (cmd.compare("help") == 0) || (cmd.compare("?") == 0) )
         {
@@ -394,10 +398,13 @@ ConsoleThread::run()
                 this->setAlarm();
         }
 
-        LogFacility::LogToStream("console", msg.str(), false);
-        
-        //if ( _prompt )
-            //msg << " ";
+        if ( ! msg.str().empty() ) {
+            LogFacility::LogToStream("console", msg.str(), false);
+        } else {
+            msg << std::endl << prompt;
+            LogFacility::LogToStream("console", msg.str(), false);
+        }
+            
     }
 
     return;
@@ -484,9 +491,11 @@ ConsoleThread::sendAPIUpdates ( TnmsAPI * api, const time_t & now )
         } else 
             conn = true;
         
-        qsize  = api->flushsize();
-        if ( qsize > 0 )
-            logmsg << "Bytes queued: " << qsize << std::endl;
+        if ( conn ) {
+            qsize  = api->flushsize();
+            if ( qsize > 0 )
+                logmsg << "Bytes queued: " << qsize << std::endl;
+        }
         
         if ( retval > 0 ) {
             if ( ! conn ) {
@@ -502,11 +511,11 @@ ConsoleThread::sendAPIUpdates ( TnmsAPI * api, const time_t & now )
                 logmsg << std::endl << "Connected.";
             conn = true;
         }
-    } while ( (retval > 0 && errcnt < 8) );
+    } while ( (retval > 0 && errcnt < MAX_SENDERR_CNT) );
 
     logmsg << std::endl;
 
-    LogFacility::LogToStream("console", logmsg.str(), false);
+    LogFacility::LogToStream("console", logmsg.str());
 
     return retval;
 }

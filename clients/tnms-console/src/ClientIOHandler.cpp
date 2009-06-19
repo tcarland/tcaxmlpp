@@ -146,6 +146,7 @@ ClientIOHandler::handle_close ( const EventIO * io )
     ClientSet::iterator  cIter = _clientSet.find(client);
 
     if ( cIter != _clientSet.end() ) {
+        LogFacility::LogMessage("console", "Client close event handled for " + client->getHostStr());
         client->close();
     }
 
@@ -169,8 +170,7 @@ ClientIOHandler::handle_destroy ( const EventIO * io )
     if ( client == NULL )
         return;
     
-    ClientSet::iterator  cIter;
-    cIter = _clientSet.find(client);
+    ClientSet::iterator  cIter = _clientSet.find(client);
     if ( cIter == _clientSet.end() )
         delete client;
 
@@ -294,7 +294,8 @@ ClientIOHandler::listClients()
         LogFacility::Message  msg;
 
         msg << "    "  << cIter->first << "    =    " << cIter->second->getHostStr() << std::endl;
-        LogFacility::LogMessage(msg);
+
+        LogFacility::LogMessage("console", msg.str());
     }
 
     return;

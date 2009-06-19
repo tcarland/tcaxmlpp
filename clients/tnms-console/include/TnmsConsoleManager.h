@@ -18,8 +18,6 @@ namespace tnmsconsole {
 
 
 
-
-
 class TnmsConsoleManager : public EventTimerHandler {
 
 public:
