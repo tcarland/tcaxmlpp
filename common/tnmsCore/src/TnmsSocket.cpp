@@ -1165,7 +1165,9 @@ TnmsSocket::setLastRecord()
 size_t
 TnmsSocket::txBytesBuffered()
 {
-    return _sock->flushAvailable() + _wxcbuff->readAvailable();
+    if ( _sock )
+        return _sock->flushAvailable() + _wxcbuff->readAvailable();
+    return 0;
 }
 
 // ------------------------------------------------------------------- //
