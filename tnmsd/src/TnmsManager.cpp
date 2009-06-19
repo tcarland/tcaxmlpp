@@ -92,6 +92,9 @@ TnmsManager::run()
     //  Enter Main Loop
     _evmgr->eventLoop();
 
+    if ( _debug )
+        LogFacility::RemoveLogStream("stdout");
+
     LogFacility::CloseLogFacility();
 
     return;

@@ -241,7 +241,8 @@ ConsoleThread::run()
             else
                 ts = now;
 
-            msg << "Update: '" << name << "' val: " << val << " tstamp: " << ts << std::endl;
+            msg << "Update: '" << name << "' val: " << val << " tstamp: " << ts 
+                << std::endl << prompt;
 
             // api->update
             if ( ! showI->second->update(name, ts, val, TNMS_UINT64) ) {

@@ -48,6 +48,7 @@ TnmsConsoleManager::run()
     _evmgr->eventLoop();
 
     LogFacility::LogMessage("console", "TnmsConsoleManager shutting down");
+    LogFacility::RemoveLogStream("console");
     LogFacility::CloseLogFacility();
 
     return;

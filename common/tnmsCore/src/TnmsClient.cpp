@@ -201,7 +201,7 @@ TnmsClient::AuthReplyHandler ( const TnmsAuthReply & reply )
     else
         msg << " is not authorized";
 
-    LogFacility::LogMessage(msg);
+    LogFacility::LogMessage(msg.str());
 
     if ( this->_isMirror ) {
         //time_t  now = ::time(NULL);
