@@ -34,21 +34,21 @@ ClientIOHandler::timeout ( const EventTimer * timer )
     int  rd  = 0;
     int  wt  = 0;
 
+    const time_t & now = timer->abstime.tv_sec;
+
     std::set<TnmsClient*>::iterator  cIter;
 
     for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter ) {
         TnmsClient * client = *cIter;
 
-        if ( (rd = client->receive()) < 0 ) {
+        if ( (rd = client->receive(now)) < 0 ) {
             client->close();
             continue;
         }
-
-        if ( (wt = client->send()) < 0 ) {
+        if ( (wt = client->send(now)) < 0 ) {
             client->close();
             continue;
         }
-
     }
 
     if ( _tree )
@@ -84,14 +84,14 @@ ClientIOHandler::handle_accept ( const EventIO * io )
 void
 ClientIOHandler::handle_read ( const EventIO * io )
 {
-    int  rd  = 0;
+    int  rd   = 0;
 
     if ( io->isServer )
         return;
 
     TnmsClient * client = (TnmsClient*) io->rock;
 
-    if ( (rd = client->receive()) < 0 )
+    if ( (rd = client->receive(io->abstime.tv_sec)) < 0 )
         return this->handle_close(io);
     else if ( rd > 0 )
         LogFacility::LogMessage("ClientIOHandler::handle_read()" + StringUtils::toString(client->getBytesReceived()));
@@ -103,14 +103,14 @@ ClientIOHandler::handle_read ( const EventIO * io )
 void
 ClientIOHandler::handle_write ( const EventIO * io )
 {
-    int  wt = 0;
+    int   wt  = 0;
 
     if ( io->isServer )
         return;
 
     TnmsClient * client = (TnmsClient*) io->rock;
 
-    if ( (wt = client->send()) < 0 )
+    if ( (wt = client->send(io->abstime.tv_sec)) < 0 )
         return this->handle_close(io);
     else if ( wt > 0 )
         LogFacility::LogMessage("ClientIOHandler::handle_write() " + StringUtils::toString(client->getBytesSent()));

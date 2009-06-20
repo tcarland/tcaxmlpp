@@ -69,14 +69,17 @@ int main ( int argc, char **argv )
     TnmsAdd add("foo/bar");
 
     int i = 1;
+    time_t now = ::time(NULL);
 
     metric1.setValue(TNMS_INT32, i);
 
     sock->subscribeStructure();
     sock->sendMessage(&add);
-    sock->send();
+    sock->send(now);
     
     while ( ! _Alarm ) {
+
+        now = ::time(NULL);
 
         if ( ! sock->isConnected() ) {
             printf("Not connected...");
@@ -89,17 +92,16 @@ int main ( int argc, char **argv )
                 sock->connect();
             } 
         } else {
-
             if ( c == 1 ) {
                 printf("Connected.\n");
                 c = 0;
             }
             sock->sendMessage(&metric1);
 
-            if ( (wt = sock->send()) < 0 ) {
+            if ( (wt = sock->send(now)) < 0 ) {
                 printf("msgclient: Write error %s\n", sock->getErrorStr().c_str());
                 sock->close();
-            } else if ( (rd = sock->receive()) < 0 ) {
+            } else if ( (rd = sock->receive(now)) < 0 ) {
                 printf("msgclient: Read error %s\n", sock->getErrorStr().c_str());
                 sock->close();
             } else {

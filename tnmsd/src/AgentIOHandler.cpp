@@ -30,7 +30,8 @@ AgentIOHandler::~AgentIOHandler()
 void
 AgentIOHandler::timeout ( const EventTimer * timer )
 {
-    int  rd, sd;
+    int            rd, sd;
+    const time_t & now = timer->abstime.tv_sec;
 
     ClientSet::iterator  cIter;
 
@@ -67,7 +68,7 @@ AgentIOHandler::timeout ( const EventTimer * timer )
             }
         }
 
-        if ( (rd = client->receive()) < 0 ) {
+        if ( (rd = client->receive(now)) < 0 ) {
             logmsg << " error in receive() ";
             LogFacility::LogMessage(logmsg);
             client->close();
@@ -77,7 +78,7 @@ AgentIOHandler::timeout ( const EventTimer * timer )
             ;
         }
 
-        if ( (sd = client->send()) < 0 ) {
+        if ( (sd = client->send(now)) < 0 ) {
             logmsg << " error in send() ";
             LogFacility::LogMessage(logmsg);
             client->close();
@@ -136,7 +137,7 @@ AgentIOHandler::handle_read ( const EventIO * io )
 
     TnmsClient * client = (TnmsClient*) io->rock;
 
-    if ( (rd = client->receive()) < 0 )
+    if ( (rd = client->receive(io->abstime.tv_sec)) < 0 )
         return this->handle_close(io);
     else if ( rd > 0 )
         LogFacility::LogMessage("AgentIOHandler::handle_read() " + StringUtils::toString(client->getBytesReceived()));
@@ -154,7 +155,7 @@ AgentIOHandler::handle_write ( const EventIO * io )
 
     TnmsClient * client = (TnmsClient*) io->rock;
 
-    if ( (wt = client->send()) < 0 )
+    if ( (wt = client->send(io->abstime.tv_sec)) < 0 )
         return this->handle_close(io);
     else if ( wt > 0 )
         LogFacility::LogMessage("AgentIOHandler::handle_write() " + StringUtils::toString(client->getBytesSent()));

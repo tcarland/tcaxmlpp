@@ -107,7 +107,7 @@ TnmsBase::send ( time_t  now )
     // check for conn flush
     if ( _conn->txBytesBuffered() > 0 ) 
     {
-        if ( (wt = _conn->send()) < 0 ) {
+        if ( (wt = _conn->send(now)) < 0 ) {
             LogFacility::LogToStream(_logName, "TnmsAPI: connection lost in send(): " + _conn->getErrorStr());
             _conn->close();
             return TNMSERR_CONN_LOST;
@@ -120,7 +120,7 @@ TnmsBase::send ( time_t  now )
         _holddown = now + _holddown_interval;
         _tree->sweep();
         _tree->updateClients();
-        wt = _conn->send();
+        wt = _conn->send(now);
     }
 
     // Receive messages

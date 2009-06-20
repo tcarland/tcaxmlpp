@@ -45,6 +45,8 @@ ClientIOHandler::timeout ( const EventTimer * timer )
 
     ClientSet::iterator  cIter;
 
+    const time_t & now = timer->abstime.tv_sec;
+
     for ( cIter = _clientSet.begin(); cIter != _clientSet.end(); ++cIter ) {
         TnmsClient * client = *cIter;
         LogFacility::Message  logmsg;
@@ -79,12 +81,12 @@ ClientIOHandler::timeout ( const EventTimer * timer )
         }
 
 
-        if ( (rd = client->receive()) < 0 ) {
+        if ( (rd = client->receive(now)) < 0 ) {
             client->close();
             continue;
         }
 
-        if ( (sd = client->send()) < 0 ) {
+        if ( (sd = client->send(now)) < 0 ) {
             client->close();
             continue;
         }
@@ -106,7 +108,7 @@ ClientIOHandler::handle_read ( const EventIO * io )
 
     TnmsClient * client = (TnmsClient*) io->rock;
 
-    if ( (rd = client->receive()) < 0 )
+    if ( (rd = client->receive(io->abstime.tv_sec)) < 0 )
         return this->handle_close(io);
     
     return;
@@ -123,7 +125,7 @@ ClientIOHandler::handle_write ( const EventIO * io )
 
     TnmsClient * client = (TnmsClient*) io->rock;
 
-    if ( (wt = client->send()) < 0 )
+    if ( (wt = client->send(io->abstime.tv_sec)) < 0 )
         return this->handle_close(io);
 
     return;

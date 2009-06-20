@@ -252,13 +252,6 @@ TnmsSocket::closeConnection()
 // ------------------------------------------------------------------- //
 
 int
-TnmsSocket::send()
-{
-    time_t  now = ::time(NULL);
-    return this->send(now);
-}
-
-int
 TnmsSocket::send ( const time_t & now )
 {
     ssize_t  wt, fl;
@@ -307,13 +300,6 @@ TnmsSocket::send ( const time_t & now )
 }
 
 // ------------------------------------------------------------------- //
-
-int
-TnmsSocket::receive()
-{
-    time_t  now = ::time(NULL);
-    return this->receive(now);
-}
 
 int
 TnmsSocket::receive ( const time_t & now )
@@ -775,7 +761,7 @@ TnmsSocket::subscribeStructure()
     if ( _hdr )
         _hdr->options |= LAST_MESSAGE;
 
-    if ( this->send() < 0 )
+    if ( this->flush() < 0 )
         return false;
     return true;
 }
@@ -791,7 +777,7 @@ TnmsSocket::unsubscribeStructure()
     if ( _hdr )
         _hdr->options |= LAST_MESSAGE;
 
-    if ( this->send() < 0 )
+    if ( this->flush() < 0 )
         return false;
     return true;
 }

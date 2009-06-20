@@ -94,13 +94,16 @@ EventManager::addTimerEvent ( EventTimerHandler * handler,
 
     if ( sec > 0 ) {
 	timer.evsec  = sec;
-	timer.abstime.tv_sec  = (long)(time(NULL) + timer.evsec);
-	timer.abstime.tv_usec = 0;
+        timer.evusec = 0;
     } else {
+        timer.evsec  = 0;
 	timer.evusec = msectoevu(msec);
-	timer.abstime.tv_sec  = 0;
 	timer.abstime.tv_usec = timer.evusec;
     }
+
+    timer.abstime.tv_sec  = 0;
+    timer.abstime.tv_usec = 0;
+
     this->checkMinTimer(timer);
 
     _timers[timer.evid] = timer;
@@ -173,6 +176,9 @@ EventManager::addIOEvent ( EventIOHandler * handler, const sockfd_t & sfd,
     io.rock     = rock;
     io.isServer = isServer;
     io.enabled  = true;
+
+    io.abstime.tv_sec  = 0;
+    io.abstime.tv_usec = 0;
 
 #   if EV_DEBUG
     printf("EventManager::addIOEvent() adding ");
@@ -442,7 +448,7 @@ EventManager::checkTimers ( const timeval & now )
 
 	if ( ! timer.enabled )
 	    continue;
-
+/*
 	if ( timer.abstime.tv_usec > 0 ) {
 
 	    if ( timer.abstime.tv_usec <= _minevu ) {
@@ -470,6 +476,39 @@ EventManager::checkTimers ( const timeval & now )
 	    }
 
 	}
+*/
+        if ( timer.abstime.tv_sec == 0 ) {
+            timer.abstime = now;
+            timer.abstime.tv_sec  += timer.evsec;
+            timer.abstime.tv_usec += timer.evusec;
+            continue;
+        }
+
+        bool fired = false;
+       
+        if ( timer.abstime.tv_sec < now.tv_sec ) {
+            fired = true;
+        } else if ( timer.abstime.tv_sec == now.tv_sec ) {
+            if ( timer.evusec > 0 )
+                if  ( timer.abstime.tv_usec <= now.tv_usec )
+                    fired = true;
+            else
+                fired = true;
+        }
+
+        if ( fired ) {
+            timer.abstime = now;
+            timer.fired++;
+
+            timer.handler->timeout(&timer);
+
+            if ( timer.absolute || (timer.count > 0 && timer.fired == timer.count) ) {
+                timer.enabled = false;
+            } else {
+                timer.abstime.tv_sec = now.tv_sec + timer.evsec;
+                timer.abstime.tv_usec = now.tv_usec + timer.evusec;
+            }
+        }
     }
 
     return;

@@ -17,7 +17,7 @@ AuthIOHandler::handle_read ( const EventIO * io )
 {
     TnmsClient * client = (TnmsClient*) io->rock;
 
-    if  ( client && client->receive() < 0 ) {
+    if  ( client && client->receive(io->abstime.tv_sec) < 0 ) {
         LogFacility::LogMessage("AuthIOHandler::handle_read() error: " + client->getHostStr());
         client->close();
     }
@@ -30,7 +30,7 @@ AuthIOHandler::handle_write ( const EventIO * io )
 {
     TnmsClient * client = (TnmsClient*) io->rock;
 
-    if  ( client && client->receive() < 0 ) {
+    if  ( client && client->send(io->abstime.tv_sec) < 0 ) {
         LogFacility::LogMessage("AuthIOHandler::handle_write() error: " + client->getHostStr());
         client->close();
     }

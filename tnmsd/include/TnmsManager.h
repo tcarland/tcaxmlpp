@@ -36,12 +36,13 @@ class TnmsManager : public EventTimerHandler {
   public:
 
     TnmsManager ( const std::string & configfile );
+
     virtual ~TnmsManager();
 
     // EventTimerHandler
     virtual void timeout ( const EventTimer * timer );
 
-    void         run();  
+    void         run();
 
     void         setAlarm();
     void         setHUP();

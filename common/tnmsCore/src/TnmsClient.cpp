@@ -42,7 +42,7 @@ TnmsClient::~TnmsClient()
 
 
 int
-TnmsClient::send()
+TnmsClient::send ( const time_t & now )
 {
     int   wt, wtt = 0;
     bool  queued  = true;
@@ -54,7 +54,7 @@ TnmsClient::send()
     UpdateSet::iterator  uIter;
     RemoveSet::iterator  rIter;
 
-    wt  = TnmsSocket::send();
+    wt  = TnmsSocket::send(now);
 
     if ( wt < 0 )
         return wt;
@@ -119,7 +119,7 @@ TnmsClient::send()
             this->setLastRecord();
     }
 
-    wtt = TnmsSocket::send();
+    wtt = TnmsSocket::send(now);
 
     if ( wtt < 0 )
         return wtt;

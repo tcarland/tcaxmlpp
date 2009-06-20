@@ -23,7 +23,7 @@ class TnmsClient : public TnmsSocket {
     virtual ~TnmsClient();
 
     // TnmsSocket
-    virtual int     send();
+    virtual int     send ( const time_t & now );
     virtual void    close();
 
     // TnmsClient

@@ -65,12 +65,12 @@ AuthClient::timeout ( const EventTimer * timer )
         if ( this->connect() <= 0 )
             return;
 
-    if ( this->receive() < 0 ) {
+    if ( this->receive(now) < 0 ) {
         this->close();
         return;
     }
 
-    if ( this->send() < 0 ) {
+    if ( this->send(now) < 0 ) {
         this->close();
         return;
     }
