@@ -152,18 +152,26 @@ TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
     }
     else if ( cmd.compare("subscribe") == 0 ) 
     {
-        LogFacility::LogMessage("console", "client subscribe");
+        if ( cmdlist.size() < 4 ) {
+            LogFacility::LogToStream("console", "Syntax error in client subscribe");
+            return;
+        }
         tag    = cmdlist[2];
         name   = cmdlist[3];
+        LogFacility::LogMessage("console", "client subscribe " + name);
         client = _clientHandler->find(tag);
         if ( client )
             client->subscribe(name);
     }
     else if ( cmd.compare("unsubscribe") == 0 ) 
     {
-        LogFacility::LogMessage("console", "client unsubscribe");
+        if ( cmdlist.size() < 4 ) {
+            LogFacility::LogToStream("console", "Syntax error in client unsubscribe");
+            return;
+        }
         tag    = cmdlist[2];
         name   = cmdlist[3];
+        LogFacility::LogMessage("console", "client unsubscribe");
         client = _clientHandler->find(tag);
         if ( client )
             client->unsubscribe(name);
@@ -174,6 +182,7 @@ TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
              return;
          
          name = cmdlist[2];
+         _tree->debugDump(name);
     }
     else if ( cmd.compare("dump") == 0 ) 
     {
@@ -186,6 +195,9 @@ TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
     }
     else if ( cmd.compare("show") == 0 ) 
     {
+        if ( cmdlist.size() < 3 )
+            return;
+
         TnmsMetric metric;
         name = cmdlist[2];
         

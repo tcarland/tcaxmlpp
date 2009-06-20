@@ -50,126 +50,126 @@ class TnmsSocket {
     virtual ~TnmsSocket();
 
 
-    int                 openConnection  ( const std::string & host,
+    int                    openConnection  ( const std::string & host,
                                           uint16_t port );
-    int                 openConnection();
+    int                    openConnection();
 
 
-    virtual int         connect()      { return this->openConnection(); }
-    virtual void        close()        { return this->closeConnection(); }
+    virtual int            connect()      { return this->openConnection(); }
+    virtual void           close()        { return this->closeConnection(); }
 
-    virtual int         send           ( const time_t  & now );
-    virtual int         receive        ( const time_t  & now );
+    virtual int            send           ( const time_t  & now );
+    virtual int            receive        ( const time_t  & now );
 
-    ssize_t             flush();
-    size_t              txBytesBuffered();
+    ssize_t                flush();
+    size_t                 txBytesBuffered();
 
-    void                setLastRecord();
+    void                   setLastRecord();
 
-    size_t              getBytesSent();
-    size_t              getBytesReceived();
+    size_t                 getBytesSent();
+    size_t                 getBytesReceived();
 
     /*  Attributes  */
 
-    bool                isConnected();
-    bool                isConnecting();
+    bool                   isConnected();
+    bool                   isConnecting();
 
-    sockfd_t            getDescriptor() const;
-    sockfd_t            getSockFD() const  { return this->getDescriptor(); }
-    sockfd_t            getFD() const      { return this->getDescriptor(); }
+    sockfd_t               getDescriptor() const;
+    sockfd_t               getSockFD() const  { return this->getDescriptor(); }
+    sockfd_t               getFD() const      { return this->getDescriptor(); }
 
-    void                setMessageHandler  ( MessageHandler * msgHandler );
-    MessageHandler*     getMessageHandler();
+    void                   setMessageHandler  ( MessageHandler * msgHandler );
+    const MessageHandler*  getMessageHandler();
 
-    void                reconnectTime      ( const time_t & secs );
-    const time_t&       reconnectTime() const;
+    void                   reconnectTime      ( const time_t & secs );
+    const time_t&          reconnectTime() const;
 
-    void                setCompression     ( bool    compress );
-    bool                getCompression() const;
+    void                   setCompression     ( bool    compress );
+    bool                   getCompression() const;
 
-    void                setTxQueueSize     ( size_t  bytes );
-    size_t              getTxQueueSize() const;
+    void                   setTxQueueSize     ( size_t  bytes );
+    size_t                 getTxQueueSize() const;
 
-    std::string         getClientLogin() const;
+    std::string            getClientLogin() const;
 
-    std::string         getHostStr()  const;
-    std::string         getAddrStr()  const;
-    std::string         getHostname() const;
-    uint16_t            getHostPort() const;
-    uint32_t            getVersion()  const;
+    std::string            getHostStr()  const;
+    std::string            getAddrStr()  const;
+    std::string            getHostname() const;
+    uint16_t               getHostPort() const;
+    uint32_t               getVersion()  const;
 
-    std::string         getErrorStr() const;
-    void                setDebug          ( bool debug );
+    std::string            getErrorStr() const;
+    void                   setDebug          ( bool debug );
 
 
     /*  Additional attributes */
 
-    void                enableFlush       ( bool  flush );
-    bool                flushEnabled();
-    void                setFlushLimit     ( uint32_t limit );
-    uint32_t            getFlushLimit();
+    void                   enableFlush       ( bool  flush );
+    bool                   flushEnabled();
+    void                   setFlushLimit     ( uint32_t limit );
+    uint32_t               getFlushLimit();
 
-    void                enableTimeout     ( bool   timeout );
-    void                setTimeout        ( const time_t & secs );
-    const time_t&       getTimeout() const;
+    void                   enableTimeout     ( bool   timeout );
+    void                   setTimeout        ( const time_t & secs );
+    const time_t&          getTimeout() const;
 
 
     /*  Authorization / Subscriptions  */
 
-    virtual void        login             ( const std::string &  user,
-                                            const std::string &  pw );
+    virtual void           login             ( const std::string &  user,
+                                               const std::string &  pw );
 
-    virtual void        authReply         ( const TnmsAuthReply & reply );
+    virtual void           authReply         ( const TnmsAuthReply & reply );
 
-    bool                isAuthorized() const;
-    bool                isSubscribed() const;
+    bool                   isAuthorized() const;
+    bool                   isSubscribed() const;
 
-    virtual bool        subscribeStructure();
-    virtual bool        unsubscribeStructure();
+    virtual bool           subscribeStructure();
+    virtual bool           unsubscribeStructure();
 
-    virtual bool        subscribeAll();
-    virtual bool        unsubscribeAll();
+    virtual bool           subscribeAll();
+    virtual bool           unsubscribeAll();
 
-    virtual bool        subscribe         ( const std::string & name );
-    virtual bool        subscribe         ( const TnmsOid     & oid );
-    virtual bool        unsubscribe       ( const std::string & oid );
-    virtual bool        unsubscribe       ( const TnmsOid     & oid );
+    virtual bool           subscribe         ( const std::string & name );
+    virtual bool           subscribe         ( const TnmsOid     & oid );
+    virtual bool           unsubscribe       ( const std::string & oid );
+    virtual bool           unsubscribe       ( const TnmsOid     & oid );
 
-    virtual bool        subscribeLevel    ( const std::string & oid );
-    virtual bool        unsubscribeLevel  ( const std::string & oid );
+    virtual bool           subscribeLevel    ( const std::string & oid );
+    virtual bool           unsubscribeLevel  ( const std::string & oid );
 
-    int                 subscribeCount();
-    void                resubscribe();
+    int                    subscribeCount();
+    void                   resubscribe();
 
     /*  send message handling / packing  */
 
-    bool                sendMessage       ( Serializable  * message );
+    bool                   sendMessage       ( Serializable  * message );
 
   protected:
 
     /*  receive message handling / extraction  */
-    int                 receiveMessages   ( tnmsHeader  & hdr );
+    int                    receiveMessages   ( tnmsHeader  & hdr );
 
-    int                 rcvAuthRequest    ( tnmsHeader  & hdr );
-    int                 rcvAuthReply      ( tnmsHeader  & hdr );
-    int                 rcvMetrics        ( tnmsHeader  & hdr );
-    int                 rcvAdds           ( tnmsHeader  & hdr );
-    int                 rcvRemoves        ( tnmsHeader  & hdr );
-    int                 rcvRequests       ( tnmsHeader  & hdr );
-    int                 rcvSubscribes     ( tnmsHeader  & hdr );
-    int                 rcvUnsubscribes   ( tnmsHeader  & hdr );
+    int                    rcvAuthRequest    ( tnmsHeader  & hdr );
+    int                    rcvAuthReply      ( tnmsHeader  & hdr );
+    int                    rcvMetrics        ( tnmsHeader  & hdr );
+    int                    rcvAdds           ( tnmsHeader  & hdr );
+    int                    rcvRemoves        ( tnmsHeader  & hdr );
+    int                    rcvRequests       ( tnmsHeader  & hdr );
+    int                    rcvSubscribes     ( tnmsHeader  & hdr );
+    int                    rcvUnsubscribes   ( tnmsHeader  & hdr );
 
 
   private:
 
-    void                init();
-    void                clearState();
-    void                closeConnection();
-    void                setHostStr();
+    void                   init();
+    void                   clearState();
+    void                   closeConnection();
+    void                   setHostStr();
 
-    bool                initHeader        ( uint16_t type, size_t size );
-    ssize_t             uncompress        ( uint32_t size );
-    //bool                checkStall();
+    bool                   initHeader        ( uint16_t type, size_t size );
+    ssize_t                uncompress        ( uint32_t size );
+    //bool                   checkStall();
 
 
   protected:

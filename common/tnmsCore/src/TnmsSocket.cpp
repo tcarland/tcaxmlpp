@@ -435,12 +435,14 @@ TnmsSocket::receiveMessages ( tnmsHeader & hdr )
 void
 TnmsSocket::setMessageHandler ( MessageHandler * msgHandler )
 {
-    if ( _msgHandler )
+    if ( this->_msgHandler )
         delete _msgHandler;
-    _msgHandler = msgHandler;
+    this->_msgHandler = msgHandler;
+    if ( this->_msgHandler == NULL )
+        this->_msgHandler = new MessageHandler();
 }
 
-MessageHandler*
+const MessageHandler*
 TnmsSocket::getMessageHandler()
 {
     return this->_msgHandler;
@@ -956,7 +958,7 @@ TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
     upk = auth.deserialize(rptr, rsz);
 
     if ( upk < 0 ) {
-        _errstr = "TnmsSocket::rcvAuthRequest() Error ";
+        _errstr = "TnmsSocket::rcvAuthRequest() Error in deserialize";
         return -1;
     }
 
@@ -983,7 +985,7 @@ TnmsSocket::rcvAuthReply ( tnmsHeader & hdr )
     upk = reply.deserialize(rptr, rsz);
 
     if ( upk < 0 ) {
-        _errstr = "TnmsSocket::rcvAuthReply() error ";
+        _errstr = "TnmsSocket::rcvAuthReply() error in deserialize";
         return -1;
     }
 
@@ -1012,7 +1014,7 @@ TnmsSocket::rcvMetrics ( tnmsHeader & hdr )
         upk = metric.deserialize(rptr, rsz-rd);
 
         if ( upk < 0 ) {
-            _errstr = "TnmsSocket::rcvMetrics() Error";
+            _errstr = "TnmsSocket::rcvMetrics() Error in deserialize";
             break;
         }
 
@@ -1045,7 +1047,7 @@ TnmsSocket::rcvAdds ( tnmsHeader & hdr )
         upk = addmsg.deserialize(rptr, (rsz-rd));
 
         if ( upk < 0 ) {
-            _errstr = "TnmsSocket::rcvAdds() Error unpacking add";
+            _errstr = "TnmsSocket::rcvAdds() Error in deserialize";
             break;
         }
 
@@ -1078,7 +1080,7 @@ TnmsSocket::rcvRemoves ( tnmsHeader & hdr )
         upk  = remove.deserialize(rptr, (rsz-rd));
 
         if ( upk < 0 ) {
-            _errstr = "TnmsSocket::rcvRemoves() Error unpacking";
+            _errstr = "TnmsSocket::rcvRemoves() Error in deserialize";
             break;
         }
 
@@ -1096,15 +1098,65 @@ TnmsSocket::rcvRemoves ( tnmsHeader & hdr )
 int
 TnmsSocket::rcvSubscribes ( tnmsHeader & hdr )
 {
-    return -1;
+    char   * rptr;
+    size_t   rsz, rd;
+    ssize_t  upk, i;
+
+    rptr = _rxbuff;
+    rsz  = hdr.payload_size;
+    rd   = 0;
+    upk  = 0;
+
+    for ( i = 0; i < hdr.message_count; ++i ) {
+        TnmsSubscribe  sub;
+
+        upk = sub.deserialize(rptr, (rsz-rd));
+
+        if ( upk < 0 ) {
+            _errstr = "TnmsSocket::rcvSubscribes() Error in deserialize.";
+            break;
+        }
+
+        rd   += upk;
+        rptr += upk;
+
+        _msgHandler->SubscribeHandler(sub.getElementName());
+    }
+
+    return i;
 }
 
 // ------------------------------------------------------------------- //
 
 int
 TnmsSocket::rcvUnsubscribes ( tnmsHeader & hdr )
-{
-    return -1;
+{    
+    char   * rptr;
+    size_t   rsz, rd;
+    ssize_t  upk, i;
+
+    rptr = _rxbuff;
+    rsz  = hdr.payload_size;
+    rd   = 0;
+    upk  = 0;
+
+    for ( i = 0; i < hdr.message_count; ++i ) {
+        TnmsSubscribe  unsub;
+
+        upk = unsub.deserialize(rptr, (rsz-rd));
+
+        if ( upk < 0 ) {
+            _errstr = "TnmsSocket::rcvUnsubscribes() Error in deserialize.";
+            break;
+        }
+
+        rd   += upk;
+        rptr += upk;
+
+        _msgHandler->UnsubscribeHandler(unsub.getElementName());
+    }
+
+    return i;
 }
 
 // ------------------------------------------------------------------- //
@@ -1112,7 +1164,32 @@ TnmsSocket::rcvUnsubscribes ( tnmsHeader & hdr )
 int
 TnmsSocket::rcvRequests ( tnmsHeader & hdr )
 {
-    return -1;
+    char   * rptr;
+    size_t   rsz, rd;
+    ssize_t  upk, i;
+
+    rptr = _rxbuff;
+    rsz  = hdr.payload_size;
+    rd   = 0;
+    upk  = 0;
+
+    for ( i = 0; i < hdr.message_count; ++i ) {
+        TnmsRequest  req;
+
+        upk = req.deserialize(rptr, (rsz-rd));
+
+        if ( upk < 0 ) {
+            _errstr = "TnmsSocket::rcvRequests() Error in deserialize.";
+            break;
+        }
+
+        rd   += upk;
+        rptr += upk;
+
+        _msgHandler->RequestHandler(req);
+    }
+
+    return i;
 }
 
 // ------------------------------------------------------------------- //
