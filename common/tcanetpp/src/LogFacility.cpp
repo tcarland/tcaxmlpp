@@ -84,7 +84,7 @@ LogFacility::OpenLogFile ( const std::string & logname,
 
     sIter = LogFacility::_StreamMap.find(logname);
     
-    if ( sIter == LogFacility::_StreamMap.end() )
+    if ( sIter != LogFacility::_StreamMap.end() )
         return false;
 
     std::auto_ptr<std::ofstream>  newfstrm(new std::ofstream());

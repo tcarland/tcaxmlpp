@@ -17,9 +17,10 @@ using namespace tnmsCore;
 namespace tnmsd {
 
 
-#define LOG_ROTATE_INTERVAL        86400
+#define LOG_CHECK_INTERVAL         3600
 #define DEFAULT_STARTUP_DELAY      30
 #define DEFAULT_HOLDDOWN_INTERVAL  30
+#define DEFAULT_REPORT_INTERVAL    30
 
 #define TNMSD_CONFIG_ROOT          "tnmsd"
 
@@ -39,60 +40,64 @@ class TnmsManager : public EventTimerHandler {
 
     virtual ~TnmsManager();
 
-    // EventTimerHandler
-    virtual void timeout ( const EventTimer * timer );
+    /* EventTimerHandler */
+    virtual void        timeout ( const EventTimer * timer );
 
-    void         run();
+    /*  TnmsManager */
+    void                run();
 
-    void         setAlarm();
-    void         setHUP();
-    void         setUSR();
+    void                setAlarm();
+    void                setHUP();
+    void                setUSR();
 
-    void         setDebug  ( bool d = true );
-    std::string  getErrorStr();
+    void                setDebug  ( bool d = true );
+    bool                getDebug() const;
+                        
+    const std::string&  getErrorStr() const;
 
 
   protected:
 
-    void         createClients();
-    void         verifyClients ( const time_t      & now );
-    bool         parseConfig   ( const std::string & cfg,
-                                 const time_t      & now );
+    void                createClients();
+    void                verifyClients ( const time_t      & now );
+    bool                parseConfig   ( const std::string & cfg,
+                                        const time_t      & now );
 
-    void         logRotate     ( std::string         logfile,
-                                 const time_t      & now );
+    void                logRotate     ( std::string         logfile,
+                                        const time_t      & now );
 
   private:
 
-    EventManager*       _evmgr;
-    TnmsTree*           _tree;
+    EventManager*               _evmgr;
+    TnmsTree*                   _tree;
 
-    Socket*             _agtsvr;
-    Socket*             _clnsvr;
-    AuthClient*         _auth;
+    Socket*                     _agent;
+    Socket*                     _client;
+    AuthClient*                 _auth;
 
-    ClientMap           _clientMap;
-    evid_t              _agtsvrid, _clnsvrid;
+    ClientMap                   _clientMap;
+    evid_t                      _agentId, _clientId;
+    evid_t                      _reportId, _logId;
 
-    AgentIOHandler*     _agentHandler;
-    ClientIOHandler*    _clientHandler;
+    AgentIOHandler*             _agentHandler;
+    ClientIOHandler*            _clientHandler;
 
-    TnmsConfig          _tconfig;
+    TnmsConfig                  _tconfig;
 
-    time_t              _lastTouched;
-    time_t              _logRotate;
-    time_t              _startDelay, _startAt;
-    time_t              _reportAt;
-    time_t              _holddown;
-    int                 _today;
+    time_t                      _lastTouched;
+    time_t                      _reportDelay;
+    time_t                      _startDelay, _startAt;
+    time_t                      _logCheck;
+    time_t                      _holddown;
+    int                         _today;
 
-    std::string         _configfile;
-    std::string         _logname;
-    std::string         _errstr;
+    std::string                 _configfile;
+    std::string                 _logname;
+    std::string                 _errstr;
 
-    bool                _hup;
-    bool                _usr;
-    bool                _debug;
+    bool                        _hup;
+    bool                        _usr;
+    bool                        _debug;
 
 };
 
