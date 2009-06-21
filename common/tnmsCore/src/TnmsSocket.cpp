@@ -262,13 +262,18 @@ TnmsSocket::send ( const time_t & now )
     if ( this->isConnecting() ) {
         return this->openConnection();
     } else if ( ! this->isConnected() ) {
+        _errstr = "TnmsSocket::send() no connection: ";
+        _errstr.append(_hoststr);
         return -1;
     }
 
     wt = this->flush();
 
-    if ( wt < 0 )
+    if ( wt < 0 ) {
+        if ( _errstr.empty() )
+            _errstr = "TnmsSocket::send() error in flush()";
         return -1;
+    }
 
     fl = _sock->flushAvailable() + _wxcbuff->readAvailable();
 
@@ -276,8 +281,9 @@ TnmsSocket::send ( const time_t & now )
         if ( _lastWxTime > 0 ) {
             if ( _wxstallsz <= (size_t) fl ) {
                 if ( (_lastWxTime + _wxTimeout) < now ) {
-                    _errstr.append(" TnmsSocket::send() client stalled, timeout exceeded: ");
-                    _errstr.append(_hoststr);
+                    if ( _errstr.empty() )
+                        _errstr = "TnmsSocket::send()";
+                    _errstr.append(" client stalled, timeout exceeded");
                     return -1;
                 }
                 _wxstallsz = fl;
@@ -292,9 +298,8 @@ TnmsSocket::send ( const time_t & now )
     } else if ( wt > 0 ) {
         _lastWxTime = 0;
         _wxstallsz  = 0;
+        _txCtr     += wt;
     }
-
-    this->_txCtr += wt;  // track tx bytes
 
     return wt;
 }
@@ -321,6 +326,7 @@ TnmsSocket::receive ( const time_t & now )
     if ( this->isConnecting() )
         return this->openConnection();
     else if ( ! this->isConnected() ) {  // connection lost
+        _errstr = "TnmsSocket::receive() connection lost";
         return -1;
     }
 

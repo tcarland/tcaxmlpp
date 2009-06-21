@@ -85,7 +85,7 @@ typedef struct tnmsHeader
 typedef struct tnmsMetric
 {
     uint32_t    oid_len;
-    uint16_t*   oid;
+    uint32_t*   oid;
     uint32_t    metric_name_len;
     char*       metric_name;
     uint16_t    metric_value_type;
@@ -100,7 +100,7 @@ typedef struct tnmsRequest
 {
     uint16_t    record_type;
     uint32_t    oid_len;
-    uint16_t*   oid;
+    uint32_t*   oid;
     uint32_t    metric_name_len;
     char*       metric_name;
 
@@ -157,7 +157,7 @@ typedef struct tnmsAuthReply
     uint32_t    agent_name_len;
     char*       agent_name;
     uint32_t    oid_len;
-    uint16_t*   oid;
+    uint32_t*   oid;
     uint16_t    auth_result;
     uint32_t    reason_len;
     char*       reason;

@@ -108,7 +108,7 @@ TnmsMessage::size() const
     if ( this->_message_type == NO_RECORD )
         return sz;
 
-    sz  = sizeof(uint32_t) + _element_name.length() 
+    sz  = sizeof(uint16_t) + sizeof(uint32_t) + _element_name.length() 
           + _element_oid.size();
 
     return sz;
