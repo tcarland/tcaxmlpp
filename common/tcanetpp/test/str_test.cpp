@@ -17,7 +17,7 @@ int main() {
     //int inta      = 256;
     //uint32_t intb = 512;
     uint16_t intc = 1;
-    uint8_t  mb   = 28;
+    uint16_t  mb  = 28;
     uint16_t mbb  = 29;
 
 
@@ -30,7 +30,7 @@ int main() {
     std::cout << "mb = " << mb << std::endl;
     std::cout << "mbb = " << mbb << std::endl;
 
-    uint8_t uintmb = StringUtils::fromString<uint8_t>(mbs);
+    uint16_t uintmb = StringUtils::fromString<uint16_t>(mbs);
 
 
     std::cout << "string of '" << mbs << "' converted to '" << uintmb << "'"
@@ -59,7 +59,7 @@ int main() {
 	return -1;
 
     if ( stok.size() == 2 )
-	uintmb = StringUtils::fromString<uint8_t>(stok[1]);
+	uintmb = StringUtils::fromString<uint16_t>(stok[1]);
 
     std::cout << "string of '" << stok[1] << "' converted to '" << uintmb << "'"
         << std::endl;

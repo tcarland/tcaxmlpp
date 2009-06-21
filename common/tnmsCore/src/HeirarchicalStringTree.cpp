@@ -12,7 +12,6 @@ namespace tnmsCore {
 //-------------------------------------------------------------//
 //  HeirarchicalStringTreeNode
 
-
 template<typename ValueType>
 HeirarchicalStringTreeNode<ValueType>::HeirarchicalStringTreeNode ( const std::string & nodeName,
                                                                     TreeNode * parent,
@@ -170,8 +169,8 @@ HeirarchicalStringTree<ValueType>::find ( const std::string & absoluteName )
 
     StringUtils::split(absoluteName, _delim, std::back_inserter(branchNames));
 
-    this->nodesFromBranches(branchNames.begin(), branchNames.end(),
-                          std::back_inserter(branches));
+    this->branchToNodes(branchNames.begin(), branchNames.end(),
+                        std::back_inserter(branches));
 
     if ( branches.empty() || branches.size() != branchNames.size() )
         return NULL;
@@ -195,8 +194,7 @@ HeirarchicalStringTree<ValueType>::insert ( const std::string & absoluteName,
     if ( branchNames.empty() )
         return NULL;
 
-    if ( this->nodesFromBranches(branchNames.begin(), branchNames.end(),
-                                 std::back_inserter(branches)) )
+    if ( this->branchToNodes(branchNames.begin(), branchNames.end(), std::back_inserter(branches)) )
         return NULL;
 
     NodeMap * children = &_roots;
@@ -303,16 +301,17 @@ HeirarchicalStringTree<ValueType>::clear()
 template<typename ValueType>
 template<typename BranchIterator_, typename OutputIterator_>
 bool
-HeirarchicalStringTree<ValueType>::nodesFromBranches ( BranchIterator_ bIter,
-                                                       BranchIterator_ endIter,
-                                                       OutputIterator_ outIter )
+HeirarchicalStringTree<ValueType>::branchToNodes ( BranchIterator_  begin,
+                                                   BranchIterator_  end,
+                                                   OutputIterator_  outIter )
 {
     NodeMap *  children = &_roots;
 
-    for ( ; bIter != endIter; ++bIter ) {
+    for ( ; begin != end; ++begin )
+    {
         NodeMapIter nIter;
 
-        if ( (nIter = children->find(*bIter)) == children->end() )
+        if ( (nIter = children->find(*begin)) == children->end() )
             return false;
 
         *outIter++ = nIter->second;

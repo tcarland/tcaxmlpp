@@ -1,6 +1,6 @@
 
 #include <string>
-#include <set>
+#include <vector>
 #include <iostream>
 
 #include "tnmsCore.h"
@@ -12,34 +12,36 @@ using namespace tnmsCore;
 
 struct foo
 {
-    foo() : f1(0), f2(0) {}
     int f1;
     int f2;
+    
+    foo() 
+        : f1(0), f2(0) 
+    {}
 };
 
 
 int main()
 {
-    HeirarchicalStringTree<foo>  tree;
+    HeirarchicalStringTree<foo>         tree;
+    HeirarchicalStringTree<foo>::Node * node = NULL;
+
+    std::vector<HeirarchicalStringTree<foo>::Node*>  addlist;
 
     std::string  name1 = "test/foo/bar/joy";
     std::string  name2 = "test/foo";
     std::string  name3 = "/test/foo/";
     std::string  name4 = "/test/foo/bar/joy/beer1/";
 
-    std::set<HeirarchicalStringTree<foo>::Node*>  addlist;
-
-    HeirarchicalStringTree<foo>::Node * node = NULL;
-
     std::cout << "----------------------------" << std::endl
-              << "   HeirarchicalStringTree "   << std::endl
+              << "   HeirarchicalStringTree Test"   << std::endl
               << std::endl;
 
     //-----------------------------------------------------------------------
 
     node = tree.insert(name1, std::inserter(addlist, addlist.begin()));
 
-    std::cout << "list size for adding '" << name1 << "' is " << addlist.size()
+    std::cout << "List size for adding '" << name1 << "' is " << addlist.size()
               << std::endl;
     std::cout << "tree size is " << tree.size() << std::endl;
 

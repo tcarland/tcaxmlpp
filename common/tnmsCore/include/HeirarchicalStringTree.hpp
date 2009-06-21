@@ -67,7 +67,7 @@ class HeirarchicalStringTree {
 
   public:
 
-    HeirarchicalStringTree ( char delimiter = '.' );
+    HeirarchicalStringTree ( char delimiter = '/' );
     HeirarchicalStringTree ( const HeirarchicalStringTree & tree );
 
     virtual ~HeirarchicalStringTree();
@@ -77,11 +77,9 @@ class HeirarchicalStringTree {
 
 
     char            getDelimiter() const;
-
     NodeMap&        getRoots();
     const NodeMap&  getRoots() const;
 
-    int             size() const;
 
     Node*           find   ( const std::string & absoluteName );
 
@@ -100,6 +98,7 @@ class HeirarchicalStringTree {
     bool            erase  ( Node * node,
                              OutputIterator_ outIter );
 
+    int             size() const;
     void            clear();
 
 
@@ -109,9 +108,9 @@ class HeirarchicalStringTree {
 
 
     template<typename BranchIterator_, typename OutputIterator_>
-    bool            nodesFromBranches   ( BranchIterator_ begin,
-                                          BranchIterator_ end,
-                                          OutputIterator_ outIter );
+    bool            branchToNodes   ( BranchIterator_  begin,
+                                      BranchIterator_  end,
+                                      OutputIterator_  outIter );
 
   public:
 
