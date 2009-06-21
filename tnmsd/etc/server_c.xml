@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<tnms version="0.1">
+    <tnmsd
+        agent_name="server_c"
+        logfile="server_c.log"
+        syslog="false"
+        debug="true"
+        auth_bypass="true" >
+
+        <server
+            client_port="15605"
+            holddown="30"
+            reconnect="30"/>
+    </tnmsd>
+
+</tnms>
+
