@@ -80,8 +80,9 @@ ConsoleThread::run()
             if ( line[0] == '#' )
                 continue;
         }
-
-        StringUtils::split(line, ' ', std::back_inserter(cmdlist));
+        cmd = line;
+        StringUtils::toLowerCase(cmd);
+        StringUtils::split(cmd, ' ', std::back_inserter(cmdlist));
 
         if ( cmdlist.size() > 0 )
             cmd  = cmdlist[0];

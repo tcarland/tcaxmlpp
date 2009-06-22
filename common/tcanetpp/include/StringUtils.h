@@ -74,7 +74,10 @@ class StringUtils {
     static void          stripComments    ( std::string & strline );
     static void          replaceTabs      ( std::string & strline );
 
-
+    /*  Note: the to/fromString functions do NOT work with (u)int8_t 
+     *  types since these are often typedef'd from (unsigned)char 
+     *  and thus get manipulated differently by stringstream.
+     */
     template<typename T>
     static inline std::string toString    ( const T & a )
     {

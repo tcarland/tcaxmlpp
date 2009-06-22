@@ -25,7 +25,7 @@ TnmsMessageHandler::~TnmsMessageHandler()
 void
 TnmsMessageHandler::AddHandler ( const TnmsAdd & add )
 {
-    if ( _client == NULL || ! _client->isAgent() )
+    if ( _client == NULL || ! _client->isAuthorized() )
         return;
 
     LogFacility::LogMessage("TnmsMessageHandler::AddHandler() " 
@@ -40,7 +40,7 @@ TnmsMessageHandler::AddHandler ( const TnmsAdd & add )
 void  
 TnmsMessageHandler::RemoveHandler ( const TnmsRemove  & remove )
 {
-    if ( _client == NULL || ! _client->isAgent() )
+    if ( _client == NULL || ! _client->isAuthorized() )
         return;
     
     LogFacility::LogMessage("TnmsMessageHandler::RemoveHandler() " 
@@ -55,7 +55,7 @@ TnmsMessageHandler::RemoveHandler ( const TnmsRemove  & remove )
 void
 TnmsMessageHandler::MetricHandler ( const TnmsMetric & metric )
 {
-    if ( _client == NULL || ! _client->isAgent() )
+    if ( _client == NULL || ! _client->isAuthorized() )
         return;
 
     LogFacility::LogMessage("TnmsMessageHandler::MetricHandler() " 

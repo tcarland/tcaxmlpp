@@ -1,5 +1,5 @@
-#ifndef _TNMSD_CLIENTIOHANDLER_H_
-#define _TNMSD_CLIENTIOHANDLER_H_
+#ifndef _TNMSCONSOLE_CLIENTIOHANDLER_H_
+#define _TNMSCONSOLE_CLIENTIOHANDLER_H_
 
 #include <set>
 
@@ -80,5 +80,5 @@ class ClientIOHandler : public EventIOHandler {
 
 }  // namespace 
 
-#endif //  _TNMSD_CLIENTIOHANDLER_H_
+#endif //  _TNMSCONSOLE_CLIENTIOHANDLER_H_
 

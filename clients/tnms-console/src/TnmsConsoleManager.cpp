@@ -133,7 +133,7 @@ TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
 
     }
     // Delete Client
-    else if ( cmd.compare("del") == 0 ) 
+    else if ( StringUtils::startsWith(cmd, "del") )
     {
         LogFacility::LogMessage("console", "client del");
 
@@ -150,7 +150,7 @@ TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
     {
         _clientHandler->listClients();
     }
-    else if ( cmd.compare("subscribe") == 0 ) 
+    else if ( StringUtils::startsWith(cmd, "sub") )
     {
         if ( cmdlist.size() < 4 ) {
             LogFacility::LogToStream("console", "Syntax error in client subscribe");
@@ -163,7 +163,7 @@ TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
         if ( client )
             client->subscribe(name);
     }
-    else if ( cmd.compare("unsubscribe") == 0 ) 
+    else if ( StringUtils::startsWith(cmd, "unsub") )
     {
         if ( cmdlist.size() < 4 ) {
             LogFacility::LogToStream("console", "Syntax error in client unsubscribe");

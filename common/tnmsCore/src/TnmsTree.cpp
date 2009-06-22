@@ -313,8 +313,10 @@ TnmsTree::subscribe ( const std::string & name, TnmsClient * client )
 
         NodeChildMap::iterator  nIter;
         for ( nIter = nodemap->begin(); nIter != nodemap->end(); ++nIter ) {
-            if ( ! nIter->second->getValue().erase )
+            if ( ! nIter->second->getValue().erase ) {
                 client->queueAdd(nIter->second);
+                _updates[nIter->second->getValue().metric.getElementName()] = nIter->second;
+            }
         }
 
     } else {
@@ -325,8 +327,8 @@ TnmsTree::subscribe ( const std::string & name, TnmsClient * client )
 
         node->getValue().nodeSubscribers.insert(client);
         node->getValue().metric.message_type(METRIC_MESSAGE);
-
         client->queueAdd(node);
+        _updates[node->getValue().metric.getElementName()] = node;
     }
 
     return true;

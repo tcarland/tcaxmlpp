@@ -1,4 +1,4 @@
-#define _TNMSD_CLIENTIOHANDLER_CPP_
+#define _TNMSCONSOLE_CLIENTIOHANDLER_CPP_
 
 #include "ClientIOHandler.h"
 
@@ -110,6 +110,9 @@ ClientIOHandler::handle_read ( const EventIO * io )
 
     if ( (rd = client->receive(io->abstime.tv_sec)) < 0 )
         return this->handle_close(io);
+    else if ( rd > 0 )
+        LogFacility::LogMessage("ClientIOHandler::handle_read() bytes = " 
+            + StringUtils::toString(rd));
     
     return;
 }
@@ -127,6 +130,9 @@ ClientIOHandler::handle_write ( const EventIO * io )
 
     if ( (wt = client->send(io->abstime.tv_sec)) < 0 )
         return this->handle_close(io);
+    else if ( wt > 0 )
+        LogFacility::LogMessage("ClientIOHandler::handle_write() bytes = " 
+            + StringUtils::toString(wt));
 
     return;
 }
@@ -173,6 +179,7 @@ ClientIOHandler::handle_destroy ( const EventIO * io )
         return;
     
     ClientSet::iterator  cIter = _clientSet.find(client);
+
     if ( cIter == _clientSet.end() )
         delete client;
 
@@ -307,5 +314,5 @@ ClientIOHandler::listClients()
 } // namespace 
 
 
-/*  _TNMSD_CLIENTIOHANDLER_CPP_  */
+/*  _TNMSCONSOLE_CLIENTIOHANDLER_CPP_  */
 
