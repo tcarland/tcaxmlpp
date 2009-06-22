@@ -1,7 +1,7 @@
 /*
  * tnmsCore.h
  *
- *  Copyright(c) 2008, Timothy Charlton Arland
+ *  Copyright(c) 2008, 2009  Timothy Charlton Arland
  *      tca@charltontechnology.net
  *
  */
@@ -11,8 +11,10 @@
 
 #define TNMS_VERSION_MAJOR         0x0001
 #define TNMS_VERSION_MINOR         0x0002
+
 #define TNMS_VERSION               ( (((uint32_t)TNMS_VERSION_MAJOR << 16) & 0xffff0000) | \
                                       ((uint32_t)TNMS_VERSION_MINOR) )
+
 #define TNMS_GET_MAJOR(x)          (  ((uint32_t)x >> 16) & 0x0000ffff )
 #define TNMS_GET_MINOR(x)          (  (uint32_t)x & 0x0000ffff )
 
@@ -30,7 +32,7 @@
 #define TNMS_CLIENT_TIMEOUT        120         // stall timeout
 #define TNMS_LOGIN_ATTEMPTS        5
 #define TNMS_LOGIN_INTERVAL        15
-#define TNMS_COMPRESSION_ENABLE    1
+#define TNMS_COMPRESSION_ENABLE    0
 #define TNMS_FLUSH_ENABLE          1
 
 

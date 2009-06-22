@@ -12,6 +12,14 @@
             client_port="15605"
             holddown="30"
             reconnect="30"/>
+
+        <client
+            name="server_a"
+            host="localhost"
+            port="15600">
+
+            <subscribe name="*"/>
+        </client>
     </tnmsd>
 
 </tnms>

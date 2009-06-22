@@ -1,3 +1,9 @@
+/*
+ * TnmsSocket.cpp
+ *
+ *  Copyright(c) 2008, 2009  Timothy Charlton Arland
+ *      Author: tca@charltontechnology.net
+ */
 #define _SOURCE_TNMSSOCKET_CPP_
 
 #include "TnmsSocket.h"
@@ -372,62 +378,6 @@ TnmsSocket::receive ( const time_t & now )
             ctr = this->receiveMessages(hdr);
 
     } while ( rd > 0 );
-
-    return ctr;
-}
-
-// ------------------------------------------------------------------- //
-
-int
-TnmsSocket::receiveMessages ( tnmsHeader & hdr )
-{
-    int  ctr = 0;
-
-    switch ( hdr.message_type ) {
-        case AUTH_REQUEST:
-            ctr += this->rcvAuthRequest(hdr);
-            break;
-        case AUTH_REPLY:
-            ctr += this->rcvAuthReply(hdr);
-            break;
-        case AUTH_REFRESH:
-            break;
-        case ADD_MESSAGE:
-            ctr += this->rcvAdds(hdr);
-            break;
-        case REMOVE_MESSAGE:
-            ctr += this->rcvRemoves(hdr);
-            break;
-        case REQUEST_MESSAGE:
-            ctr += this->rcvRequests(hdr);
-            break;
-        case METRIC_MESSAGE:
-            ctr += this->rcvMetrics(hdr);
-            break;
-        case SUBSCRIBE:
-            ctr += this->rcvSubscribes(hdr);
-            break;
-        case UNSUBSCRIBE:
-            break;
-        case SUBSCRIBE_STRUCTURE:
-            _msgHandler->StructureHandler(true);
-            break;
-        case UNSUBSCRIBE_STRUCTURE:
-            _msgHandler->StructureHandler(false);
-            break;
-        case PING_REQUEST:
-            _msgHandler->PingHandler();
-            break;
-        case PING_REPLY:
-            _msgHandler->PingReplyHandler();
-            break;
-        default:
-            //unknown type
-            break;
-    }
-
-    if ( hdr.options & LAST_MESSAGE )
-        _msgHandler->LastMessageHandler(hdr.message_type);
 
     return ctr;
 }
@@ -948,6 +898,63 @@ TnmsSocket::sendMessage ( Serializable * message )
 // ------------------------------------------------------------------- //
 
 int
+TnmsSocket::receiveMessages ( tnmsHeader & hdr )
+{
+    int  ctr = 0;
+
+    switch ( hdr.message_type ) {
+        case AUTH_REQUEST:
+            ctr += this->rcvAuthRequest(hdr);
+            break;
+        case AUTH_REPLY:
+            ctr += this->rcvAuthReply(hdr);
+            break;
+        case AUTH_REFRESH:
+            break;
+        case ADD_MESSAGE:
+            ctr += this->rcvAdds(hdr);
+            break;
+        case REMOVE_MESSAGE:
+            ctr += this->rcvRemoves(hdr);
+            break;
+        case REQUEST_MESSAGE:
+            ctr += this->rcvRequests(hdr);
+            break;
+        case METRIC_MESSAGE:
+            ctr += this->rcvMetrics(hdr);
+            break;
+        case SUBSCRIBE:
+            ctr += this->rcvSubscribes(hdr);
+            break;
+        case UNSUBSCRIBE:
+            ctr += this->rcvUnsubscribes(hdr);
+            break;
+        case SUBSCRIBE_STRUCTURE:
+            _msgHandler->StructureHandler(true);
+            break;
+        case UNSUBSCRIBE_STRUCTURE:
+            _msgHandler->StructureHandler(false);
+            break;
+        case PING_REQUEST:
+            _msgHandler->PingHandler();
+            break;
+        case PING_REPLY:
+            _msgHandler->PingReplyHandler();
+            break;
+        default:
+            //unknown type
+            break;
+    }
+
+    if ( hdr.options & LAST_MESSAGE )
+        _msgHandler->LastMessageHandler(hdr.message_type);
+
+    return ctr;
+}
+
+// ------------------------------------------------------------------- //
+
+int
 TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
 {
     char    * rptr;
@@ -1253,26 +1260,32 @@ TnmsSocket::initHeader ( uint16_t type, size_t messagesize )
     if ( _sock == NULL || ! this->isConnected() )
         return false;
 
-    if ( _wptr ) { // update output buffer
+    if ( _wptr )  // update output buffer
+    {
         if ( _compression && (type == METRIC_MESSAGE
                           ||  type == ADD_MESSAGE || type == REMOVE_MESSAGE) )
-        {}
-        else {
+        {
+            // write to zxbuff
+        }
+        else 
+        {
             _wxcbuff->setWritePtr(_wtt);
             _wptr   = NULL;
         }
     }
 
-    // check current header
-    if ( _hdr ) {   // check flush limit
-
-        if ( _flush && _hdr->message_count >= _flushLimit ) {
+    if ( _hdr )    // check current header
+    {
+        
+        if ( _flush && _hdr->message_count >= _flushLimit )   // check flush limit
+        {
             if ( _hdr->message_type != type )
                 _hdr->options |= LAST_MESSAGE;
             rd = this->flush();
 
-        } else if ( _hdr->message_type == type ) {  // continue pdu
-
+        }
+        else if ( _hdr->message_type == type )   // continue pdu
+        {
             if ( _compression && (type == METRIC_MESSAGE
                               ||  type == ADD_MESSAGE || type == REMOVE_MESSAGE) )
             {
@@ -1287,7 +1300,8 @@ TnmsSocket::initHeader ( uint16_t type, size_t messagesize )
                 _wtsize = sz;  // store space avail for writing
                 _wtt    = 0;   // init write total for this write session
 
-                if ( _wptr == NULL ) {
+                if ( _wptr == NULL ) 
+                {
                     _errstr = "TnmsSocket::initHeader() out of space: ";
                     _errstr.append(_hoststr);
                     _wxcbuff->setWritePtr(0);
@@ -1298,7 +1312,9 @@ TnmsSocket::initHeader ( uint16_t type, size_t messagesize )
 
             return true;
 
-        } else {   // flush pdu
+        }
+        else   // flush pdu 
+        {
             _hdr->options |= LAST_MESSAGE;
             rd = this->flush();
         }
@@ -1307,7 +1323,8 @@ TnmsSocket::initHeader ( uint16_t type, size_t messagesize )
     sz    = messagesize + hdrlen;
     _wptr = _wxcbuff->getWritePtr(&sz);
 
-    if ( _wptr == NULL || sz < (messagesize+hdrlen) ) {
+    if ( _wptr == NULL || sz < (messagesize+hdrlen) )
+    {
         _wxcbuff->setWritePtr(0);
         this->clearState();
         _errstr = "ClientSocket::initHeader() out of space: ";

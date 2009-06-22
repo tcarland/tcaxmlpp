@@ -1,11 +1,12 @@
 /*
  * tnmsProtocol.h
  *
- *  Copyright(c) 2008, Charlton Technology LLC
+ *  Copyright(c) 2008, 2009 Timothy C. Arland
  *      Author: tcarland@gmail.com
  */
 #ifndef _TNMSCORE_TNMSPROTOCOL_H_
 #define _TNMSCORE_TNMSPROTOCOL_H_
+
 
 #include "tcanetpp_types.h"  // tcanetpp
 
@@ -170,3 +171,4 @@ typedef struct tnmsAuthReply
 
 
 #endif  //  _TNMSCORE_TNMSPROTOCOL_H_
+

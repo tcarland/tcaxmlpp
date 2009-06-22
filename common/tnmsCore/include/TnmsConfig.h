@@ -43,6 +43,8 @@ namespace tnmsCore {
  *
  *              <subscribe 
  *                  name="tcanms"/>
+ *          </client>
+ *
  *          <client
  *              name="upstream2"
  *              host="up2host"

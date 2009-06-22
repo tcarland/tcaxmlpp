@@ -15,9 +15,11 @@ class TnmsMessageHandler : public MessageHandler {
   public:
 
     TnmsMessageHandler ( TnmsTree * tree, TnmsClient * client );
+
     virtual ~TnmsMessageHandler();
 
         /*  Messaging Callbacks  */
+
     virtual void  AddHandler         ( const TnmsAdd     & add );
     virtual void  RemoveHandler      ( const TnmsRemove  & remove );
     virtual void  MetricHandler      ( const TnmsMetric  & metric );
