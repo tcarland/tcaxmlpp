@@ -43,22 +43,8 @@ TnmsManager::TnmsManager ( const std::string & configfile )
 
 TnmsManager::~TnmsManager()
 {
-    ClientMap::iterator cIter;
-
-    for ( cIter = _clientMap.begin(); cIter != _clientMap.end(); ++cIter ) {
-        TnmsClient * client = (TnmsClient*) cIter->second;
-
-        if ( client ) {
-            if ( client->isConnected() )
-                client->close();
-            delete client;
-        }
-    }
-    _clientMap.clear();
-
     if ( _auth )
         delete _auth;
-
     delete _agentHandler;
     delete _clientHandler;
     delete _tree;

@@ -37,17 +37,13 @@ AgentIOHandler::timeout ( const EventTimer * timer )
 
     for ( cIter = _clients.begin(); cIter != _clients.end(); cIter++ ) {
         TnmsClient * client = (TnmsClient*) *cIter;
-        LogFacility::Message  logmsg;
-
-        logmsg << "AgentIOHandler timeout (" << client->getHostStr() << ")";
 
         if ( client->isMirrorClient() ) {
             if ( ! client->isConnected() || client->isConnecting() ) {
                 int c = 0;
 
                 if ( (c = client->connect()) < 0 ) {
-                    logmsg << " mirror disconnected.";
-                    LogFacility::LogMessage(logmsg);
+                    LogFacility::LogMessage("AgentIOHandler mirror disconnected.");
                     continue;
                 } else if ( c >= 0 ) {
                     timer->evmgr->addIOEvent(this, client->getSockFD(), client);
@@ -55,8 +51,9 @@ AgentIOHandler::timeout ( const EventTimer * timer )
                 }
 
                 if ( c > 0 ) {
-                    logmsg << " mirror connected.";
-                    LogFacility::LogMessage(logmsg);
+                    LogFacility::LogMessage("AgentIOHandler mirror connected " 
+                        + client->getHostStr());
+                    continue;
                 }
             } else {
                 if ( client->isAuthorized() && ! client->isSubscribed() )
@@ -69,8 +66,8 @@ AgentIOHandler::timeout ( const EventTimer * timer )
         }
 
         if ( (rd = client->receive(now)) < 0 ) {
-            logmsg << " error in receive() ";
-            LogFacility::LogMessage(logmsg);
+            LogFacility::LogMessage("AgentIOHandler error in receive() " 
+                + client->getErrorStr());
             client->close();
             continue;
         } else {
@@ -79,8 +76,8 @@ AgentIOHandler::timeout ( const EventTimer * timer )
         }
 
         if ( (sd = client->send(now)) < 0 ) {
-            logmsg << " error in send() ";
-            LogFacility::LogMessage(logmsg);
+            LogFacility::LogMessage("AgentIOHandler error in send() " 
+                + client->getErrorStr());
             client->close();
             continue;
         } else {
@@ -119,8 +116,9 @@ AgentIOHandler::handle_accept ( const EventIO * io )
         LogFacility::LogMessage("AgentIOHandler::handle_accept() event error: " 
             + io->evmgr->getErrorStr());
 
-    // if compression; enable it
-    // client->enableCompression();
+    //if ( client->useCompression() )
+    //    client->enableCompression();
+    
     LogFacility::LogMessage("AgentIOHandler::handle_accept() " + client->getHostStr());
     _clients.insert(client);
 
@@ -137,10 +135,14 @@ AgentIOHandler::handle_read ( const EventIO * io )
 
     TnmsClient * client = (TnmsClient*) io->rock;
 
-    if ( (rd = client->receive(io->abstime.tv_sec)) < 0 )
+    if ( (rd = client->receive(io->abstime.tv_sec)) < 0 ) {
+        LogFacility::LogMessage("AgentIOHandler::handle_read() error: " 
+            + client->getErrorStr());
         return this->handle_close(io);
-    else if ( rd > 0 )
-        LogFacility::LogMessage("AgentIOHandler::handle_read() " + StringUtils::toString(client->getBytesReceived()));
+    } else if ( rd > 0 ) {
+        LogFacility::LogMessage("AgentIOHandler::handle_read() bytes = " 
+            + StringUtils::toString(client->getBytesReceived()));
+    }
 
     return;
 }
@@ -155,10 +157,14 @@ AgentIOHandler::handle_write ( const EventIO * io )
 
     TnmsClient * client = (TnmsClient*) io->rock;
 
-    if ( (wt = client->send(io->abstime.tv_sec)) < 0 )
+    if ( (wt = client->send(io->abstime.tv_sec)) < 0 ) {
+        LogFacility::LogMessage("AgentIOHandler::handle_write() error: " 
+            + client->getErrorStr());
         return this->handle_close(io);
-    else if ( wt > 0 )
-        LogFacility::LogMessage("AgentIOHandler::handle_write() " + StringUtils::toString(client->getBytesSent()));
+    } else if ( wt > 0 ) {
+        LogFacility::LogMessage("AgentIOHandler::handle_write() bytes = " 
+            + StringUtils::toString(client->getBytesSent()));
+    }
 
     return;
 }
@@ -174,16 +180,12 @@ AgentIOHandler::handle_close ( const EventIO * io )
     if ( client == NULL )
         return;
 
-    if ( client->isMirror() ) {
-        ;
-    } else {
-        _clients.erase(client);
-        _tree->removeClient(client);
-    }
-
     LogFacility::LogMessage("AgentIOHandler::handle_close() " + client->getHostStr());
+
+    _tree->removeClient(client);
     client->close();
     io->evmgr->removeEvent(io->evid);
+    _clients.erase(client);
 
     return;
 }
@@ -206,7 +208,7 @@ AgentIOHandler::handle_destroy ( const EventIO * io )
             delete svr;
     } else {
         TnmsClient * client = (TnmsClient*) io->rock;
-        if ( client )
+        if ( client && ! client->isMirror() )
             delete client;
     }
 

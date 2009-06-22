@@ -42,10 +42,14 @@ ClientIOHandler::timeout ( const EventTimer * timer )
         TnmsClient * client = *cIter;
 
         if ( (rd = client->receive(now)) < 0 ) {
+            LogFacility::LogMessage("ClientIOHandler error in receive() from client " 
+                + client->getHostStr());
             client->close();
             continue;
         }
         if ( (wt = client->send(now)) < 0 ) {
+            LogFacility::LogMessage("ClientIOHandler error in send() from client " 
+                + client->getHostStr());
             client->close();
             continue;
         }
