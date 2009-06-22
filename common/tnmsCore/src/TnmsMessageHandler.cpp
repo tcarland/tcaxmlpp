@@ -160,6 +160,8 @@ void
 TnmsMessageHandler::PingHandler() 
 {
     LogFacility::LogMessage("TnmsMessageHandler::PingHandler() ");
+    // TnmsMessage ping(PING_REPLY);
+    // _client->sendMessage(ping);
 }
 
 
@@ -180,7 +182,9 @@ TnmsMessageHandler::LastMessageHandler ( int record_type )
 
     if ( _client->inTreeSend() && 
          (record_type == ADD_MESSAGE || record_type == METRIC_MESSAGE) )
+    {
         _client->inTreeSend(false);
+    }
 
     return;
 }

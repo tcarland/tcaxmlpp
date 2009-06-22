@@ -17,6 +17,7 @@ class MessageHandler {
     virtual ~MessageHandler() {}
 
     /*  Messaging Callbacks  */
+
     virtual void  AddHandler         ( const TnmsAdd     & add ) {}
     virtual void  RemoveHandler      ( const TnmsRemove  & remove ) {}
     virtual void  MetricHandler      ( const TnmsMetric  & metric ) {}

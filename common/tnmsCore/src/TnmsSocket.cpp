@@ -1338,10 +1338,10 @@ TnmsSocket::initHeader ( uint16_t type, size_t messagesize )
     _wtt     = hdrlen;
     _wtsize  = (sz - _wtt);
 
-    _hdr->major_version = TNMS_VERSION_MAJOR;
-    _hdr->minor_version = TNMS_VERSION_MINOR;
-    _hdr->options       = 0;
-    _hdr->payload_size  = 0;
+    _hdr->major_version  = TNMS_VERSION_MAJOR;
+    _hdr->minor_version  = TNMS_VERSION_MINOR;
+    _hdr->options        = 0;
+    _hdr->payload_size   = 0;
     _hdr->message_count  = 0;
     _hdr->message_type   = type;
 

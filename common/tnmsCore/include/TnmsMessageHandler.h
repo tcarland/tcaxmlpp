@@ -31,12 +31,11 @@ class TnmsMessageHandler : public MessageHandler {
 
     virtual void  AuthRequestHandler ( const TnmsAuthRequest & request );
     virtual void  AuthReplyHandler   ( const TnmsAuthReply   & reply );
+    
+    virtual void  LastMessageHandler ( int   record_type );
 
     virtual void  PingHandler();
     virtual void  PingReplyHandler();
-
-    virtual void  LastMessageHandler ( int   record_type );
-
 
   protected:
 
