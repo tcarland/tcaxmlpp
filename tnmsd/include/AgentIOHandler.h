@@ -12,6 +12,7 @@ using namespace tnmsCore;
 
 namespace tnmsd {
 
+
 typedef std::set<TnmsClient*>  ClientSet;
 
 
@@ -25,7 +26,8 @@ class AgentIOHandler : public EventIOHandler {
     virtual ~AgentIOHandler();
 
     void timeout ( const EventTimer * timer );
-    void addMirrorConnection ( TnmsClient * client );
+
+    /* EventIOHandler */
 
     virtual void handle_accept  ( const EventIO * io );
     virtual void handle_read    ( const EventIO * io );
@@ -43,9 +45,7 @@ class AgentIOHandler : public EventIOHandler {
     TnmsTree *                  _tree;
     AuthClient *                _auth;
 
-    std::set<TnmsClient*>       _clients;
-    std::set<TnmsClient*>       _mirrors;
-
+    ClientSet                   _clients;
 };
 
 }  // namespace 

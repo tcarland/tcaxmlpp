@@ -22,9 +22,9 @@ ClientIOHandler::ClientIOHandler ( TnmsTree * tree, AuthClient * auth )
 ClientIOHandler::~ClientIOHandler()
 {
     ClientSet::iterator  cIter;
-
     for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
         delete *cIter;
+    _clients.clear();
 }
 
 
@@ -36,23 +36,51 @@ ClientIOHandler::timeout ( const EventTimer * timer )
 
     const time_t & now = timer->abstime.tv_sec;
 
-    std::set<TnmsClient*>::iterator  cIter;
-
+    ClientSet::iterator  cIter;
     for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter ) {
-        TnmsClient * client = *cIter;
+        TnmsClient * client = (TnmsClient*) *cIter;
+
+        if ( client->isMirror() ) {
+            if ( ! client->isConnected() || client->isConnecting() ) {
+                int c = 0;
+
+                if ( (c = client->connect()) < 0 ) {
+                    LogFacility::LogMessage("AgentIOHandler mirror disconnected.");
+                    continue;
+                } else if ( c >= 0 ) {
+                    timer->evmgr->addIOEvent(this, client->getSockFD(), client);
+                    continue;
+                }
+
+                if ( c > 0 ) {
+                    LogFacility::LogMessage("AgentIOHandler mirror connected " 
+                        + client->getHostStr());
+                    continue;
+                }
+            } else {
+                if ( client->isAuthorized() && ! client->isSubscribed() )
+                    // suball?
+                    client->resubscribe();
+                else if ( ! client->isAuthorized() )
+                    //login
+                    client->login("tnmsd", "");
+            }
+        }
 
         if ( (rd = client->receive(now)) < 0 ) {
             LogFacility::LogMessage("ClientIOHandler error in receive() from client " 
                 + client->getHostStr());
             client->close();
             continue;
-        }
+        }  // else report rd;
+
         if ( (wt = client->send(now)) < 0 ) {
             LogFacility::LogMessage("ClientIOHandler error in send() from client " 
                 + client->getHostStr());
             client->close();
             continue;
-        }
+        } // else report wt;
+
     }
 
     if ( _tree )
@@ -60,6 +88,13 @@ ClientIOHandler::timeout ( const EventTimer * timer )
 
     return;
 }
+
+void
+ClientIOHandler::addMirror ( TnmsClient * client )
+{
+    _clients.insert(client);
+}
+
 
 
 void
@@ -152,21 +187,29 @@ ClientIOHandler::handle_close ( const EventIO * io )
     return;
 }
 
+
 void
 ClientIOHandler::handle_shut ( const EventIO * io )
 {
-
 }
+
 
 void
 ClientIOHandler::handle_destroy ( const EventIO * io )
-{
-    TnmsClient * client = (TnmsClient*) io->rock;
+{    
+    LogFacility::LogMessage("ClientIOHandler::handle_destroy()");
 
-    if ( client == NULL )
-        return;
+    if ( io->isServer ) {
+        Socket * svr = (Socket*) io->rock;
+        if ( svr )
+            delete svr;
+    } else {
+        TnmsClient * client = (TnmsClient*) io->rock;
+        if ( client && ! client->isMirror() )
+            delete client;
+    }
 
-    delete client;
+    return;
 }
 
 

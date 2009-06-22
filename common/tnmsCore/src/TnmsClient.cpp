@@ -1,6 +1,5 @@
 #define _TNMSD_TNMSCLIENT_CPP_
 
-
 #include "TnmsClient.h"
 
 #include "TnmsMessageHandler.h"

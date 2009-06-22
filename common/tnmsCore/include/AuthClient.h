@@ -17,9 +17,9 @@ class AuthIOHandler;
 
 struct AuthAttempt 
 {
-    TnmsAuthRequest  request;
-    TnmsClient*      client;
-    time_t           sent_at;
+    TnmsAuthRequest    request;
+    TnmsClient*        client;
+    time_t             sent_at;
 
     bool operator== ( const AuthAttempt & attempt ) 
     {
@@ -55,7 +55,7 @@ class AuthClient : public TnmsClient {
 
     virtual void   AuthReplyHandler ( TnmsAuthReply & reply );
 
-  public:
+  public:  /* AuthClient */
 
     void           timeout          ( const EventTimer * timer );
 

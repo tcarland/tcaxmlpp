@@ -21,49 +21,23 @@ AgentIOHandler::AgentIOHandler ( TnmsTree * tree, AuthClient * auth )
 AgentIOHandler::~AgentIOHandler()
 {
     ClientSet::iterator  cIter;
-
     for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
         delete *cIter;
+    _clients.clear();
 }
 
 
 void
 AgentIOHandler::timeout ( const EventTimer * timer )
 {
-    int            rd, sd;
+    int  rd  = 0;
+    int  wt  = 0;
+    
     const time_t & now = timer->abstime.tv_sec;
 
     ClientSet::iterator  cIter;
-
     for ( cIter = _clients.begin(); cIter != _clients.end(); cIter++ ) {
         TnmsClient * client = (TnmsClient*) *cIter;
-
-        if ( client->isMirrorClient() ) {
-            if ( ! client->isConnected() || client->isConnecting() ) {
-                int c = 0;
-
-                if ( (c = client->connect()) < 0 ) {
-                    LogFacility::LogMessage("AgentIOHandler mirror disconnected.");
-                    continue;
-                } else if ( c >= 0 ) {
-                    timer->evmgr->addIOEvent(this, client->getSockFD(), client);
-                    continue;
-                }
-
-                if ( c > 0 ) {
-                    LogFacility::LogMessage("AgentIOHandler mirror connected " 
-                        + client->getHostStr());
-                    continue;
-                }
-            } else {
-                if ( client->isAuthorized() && ! client->isSubscribed() )
-                    // suball?
-                    ;
-                else if ( ! client->isAuthorized() )
-                    //login
-                    ;
-            }
-        }
 
         if ( (rd = client->receive(now)) < 0 ) {
             LogFacility::LogMessage("AgentIOHandler error in receive() " 
@@ -75,26 +49,19 @@ AgentIOHandler::timeout ( const EventTimer * timer )
             ;
         }
 
-        if ( (sd = client->send(now)) < 0 ) {
+        if ( (wt = client->send(now)) < 0 ) {
             LogFacility::LogMessage("AgentIOHandler error in send() " 
                 + client->getErrorStr());
             client->close();
             continue;
         } else {
-            // sd is our count
+            // wt is our count
             ;
         }
 
     }
 
     return;
-}
-
-
-void
-AgentIOHandler::addMirrorConnection ( TnmsClient * client )
-{
-    _clients.insert(client);
 }
 
 
@@ -180,12 +147,14 @@ AgentIOHandler::handle_close ( const EventIO * io )
     if ( client == NULL )
         return;
 
+    if ( _tree )
+        _tree->removeClient(client);
+
     LogFacility::LogMessage("AgentIOHandler::handle_close() " + client->getHostStr());
 
-    _tree->removeClient(client);
     client->close();
-    io->evmgr->removeEvent(io->evid);
     _clients.erase(client);
+    io->evmgr->removeEvent(io->evid);
 
     return;
 }
@@ -194,8 +163,8 @@ AgentIOHandler::handle_close ( const EventIO * io )
 void
 AgentIOHandler::handle_shut ( const EventIO * io )
 {
-
 }
+
 
 void
 AgentIOHandler::handle_destroy ( const EventIO * io )

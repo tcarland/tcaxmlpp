@@ -163,14 +163,14 @@ TnmsManager::createClients()
 
         // set client attributes
         //client->setReconnectInterval(cIter->reconnect_interval);
-        _agentHandler->addMirrorConnection(client);
+        _clientHandler->addMirror(client);
 
         if ( client->openConnection(cIter->hostname, cIter->port)  < 0 )
             continue;
 
         _evmgr->addIOEvent(_agentHandler, client->getDescriptor(), client);
 
-        // client->login();
+        client->login("tnmsd", "");
     }
 
     return;
