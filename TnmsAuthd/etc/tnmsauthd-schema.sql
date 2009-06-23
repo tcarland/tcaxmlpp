@@ -20,7 +20,7 @@ CREATE TABLE tnms.groups (
     gid INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     description TEXT NULL,
-    internal BOOL NOT NULL DEFAULT '0',
+    internal TINYINT NOT NULL DEFAULT '0',
     PRIMARY KEY(gid),
     INDEX groupname_idx(gid, name)
 ) TYPE=InnoDB DEFAULT CHARSET=utf8;
@@ -29,7 +29,7 @@ CREATE TABLE tnms.groups (
 CREATE TABLE tnms.authorizations (
     subtree_id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
     subtree_name VARCHAR(255) NOT NULL,
-    isInclude BOOL NOT NULL,
+    isInclude TINYINT NOT NULL,
     description VARCHAR(255) NULL,
     PRIMARY KEY(subtree_id),
     INDEX subtree_idx(subtree_id, subtree_name)
@@ -41,7 +41,7 @@ CREATE TABLE tnms.agents (
     gid INTEGER UNSIGNED NOT NULL,
     name VARCHAR(255) NOT NULL,
     ipaddress VARCHAR(45) NULL,
-    required BOOL NOT NULL DEFAULT '0',
+    required TINYINT NOT NULL DEFAULT '0',
     PRIMARY KEY(agent_id),
     INDEX agentname_idx(agent_id, name),
     INDEX agents_gid_FKidx(gid),
@@ -68,7 +68,7 @@ CREATE TABLE tnms.users (
     authtype_id INTEGER UNSIGNED NOT NULL,
     username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NULL,
-    internal BOOL NOT NULL DEFAULT '0',
+    internal TINYINT NOT NULL DEFAULT '0',
     PRIMARY KEY(uid),
     INDEX username_idx(uid, username),
     INDEX users_gid_FKidx(gid),

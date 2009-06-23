@@ -38,16 +38,17 @@ class SoapClient {
     SoapClient ( const std::string & pemfile = "" );
     virtual ~SoapClient();
 
-    virtual bool  handle_event();
-    virtual void  close()    {}
+    virtual bool        handle_event();
+    virtual void        close()    {}
 
-    const int&    getFD() const;
-    std::string   getAddrStr() const;
+    int                 bind       ( uint16_t port, void * userobj );
+    SoapClient*         accept     ( SoapClientFactory & factory );
+    SoapClient*         accept();
 
-    int           bind       ( uint16_t port, void * userobj );
-    SoapClient*   accept     ( SoapClientFactory & factory );
-    SoapClient*   accept();
-
+    const int&          getFD() const;
+    const std::string&  getAddrStr() const;
+    const std::string&  getErrorStr() const;
+    bool                sslEnabled() const;
 
   protected:
 
@@ -60,8 +61,10 @@ class SoapClient {
 
     std::string         _pem;
     std::string         _ipaddr;
+    std::string         _errstr;
 
     bool                _svr;
+    bool                _ssl;
 
 };
 

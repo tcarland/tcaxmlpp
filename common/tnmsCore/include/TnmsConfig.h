@@ -60,10 +60,12 @@ typedef struct Subscription
 {
     std::string  name;
     uint32_t     depth;
+
+    Subscription() : depth(0) {}
 } subs_t;
 
 
-typedef std::list<std::string>  StringList;
+typedef std::list<std::string>     StringList;
 
 
 struct TnmsClientConfig
@@ -87,7 +89,7 @@ struct TnmsClientConfig
     {}
 };
 
-typedef std::list<TnmsClientConfig>  ClientList;
+typedef std::list<TnmsClientConfig>  ClientConfigList;
 
 
 struct TnmsServerConfig
@@ -105,8 +107,6 @@ struct TnmsServerConfig
     {}
 };
 
-typedef std::list<TnmsServerConfig>         ServerList;
-
 
 struct TnmsConfig
 {
@@ -120,7 +120,7 @@ struct TnmsConfig
     bool          debug;
 
     TnmsServerConfig  serverConfig;
-    ClientList        clients;
+    ClientConfigList  clients;
 
     TnmsConfig() 
         : auth_port(0),
@@ -168,6 +168,7 @@ class TnmsConfigHandler {
     bool                parseRoot    ( XmlNode * node );
     bool                parseServer  ( XmlNode * node );
     bool                parseClient  ( XmlNode * node );
+
     XmlNode*            findRootNode ( XmlNode * node, std::string & name );
 
 

@@ -20,7 +20,8 @@ SoapClient::SoapClientFactory SoapClient::factory;
 SoapClient::SoapClient ( const int & fd, struct soap * tsoap )
     : _soap(tsoap),
       _fd(fd),
-      _svr(false)
+      _svr(false),
+      _ssl(false)
 {
     _ipaddr = CidrUtils::ntop(ntohl(tsoap->ip));
 }
@@ -30,7 +31,8 @@ SoapClient::SoapClient ( const std::string & pemfile )
       _fd(-1),
       _pem(pemfile),
       _ipaddr(0),
-      _svr(false)
+      _svr(false),
+      _ssl(false)
 {
     this->_soap = soap_new();
 }
@@ -117,20 +119,6 @@ SoapClient::getFD() const
 }
 
 
-std::string
-SoapClient::getAddrStr() const
-{
-    return _ipaddr;
-}
-
-
-SoapClient*
-SoapClient::accept() 
-{
-    return this->accept(factory);
-}
-
-
 SoapClient*
 SoapClient::accept ( SoapClientFactory & factory )
 {
@@ -148,8 +136,8 @@ SoapClient::accept ( SoapClientFactory & factory )
 #ifdef WITH_OPENSSL
     if ( _pem.length() > 0 ) {
         if (soap_ssl_accept(tsoap) != SOAP_OK) {
-            Logger::LogMessage("  Error in soap_ssl_accept() " 
-                    + StringUtils::toString(tsoap->error));
+            _errstr = "  Error in soap_ssl_accept() "; 
+            _errstr.append(StringUtils::toString(tsoap->error));
             soap_destroy(tsoap);
             soap_end(tsoap);
             soap_done(tsoap);
@@ -157,7 +145,7 @@ SoapClient::accept ( SoapClientFactory & factory )
             return NULL;
         }
 
-        msg << " <SSL>";
+        _ssl = true;;
     }
 #endif
 
@@ -171,10 +159,22 @@ SoapClient::getFD() const
     return _fd;
 }
 
-std::string
+const std::string&
 SoapClient::getAddrStr() const
 {
     return _ipaddr;
+}
+
+const std::string&
+SoapClient::getErrorStr() const
+{
+    return _errstr;
+}
+
+bool
+SoapClient::sslEnabled() const
+{
+    return _ssl;
 }
 
 
