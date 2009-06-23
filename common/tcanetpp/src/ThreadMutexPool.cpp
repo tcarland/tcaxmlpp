@@ -25,6 +25,7 @@
 #include <algorithm>
 
 #include "ThreadMutexPool.h"
+#include "ThreadAutoMutex.hpp"
 
 
 namespace tcanetpp {
@@ -43,8 +44,8 @@ ThreadMutexPool::~ThreadMutexPool()
 {
     ThreadLockPool::iterator  tIter;
 
-    this->lock();
-    
+    _lock.lock();
+
     for ( tIter = _mutexIn.begin(); tIter != _mutexIn.end(); ++tIter ) {
         ThreadLock * lock = (ThreadLock*) *tIter;
         
@@ -60,15 +61,16 @@ ThreadMutexPool::~ThreadMutexPool()
             delete lock;
     }
     _mutexOut.clear();
+
+    _lock.unlock();
 }
 
 
 ThreadLock*
 ThreadMutexPool::AcquireMutex()
 {
-    ThreadLock * lock = NULL;
-
-    this->lock();
+    ThreadAutoMutex mutex(&_lock);
+    ThreadLock    * lock = NULL;
 
     if ( _mutexIn.empty() )
         this->createMutexes();
@@ -79,8 +81,6 @@ ThreadMutexPool::AcquireMutex()
         _mutexOut.push_front(lock);
     }
 
-    this->unlock();
-
     return lock;
 }
 
@@ -88,10 +88,9 @@ ThreadMutexPool::AcquireMutex()
 void
 ThreadMutexPool::ReleaseMutex ( ThreadLock * lock )
 {
+    ThreadAutoMutex mutex(&_lock);
+
     ThreadLockPool::iterator  tIter;
-
-    this->lock();
-
     tIter = find(_mutexOut.begin(), _mutexOut.end(), lock);
 
     if ( tIter == _mutexOut.end() ) {
@@ -103,8 +102,6 @@ ThreadMutexPool::ReleaseMutex ( ThreadLock * lock )
         _mutexIn.push_front(lock);
     }
 
-    this->unlock();
-
     return;
 }
 
@@ -112,6 +109,7 @@ ThreadMutexPool::ReleaseMutex ( ThreadLock * lock )
 void
 ThreadMutexPool::MinPoolSize ( size_t minsize )
 {
+    ThreadAutoMutex mutex(&_lock);
     _lockmin = minsize;
 }
 
@@ -119,6 +117,7 @@ ThreadMutexPool::MinPoolSize ( size_t minsize )
 size_t
 ThreadMutexPool::MinPoolSize()
 {
+    ThreadAutoMutex mutex(&_lock);
     return _lockmin;
 }
 
@@ -126,12 +125,14 @@ ThreadMutexPool::MinPoolSize()
 void
 ThreadMutexPool::MaxPoolSize ( size_t maxsize )
 {
+    ThreadAutoMutex mutex(&_lock);
     _lockmax = maxsize;
 }
 
 size_t
 ThreadMutexPool::MaxPoolSize()
 {
+    ThreadAutoMutex mutex(&_lock);
     return _lockmax;
 }
 
@@ -139,33 +140,23 @@ ThreadMutexPool::MaxPoolSize()
 size_t
 ThreadMutexPool::MutexAvailable()
 {
+    ThreadAutoMutex mutex(&_lock);
     return(_lockmax - _mutexOut.size());
 }
 
 size_t
 ThreadMutexPool::MutexInUse()
 {
+    ThreadAutoMutex mutex(&_lock);
     return _mutexOut.size();
 }
 
 
-
-void
-ThreadMutexPool::lock()
-{
-    _mutex.lock();
-}
-
-void
-ThreadMutexPool::unlock()
-{
-    _mutex.unlock();
-}
-
 void
 ThreadMutexPool::createMutexes()
 {
-    ThreadLock * lock = NULL;
+    ThreadAutoMutex mutex(&_lock);
+    ThreadLock    * lock = NULL;
     
     if ( _lockcnt > _lockmax )
         return;

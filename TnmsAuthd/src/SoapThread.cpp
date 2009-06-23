@@ -1,6 +1,5 @@
 #define _TNMSAUTH_SOAPTHREAD_CPP_
 
-
 #include "SoapThread.h"
 #include "SoapClient.h"
 

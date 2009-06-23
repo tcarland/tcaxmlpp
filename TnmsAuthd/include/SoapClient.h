@@ -36,7 +36,9 @@ class SoapClient {
   public:
 
     SoapClient ( const std::string & pemfile = "" );
+
     virtual ~SoapClient();
+
 
     virtual bool        handle_event();
     virtual void        close()    {}

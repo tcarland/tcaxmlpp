@@ -46,6 +46,7 @@ class ThreadMutexPool {
     ThreadMutexPool();
     virtual ~ThreadMutexPool();
 
+
     ThreadLock*  AcquireMutex();
     void         ReleaseMutex ( ThreadLock * lock );
 
@@ -61,8 +62,6 @@ class ThreadMutexPool {
 
   private:
 
-    void         lock();
-    void         unlock();
     void         createMutexes();
 
     
@@ -71,7 +70,7 @@ class ThreadMutexPool {
     ThreadLockPool    _mutexIn;
     ThreadLockPool    _mutexOut;
 
-    ThreadLock        _mutex;
+    ThreadLock        _lock;
 
     int               _lockcnt;
     int               _lockmin;

@@ -70,14 +70,12 @@ TnmsManager::run()
     _logId     = _evmgr->addTimerEvent(this, _logCheck, 0);
 
     if ( ! this->parseConfig(_configfile, now) ) {
-        // error parsing config
         if ( _debug )
             LogFacility::LogMessage("Error parsing config");
         return;
     }
 
-    //  Enter Main Loop
-    _evmgr->eventLoop();
+    _evmgr->eventLoop(); // main loop
 
     if ( _debug )
         LogFacility::RemoveLogStream("stdout");
@@ -152,8 +150,8 @@ TnmsManager::createClients()
 {
     TnmsClient * client = NULL;
 
-    ClientList  & clist  = _tconfig.clients;
-    ClientList::iterator  cIter;
+    ClientConfigList  & clist  = _tconfig.clients;
+    ClientConfigList::iterator  cIter;
 
     if ( _debug )
         LogFacility::LogMessage("TnmsManager::createClients()");
