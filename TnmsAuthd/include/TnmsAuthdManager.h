@@ -65,6 +65,7 @@ class TnmsAuthdManager : public EventTimerHandler {
     EventManager*       _evmgr;
     TnmsTree*           _tree;
     TnmsAuthThread*     _authThread;
+    SqlSession*         _sql;
 
     Socket*             _svr;
     SoapClient*         _soap;
