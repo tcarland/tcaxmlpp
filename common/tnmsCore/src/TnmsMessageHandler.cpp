@@ -139,7 +139,8 @@ TnmsMessageHandler::StructureHandler ( bool  subscribe )
 void  
 TnmsMessageHandler::AuthRequestHandler ( const TnmsAuthRequest & request )
 {
-    LogFacility::LogMessage("TnmsMessageHandler::AuthRequestHandler() " + request.getElementName());
+    LogFacility::LogMessage("TnmsMessageHandler::AuthRequestHandler() " 
+        + request.getElementName());
     if ( _client ) 
         _client->AuthRequestHandler(request);
 }
@@ -149,7 +150,8 @@ void
 TnmsMessageHandler::AuthReplyHandler   ( const TnmsAuthReply & reply )
 {
 
-    LogFacility::LogMessage("TnmsMessageHandler::AuthReplyHandler() " + reply.getElementName());
+    LogFacility::LogMessage("TnmsMessageHandler::AuthReplyHandler() " 
+        + reply.getElementName());
     if ( _client )
         _client->AuthReplyHandler(reply);
     return;

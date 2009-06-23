@@ -94,7 +94,7 @@ SoapIOHandler::handle_accept ( const EventIO * io )
     if ( client == NULL )
         return;
 
-    SoapThread * sthread = new SoapThread(client, io-abstime.tv_sec);
+    SoapThread * sthread = new SoapThread(client, io->abstime.tv_sec);
 
     try {
         sthread->start();

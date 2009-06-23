@@ -6,34 +6,40 @@
 #include "EventHandlers.hpp"
 using namespace tcanetpp;
 
-#include "SoapClient.h"
 
 namespace tnmsauth {
 
-typedef std::set<SoapClient*>  SoapClientSet;
+
+class TnmsAuthThread;
+class TnmsAuthClient;
+
+typedef std::set<TnmsAuthClient*>  ClientSet;
+
 
 
 class AuthIOHandler : public EventIOHandler {
 
   public:
 
-    AuthIOHandler() {}
-    ~AuthIOHandler() {}
-
-    void           timeout            ( const time_t & now );
-
-    void           event_timeout_secs ( time_t  secs );
-    const time_t&  event_timeout_secs() const;
-
-    void           max_connections    ( int  max );
-    int            max_connections() const;
+    AuthIOHandler ( TnmsAuthThread * authThread = NULL );
+    virtual ~AuthIOHandler();
 
     /*  EventIOHandler */
+
     virtual void   handle_accept      ( const EventIO * io );
     virtual void   handle_destroy     ( const EventIO * io );
     
     virtual bool   readable           ( const EventIO * io );
 
+    /*  AuthIOHandler */
+
+    void           timeout            ( const time_t & now );
+
+
+  protected:
+
+    TnmsAuthThread*     _authThread;
+    ClientSet           _clients;
 
 };
 

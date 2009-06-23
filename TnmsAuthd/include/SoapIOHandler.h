@@ -9,20 +9,31 @@ using namespace tcanetpp;
 
 namespace tnmsauth {
 
+#define DEFAULT_EVENT_TIMEOUT 60
+#define DEFAULT_MAX_SOAP_CONNECTIONS  100
+
+
 class SoapThread;
 typedef std::list<SoapThread*>  SoapThreadList;
 
-#define DEFAULT_EVENT_TIMEOUT 60
-#define DEFAULT_MAX_SOAP_CONNECTIONS  100
 
 
 class SoapIOHandler : public EventIOHandler {
 
   public:
 
-    SoapIOHandler() {}
+    SoapIOHandler();
+    virtual ~SoapIOHandler();
 
-    virtual ~SoapIOHandler() {}
+    /*  EventIOHandler  */
+
+    virtual void   handle_accept      ( const EventIO * io );
+    virtual void   handle_destroy     ( const EventIO * io );
+    
+    virtual bool   readable           ( const EventIO * io );
+    virtual bool   writeable          ( const EventIO * io );
+
+    /*  SoapIOHandler  */
 
     void           timeout            ( const time_t & now );
 
@@ -32,12 +43,6 @@ class SoapIOHandler : public EventIOHandler {
     void           max_connections    ( int  max );
     int            max_connections() const;
 
-    /*  EventIOHandler */
-    virtual void   handle_accept      ( const EventIO * io );
-    virtual void   handle_destroy     ( const EventIO * io );
-    
-    virtual bool   readable           ( const EventIO * io );
-    virtual bool   writeable          ( const EventIO * io );
 
   protected:
 
