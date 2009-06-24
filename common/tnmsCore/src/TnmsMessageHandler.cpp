@@ -162,8 +162,8 @@ void
 TnmsMessageHandler::PingHandler() 
 {
     LogFacility::LogMessage("TnmsMessageHandler::PingHandler() ");
-    // TnmsMessage ping(PING_REPLY);
-    // _client->sendMessage(ping);
+    TnmsMessage ping(PING_REPLY);
+    _client->sendMessage(&ping);
 }
 
 
