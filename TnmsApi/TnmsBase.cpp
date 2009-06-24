@@ -196,7 +196,6 @@ TnmsBase::update ( const std::string & name,
 {
     TnmsMetric   metric;
     std::string  fullname = _agentName;
-
     fullname.append("/").append(name);
 
     if ( ! _tree->request(fullname, metric) )
@@ -219,7 +218,6 @@ TnmsBase::update ( const std::string & name,
 {    
     TnmsMetric   metric;
     std::string  fullname = _agentName;
-
     fullname.append("/").append(name);
 
     if ( ! _tree->request(fullname, metric) )
@@ -237,9 +235,11 @@ TnmsBase::update ( const std::string & name,
 bool
 TnmsBase::update ( const std::string & name, const std::string & data )
 {
-    TnmsMetric metric;
+    TnmsMetric   metric;
+    std::string  fullname = _agentName;
+    fullname.append("/").append(name);
 
-    if ( ! _tree->request(name, metric) )
+    if ( ! _tree->request(fullname, metric) )
         return false;
 
     metric.setPvtData(data);
@@ -253,7 +253,8 @@ void
 TnmsBase::clear()
 {
     //_tree->clear();
-    // remove _agentName
+    _tree->remove(_agentName);
+    _tree->add(_agentName);
 }
 
 
@@ -274,6 +275,7 @@ TnmsBase::checkConfig ( const time_t & now )
             return TNMSERR_CONFIG;
         else if ( ! _conn->getConfig().empty() )
             this->_xmlConfig = _conn->getConfig();
+        return this->reconfigure(now);
     }
     else if ( _xmlConfig.empty() ) 
     {
@@ -290,6 +292,12 @@ TnmsBase::checkConfig ( const time_t & now )
         // validate xmlConfig change?
         // handle config versioning check. could simply .compare() for now 
         // if done infrequently.
+        if ( _xmlConfig.compare(_conn->getConfig()) != 0 &&
+             ! _conn->getConfig().empty() ) 
+        {
+            _xmlConfig = _conn->getConfig();
+            return this->reconfigure(now);
+        }
     }
 
     return TNMSERR_NONE;
@@ -446,8 +454,7 @@ TnmsBase::reconfigure ( const time_t & now )
 void
 TnmsBase::openLog ( const std::string & logfile, const time_t & now )
 {
-    struct tm     * t    = ::localtime(&now);
-    std::ofstream * strm = NULL;
+    struct tm  * t   = ::localtime(&now);
 
     if ( LogFacility::IsOpen() && _config.logfile.compare(logfile) == 0 )
     {
@@ -464,11 +471,7 @@ TnmsBase::openLog ( const std::string & logfile, const time_t & now )
             msg << "TnmsAPI switching log to " << logfile;
 
         LogFacility::LogToStream(_logName, msg.str());
-        strm = (std::ofstream*) LogFacility::RemoveLogStream(_logName);
-        if ( strm ) {
-            strm->close();
-            delete strm;
-        }
+        LogFacility::CloseLogFile(_logName);
     }
 
     _config.logfile = logfile;
@@ -482,9 +485,11 @@ TnmsBase::openLog ( const std::string & logfile, const time_t & now )
     _today              = t->tm_yday;
 
     strftime(line, 60, ".%Y%m%d", t);
+
     file.append(line);
     prefix.append(_agentName);
     _logName = prefix;
+
     LogFacility::OpenLogFile(_logName, prefix, file);
 
     return;

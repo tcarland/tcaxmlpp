@@ -72,8 +72,9 @@ class TnmsTree {
     void       sweep            ( TnmsTree::Node    * node );
     void       sweep            ( const std::string & name );
 
-
     size_t     size() const;
+    void       clear();
+
     void       debugDump() const;
     void       debugDump        ( const std::string & name ) const;
 
