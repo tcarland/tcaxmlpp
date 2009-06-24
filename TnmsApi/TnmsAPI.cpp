@@ -19,6 +19,7 @@ TnmsAPI::TnmsAPI ( const std::string & agent_name )
     api = (void*) new TnmsBase(agentName);
 }
 
+
 TnmsAPI::TnmsAPI ( const std::string & agent_name,
                    const std::string & host_name,
                    uint16_t            host_port )
@@ -43,6 +44,7 @@ TnmsAPI::~TnmsAPI()
 }
 
 
+
 int
 TnmsAPI::send ( const time_t & now )
 {
@@ -55,6 +57,7 @@ TnmsAPI::add ( const std::string & element_name, const time_t & now )
 {
     return ( ((TnmsBase*)api)->add(element_name, now) );
 }
+
 
 bool
 TnmsAPI::remove ( const std::string & element_name ) 
@@ -96,11 +99,13 @@ TnmsAPI::clear()
     return ( ((TnmsBase*)api)->clear() );
 }
 
+
 void
 TnmsAPI::set_config ( const std::string & filename ) 
 {
     return ( ((TnmsBase*)api)->set_config(filename) );
 }
+
 
 void
 TnmsAPI::holddown_interval ( time_t  secs )
@@ -121,11 +126,13 @@ TnmsAPI::reconnect_interval ( time_t secs )
     return ( ((TnmsBase*)api)->reconnect_interval(secs) );
 }
 
+
 time_t
 TnmsAPI::reconnect_interval() 
 {
     return ( ((TnmsBase*)api)->reconnect_interval() );
 }
+
 
 void
 TnmsAPI::max_messages ( int max )
@@ -133,11 +140,13 @@ TnmsAPI::max_messages ( int max )
     return ( ((TnmsBase*)api)->flush_limit(max) );
 }
 
+
 int
 TnmsAPI::max_messages() 
 {
     return ( ((TnmsBase*)api)->flush_limit() );
 }
+
 
 void
 TnmsAPI::set_debug ( bool d )
@@ -158,6 +167,7 @@ TnmsAPI::set_logfile ( const std::string & logfilename )
 {
     return ( ((TnmsBase*)api)->set_logfile(logfilename) );
 }
+
 
 bool
 TnmsAPI::need_flush() 
