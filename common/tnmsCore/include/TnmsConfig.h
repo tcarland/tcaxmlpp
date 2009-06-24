@@ -113,6 +113,8 @@ struct TnmsConfig
     std::string   agent_name;
     std::string   auth_server;
     uint16_t      auth_port;
+
+    uint32_t      version;
     
     std::string   logfile;
     bool          compression;
@@ -124,6 +126,7 @@ struct TnmsConfig
 
     TnmsConfig() 
         : auth_port(0),
+          version(0),
           compression(false),
           syslog(false),
           debug(false)

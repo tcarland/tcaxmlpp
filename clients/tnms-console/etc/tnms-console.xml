@@ -5,7 +5,8 @@
         agent_name="tcanms/tnms-console"
         logfile="tcanms-console.log"
         syslog="false"
-        debug="true" >
+        debug="true"
+        version="1">
 
         <client
             name="server_a"

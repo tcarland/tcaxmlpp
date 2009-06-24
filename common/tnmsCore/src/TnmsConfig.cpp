@@ -30,7 +30,9 @@ TnmsConfigHandler::TnmsConfigHandler ( const char * xmlblob, size_t len,
     : _isXML(true),
       _debug(false),
       _rootname(rootname)
-{}
+{
+    _xmlcfg.assign(xmlblob, len);    
+}
 
 
 
@@ -134,10 +136,12 @@ TnmsConfigHandler::parseRoot ( XmlNode * node )
     // first collect our known root elements
     config.agent_name  = root->getAttribute("agent_name");
     config.logfile     = root->getAttribute("logfile");
-    config.auth_server = root->getAttribute("auth_server"); 
+    config.auth_server = root->getAttribute("auth_server");
 
     if ( root->haveAttribute("auth_port") )
         config.auth_port = StringUtils::fromString<uint16_t>(root->getAttribute("auth_port"));
+    if ( root->haveAttribute("version") )
+        config.auth_port = StringUtils::fromString<uint32_t>(root->getAttribute("version"));
 
     if ( root->hasAttr("syslog") && root->getAttr("syslog").compare("true") == 0 )
         config.syslog = true;
