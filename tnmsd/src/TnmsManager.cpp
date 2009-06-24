@@ -200,7 +200,6 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
     if ( _lastTouched > 0 && _lastTouched == FileUtils::LastTouched(cfg) )
         return true;
 
-
     TnmsConfigHandler  cfgmgr(cfg, TNMSD_CONFIG_ROOT);
     std::string        prefix = TNMSD_CONFIG_ROOT;
 
