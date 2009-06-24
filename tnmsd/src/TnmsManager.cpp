@@ -9,6 +9,7 @@
 #include "AuthClient.h"
 
 #include "LogFacility.h"
+#include "FileUtils.h"
 
 
 
@@ -43,6 +44,7 @@ TnmsManager::TnmsManager ( const std::string & configfile )
 
 TnmsManager::~TnmsManager()
 {
+    this->destroyClients();
     if ( _auth )
         delete _auth;
     delete _agentHandler;
@@ -140,8 +142,22 @@ TnmsManager::timeout ( const EventTimer * timer )
 
 
 void
-TnmsManager::verifyClients ( const time_t & now )
+TnmsManager::destroyClients ()
 {
+    ClientMap::iterator  cIter;
+
+    for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
+    {
+        TnmsClient * client = cIter->second.client;
+        if ( client ) 
+        {
+            _clientHandler->eraseMirror(client);
+            _evmgr->removeEvent(cIter->second.id);
+            client->close();
+            delete client;
+        }
+    }
+    _clients.clear();
 }
 
 
@@ -149,6 +165,7 @@ void
 TnmsManager::createClients()
 {
     TnmsClient * client = NULL;
+    evid_t       id     = 0;
 
     ClientConfigList  & clist  = _tconfig.clients;
     ClientConfigList::iterator  cIter;
@@ -166,9 +183,11 @@ TnmsManager::createClients()
         if ( client->openConnection(cIter->hostname, cIter->port)  < 0 )
             continue;
 
-        _evmgr->addIOEvent(_agentHandler, client->getDescriptor(), client);
+        id = _evmgr->addIOEvent(_clientHandler, client->getDescriptor(), client);
+        client->login("tnmsd", _tconfig.agent_name);
 
-        client->login("tnmsd", "");
+        MirrorConnection  mirror(id, *cIter, client);
+        _clients[cIter->connection_name] = mirror;
     }
 
     return;
@@ -178,6 +197,10 @@ TnmsManager::createClients()
 bool
 TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
 {
+    if ( _lastTouched > 0 && _lastTouched == FileUtils::LastTouched(cfg) )
+        return true;
+
+
     TnmsConfigHandler  cfgmgr(cfg, TNMSD_CONFIG_ROOT);
     std::string        prefix = TNMSD_CONFIG_ROOT;
 
@@ -279,6 +302,7 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
     // assign the new config
     _tconfig = config;
 
+    this->destroyClients();
     // init mirror connections
     if ( _tconfig.clients.size() > 0 )
         this->createClients();

@@ -2,6 +2,7 @@
 #define _TNMSD_CLIENTIOHANDLER_H_
 
 #include <set>
+#include <map>
 
 #include "EventHandlers.hpp"
 #include "Exception.hpp"
@@ -13,7 +14,8 @@ using namespace tnmsCore;
 
 namespace tnmsd {
 
-typedef std::set<TnmsClient*>  ClientSet;
+
+typedef std::set<TnmsClient*>               ClientSet;
 
 
 class ClientIOHandler : public EventIOHandler {
@@ -38,9 +40,12 @@ class ClientIOHandler : public EventIOHandler {
     virtual bool writeable      ( const EventIO * io );
 
     /* ClientIOHandler */
+
     void         timeout        ( const EventTimer * timer );
 
     void         addMirror      ( TnmsClient * client );
+    void         eraseMirror    ( TnmsClient * client );
+
 
   protected:
 

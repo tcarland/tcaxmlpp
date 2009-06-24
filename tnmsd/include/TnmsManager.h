@@ -28,8 +28,6 @@ namespace tnmsd {
 class AgentIOHandler;
 class ClientIOHandler;
 
-typedef std::map<evid_t, TnmsClient*>  ClientMap;
-
 
 
 class TnmsManager : public EventTimerHandler {
@@ -59,14 +57,37 @@ class TnmsManager : public EventTimerHandler {
   protected:
 
     void                createClients();
-    void                verifyClients ( const time_t      & now );
+    void                destroyClients();
+
     bool                parseConfig   ( const std::string & cfg,
-                                        const time_t      & now );
+                                        const time_t & now );
 
-    void                logRotate     ( std::string         logfile,
-                                        const time_t      & now );
+    void                logRotate     ( std::string    logfile,
+                                        const time_t & now );
 
-  private:
+  protected:
+
+
+    struct MirrorConnection {
+        evid_t              id;
+        TnmsClientConfig    config;
+        TnmsClient *        client;
+
+        MirrorConnection() : id(0), client(NULL) {}
+
+        MirrorConnection ( evid_t & id_, 
+                           TnmsClientConfig & config_,
+                           TnmsClient * client )
+            : id(id_),
+              config(config_),
+              client(client)
+        {}
+    };
+
+    typedef std::map<std::string, MirrorConnection>  ClientMap;
+
+
+
 
     EventManager*               _evmgr;
     TnmsTree*                   _tree;
@@ -75,7 +96,7 @@ class TnmsManager : public EventTimerHandler {
     Socket*                     _client;
     AuthClient*                 _auth;
 
-    ClientMap                   _clientMap;
+    ClientMap                   _clients;
     evid_t                      _agentId, _clientId;
     evid_t                      _reportId, _logId;
 

@@ -23,7 +23,12 @@ ClientIOHandler::~ClientIOHandler()
 {
     ClientSet::iterator  cIter;
     for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
-        delete *cIter;
+    {
+        TnmsClient * client = (TnmsClient*) *cIter;
+
+        if ( client && ! client->isMirror() )
+            delete *cIter;
+    }
     _clients.clear();
 }
 
@@ -90,11 +95,17 @@ ClientIOHandler::timeout ( const EventTimer * timer )
 }
 
 void
-ClientIOHandler::addMirror ( TnmsClient * client )
+ClientIOHandler::addMirror (TnmsClient * client )
 {
     _clients.insert(client);
 }
 
+
+void
+ClientIOHandler::eraseMirror ( TnmsClient * client )
+{
+    _clients.erase(client);
+}
 
 
 void
