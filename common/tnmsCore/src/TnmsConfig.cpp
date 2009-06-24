@@ -199,8 +199,8 @@ TnmsConfigHandler::parseServer ( XmlNode * node )
     if ( this->_debug ) {
         LogFacility::Message  logmsg;
         logmsg << "TnmsConfigHandler::parseServer()  agent port: " 
-               << config.serverConfig.agent_port << " client port: " 
-               << config.serverConfig.client_port << " holddown: " 
+               << config.serverConfig.agent_port        << " client port: " 
+               << config.serverConfig.client_port       << " holddown: " 
                << config.serverConfig.holddown_interval << " reconnect interval: " 
                << config.serverConfig.reconnect_interval;
         LogFacility::LogMessage(logmsg.str());
@@ -230,8 +230,8 @@ TnmsConfigHandler::parseClient ( XmlNode * node )
     // subscribes
     XmlNode   * snode = NULL;
     XmlNodeList nlist = node->getNodeList();
-    XmlNodeList::iterator  nIter;
 
+    XmlNodeList::iterator  nIter;
     for ( nIter = nlist.begin(); nIter != nlist.end(); ++nIter ) {
         snode = (XmlNode*) *nIter;
         if ( snode->getNodeName().compare("subscribe") == 0 )
@@ -244,8 +244,8 @@ TnmsConfigHandler::parseClient ( XmlNode * node )
         LogFacility::Message  logmsg;
         logmsg << "TnmsConfigHandler::parseClient()  name: " 
                << clientcfg.connection_name << " host: " 
-               << clientcfg.hostname << " addr: " 
-               << clientcfg.hostaddr << " port: " 
+               << clientcfg.hostname        << " addr: " 
+               << clientcfg.hostaddr        << " port: " 
                << clientcfg.port;
         LogFacility::LogMessage(logmsg.str());
     }
