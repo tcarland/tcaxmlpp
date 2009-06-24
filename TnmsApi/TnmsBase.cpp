@@ -151,14 +151,25 @@ TnmsBase::add ( const std::string & name,
         return false;
     }
 
-    TnmsMetric  metric;
-    if ( _tree->add(name) )
+    TnmsMetric   metric;
+    std::string  fullname = _agentName;
+    bool         result   = false;
+
+    fullname.append("/").append(name);
+
+    if ( _tree->add(fullname) )
     {
-        if ( ! _tree->request(name, metric) )
-            return false;
-        msg << " added element '" << name << "'";
-    } else
+        if ( ! _tree->request(fullname, metric) ) {
+            msg << " add failed for '" << name << "'";
+        } else {
+            msg << " added element '" << name << "'";
+            result = true;
+        }
+    }
+    else 
+    {
         msg << " add failed for '" << name << "'";
+    }
 
     LogFacility::LogToStream(_logName, msg.str());
 
@@ -169,7 +180,9 @@ TnmsBase::add ( const std::string & name,
 bool
 TnmsBase::remove ( const std::string & name )
 {
-    return _tree->remove(name);
+    std::string fullname = _agentName;
+    fullname.append("/").append(name);
+    return _tree->remove(fullname);
 }
 
 
@@ -179,9 +192,12 @@ TnmsBase::update ( const std::string & name,
                    uint64_t          & value, 
                    eValueType          type )
 {
-    TnmsMetric  metric;
+    TnmsMetric   metric;
+    std::string  fullname = _agentName;
 
-    if ( ! _tree->request(name, metric) )
+    fullname.append("/").append(name);
+
+    if ( ! _tree->request(fullname, metric) )
         return false;
 
     if ( LogFacility::GetDebug() )
@@ -199,9 +215,12 @@ TnmsBase::update ( const std::string & name,
                    const time_t      & now,
                    const std::string & value )
 {    
-    TnmsMetric  metric;
+    TnmsMetric   metric;
+    std::string  fullname = _agentName;
 
-    if ( ! _tree->request(name, metric) )
+    fullname.append("/").append(name);
+
+    if ( ! _tree->request(fullname, metric) )
         return false;
 
     if ( LogFacility::GetDebug() )
