@@ -7,15 +7,12 @@
 
 #include "tnmsCore.h"
 #include "TnmsConfig.h"
+using namespace tnmsCore;
 
-
-namespace tnmsCore {
+namespace tnmsApi {
 
 #define DEFAULT_RECONFIG_INTERVAL 120
 
-
-class TnmsTree;
-class TnmsClient;
 
 
 class TnmsBase {

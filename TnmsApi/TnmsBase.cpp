@@ -11,7 +11,8 @@
 #include "LogFacility.h"
 
 
-namespace tnmsCore {
+namespace tnmsApi {
+
 
 // for accepting only human readable strings
 #define LOW_CHAR  32

@@ -2,16 +2,17 @@
 #define _TNMSCORE_TNMSAGENT_H_
 
 #include "tnmsCore.h"
-#include "TnmsClient.h"
+using namespace tnmsCore;
 
-namespace tnmsCore {
+
+namespace tnmsApi {
 
 
 class TnmsAgent : public TnmsClient {
 
   public:
 
-    TnmsAgent();
+    TnmsAgent ( TnmsTree * tree );
 
     virtual ~TnmsAgent();
 

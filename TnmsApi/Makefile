@@ -12,7 +12,7 @@ endif
 LIBS =
 INCLUDES =              -I.
 
-OBJS =                  TnmsAPI.o TnmsBase.o
+OBJS =                  TnmsAPI.o TnmsBase.o TnmsAgent.o
 
 BIN =                        
 ALL_OBJS =              $(OBJS)

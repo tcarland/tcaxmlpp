@@ -5,8 +5,7 @@
 #include "TnmsBase.h"
 
 
-namespace tnmsCore {
-
+namespace tnmsApi {
 
 
 

@@ -3,15 +3,17 @@
 #include "TnmsAgent.h"
 
 
-namespace tnmsCore {
+namespace tnmsApi {
 
 
 TnmsAgent::TnmsAgent( TnmsTree * tree )
     : TnmsClient(tree) 
 {
-    this->_agent  = true;
-    this->_mirror = false;
+    this->_isAgent  = true;
+    this->_isMirror = false;
 }
+
+TnmsAgent::~TnmsAgent() {}
 
 void
 TnmsAgent::login ( const std::string & agentname ) 

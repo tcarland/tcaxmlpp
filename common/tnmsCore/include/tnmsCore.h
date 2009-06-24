@@ -37,7 +37,7 @@
 
 
 #include "tnmsProtocol.h"
-#include "TnmsSocket.h"
+#include "TnmsClient.h"
 
 
 #endif //  _TNMSCORE_H_

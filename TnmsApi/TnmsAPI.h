@@ -6,6 +6,7 @@
 #include <string>
 
 #include "tnmsCore.h"
+using namespace tnmsCore;
 
 
 #ifndef DLLOPT
@@ -22,7 +23,7 @@
 
 
 
-namespace tnmsCore {
+namespace tnmsApi {
 
 
 
