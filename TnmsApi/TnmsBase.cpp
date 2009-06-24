@@ -6,9 +6,10 @@
 
 
 #include "TnmsBase.h"
-#include "TnmsClient.h"
-#include "TnmsTree.h"
+#include "TnmsAgent.h"
+
 #include "LogFacility.h"
+using namespace tcanetpp;
 
 
 namespace tnmsApi {
@@ -42,7 +43,7 @@ Iterator first_out_of_range( Iterator  begin,
 TnmsBase::TnmsBase ( const std::string & name )
     : _tree(new TnmsTree()),
       _agentName(name),
-      _conn(new TnmsClient(_tree))
+      _conn(new TnmsAgent(_tree))
 {}
 
 TnmsBase::TnmsBase ( const std::string & name,
@@ -50,7 +51,7 @@ TnmsBase::TnmsBase ( const std::string & name,
                      uint16_t            port )
     : _tree(new TnmsTree()),
       _agentName(name),
-      _conn(new TnmsClient(_tree)),
+      _conn(new TnmsAgent(_tree)),
       _hostName(host),
       _hostPort(port),
       _holddown(0),
@@ -316,7 +317,7 @@ TnmsBase::checkConnection ( const time_t & now )
             return TNMSERR_CONN_FAIL;
         } else if ( con > 0 ) {   // login
             LogFacility::LogToStream(_logName, "TnmsAPI: connection established.");
-            _conn->login(_agentName, "");
+            _conn->login(_agentName);
             return TNMSERR_NONE;
         } else {                  // in progress
             LogFacility::LogToStream(_logName, "TnmsAPI: connection in progress.");
@@ -357,7 +358,7 @@ TnmsBase::checkSubscription ( const time_t & now )
         _subscribed  = false;
 
         LogFacility::LogToStream(_logName, "TnmsAPI: sending credentials.");
-        _conn->login(_agentName, "");
+        _conn->login(_agentName);
     }
 
     return TNMSERR_NONE;

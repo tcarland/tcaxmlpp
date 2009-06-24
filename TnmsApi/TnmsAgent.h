@@ -1,7 +1,7 @@
 #ifndef _TNMSCORE_TNMSAGENT_H_
 #define _TNMSCORE_TNMSAGENT_H_
 
-#include "tnmsCore.h"
+#include "TnmsClient.h"
 using namespace tnmsCore;
 
 

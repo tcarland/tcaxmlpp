@@ -9,19 +9,24 @@
 #define _TNMSCORE_H_
 
 
+//  global version info
 #define TNMS_VERSION_MAJOR         0x0001
 #define TNMS_VERSION_MINOR         0x0002
-
 #define TNMS_VERSION               ( (((uint32_t)TNMS_VERSION_MAJOR << 16) & 0xffff0000) | \
                                       ((uint32_t)TNMS_VERSION_MINOR) )
+#define TNMSCORE_VERSION           ( TNMS_VERSION )
 
 #define TNMS_GET_MAJOR(x)          (  ((uint32_t)x >> 16) & 0x0000ffff )
 #define TNMS_GET_MINOR(x)          (  (uint32_t)x & 0x0000ffff )
+
+
 
 #define TNMS_DELIMITER             "/"
 #define TNMS_DELIMITER_CHAR        '/'
 #define TNMS_AGENT_ID              "tnmsagent"
 
+
+// client/protocol attributes
 #define TNMS_RECORD_LIMIT          1000        // max records
 #define TNMS_RECORD_SIZE           1024        // avg rec size
 
@@ -37,7 +42,7 @@
 
 
 #include "tnmsProtocol.h"
-#include "TnmsClient.h"
+#include "TnmsSocket.h"
 
 
 #endif //  _TNMSCORE_H_

@@ -11,7 +11,7 @@
 using namespace tcanetpp;
 
 #include "TnmsAPI.h"
-using namespace tnmsCore;
+using namespace tnmsApi;
 
 namespace tnmsconsole {
 

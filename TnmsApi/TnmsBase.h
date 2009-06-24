@@ -7,12 +7,15 @@
 
 #include "tnmsCore.h"
 #include "TnmsConfig.h"
+#include "TnmsTree.h"
 using namespace tnmsCore;
+
 
 namespace tnmsApi {
 
 #define DEFAULT_RECONFIG_INTERVAL 120
 
+class TnmsAgent;
 
 
 class TnmsBase {
@@ -97,7 +100,7 @@ class TnmsBase {
     TnmsTree*            _tree;
     std::string          _agentName;
 
-    TnmsClient*          _conn;
+    TnmsAgent*           _conn;
     TnmsConfig           _config;
 
     std::string          _xmlConfig;
