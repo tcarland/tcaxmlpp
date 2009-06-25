@@ -258,7 +258,7 @@ ConsoleThread::run()
         // 
         // UPDATE_S
         //
-        else if ( cmd.compare("updateS") == 0 )
+        else if ( cmd.compare("update_s") == 0 )
         {
             if ( cmdlist.size() < 3 ) {
                 msg << "Error: invalid syntax " << std::endl << prompt;
@@ -271,9 +271,18 @@ ConsoleThread::run()
                 LogFacility::LogToStream("console", msg.str(), false);
                 continue;
             }
-
+            
             name = cmdlist[1];
+
             desc = cmdlist[2];
+            
+            if ( StringUtils::startsWith(desc, "\"") ) {
+                if ( ! GetQuotedString(2, cmdlist, desc) ) {
+                    msg << "Error: invalid syntax" << std::endl << prompt;
+                    LogFacility::LogToStream("console", msg.str(), false);
+                    continue;
+                }
+            }
 
             if ( cmdlist.size() == 4 )
                 ts = StringUtils::fromString<time_t>(cmdlist[3]);
@@ -544,9 +553,9 @@ ConsoleThread::DisplayHelp()
 
     logmsg << "Agent source commands" << std::endl;
     logmsg << " add [name] <epoch>                  =  adds a new metric of 'name'." << std::endl;
-    logmsg << " remove  [name]                      =  removes a metric of 'name'." << std::endl;
-    logmsg << " update  [name] [value] <epoch>      =  Updates a metric." << std::endl;
-    logmsg << " updates [name] [value] <epoch>      =  Updates a metric with a string value." << std::endl;
+    logmsg << " remove   [name]                     =  removes a metric of 'name'." << std::endl;
+    logmsg << " update   [name] [value] <epoch>     =  Updates a metric." << std::endl;
+    logmsg << " update_s [name] [value] <epoch>     =  Updates a metric with a string value." << std::endl;
     logmsg << " send                                =  Give time to the API instance." << std::endl;
 
     logmsg << std::endl;
@@ -577,6 +586,48 @@ ConsoleThread::sleeps ( int secs )
 #else
     ::sleep(secs);
 #endif
+}
+
+
+bool
+ConsoleThread::GetQuotedString ( size_t indx, CommandList & cmdlist, std::string & str )
+{
+    std::ostringstream  ostrm;
+    std::string         word  = "";
+    bool                valid = false;
+
+    if ( cmdlist.size() < indx )
+        return valid;
+
+    word = cmdlist[indx];
+
+    if ( StringUtils::startsWith(word, "\"") )
+    {
+        word = word.substr(1);
+    } else
+        return valid;
+
+    do {
+        if ( StringUtils::endsWith(word, "\"") ) {
+            word = word.substr(0, word.length() - 1);
+            valid = true;
+        }
+
+        ostrm << word;
+
+        if ( ++indx == cmdlist.size() )
+            break;
+
+        if ( ! valid ) {
+            ostrm << " ";
+            word = cmdlist[indx];
+        }
+    } while ( ! valid );
+
+    if ( valid )
+        str = ostrm.str();
+
+    return valid;
 }
 
 

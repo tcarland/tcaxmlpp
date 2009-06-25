@@ -66,6 +66,8 @@ class LogFacility {
     static bool           InitThreaded    ( bool trylock = false );
     
 
+    /*  open log methods */
+
     static bool           OpenLogFile     ( const std::string & logname,
                                             const std::string & prefix, 
                                             const std::string & filename, 
@@ -74,24 +76,31 @@ class LogFacility {
     static bool           OpenSyslog      ( const std::string & prefix, 
                                             int facility );
     
-    static bool           OpenLogStream   ( const std::string & name,
+    static bool           OpenLogStream   ( const std::string & logname,
                                             const std::string & prefix,
                                             std::ostream * stream );
     
     
-    static bool           AddLogStream    ( const std::string & name, 
+    static bool           AddLogStream    ( const std::string & logname, 
                                             const std::string & prefix,
                                             std::ostream * stream );
     
-    static std::ostream*  RemoveLogStream ( const std::string & name );
+    /* close log methods */
+
+    static std::ostream*  RemoveLogStream ( const std::string & logname,
+                                            bool del  = false );
+
     static void           RemoveLogStreams( bool del  = true );
     
+
     static void           CloseSyslog();
     static std::ostream*  CloseLogFile    ( const std::string & logname, 
-                                            bool del  = true );
+                                            bool del  = false );
 
     static void           CloseLogFacility();
 
+
+    /*  log messages */
     
     static void           LogMessage      ( LogFacility::Message & logmsg, 
                                             int level = LOGFAC_NOTICE );
@@ -113,7 +122,7 @@ class LogFacility {
                                             const std::string & entry,
                                             bool  newline = true );
 
-
+    /*  log settings */
 
     static bool           SetDefaultLogName   ( const std::string & name );
     static std::string    GetDefaultLogName();
@@ -138,6 +147,7 @@ class LogFacility {
     static void           SetBroadcast    ( bool broadcast );
 
     static bool           IsOpen();
+    static bool           IsOpen          ( const std::string & logname );
 
     static void           SetDebug        ( bool debug );
     static bool           GetDebug();

@@ -126,26 +126,26 @@ LogFacility::OpenSyslog ( const std::string & prefix, int facility )
 // ----------------------------------------------------------------------
 
 bool
-LogFacility::OpenLogStream ( const std::string & name, const std::string & prefix, std::ostream * stream )
+LogFacility::OpenLogStream ( const std::string & logname, const std::string & prefix, std::ostream * stream )
 {
-     return(LogFacility::AddLogStream(name, prefix, stream));
+     return(LogFacility::AddLogStream(logname, prefix, stream));
 }
 
 // ----------------------------------------------------------------------
 
 bool
-LogFacility::AddLogStream ( const std::string & name, const std::string & prefix, std::ostream * stream )
+LogFacility::AddLogStream ( const std::string & logname, const std::string & prefix, std::ostream * stream )
 {
     bool result = false;
 
     if ( stream == NULL ||  ! LogFacility::Lock() )
         return result;
 
-    StreamMap::iterator  sIter = LogFacility::_StreamMap.find(name);
+    StreamMap::iterator  sIter = LogFacility::_StreamMap.find(logname);
 
     if ( sIter == LogFacility::_StreamMap.end() ) {
-        LogStream  lstrm(name, prefix, stream);
-        LogFacility::_StreamMap[name] = lstrm;
+        LogStream  lstrm(logname, prefix, stream);
+        LogFacility::_StreamMap[logname] = lstrm;
         result = true;
     }
 
@@ -155,7 +155,7 @@ LogFacility::AddLogStream ( const std::string & name, const std::string & prefix
 }
 
 std::ostream*
-LogFacility::RemoveLogStream ( const std::string & name )
+LogFacility::RemoveLogStream ( const std::string & logname, bool del )
 {
     std::ostream        *ptr = NULL;
     StreamMap::iterator  sIter;
@@ -163,9 +163,12 @@ LogFacility::RemoveLogStream ( const std::string & name )
     if ( ! LogFacility::Lock() )
         return ptr;
 
-    sIter = LogFacility::_StreamMap.find(name);
+    sIter = LogFacility::_StreamMap.find(logname);
     if ( sIter != LogFacility::_StreamMap.end() ) {
-        ptr = sIter->second.logStream;
+        if ( del && sIter->second.logStream )
+            delete sIter->second.logStream;
+        else
+            ptr = sIter->second.logStream;
         LogFacility::_StreamMap.erase(sIter);
     }
 
@@ -263,6 +266,17 @@ LogFacility::IsOpen()
     
     return true;
 }
+
+bool
+LogFacility::IsOpen ( const std::string & logname ) 
+{
+    bool result = false;
+
+    LogFacility::GetEnabled(logname, result);
+
+    return result;
+}
+        
 
 // ----------------------------------------------------------------------
 
@@ -414,7 +428,8 @@ LogFacility::CloseLogFile ( const std::string & logname, bool del )
 {
     std::ofstream  * fstrm = NULL;
 
-    LogFacility::LogMessage("==== LogFacility Closing ====");
+    if ( LogFacility::IsOpen(logname) )
+        LogFacility::LogMessage(logname, "==== LogFacility Closing ====");
 
     fstrm = (std::ofstream*) LogFacility::RemoveLogStream(logname);
 

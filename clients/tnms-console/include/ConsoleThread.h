@@ -44,6 +44,8 @@ public:
 
     static void  DisplayHelp();
 
+    static bool  GetQuotedString ( size_t indx, CommandList & cmdlist, 
+                                   std::string & str );
 
 protected:
 
