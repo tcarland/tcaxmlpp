@@ -8,16 +8,16 @@
 #include "XmlDocument.h"
 using namespace tcaxmlplus;
 
+#include "tnmsCore.h"
+
 
 namespace tnmsCore {
+
+
 
 #define TNMS_CONFIG_ROOT "tnms"
 #define TNMSAPI_CONFIG_ROOT "tnmsapi"
 
-
-#define DEFAULT_RECONFIG_INTERVAL 120
-#define DEFAULT_HOLDDOWN_INTERVAL 30
-#define DEFAULT_RECONNECT_INTERVAL 30
 
 /*
  *  sample xml config
@@ -65,7 +65,7 @@ typedef struct Subscription
 } subs_t;
 
 
-typedef std::list<std::string>     StringList;
+typedef std::list<Subscription>     SubsList;
 
 
 struct TnmsClientConfig
@@ -78,14 +78,14 @@ struct TnmsClientConfig
     uint32_t     reconnect_interval;
     uint32_t     flush_limit;
 
-    StringList   subs;
+    SubsList     subs;
 
     TnmsClientConfig()
         : hostaddr(0),
           port(0),
-          holddown_interval(DEFAULT_HOLDDOWN_INTERVAL),
-          reconnect_interval(DEFAULT_RECONNECT_INTERVAL),
-          flush_limit(0)
+          holddown_interval(DEFAULT_TNMS_HOLDDOWN_INTERVAL),
+          reconnect_interval(DEFAULT_TNMS_RECONNECT_INTERVAL),
+          flush_limit(DEFAULT_TNMS_FLUSH_LIMIT)
     {}
 };
 
@@ -102,8 +102,8 @@ struct TnmsServerConfig
     TnmsServerConfig()
         : agent_port(0),
           client_port(0),
-          holddown_interval(DEFAULT_HOLDDOWN_INTERVAL),
-          reconnect_interval(DEFAULT_RECONNECT_INTERVAL)
+          holddown_interval(DEFAULT_TNMS_HOLDDOWN_INTERVAL),
+          reconnect_interval(DEFAULT_TNMS_RECONNECT_INTERVAL)
     {}
 };
 

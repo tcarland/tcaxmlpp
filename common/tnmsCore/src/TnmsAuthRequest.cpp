@@ -10,7 +10,7 @@ namespace tnmsCore {
 
 
 ssize_t
-TnmsAuthRequest::serialize ( char * buffer, size_t buffer_len )
+TnmsAuthRequest::serialize ( char * buffer, size_t buffer_len ) const
 {
     ssize_t  pk, wt = 0;
     char   * wptr   = buffer;

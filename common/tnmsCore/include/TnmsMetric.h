@@ -59,7 +59,7 @@ class TnmsMetric : public TnmsMessage {
 
 
     /*  Serializable */
-    virtual ssize_t     serialize   ( char * buffer, size_t buffer_len );
+    virtual ssize_t     serialize   ( char * buffer, size_t buffer_len ) const;
     virtual ssize_t     deserialize ( const char * buffer, size_t buffer_len );
     virtual size_t      size() const;
 

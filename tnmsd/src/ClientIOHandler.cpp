@@ -42,11 +42,14 @@ ClientIOHandler::timeout ( const EventTimer * timer )
     const time_t & now = timer->abstime.tv_sec;
 
     ClientSet::iterator  cIter;
-    for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter ) {
+    for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
+    {
         TnmsClient * client = (TnmsClient*) *cIter;
 
-        if ( client->isMirror() ) {
-            if ( ! client->isConnected() || client->isConnecting() ) {
+        if ( client->isMirror() ) 
+        {
+            if ( ! client->isConnected() || client->isConnecting() )
+            {
                 int c = 0;
 
                 if ( (c = client->connect()) < 0 ) {
@@ -62,13 +65,14 @@ ClientIOHandler::timeout ( const EventTimer * timer )
                         + client->getHostStr());
                     continue;
                 }
-            } else {
-                if ( client->isAuthorized() && ! client->isSubscribed() )
-                    // suball?
-                    client->resubscribe();
-                else if ( ! client->isAuthorized() )
-                    //login
-                    client->login("tnmsd", "");
+            }
+            else 
+            {
+                if ( client->isAuthorized() && ! client->isSubscribed() ) {
+                    client->subscribeAll();
+                } else if ( ! client->isAuthorized() ) {
+                    client->login();
+                }
             }
         }
 

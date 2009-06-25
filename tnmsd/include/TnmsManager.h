@@ -38,6 +38,7 @@ class TnmsManager : public EventTimerHandler {
 
     virtual ~TnmsManager();
 
+
     /* EventTimerHandler */
     virtual void        timeout ( const EventTimer * timer );
 

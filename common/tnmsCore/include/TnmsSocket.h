@@ -78,11 +78,13 @@ class TnmsSocket {
     sockfd_t               getSockFD() const  { return this->getDescriptor(); }
     sockfd_t               getFD() const      { return this->getDescriptor(); }
 
+
     void                   setMessageHandler  ( MessageHandler * msgHandler );
     const MessageHandler*  getMessageHandler();
 
-    void                   reconnectTime      ( const time_t & secs );
-    const time_t&          reconnectTime() const;
+
+    void                   setReconnectTime   ( const time_t & secs );
+    const time_t&          getReconnectTime() const;
 
     void                   setCompression     ( bool    compress );
     bool                   getCompression() const;
@@ -90,15 +92,16 @@ class TnmsSocket {
     void                   setTxQueueSize     ( size_t  bytes );
     size_t                 getTxQueueSize() const;
 
-    std::string            getClientLogin() const;
+    void                   setClientLoginName ( const std::string & login );
+    const std::string&     getClientLoginName() const;
 
-    std::string            getHostStr()  const;
-    std::string            getAddrStr()  const;
-    std::string            getHostname() const;
+    const std::string&     getHostStr()  const;
+    const std::string&     getAddrStr()  const;
+    const std::string&     getHostname() const;
     uint16_t               getHostPort() const;
     uint32_t               getVersion()  const;
 
-    std::string            getErrorStr() const;
+    const std::string&     getErrorStr() const;
     void                   setDebug          ( bool debug );
 
 
@@ -109,14 +112,13 @@ class TnmsSocket {
     void                   setFlushLimit     ( uint32_t limit );
     uint32_t               getFlushLimit();
 
-    void                   enableTimeout     ( bool   timeout );
     void                   setTimeout        ( const time_t & secs );
     const time_t&          getTimeout() const;
 
 
     /*  Authorization / Subscriptions  */
 
-    virtual void           login             ( const std::string &  user,
+    virtual bool           login             ( const std::string &  user,
                                                const std::string &  pw );
 
     virtual void           authReply         ( const TnmsAuthReply & reply );
@@ -139,11 +141,11 @@ class TnmsSocket {
     virtual bool           unsubscribeLevel  ( const std::string & oid );
 
     int                    subscribeCount();
-    void                   resubscribe();
+    bool                   resubscribe();
 
     /*  send message handling / packing  */
 
-    bool                   sendMessage       ( Serializable  * message );
+    bool                   sendMessage       ( const Serializable  * message );
 
   protected:
 

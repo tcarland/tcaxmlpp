@@ -21,7 +21,8 @@ TnmsAgent::login ( const std::string & agentname )
     std::string  login = TNMS_AGENT_ID;
 
     login.append(":").append(agentname);
-    TnmsClient::login(login, "");
+    this->setClientLoginName(login);
+    TnmsClient::login();
     
     return;
 }

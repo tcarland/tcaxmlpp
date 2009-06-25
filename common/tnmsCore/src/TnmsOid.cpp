@@ -171,7 +171,7 @@ TnmsOid::lastValue() const
 
 
 ssize_t
-TnmsOid::serialize ( char * buffer, size_t buffer_len )
+TnmsOid::serialize ( char * buffer, size_t buffer_len ) const
 {
     char   * wptr;
     size_t   wsz;
@@ -191,7 +191,7 @@ TnmsOid::serialize ( char * buffer, size_t buffer_len )
     wt   += pk;
     wptr += pk;
 
-    OidList::iterator  tIter;
+    OidList::const_iterator  tIter;
     for ( tIter = _oidlist.begin(); tIter != _oidlist.end(); ++tIter ) {
         pk = Serializer::Pack(wptr, (wsz-wt), *tIter);
         if ( pk < 0 )

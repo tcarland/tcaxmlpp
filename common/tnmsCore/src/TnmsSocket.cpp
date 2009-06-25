@@ -30,12 +30,12 @@ TnmsSocket::TnmsSocket ( MessageHandler * msgHandler )
       _wxcbuff(NULL),
       _wptr(NULL),
       _loginCtr(0),
-      _clTimeout(TNMS_CLIENT_TIMEOUT),
-      _reconTime(TNMS_CLIENT_TIMEOUT),
+      _clTimeout(DEFAULT_TNMS_CLIENT_TIMEOUT),
+      _reconTime(DEFAULT_TNMS_RECONNECT_INTERVAL),
       _lastWxTime(0),
-      _wxTimeout(TNMS_CLIENT_TIMEOUT),
+      _wxTimeout(DEFAULT_TNMS_CLIENT_TIMEOUT),
       _flush(TNMS_FLUSH_ENABLE),
-      _flushLimit(TNMS_FLUSH_LIMIT),
+      _flushLimit(DEFAULT_TNMS_FLUSH_LIMIT),
       _maxMessages(TNMS_RECORD_LIMIT)
 {
     this->_msgHandler = msgHandler;
@@ -59,12 +59,12 @@ TnmsSocket::TnmsSocket ( const std::string & host, uint16_t port,
       _wxcbuff(NULL),
       _wptr(NULL),
       _loginCtr(0),
-      _clTimeout(TNMS_CLIENT_TIMEOUT),
-      _reconTime(TNMS_CLIENT_TIMEOUT),
+      _clTimeout(DEFAULT_TNMS_CLIENT_TIMEOUT),
+      _reconTime(DEFAULT_TNMS_RECONNECT_INTERVAL),
       _lastWxTime(0),
-      _wxTimeout(TNMS_CLIENT_TIMEOUT),
+      _wxTimeout(DEFAULT_TNMS_CLIENT_TIMEOUT),
       _flush(TNMS_FLUSH_ENABLE),
-      _flushLimit(TNMS_FLUSH_LIMIT),
+      _flushLimit(DEFAULT_TNMS_FLUSH_LIMIT),
       _maxMessages(TNMS_RECORD_LIMIT)
 {
     this->init();
@@ -84,12 +84,12 @@ TnmsSocket::TnmsSocket ( BufferedSocket * sock, MessageHandler * msgHandler )
       _wxcbuff(NULL),
       _wptr(NULL),
       _loginCtr(0),
-      _clTimeout(TNMS_CLIENT_TIMEOUT),
-      _reconTime(TNMS_CLIENT_TIMEOUT),
+      _clTimeout(DEFAULT_TNMS_CLIENT_TIMEOUT),
+      _reconTime(DEFAULT_TNMS_RECONNECT_INTERVAL),
       _lastWxTime(0),
-      _wxTimeout(TNMS_CLIENT_TIMEOUT),
+      _wxTimeout(DEFAULT_TNMS_CLIENT_TIMEOUT),
       _flush(TNMS_FLUSH_ENABLE),
-      _flushLimit(TNMS_FLUSH_LIMIT),
+      _flushLimit(DEFAULT_TNMS_FLUSH_LIMIT),
       _maxMessages(TNMS_RECORD_LIMIT)
 {
     if ( sock == NULL )
@@ -132,7 +132,6 @@ TnmsSocket::init()
     _authorized     = false;
     _subscribed     = false;
     _subtree        = false;
-    _reconTime      = TNMS_CLIENT_TIMEOUT;      // reconnect
     _loginCtr       = 0;
 
     // buffers
@@ -283,25 +282,32 @@ TnmsSocket::send ( const time_t & now )
 
     fl = _sock->flushAvailable() + _wxcbuff->readAvailable();
 
-    if ( wt == 0 && fl > 0 ) {
-        if ( _lastWxTime > 0 ) {
-            if ( _wxstallsz <= (size_t) fl ) {
+    if ( wt == 0 && fl > 0 ) 
+    {
+        if ( _lastWxTime > 0 ) 
+        {
+            if ( _wxstallsz <= (size_t) fl ) 
+            {
                 if ( (_lastWxTime + _wxTimeout) < now ) {
-                    if ( _errstr.empty() )
-                        _errstr = "TnmsSocket::send()";
-                    _errstr.append(" client stalled, timeout exceeded");
+                    _errstr = "TnmsSocket::send() client stalled, timeout exceeded";
                     return -1;
                 }
                 _wxstallsz = fl;
-            } else {
+            } 
+            else 
+            {
                 _lastWxTime = 0;
                 _wxstallsz  = 0;
             }
-        } else {
-            _lastWxTime  = now;
-            _wxstallsz = fl;
+        } 
+        else 
+        {
+            _lastWxTime = now;
+            _wxstallsz  = fl;
         }
-    } else if ( wt > 0 ) {
+    } 
+    else if ( wt > 0 ) 
+    {
         _lastWxTime = 0;
         _wxstallsz  = 0;
         _txCtr     += wt;
@@ -442,13 +448,13 @@ TnmsSocket::getDescriptor() const
 // ------------------------------------------------------------------- //
 
 void
-TnmsSocket::reconnectTime ( const time_t & secs )
+TnmsSocket::setReconnectTime ( const time_t & secs )
 {
     this->_reconTime = secs;
 }
 
 const time_t&
-TnmsSocket::reconnectTime() const
+TnmsSocket::getReconnectTime() const
 {
     return this->_reconTime;
 }
@@ -517,25 +523,28 @@ TnmsSocket::getBytesReceived()
 
 // ------------------------------------------------------------------- //
 
-void
+bool
 TnmsSocket::login ( const std::string & user, const std::string & pw )
 {
 
     this->_login = user;
 
+    if ( ! this->isConnected() ) {
+        _authorizing = false;
+        _authorized  = false;
+        return false;
+    }
+
     if ( _authorizing && _loginCtr > TNMS_LOGIN_ATTEMPTS ) {
         this->close();
-        return;
+        return false;
     } else {
         _loginCtr++;
         _authorizing = true;
     }
 
     TnmsAuthRequest  req(user, pw);
-    this->sendMessage(&req);
-    this->_login  = user;
-
-    return;
+    return this->sendMessage(&req);
 }
 
 // ------------------------------------------------------------------- //
@@ -554,8 +563,14 @@ TnmsSocket::isSubscribed() const
 
 // ------------------------------------------------------------------- //
 
-std::string
-TnmsSocket::getClientLogin() const
+void
+TnmsSocket::setClientLoginName ( const std::string & login )
+{
+    this->_login = login;
+}
+
+const std::string&
+TnmsSocket::getClientLoginName() const
 {
     return this->_login;
 }
@@ -584,7 +599,7 @@ TnmsSocket::setHostStr()
 
 // ------------------------------------------------------------------- //
 
-std::string
+const std::string&
 TnmsSocket::getHostStr() const
 {
     return this->_hoststr;
@@ -592,7 +607,7 @@ TnmsSocket::getHostStr() const
 
 // ------------------------------------------------------------------- //
 
-std::string
+const std::string&
 TnmsSocket::getAddrStr() const
 {
     return this->_addrstr;
@@ -600,7 +615,7 @@ TnmsSocket::getAddrStr() const
 
 // ------------------------------------------------------------------- //
 
-std::string
+const std::string&
 TnmsSocket::getHostname() const
 {
     return this->_hostname;
@@ -624,7 +639,7 @@ TnmsSocket::getVersion() const
 
 // ------------------------------------------------------------------- //
 
-std::string
+const std::string&
 TnmsSocket::getErrorStr() const
 {
     return this->_errstr;
@@ -659,6 +674,8 @@ TnmsSocket::flushEnabled()
 void
 TnmsSocket::setFlushLimit ( uint32_t limit )
 {
+    if ( limit > this->_maxMessages )
+        limit = this->_maxMessages;
     this->_flushLimit = limit;
 }
 
@@ -696,15 +713,21 @@ TnmsSocket::subscribeCount()
 
 // ------------------------------------------------------------------- //
 
-void
+bool
 TnmsSocket::resubscribe()
 {
+    if ( ! this->isAuthorized() ) {
+        _subscribed = false;
+        return _subscribed;
+    }
+
     SubscriptionList::iterator  sIter;
+    for ( sIter = _subs.begin(); sIter != _subs.end(); ++sIter ) {
+        if ( (_subscribed = this->sendMessage(&(*sIter))) == false )
+            break;
+    }
 
-    for ( sIter = _subs.begin(); sIter != _subs.end(); ++sIter )
-        this->subscribe(sIter->getElementName());
-
-    return;
+    return _subscribed;
 }
 // ------------------------------------------------------------------- //
 
@@ -763,8 +786,8 @@ TnmsSocket::subscribe ( const std::string & name )
 {
     TnmsSubscribe msg(name);
     _subs.insert(msg);
-    _subscribed = true;
-    return this->sendMessage(&msg);
+    _subscribed = this->sendMessage(&msg);
+    return _subscribed;
 }
 
 bool
@@ -873,7 +896,7 @@ TnmsSocket::authReply ( const TnmsAuthReply & reply )
 // ------------------------------------------------------------------- //
 
 bool
-TnmsSocket::sendMessage ( Serializable * message )
+TnmsSocket::sendMessage ( const Serializable * message )
 {
     size_t  msz, wt;
 

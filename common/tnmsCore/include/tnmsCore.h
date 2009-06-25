@@ -33,12 +33,18 @@
 #define TNMS_PACKET_SIZE           ( TNMS_RECORD_SIZE * TNMS_RECORD_LIMIT )
 #define TNMS_MAX_PACKET_SIZE       ( TNMS_PACKET_SIZE * 2 )
 
-#define TNMS_FLUSH_LIMIT           500         // minimum flush amt
-#define TNMS_CLIENT_TIMEOUT        120         // stall timeout
-#define TNMS_LOGIN_ATTEMPTS        5
-#define TNMS_LOGIN_INTERVAL        15
 #define TNMS_COMPRESSION_ENABLE    0
 #define TNMS_FLUSH_ENABLE          1
+
+#define TNMS_LOGIN_ATTEMPTS        5
+#define TNMS_LOGIN_INTERVAL        15
+
+#define DEFAULT_TNMS_FLUSH_LIMIT           100         // minimum flush amt
+#define DEFAULT_TNMS_CLIENT_TIMEOUT        120         // stall timeout
+
+#define DEFAULT_TNMS_RECONFIG_INTERVAL     120
+#define DEFAULT_TNMS_HOLDDOWN_INTERVAL     30
+#define DEFAULT_TNMS_RECONNECT_INTERVAL    30
 
 
 #include "tnmsProtocol.h"

@@ -30,7 +30,7 @@ TnmsAuthReply::authData() const
 
 
 ssize_t
-TnmsAuthReply::serialize ( char * buffer, size_t buffer_len )
+TnmsAuthReply::serialize ( char * buffer, size_t buffer_len ) const
 {
     ssize_t  pk, wt = 0;
     char   * wptr   = buffer;

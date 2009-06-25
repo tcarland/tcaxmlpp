@@ -232,10 +232,16 @@ TnmsConfigHandler::parseClient ( XmlNode * node )
     XmlNodeList nlist = node->getNodeList();
 
     XmlNodeList::iterator  nIter;
-    for ( nIter = nlist.begin(); nIter != nlist.end(); ++nIter ) {
+    for ( nIter = nlist.begin(); nIter != nlist.end(); ++nIter ) 
+    {
         snode = (XmlNode*) *nIter;
-        if ( snode->getNodeName().compare("subscribe") == 0 )
-            clientcfg.subs.push_back(snode->getAttribute("name"));
+        if ( snode->getNodeName().compare("subscribe") == 0 ) {
+            Subscription sub;
+            sub.name = snode->getAttribute("name");
+            if ( snode->haveAttribute("depth") )
+                sub.depth = StringUtils::fromString<uint32_t>(snode->getAttribute("depth"));
+            clientcfg.subs.push_back(sub);
+        }
     }
 
     config.clients.push_back(clientcfg);

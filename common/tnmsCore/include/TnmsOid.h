@@ -60,7 +60,7 @@ public:
     size_t           length() const { return this->getOidLength(); }
 
     // Serializable
-    virtual ssize_t  serialize       ( char * buffer, size_t len );
+    virtual ssize_t  serialize       ( char * buffer, size_t len ) const;
     virtual ssize_t  deserialize     ( const char * buffer, size_t len );
     virtual size_t   size() const;
     virtual uint16_t message_type() const { return 0; }

@@ -25,11 +25,13 @@ class TnmsClient : public TnmsSocket {
     // TnmsSocket
     virtual int     send ( const time_t & now );
     virtual void    close();
+    virtual bool    login ( const std::string & name, const std::string & pw );
 
     // TnmsClient
     virtual void    AuthReplyHandler    ( const TnmsAuthReply   & reply );
     virtual void    AuthRequestHandler  ( const TnmsAuthRequest & request );
 
+    bool            login();
     void            queueAdd     ( TnmsTree::Node  * node );
     void            queueUpdate  ( TnmsTree::Node  * node );
     void            queueRemove  ( TnmsTree::Node  * node );

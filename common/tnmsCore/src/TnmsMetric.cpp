@@ -74,7 +74,7 @@ TnmsMetric::setPvtData ( const std::string & data )
 
 
 ssize_t
-TnmsMetric::serialize ( char * buffer, size_t  buffer_len )
+TnmsMetric::serialize ( char * buffer, size_t  buffer_len ) const
 {
     char    * wptr;
     size_t    wsz;

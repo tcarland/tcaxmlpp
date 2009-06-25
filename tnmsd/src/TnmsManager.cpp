@@ -174,17 +174,24 @@ TnmsManager::createClients()
         LogFacility::LogMessage("TnmsManager::createClients()");
 
     for ( cIter = clist.begin(); cIter != clist.end(); ++cIter ) {
+        TnmsClientConfig & cfg = *cIter;
+
         client = new TnmsClient(_tree);
 
         // set client attributes
-        //client->setReconnectInterval(cIter->reconnect_interval);
+        client->setCompression(_tconfig.compression);
+        client->setReconnectTime(cfg.reconnect_interval);
         _clientHandler->addMirror(client);
 
         if ( client->openConnection(cIter->hostname, cIter->port)  < 0 )
             continue;
 
         id = _evmgr->addIOEvent(_clientHandler, client->getDescriptor(), client);
-        client->login("tnmsd", _tconfig.agent_name);
+
+        std::string  login = TNMS_AGENT_ID;
+        login.append(":").append(_tconfig.agent_name);
+        client->setClientLoginName(login);
+        client->login();
 
         MirrorConnection  mirror(id, *cIter, client);
         _clients[cIter->connection_name] = mirror;

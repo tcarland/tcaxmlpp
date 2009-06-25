@@ -13,7 +13,7 @@ public:
 
     virtual ~Serializable() {}
 
-    virtual ssize_t  serialize   ( char * buffer, size_t buffer_len ) = 0;
+    virtual ssize_t  serialize   ( char * buffer, size_t buffer_len ) const = 0;
     virtual ssize_t  deserialize ( const char * buffer, size_t buffer_len ) = 0;
 
     virtual size_t   size() const = 0;

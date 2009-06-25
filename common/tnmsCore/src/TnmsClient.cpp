@@ -185,6 +185,18 @@ TnmsClient::inTreeSend ( bool insend )
     _inTreeSend = insend;
 }
 
+bool
+TnmsClient::login ( const std::string & name, const std::string & pw ) 
+{
+    return TnmsSocket::login(name, pw);
+}
+
+
+bool
+TnmsClient::login()
+{
+    return TnmsSocket::login(this->getClientLoginName(), "");
+}
 
 void
 TnmsClient::AuthReplyHandler ( const TnmsAuthReply & reply )

@@ -59,7 +59,7 @@ TnmsMessage::operator< ( const TnmsMessage & msg ) const
 
 
 ssize_t
-TnmsMessage::serialize ( char * buffer, size_t buffer_len )
+TnmsMessage::serialize ( char * buffer, size_t buffer_len ) const
 {
     ssize_t  pk, wt = 0;
 

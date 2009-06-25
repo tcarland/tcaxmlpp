@@ -65,6 +65,9 @@ AuthClient::timeout ( const EventTimer * timer )
         if ( this->connect() <= 0 )
             return;
 
+    if ( ! this->isAuthorized() )
+        this->login();
+
     if ( this->receive(now) < 0 ) {
         this->close();
         return;
@@ -154,7 +157,7 @@ AuthClient::unauthClient ( TnmsClient * client )
 
     AuthRequestMap::iterator  rIter;
 
-    rIter = _authMap.find(client->getClientLogin());
+    rIter = _authMap.find(client->getClientLoginName());
 
     if ( rIter != _authMap.end() )
         _authMap.erase(rIter);
