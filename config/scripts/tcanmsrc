@@ -8,16 +8,18 @@ export LANG=en_US.ISO8859-1
 
 export TCANMS_HOME="${HOME}/tcanms"
 
-export TCANMS_TMP=${TCANMS_HOME}/tmp
 export TCANMS_BIN=${TCANMS_HOME}/bin
 export TCANMS_SBIN=${TCANMS_HOME}/sbin
+export TCANMS_TMP=${TCANMS_HOME}/tmp
 export TCANMS_LOGS=${TCANMS_HOME}/logs
 
 export TCANMS_USER="tcanms"
 export TCANMS_EMAIL="tcanms@charltontechnology.net"
+
+export TCANMS_DB="mysql"
+
 export TCANMS_USE_CRON=0
 export TCANMS_CRON_INTERVAL=5
-
 export EMAIL_ON_ERROR=0
 
 

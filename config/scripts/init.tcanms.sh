@@ -1,10 +1,20 @@
+#!/bin/bash
+#
+#   TcaNms init script 
+#
+#   The script is used for starting, stopping, and verifying TcaNms services.
+#
+#
 
-SYSHOME=
+
+SYSHOME=""
 CURDIR=`dirname $0`
 
 if [ "$CURDIR" == "." ]; then
     CURDIR=${PWD}
 fi
+
+echo "init.tcanms: current dir: $CURDIR"
 
 
 if [ -n "$TCANMS_HOME" ] && [ -d $TCANMS_HOME ]; then
@@ -19,6 +29,7 @@ fi
 
 
 CONFIGDIR="$SYSHOME/etc"
+
 
 if [ -z "$RC_TCANMS_BASHRC" ]; then
     if [ -e $CONFIGDIR/tcanmsrc ]; then
