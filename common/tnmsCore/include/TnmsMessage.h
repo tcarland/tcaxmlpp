@@ -43,9 +43,9 @@ public:
     virtual ~TnmsMessage();
 
     
-    void                operator=     ( const TnmsMessage & msg );
-    bool                operator==    ( const TnmsMessage & msg ) const;
-    bool                operator<     ( const TnmsMessage & msg ) const;
+    virtual void        operator=     ( const TnmsMessage & msg );
+    virtual bool        operator==    ( const TnmsMessage & msg ) const;
+    virtual bool        operator<     ( const TnmsMessage & msg ) const;
 
     const std::string&  getElementName() const { return this->_element_name; }
     const TnmsOid&      getElementOid()  const { return this->_element_oid; }

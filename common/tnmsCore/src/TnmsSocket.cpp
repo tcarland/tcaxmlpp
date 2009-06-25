@@ -702,7 +702,7 @@ TnmsSocket::resubscribe()
     SubscriptionList::iterator  sIter;
 
     for ( sIter = _subs.begin(); sIter != _subs.end(); ++sIter )
-        this->subscribe(*sIter);
+        this->subscribe(sIter->getElementName());
 
     return;
 }
@@ -762,6 +762,8 @@ bool
 TnmsSocket::subscribe ( const std::string & name )
 {
     TnmsSubscribe msg(name);
+    _subs.insert(msg);
+    _subscribed = true;
     return this->sendMessage(&msg);
 }
 
@@ -778,6 +780,9 @@ bool
 TnmsSocket::unsubscribe ( const std::string & name )
 {
     TnmsUnsubscribe msg(name);
+    _subs.erase(msg);
+    if ( _subs.size() == 0 )
+        _subscribed = false;
     return this->sendMessage(&msg);
 }
 

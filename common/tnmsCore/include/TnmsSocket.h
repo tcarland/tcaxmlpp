@@ -32,7 +32,7 @@ using namespace zlib_stream;
 namespace tnmsCore {
 
 
-typedef std::set<std::string>  SubscriptionList;
+typedef std::set<TnmsMessage>  SubscriptionList;
 
 
 class TnmsSocket {
