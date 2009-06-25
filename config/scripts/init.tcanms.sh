@@ -37,7 +37,7 @@ CONFIGDIR="$SYSHOME/etc"
 if [ -z "$RC_TCANMS_BASHRC" ]; then
     if [ -e $CONFIGDIR/tcanmsrc ]; then
         echo "Using rc file from $CONFIGDIR"
-        source $CONFIGPATH/tcanmsrc
+        source $CONFIGDIR/tcanmsrc
     elif [ -e $HOME/tcanmsrc ]; then
         echo "Using rc file from $HOME"
         source $HOME/tcanmsrc
@@ -52,13 +52,13 @@ fi
 
 
 
-if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ${SYSHOME}/bin/init.tcanms_functions.sh ]; then
-    source ${SYSHOME}/bin/init.tcanms_functions.sh
+if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ${SYSHOME}/sbin/init.tcanms_functions.sh ]; then
+    source ${SYSHOME}/sbin/init.tcanms_functions.sh
 fi
-if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ./bin/init.tcanms_functions.sh ]; then
-    source ./bin/init.tcanms_functions.sh
+if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ./sbin/init.tcanms_functions.sh ]; then
+    source ./sbin/init.tcanms_functions.sh
 fi
-if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ./init.tcanms_functions.sh ]; then
+if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ./sinit.tcanms_functions.sh ]; then
     source ./init.tcanms_functions.sh
 fi
 
