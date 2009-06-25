@@ -8,13 +8,13 @@ PID=
 
 check_binary_is_script()
 {
-	local BIN=${BINDIR}/$1
-	local IS_SCRIPT=`file $BIN | sed -n '/script/p'`
-	if [ "$IS_SCRIPT" != "" ]; then
-		return 1
-	else
-		return 0
-	fi
+    local BIN=${BINDIR}/$1
+    local IS_SCRIPT=`file $BIN | sed -n '/script/p'`
+    if [ "$IS_SCRIPT" != "" ]; then
+        return 1
+    else
+        return 0
+    fi
 }
 
 get_process_list()
@@ -80,6 +80,7 @@ get_config_list()
         else
             CONFIGLIST="$CONFIGLIST $cfg"
         fi
+
     done
 
     if [ -z "$CONFIGLIST" ]; then
@@ -97,7 +98,9 @@ check_process_pid()
     if ps ax | grep $pid | grep -v grep 1> /dev/null 2> /dev/null ; then
         return 1;
     fi
+
     echo "DEAD" >> ${PROCESS_STATUS_FILE}
+
     return 0
 }
 
@@ -210,37 +213,37 @@ start_process()
 
     # Is the binary a script?  If so, pass the call through
     if [ $is_script -gt 0 ]; then
-	${BINDIR}/$bin start ${CONFIGDIR}/${cfg}
-	if [ $? != 1 ]; then
-		return $?
- 	fi
-    	echo "Process $bin started"
+        ${BINDIR}/$bin start ${CONFIGDIR}/${cfg}
+        if [ $? != 1 ]; then
+            return $?
+        fi
+        echo "Process $bin started"
     else
-    	if [ $PID -gt 0 ]; then
-        	echo "Process $PID is already running..stop first"
-        	return 0
-    	fi
+        if [ $PID -gt 0 ]; then
+            echo "Process $PID is already running..stop first"
+            return 0
+        fi
 
-    	if [ -n "$DEBUG" ]; then
-       	 dbin="$bin -d"
-       	 echo "'${BINDIR}/${dbin} -c ${CONFIGDIR}/${cfg} &'"
-    	else
-       	 dbin="$bin -D"
-    	fi
+        if [ -n "$DEBUG" ]; then
+            dbin="$bin -d"
+            echo "'${BINDIR}/${dbin} -c ${CONFIGDIR}/${cfg} &'"
+        else
+            dbin="$bin -D"
+        fi
     
-    	$BINDIR/$dbin -c $CONFIGDIR/$cfg 1> /dev/null 2> /dev/null &
-    	echo ""
-    	sleep 1
+        $BINDIR/$dbin -c $CONFIGDIR/$cfg 1> /dev/null 2> /dev/null &
+        echo ""
+        sleep 1
 
-    	pid=`ps awwwx | grep "$bin" | grep "$cfg" | grep -v "grep" | grep -v "init" | awk '{ print $1 }'`
-    	echo ""
+        pid=`ps awwwx | grep "$bin" | grep "$cfg" | grep -v "grep" | grep -v "init" | awk '{ print $1 }'`
+        echo ""
     
-    	echo $pid > $PIDFILE
-    	echo "Process $bin started: $pid"
+        echo $pid > $PIDFILE
+        echo "Process $bin started: $pid"
     fi
 
     if [ $TCANMS_USE_CRON -eq 1 ]; then
-	install_cron_task $bin $key
+        install_cron_task $bin $key
     fi
     return 1
 }
@@ -300,38 +303,38 @@ stop_process()
 
     # Is the binary a script?  If so, pass the call through
     if [ $is_script -gt 0 ]; then
-    	echo "Killing process"
-	${BINDIR}/$bin stop $key
-	if [ $? != 1 ]; then
-		echo "Failed to terminate process" >> $INITERRLOG
-		return 0
-	fi
+        echo "Killing process"
+        ${BINDIR}/$bin stop $key
+        if [ $? != 1 ]; then
+            echo "Failed to terminate process" >> $INITERRLOG
+            return 0
+        fi
     else
-    	if [ $retval -eq 0 ]; then
-       	 	return 1
-    	fi
+        if [ $retval -eq 0 ]; then
+            return 1
+        fi
 
-    	echo "Killing process $PID"
-    	kill $PID
-    	sleep 3
+        echo "Killing process $PID"
+        kill $PID
+        sleep 3
 
-    	check_process_pid $PID
+        check_process_pid $PID
 
-    	retval=$?
+        retval=$?
 
-    	if [ $retval -gt 0 ] ; then
-       	 echo "  Sending SIGKILL"
-       	 kill -9 $PID
-    	else
-       	 echo "  Process terminated"
-    	fi
+        if [ $retval -gt 0 ] ; then
+            echo "  Sending SIGKILL"
+       	    kill -9 $PID
+        else
+            echo "  Process terminated"
+        fi
 
-    	# check again to enforce removal of pidfile
-    	check_process $bin $key
+        # check again to enforce removal of pidfile
+        check_process $bin $key
 
-    fi
+        fi
     if [ $TCANMS_USE_CRON -eq 1 ]; then
-	uninstall_cron_task $bin $key
+        uninstall_cron_task $bin $key
     fi
     return 1
 }
@@ -473,9 +476,12 @@ install_cron_task()
     # Now add the cron task for this key/cfg
     # Be sure cfg doesn't have slashes in it
     local cron_file=${TCANMS_TMP}/crontab.tmp
+
     crontab -l > ${cron_file}
+
     echo "*/${TCANMS_CRON_INTERVAL} * * * * export EMAIL_ON_ERROR=1 && ${bin_path} info ${bin} ${key} >> /dev/null 2>&1" >> ${cron_file}
     echo "Installing cron task for ${bin}/${key}..."
+
     crontab ${cron_file}	
 }
 

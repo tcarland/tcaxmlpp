@@ -11,7 +11,9 @@ if [ "$CURDIR" == "." ]; then
     CURDIR=${PWD}
 fi
 
-echo "init.tcanms: current dir: $CURDIR"
+echo ""
+echo "tcanms_install: "
+echo "   current directory: $CURDIR"
 
 
 if [ -z "$TCANMS_PREFIX" ]; then
@@ -42,6 +44,8 @@ TCANMS_TMP=${TCANMS_PREFIX}/tmp
 TCANMS_LOG=${TCANMS_PREFIX}/logs
 TCANMS_RUN=${TCANMS_PREFIX}/run
 
+echo "  Creating directory structure (if needed)."
+
 if [ ! -d $TCANMS_BIN ]; then
     mkdir -p $TCANMS_BIN
 fi
@@ -60,6 +64,9 @@ fi
 if [ ! -d $TCANMS_RUN ]; then
     mkdir -p $TCANMS_RUN
 fi
+
+echo "tcanms_install: finished."
+echo ""
 
 exit 0
 

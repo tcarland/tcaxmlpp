@@ -6,16 +6,12 @@
 #
 #
 
-
 SYSHOME=""
 CURDIR=`dirname $0`
 
 if [ "$CURDIR" == "." ]; then
     CURDIR=${PWD}
 fi
-
-echo "init.tcanms: current dir: $CURDIR"
-
 
 if [ -n "$TCANMS_HOME" ] && [ -d $TCANMS_HOME ]; then
     SYSHOME="$TCANMS_HOME"
@@ -26,6 +22,13 @@ fi
 if [ -z "$SYSHOME" ]; then
     SYSHOME="$CURDIR"
 fi
+
+echo ""
+echo "init.tcanms:"
+echo ""
+echo "  current dir: $CURDIR"
+echo "  tcanms home: $SYSHOME"
+echo ""
 
 
 CONFIGDIR="$SYSHOME/etc"
@@ -48,15 +51,6 @@ if [ -z "$RC_TCANMS_BASHRC" ]; then
 fi
 
 
-BINDIR="$SYSHOME/bin"
-RUNDIR="$SYSHOME/run"
-LOGDIR="$SYSHOME/logs"
-
-export INITERRLOG="$SYSHOME/tmp/init_error.log"
-export PROCESS_STATUS_FILE="$SYSHOME/tmp/init_status.log"
-echo -n "PROCESS_STATUS_CODE=" >> $PROCESS_STATUS_FILE
-INITERR=0
-
 
 if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ${SYSHOME}/bin/init.tcanms_functions.sh ]; then
     source ${SYSHOME}/bin/init.tcanms_functions.sh
@@ -72,6 +66,17 @@ if [ -z "$RC_TCANMS_FUNCTIONS" ]; then
     echo "Failed to locate init.tcanms_functions.sh"
     exit 1
 fi
+
+
+
+BINDIR="$SYSHOME/bin"
+RUNDIR="$SYSHOME/run"
+LOGDIR="$SYSHOME/logs"
+
+export INITERRLOG="$SYSHOME/tmp/init_error.log"
+export PROCESS_STATUS_FILE="$SYSHOME/tmp/init_status.log"
+echo -n "PROCESS_STATUS_CODE=" >> $PROCESS_STATUS_FILE
+INITERR=0
 
 
 
@@ -340,9 +345,9 @@ info_services()
 usage()
 {
     echo ""
-    echo "Usage: $0 {start|stop|restart|info}  [process]  [key]"
+    echo "Usage: $0 {start|stop|restart|info}  [service]  [key]"
     echo ""
-    echo "  process = process or binary name "
+    echo "  service = service name to start"
     echo "  key     = process identifier "
     echo ""
     echo "  Note: 'restart' will only restart services determined not currently "
@@ -371,7 +376,9 @@ case "$1" in
         usage
 esac
 
+
 retval=$?
+
 if [ $retval -eq 0 ]; then
     if [ -n "${EMAIL_ON_ERROR}" ] && [ ${EMAIL_ON_ERROR} == 1 ]; then
         send_errlog $INITERRLOG
