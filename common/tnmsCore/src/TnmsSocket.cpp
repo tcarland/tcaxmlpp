@@ -721,6 +721,7 @@ TnmsSocket::subscribeStructure()
 
     if ( this->flush() < 0 )
         return false;
+
     return true;
 }
 
@@ -737,6 +738,7 @@ TnmsSocket::unsubscribeStructure()
 
     if ( this->flush() < 0 )
         return false;
+
     return true;
 }
 

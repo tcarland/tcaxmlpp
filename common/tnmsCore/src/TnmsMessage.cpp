@@ -35,6 +35,29 @@ TnmsMessage::TnmsMessage ( const std::string & name,
 TnmsMessage::~TnmsMessage() {}
 
 
+void
+TnmsMessage::operator= ( const TnmsMessage & msg ) 
+{
+    _element_name = msg.getElementName();
+    _element_oid  = msg.getElementOid();
+    _message_type = msg.getMessageType();
+}
+
+
+bool
+TnmsMessage::operator== ( const TnmsMessage & msg ) const
+{
+    return( this->_element_name.compare(msg.getElementName()) == 0 );
+}
+
+
+bool
+TnmsMessage::operator< ( const TnmsMessage & msg ) const
+{
+    return( this->_element_name < msg.getElementName() );
+}
+
+
 ssize_t
 TnmsMessage::serialize ( char * buffer, size_t buffer_len )
 {

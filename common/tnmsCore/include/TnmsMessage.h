@@ -42,6 +42,10 @@ public:
 
     virtual ~TnmsMessage();
 
+    
+    void                operator=     ( const TnmsMessage & msg );
+    bool                operator==    ( const TnmsMessage & msg ) const;
+    bool                operator<     ( const TnmsMessage & msg ) const;
 
     const std::string&  getElementName() const { return this->_element_name; }
     const TnmsOid&      getElementOid()  const { return this->_element_oid; }
@@ -63,7 +67,10 @@ protected:
     eMessageType        _message_type;
 };
 
+
+
 typedef class TnmsMessage TnmsRequest;
+
 
 
 /**  The TnmsAdd class is simply a conveniece class that inherits 
@@ -83,6 +90,7 @@ class TnmsAdd : public TnmsMessage {
 
     virtual ~TnmsAdd() {}
 };
+
 
 
 /**  The TnmsRemove class is simply a conveniece class that 
@@ -109,6 +117,7 @@ class TnmsRemove : public TnmsMessage {
 };
 
 
+
 /**  The TnmsSubscribe class is simply a conveniece class that 
   *  inherits the TnmsMessage class and sets the message_type 
   *  accordingly.
@@ -131,6 +140,7 @@ class TnmsSubscribe : public TnmsMessage {
 
     virtual ~TnmsSubscribe() {}
 };
+
 
 
 /**  The TnmsUnsubscribe class is simply a conveniece class that 
