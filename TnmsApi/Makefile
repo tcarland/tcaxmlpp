@@ -63,3 +63,11 @@ distclean: clean lib-clean doc-clean
 	$(RM) $(BIN)
 
 install:
+ifdef TCANMS_PREFIX
+	@echo "Installing TnmsAPI..."
+	$(MKDIR) $(TCANMS_PREFIX)/include/tnmsapi
+	$(MKDIR) $(TCANMS_PREFIX)/lib
+	$(RSYNC) --delete ./*.h $(TCANMS_PREFIX)/include/tnmsapi/
+	$(RSYNC) lib/ $(TCANMS_PREFIX)/lib/
+	@echo
+endif

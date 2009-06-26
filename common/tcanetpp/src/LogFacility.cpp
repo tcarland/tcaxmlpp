@@ -50,6 +50,7 @@ bool               LogFacility::_InitLock   = false;
 bool               LogFacility::_TryLock    = false;
 bool               LogFacility::_Syslog     = false;
 bool               LogFacility::_Broadcast  = false;
+bool               LogFacility::_Enabled    = false;
 bool               LogFacility::_Debug      = false;
 std::string        LogFacility::_LogName   = "";
 std::string        LogFacility::_LogPrefix  = "tcanetpp::LogFacility";
@@ -116,6 +117,7 @@ LogFacility::OpenSyslog ( const std::string & prefix, int facility )
 
     ::openlog(prefix.c_str(), LOG_PID, facility);
     LogFacility::_Syslog   = true;
+    LogFacility::_Enabled  = true;
     LogFacility::InitLogMessage();
 
     return true;
@@ -146,6 +148,7 @@ LogFacility::AddLogStream ( const std::string & logname, const std::string & pre
     if ( sIter == LogFacility::_StreamMap.end() ) {
         LogStream  lstrm(logname, prefix, stream);
         LogFacility::_StreamMap[logname] = lstrm;
+        LogFacility::_Enabled = true;
         result = true;
     }
 
@@ -172,6 +175,9 @@ LogFacility::RemoveLogStream ( const std::string & logname, bool del )
         LogFacility::_StreamMap.erase(sIter);
     }
 
+    if ( _StreamMap.empty() && ! _Syslog )
+        _Enabled = false;
+
     LogFacility::Unlock();
 
     return ptr;
@@ -194,6 +200,10 @@ LogFacility::RemoveLogStreams ( bool del )
     }
 
     _StreamMap.clear();
+
+    if ( ! _Syslog )
+        _Enabled = false;
+
     LogFacility::Unlock();
 
     return;
@@ -201,6 +211,18 @@ LogFacility::RemoveLogStreams ( bool del )
 
 
 // ----------------------------------------------------------------------
+
+bool
+LogFacility::LogFacilityIsOpen()
+{
+    StreamMap::const_iterator  sIter;
+
+    for ( sIter = _StreamMap.begin(); sIter != _StreamMap.end(); ++sIter )
+        if ( sIter->second.enabled )
+            return true;
+
+    return false;
+}
 
 bool
 LogFacility::SetEnabled ( const std::string & logname, bool enabled )
@@ -211,6 +233,9 @@ LogFacility::SetEnabled ( const std::string & logname, bool enabled )
     StreamMap::iterator  sIter = LogFacility::_StreamMap.find(logname);
     if ( sIter != _StreamMap.end() )
         sIter->second.enabled = enabled;
+
+    if ( ! enabled && _StreamMap.size() > 1 )
+        LogFacility::_Enabled = LogFacility::LogFacilityIsOpen();
 
     LogFacility::Unlock();
 
@@ -259,22 +284,36 @@ LogFacility::GetDebug()
 bool
 LogFacility::IsOpen()
 {
-    if ( LogFacility::_StreamMap.size() == 0 )
-        return false;
+    bool open = false;
 
-    // run predicate to ensure not all streams are disabled.
+    if ( LogFacility::_StreamMap.size() == 0 )
+        return open;
+
+    if ( ! LogFacility::Lock() )
+        return open;
+
+    StreamMap::iterator sIter;
+    for ( sIter = _StreamMap.begin(); sIter != _StreamMap.end(); ++sIter )
+    {
+        if ( sIter->second.enabled ) {
+            open = true;
+            break;
+        }
+    }
+
+    LogFacility::Unlock();
     
-    return true;
+    return open;
 }
 
 bool
 LogFacility::IsOpen ( const std::string & logname ) 
 {
-    bool result = false;
+    bool open = false;
 
-    LogFacility::GetEnabled(logname, result);
+    LogFacility::GetEnabled(logname, open);
 
-    return result;
+    return open;
 }
         
 
@@ -340,7 +379,7 @@ LogFacility::LogToAllStreams ( const std::string & entry, bool newline )
         else if ( ! LogFacility::_LogPrefix.empty() )
             *(strm) << LogFacility::_LogPrefix << ": ";
 
-        if ( LogFacility::_LogTime > 0 )
+        if ( LogFacility::_LogTime > 0 && sIter->second.showTime )
             *(strm) << LogFacility::_LogTimeStr << " : ";
 
         *(strm) << entry;
@@ -382,7 +421,7 @@ LogFacility::LogToStream ( const std::string & logname,
         else if ( ! LogFacility::_LogPrefix.empty() )
             *(strm) << LogFacility::_LogPrefix  << ": ";
 
-        if ( LogFacility::_LogTime > 0 )
+        if ( LogFacility::_LogTime > 0 && sIter->second.showTime )
             *(strm) << LogFacility::_LogTimeStr << " : ";
 
         *(strm) << entry;
@@ -504,6 +543,22 @@ LogFacility::GetDefaultLogName()
 }
 
 // ----------------------------------------------------------------------
+
+bool
+LogFacility::ShowLogTime ( const std::string & logname, bool showTime )
+{
+    if ( ! LogFacility::Lock() )
+        return false;
+
+    StreamMap::iterator sIter = _StreamMap.find(logname);
+
+    if ( sIter != _StreamMap.end() )
+        sIter->second.showTime = showTime;
+
+    LogFacility::Unlock();
+
+    return true;
+}
 
 void
 LogFacility::SetLogTime ( const time_t & now )

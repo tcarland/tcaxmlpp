@@ -135,6 +135,7 @@ class LogFacility {
     static std::string    GetLogPrefix    ( const std::string & logname = "" );
     
 
+    static bool           ShowLogTime     ( const std::string & logname, bool showTime );
     static void           SetLogTime      ( const time_t & now );
     static time_t         GetLogTime();
 
@@ -160,6 +161,8 @@ private:
     static bool           InitSyslog      ( int facility );
     static void           InitLogMessage  ( const std::string & logname = "" );
 
+    static bool           LogFacilityIsOpen();
+
     static bool           Lock();
     static void           Unlock();
 
@@ -172,10 +175,12 @@ private:
         std::string    logPrefix;
         std::ostream*  logStream;
         bool           enabled;
+        bool           showTime;
 
         LogStream ( std::ostream * strm = NULL )
             : logStream(strm),
-              enabled(true)
+              enabled(true),
+              showTime(true)
         {
             if ( logStream == NULL )
                 enabled = false;
@@ -187,7 +192,8 @@ private:
             : logName(logName_),
               logPrefix(logPrefix_),
               logStream(strm),
-              enabled(true)
+              enabled(true),
+              showTime(true)
         {
             if ( logStream == NULL )
                 enabled = false;
@@ -211,6 +217,7 @@ private:
     static bool                  _Init;
     static bool                  _InitLock;
     static bool                  _TryLock;
+    static bool                  _Enabled;
     static bool                  _Broadcast;
     static bool                  _Syslog;
     static bool                  _Debug;
