@@ -38,7 +38,7 @@ TnmsConsoleManager::run()
     LogFacility::InitThreaded();
 
     LogFacility::OpenLogStream("console", "[tnms]:", &std::cout);
-    //LogFacility::SetBroadcast(true);
+    LogFacility::ShowLogTime("console", false);
     
     LogFacility::LogMessage("console", "TnmsConsoleManager::run() starting console...");
 
@@ -187,9 +187,9 @@ TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
     else if ( cmd.compare("dump") == 0 ) 
     {
         if ( cmdlist.size() < 3 )
-             return;
-         
-        name = cmdlist[2];
+             name = "";
+        else
+            name = cmdlist[2];
 
         _tree->debugDump(name);
     }
@@ -204,6 +204,13 @@ TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
         _tree->request(name, metric);
 
          LogFacility::LogMessage(" Node: " + metric.getElementName());
+         if ( metric.getValueType() == TNMS_STRING ) {
+             const std::string & valstr = metric.getValue();
+             LogFacility::LogMessage("    Value = " + valstr);
+         } else {
+             uint64_t val = metric.getValue<uint64_t>();
+             LogFacility::LogMessage("    Value = " + StringUtils::toString(val));
+         }
     }
     else
     {

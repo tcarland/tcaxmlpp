@@ -32,7 +32,7 @@ class TnmsMetric : public TnmsMessage {
                                       const std::string & value );
 
     template<typename T>
-    const T&            getValue() const
+    T                   getValue() const
     {
         if ( _valType == TNMS_STRING ) 
             return 0;
