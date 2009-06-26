@@ -66,9 +66,18 @@ clearLinks()
 
 makeLinks()
 {
-    #echo "Making links: $LINKLIST"
+    local dryrun=$1
+
+    if [ -n "$dryrun" ]; then
+        echo "Making links: $LINKLIST "
+        echo "in $PWD"
+    fi
     for lf in $LINKLIST; do
-        ln -s "$TOPDIR/$lf"
+        if [ -n "$dryrun" ]; then
+            echo "  ln -s $TOPDIR/$lf ."
+        else
+            ln -s "$TOPDIR/$lf"
+        fi
     done
     return 1
 }
@@ -106,6 +115,8 @@ usage()
     echo "                Builds the complete distribution in the 'path'"
     echo "             = 'link'  : Creates project links only"
     echo "             = 'clean' : Removes project links and runs 'make clean'"
+    echo "             = 'show'  : shows the determined project root and "
+    echo "                         what links would be created. (dry run) "
     echo ""
     echo ""
     echo "   Summary: $0  creates a complete distribution directory "
@@ -131,9 +142,16 @@ case "$1" in
      'dist')
         DODIST=1
         ;;
-    *)
-        usage
+     'link')
+        makeLinks
         exit 0
+        ;;
+     'show')
+        findTopDirectory
+        makeLinks 0
+        exit 0
+        ;;
+    *)
         ;;
 esac
 
