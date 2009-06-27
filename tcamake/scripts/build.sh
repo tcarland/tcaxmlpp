@@ -6,6 +6,9 @@ TOPDIR="."
 LINKLIST="tcamake common"
 BUILDDEF="builddefs"
 DODIST=0
+RSYNC="rsync"
+OPTIONS="-avL --delete"
+DRYRUN=" --dry-run"
 retval=0
 
 
@@ -100,6 +103,41 @@ doBuild()
 
 doDist()
 {
+    local target=$1
+    local dryrun=$2
+    local curdir=$PWD
+    local pname=`basename $curdir`
+    local options="$OPTIONS"
+    local dstpath=
+
+    if [ -z "$target" ]; then
+        echo " 'dist' requires a target path"
+        return 0
+    fi
+
+    dstpath="${target}/${pname}"
+
+    if [ -e $dstpath ]; then
+        echo "WARNING! target path of '$dstpath' already exists."
+        echo "If you continue, the contents will be overwritten"
+        echo "Are you sure you wish to continue? (Y/N)"
+        read reply
+
+        case "$reply" in
+            "Y" | "y")
+                ;;
+            *)
+                return 0
+                ;;
+        esac
+    fi
+
+    if [ -n "$dryrun" ]; then
+        $options="${options}${dryrun}"
+    fi
+
+    $RSYNC $options ./ $dstpath
+
     return 0
 }
 
@@ -111,12 +149,14 @@ usage()
     echo ""
     echo "   [command] :  a standard 'make' target (eg. all, clean, etc) "
     echo "                or one of the following commands"
-    echo "             = 'dist'  : requires a valid path as {option}"
-    echo "                Builds the complete distribution in the 'path'"
-    echo "             = 'link'  : Creates project links only"
-    echo "             = 'clean' : Removes project links and runs 'make clean'"
-    echo "             = 'show'  : shows the determined project root and "
-    echo "                         what links would be created. (dry run) "
+    echo ""
+    echo "       'dist' [path] <dryrun> 
+                            : requires a valid path as {option}"
+    echo "                     Builds the complete distribution in 'path/projectname'"
+    echo "       'link'     : Creates project links only"
+    echo "       'clean'    : Removes project links and runs 'make clean'"
+    echo "       'show'     : shows the determined project root and "
+    echo "                     what links would be created. (dry run) "
     echo ""
     echo ""
     echo "   Summary: $0  creates a complete distribution directory "
@@ -125,6 +165,8 @@ usage()
     echo "      passed through to 'make'"
     echo ""
 }
+
+
 
 case "$1" in
     'help')
@@ -173,7 +215,7 @@ makeLinks
 if [ $DODIST -eq 0 ]; then
     doBuild $1
 else
-    doDist
+    doDist $2
 fi
 
 clearLinks
