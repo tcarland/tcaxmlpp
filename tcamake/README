@@ -14,15 +14,15 @@ as a build system alternative to the autotools.  It is surprisingly
 capable and relatively easy to manage many projects that may very well use 
 autotools anyway. Essentially, if nothing else, it serves as a nice 
 build system for very large projects (A 'large' project is considered 
-to be a build 'environment' consisting of many projects that have a 
-complicated inner-dependency as well as including external projects both 
-directly and by reference, ie. a group of projects.)
+to be a build 'environment' consisting of many projects or sub-projects 
+that have a complicated inner-dependency as well as including 
+external projects both directly and by reference, ie. a group of projects.)
 
 'tcamake' is nothing more than a common Makefile include that defines 
 all of the dependencies and inner-dependencies of projects within the build
 system. It does not determine compiler capabilities and library function 
-checks like the Gnu autotools, at that level, individual (sub)projects 
-would likely still incorporate GNU autoconf.
+checks like the Gnu autotools. If that is needed, individual (sub)projects 
+would likely still choose to incorporate GNU autoconf.
 
 
 Layout:
@@ -31,17 +31,17 @@ The build environment is specific to a directory structure starting with
 a root directory that is referred to as $TOPDIR. This can be for a 
 specific project or group of projects as needed.  The term project is 
 used loosely to define the encompassing environment that may, in fact, 
-contain many projects. 
+contain many projects and simply referred to as a 'workspace' environment. 
 
-An instance of 'tcamake' build environment should exist at any 
-project 'top-level'. For example, assume we have the following code 
-repository, '~/src/svn/projectX'. projectX is considered the build 
-root or TOPDIR. The build system is always at the top-level which 
-would be '$TOPDIR/tcamake' or in our case, '~/src/svn/projectX/tcamake'.
+An instance of the 'tcamake' build environment must exist at the 
+workspace's top-level. For example, assume we have the following code 
+repository, '~/src/svn/projectX'. projectX is considered the workspace 
+or TOPDIR. The build system would then be '$TOPDIR/tcamake' or in this
+case, '~/src/svn/projectX/tcamake'.
 
-Each Makefile beneath the top-level defines the TOPDIR variable to point 
-to the relative root of the project/environment tree.  Additionally, each 
-Makefile 'includes' $TOPDIR/tcamake/builddefs. 
+Each subsequent project Makefile beneath the top-level must define 
+the TOPDIR variable to point to the relative root of the workspace.
+Additionally, each Makefile must 'include' $TOPDIR/tcamake/builddefs. 
 
 A given build environment could potentially have more than one top-level 
 directory. Each top-level is essentially a Makefile that includes 
@@ -55,19 +55,46 @@ The Files:
 
   depends
         - Defines all of our project dependencies. Generally, this is 
-        the only file that ever needs updating.
+        the only file that ever needs updating. Since the dependencies 
+        generate our INCLUDE and LIB variables, order is important. 
+        Generally, the order goes from projects with more dependencies 
+        to projects with the least dependencies.
 
   projectdefs 
         - This should be included once by a top-level Makefile.
 
   builddefs    
         - This is included by sub-level Makefiles and pulls in the 
-        needed dependencies.
+        needed dependencies as defined by the Makefile.
 
   autodepend
         - defines our dependency and build commands, included by depends.
+        This file should NOT need to be modified.
 
   environment
         - is included at each level by the builddefs to initiate the 
         desired compiler flags and other platform specific macros.
+        This file should NOT need to be modified.
+
+Scripts:
+
+    A few scripts are provided for convenience.
+
+    build.sh:  Some projects within the workspace may wish to be 
+      exported or built independently of the workspace. This script
+      will assist in creating a distribution of a subproject that 
+      includes 'tcamake', or simply allows for building the project
+      directly where TOPDIR may not be accurate. Note that the script
+      does not currently consider other project references when exporting 
+      a distribution and is primarily intended for standalone projects
+      within the workspace
+
+    tcamake_new.sh:  Used to inititiate a new project within the 
+      workspace, providing a base Makefile template.
+
+    tcamake_init.sh: Used to create a new workspace using the 
+      workspace template from the tcamake project from which the 
+      script was called.
+
+
 

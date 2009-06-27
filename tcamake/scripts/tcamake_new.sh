@@ -106,13 +106,11 @@ createProject()
     findTopDirectory
 
     if [ -n "$dryrun" ]; then
-        echo "ln -s $TOPDIR/tcamake ."
-        echo "ln -s $TOPDIR/common ."
+        echo "ln -s ${TOPDIR}/tcamake/scripts/build.sh"
         echo "mkdir -p include"
         echo "mkdir -p src"
     else
-        ln -s $TOPDIR/tcamake
-        ln -s $TOPDIR/common
+        ln -s "${TOPDIR}/tcamake/scripts/build.sh"
         mkdir -p include
         mkdir -p src
     fi
