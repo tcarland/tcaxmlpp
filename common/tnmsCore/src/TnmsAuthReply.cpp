@@ -3,7 +3,6 @@
 #include "TnmsAuthReply.h"
 
 #include "Serializer.h"
-#include "LogFacility.h"
 using namespace tcanetpp;
 
 
@@ -68,10 +67,6 @@ TnmsAuthReply::serialize ( char * buffer, size_t buffer_len ) const
     wt   += pk;
     wptr += pk;
 
-    LogFacility::Message   msg;
-    msg << "TnmsAuthReply::serialize() result = " << this->_auth_result;
-    LogFacility::LogMessage(msg);
-
     return wt;
 }
 
@@ -121,10 +116,6 @@ TnmsAuthReply::deserialize ( const char * buffer, size_t buffer_len )
         return -1;
     rd   += upk;
     rptr += upk;
-
-    LogFacility::Message   msg;
-    msg << "TnmsAuthReply::deserialize() result = " << this->_auth_result;
-    LogFacility::LogMessage(msg);
 
     return rd;
 }

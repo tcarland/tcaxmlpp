@@ -1,10 +1,10 @@
 #define _TNMSCORE_TNMSAUTHREQUEST_CPP_
 
 #include "TnmsAuthRequest.h"
-#include "Serializer.h"
 
-#include "LogFacility.h"
+#include "Serializer.h"
 using namespace tcanetpp;
+
 
 namespace tnmsCore {
 
@@ -14,9 +14,6 @@ TnmsAuthRequest::serialize ( char * buffer, size_t buffer_len ) const
 {
     ssize_t  pk, wt = 0;
     char   * wptr   = buffer;
-
-    if ( LogFacility::GetDebug() )
-        LogFacility::LogMessage("TnmsAuthRequest::serialize()");
 
     if ( buffer_len < this->size() )
         return -1;
@@ -47,9 +44,6 @@ TnmsAuthRequest::deserialize ( const char * buffer, size_t buffer_len )
     const char * rptr;
     size_t       rsz, rd = 0;
     ssize_t      upk;
-
-    if ( LogFacility::GetDebug() )
-        LogFacility::LogMessage("TnmsAuthRequest::deserialize()");
 
     if ( buffer_len < this->size() )
         return -1;

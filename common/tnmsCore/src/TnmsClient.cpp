@@ -217,6 +217,7 @@ TnmsClient::AuthReplyHandler ( const TnmsAuthReply & reply )
     if ( this->_isMirror ) {
         //time_t  now = ::time(NULL);
         //init client stats
+        ;
     }
 }
 
