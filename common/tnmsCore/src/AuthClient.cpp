@@ -105,6 +105,8 @@ AuthClient::authClient ( TnmsClient * client, TnmsAuthRequest & request )
     if ( client == NULL ) 
         return false;
 
+    LogFacility::LogMessage("AuthClient handling request for " + request.getElementName());
+
     if ( _bypass ) {
         TnmsAuthReply  reply(request.getElementName());
         reply.authResult(AUTH_SUCCESS);
@@ -138,8 +140,6 @@ AuthClient::authClient ( TnmsClient * client, TnmsAuthRequest & request )
         return false;
 
     AuthAttempt & proxy = rIter->second;
-
-    LogFacility::LogMessage("AuthClient handling request for " + request.getElementName());
 
     if ( this->sendMessage(&proxy.request) )
         proxy.sent_at = ::time(NULL);

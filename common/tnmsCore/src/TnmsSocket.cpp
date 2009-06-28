@@ -526,8 +526,16 @@ TnmsSocket::getBytesReceived()
 bool
 TnmsSocket::login ( const std::string & user, const std::string & pw )
 {
+    std::string::size_type delim;
 
-    this->_login = user;
+    delim = user.find_first_of(':', 0);
+    if ( delim == std::string::npos ) {
+        _login = TNMS_CLIENT_ID;
+        _login.append(":").append(user);
+    } else {
+        _login = user;
+    }
+    _authkey = pw;
 
     if ( ! this->isConnected() ) {
         _authorizing = false;
@@ -543,7 +551,8 @@ TnmsSocket::login ( const std::string & user, const std::string & pw )
         _authorizing = true;
     }
 
-    TnmsAuthRequest  req(user, pw);
+    TnmsAuthRequest  req(_login, _authkey);
+
     return this->sendMessage(&req);
 }
 
@@ -564,9 +573,10 @@ TnmsSocket::isSubscribed() const
 // ------------------------------------------------------------------- //
 
 void
-TnmsSocket::setClientLoginName ( const std::string & login )
+TnmsSocket::setClientLogin ( const std::string & login, const std::string & pw )
 {
-    this->_login = login;
+    this->_login   = login;
+    this->_authkey = pw;
 }
 
 const std::string&

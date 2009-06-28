@@ -39,7 +39,7 @@ TnmsConsoleManager::run()
 
     LogFacility::OpenLogStream("console", "[tnms]:", &std::cout);
     LogFacility::ShowLogTime("console", false);
-    
+    LogFacility::SetDebug(true);
     LogFacility::LogMessage("console", "TnmsConsoleManager::run() starting console...");
 
     _console->start();
@@ -84,6 +84,7 @@ TnmsConsoleManager::createClient ( const std::string & name, const std::string &
     if ( client->openConnection(host, port) < 0 )
         return false;
 
+    client->setClientLogin("tnms-console", "");
     _clientHandler->insert(name, client);
     _evmgr->addIOEvent(_clientHandler, client->getDescriptor(), client);
 
@@ -192,6 +193,7 @@ TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
             name = cmdlist[2];
 
         _tree->debugDump(name);
+        LogFacility::LogMessage(" ");
     }
     else if ( cmd.compare("show") == 0 ) 
     {

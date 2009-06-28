@@ -20,9 +20,9 @@ AgentIOHandler::AgentIOHandler ( TnmsTree * tree, AuthClient * auth )
 
 AgentIOHandler::~AgentIOHandler()
 {
-    ClientSet::iterator  cIter;
-    for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
-        delete *cIter;
+    //ClientSet::iterator  cIter;
+    //for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
+        //delete *cIter;
     _clients.clear();
 }
 

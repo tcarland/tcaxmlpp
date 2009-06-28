@@ -21,19 +21,79 @@ namespace tnmsCore {
 
 
 TnmsMetric::TnmsMetric()
-    : TnmsMessage(METRIC_MESSAGE)
+    : TnmsMessage(METRIC_MESSAGE),
+      _valType(TNMS_NONE),
+      _value(0),
+      _valueAvg(0),
+      _valueTot(0),
+      _samples(0)
 {}
 
 TnmsMetric::TnmsMetric ( const std::string & name, int message_type )
-    : TnmsMessage(name, message_type)
+    : TnmsMessage(name, message_type),
+      _valType(TNMS_NONE),
+      _value(0),
+      _valueAvg(0),
+      _valueTot(0),
+      _samples(0)
 {}
 
 TnmsMetric::TnmsMetric ( const std::string & name,
                          const TnmsOid     & oid )
-    : TnmsMessage(name, oid, METRIC_MESSAGE)
+    : TnmsMessage(name, oid, METRIC_MESSAGE),
+      _valType(TNMS_NONE),
+      _value(0),
+      _valueAvg(0),
+      _valueTot(0),
+      _samples(0)
 {}
 
 TnmsMetric::~TnmsMetric() {}
+
+
+void
+TnmsMetric::operator= ( const TnmsMetric & metric )
+{
+    _valType  = metric.getValueType();
+    _value    = metric.getValue<uint64_t>();
+    _valueAvg = metric.getValueAvg<uint64_t>();
+    _valueTot = metric._valueTot;
+    _samples  = metric.getSamples();
+    _valueStr = metric.getValue();
+    _pvt      = metric.getPvtData();
+}
+
+TnmsMetric&
+TnmsMetric::operator+= ( const TnmsMetric & metric )
+{
+    if ( _valType != metric.getValueType() || metric.getValueType() == TNMS_STRING )
+    {
+        (*this) = metric;
+    }
+    else
+    {
+        _value    = metric.getValue<uint64_t>();
+        _valueTot += _value;
+        _samples++;
+
+        if ( _samples == 0 )
+            _valueAvg = _value;
+        else
+            _valueAvg  = (_valueTot / _samples);
+
+        _pvt = metric.getPvtData();
+    }
+
+    return(*this);
+}
+
+void
+TnmsMetric::reset()
+{
+    _valueAvg = _value;
+    _valueTot = 0;
+    _samples  = 0;
+}
 
 
 const std::string&
@@ -43,10 +103,10 @@ TnmsMetric::getValue() const
 }
 
 
-int
+eValueType
 TnmsMetric::getValueType() const
 {
-    return((int)this->_valType);
+    return(this->_valType);
 }
 
 
@@ -55,6 +115,9 @@ TnmsMetric::setValue ( eValueType valtype, const std::string & value )
 {
     _valType  = TNMS_STRING;
     _valueStr = value;
+    _value    = 0;
+    _valueAvg = 0;
+    _samples  = 0;
     return true;
 }
 
@@ -70,6 +133,18 @@ TnmsMetric::setPvtData ( const std::string & data )
 {
     _pvt = data;
     return true;
+}
+
+uint32_t
+TnmsMetric::getSamples() const
+{
+    return _samples;
+}
+
+void
+TnmsMetric::setSamples ( uint32_t samples ) 
+{
+    _samples = samples;
 }
 
 
@@ -125,7 +200,19 @@ TnmsMetric::serialize ( char * buffer, size_t  buffer_len ) const
             return -1;
         wt   += pk;
         wptr += pk;
+
+        pk = Serializer::Pack(wptr, (wsz-wt), _valueAvg);
+        if ( pk < 0 )
+            return -1;
+        wt   += pk;
+        wptr += pk;
     }
+
+    pk = Serializer::Pack(wptr, (wsz-wt), _samples);
+    if ( pk < 0 )
+        return -1;
+    wt   += pk;
+    wptr += pk;
 
     pk   = Serializer::Pack(wptr, (wsz-wt), _pvt);
     if ( pk < 0 )
@@ -190,12 +277,24 @@ TnmsMetric::deserialize ( const char * buffer, size_t  buffer_len )
             return -1;
 
         upk = Serializer::Unpack(rptr, (rsz-rd), _value);
-
         if ( upk < 0 )
             return -1;
         rd   += upk;
         rptr += upk;
+
+        upk = Serializer::Unpack(rptr, (rsz-rd), _valueAvg);
+        if ( upk < 0 )
+            return -1;
+        rd   += upk;
+        rptr += upk;
+
     }
+        
+    upk = Serializer::Unpack(rptr, (rsz-rd), _samples);
+    if ( upk < 0 )
+        return -1;
+    rd   += upk;
+    rptr += upk;
 
     upk   = Serializer::Unpack(rptr, (rsz-rd), _pvt);
     if ( upk < 0 )
@@ -214,8 +313,8 @@ TnmsMetric::size() const
     size_t  sz  = 0;
 
     sz   = _element_name.length() +_element_oid.size()
-        + _valueStr.size() + _pvt.size();
-    sz  += ( 4 * sizeof(uint32_t)) + sizeof(uint64_t);
+        + _valueStr.length() + _pvt.length();
+    sz  += (4 * sizeof(uint32_t)) + (2 * sizeof(uint64_t)) + sizeof(uint16_t);
 
     return sz;
 }

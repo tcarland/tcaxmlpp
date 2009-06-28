@@ -24,6 +24,7 @@
 #define TNMS_DELIMITER             "/"
 #define TNMS_DELIMITER_CHAR        '/'
 #define TNMS_AGENT_ID              "tnmsagent"
+#define TNMS_CLIENT_ID             "tnmsclient"
 
 
 // client/protocol attributes

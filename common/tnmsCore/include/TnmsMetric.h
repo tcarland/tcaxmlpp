@@ -24,7 +24,13 @@ class TnmsMetric : public TnmsMessage {
     virtual ~TnmsMetric();
 
 
-    int                 getValueType() const;
+    virtual void        operator=   ( const TnmsMetric & metric );
+    virtual TnmsMetric& operator+=  ( const TnmsMetric & metric );
+
+
+    virtual void        reset();
+
+    eValueType          getValueType() const;
 
 
     const std::string&  getValue() const;
@@ -53,10 +59,35 @@ class TnmsMetric : public TnmsMessage {
         return false;
     }
 
+    template<typename T>
+    T                   getValueAvg() const
+    {
+        if ( _valType == TNMS_STRING ) 
+            return 0;
+        T  val = static_cast<T>(_valueAvg);
+        return val;
+    }
+
+
+    template< typename T >
+    bool                setValueAvg ( eValueType   valtype, 
+                                      T &          value )
+    {
+        if ( valtype > TNMS_NONE && valtype < TNMS_STRING ) {
+            _valType  = valtype;
+            _valueAvg = static_cast<uint64_t>(value);
+            return true;
+        }
+        return false;
+    }
+
+
 
     const std::string&  getPvtData() const;
     bool                setPvtData  ( const std::string & data );
 
+    uint32_t            getSamples() const;
+    void                setSamples ( uint32_t samples );
 
     /*  Serializable */
     virtual ssize_t     serialize   ( char * buffer, size_t buffer_len ) const;
@@ -68,6 +99,9 @@ class TnmsMetric : public TnmsMessage {
 
     eValueType          _valType;
     uint64_t            _value;
+    uint64_t            _valueAvg;
+    uint64_t            _valueTot;
+    uint32_t            _samples;
     std::string         _valueStr;
     std::string         _pvt;
 

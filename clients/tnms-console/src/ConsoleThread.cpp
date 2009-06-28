@@ -381,8 +381,12 @@ ConsoleThread::run()
                     this->startClientProcessing();
                 else
                     this->stopClientProcessing();
-            } else
+            } else if ( cmdlist[1].compare("new") == 0 ) {
+                // get user / pw
                 this->addClientCommand(cmdlist);
+            } else {
+                this->addClientCommand(cmdlist);
+            }
         } 
         else if ( cmd.compare("stop") == 0 )
         {

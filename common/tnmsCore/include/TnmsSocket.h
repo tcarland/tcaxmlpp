@@ -92,7 +92,8 @@ class TnmsSocket {
     void                   setTxQueueSize     ( size_t  bytes );
     size_t                 getTxQueueSize() const;
 
-    void                   setClientLoginName ( const std::string & login );
+    void                   setClientLogin     ( const std::string & login,
+                                                const std::string & key );
     const std::string&     getClientLoginName() const;
 
     const std::string&     getHostStr()  const;
@@ -193,6 +194,7 @@ class TnmsSocket {
     std::string                 _hostname;
     std::string                 _login;
     std::string                 _authname;
+    std::string                 _authkey;
     std::string                 _hoststr;
     std::string                 _addrstr;
     std::string                 _errstr;

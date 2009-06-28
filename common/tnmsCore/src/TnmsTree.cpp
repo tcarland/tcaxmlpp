@@ -207,7 +207,7 @@ TnmsTree::update ( const TnmsMetric & metric )
 {
     Node * node = _tree->find(metric.getElementName());
 
-    if ( node == NULL ) {
+    if ( node == NULL ) {  // implicit add
 
         if ( ! this->add(metric.getElementName()) )
             return false;
@@ -217,14 +217,14 @@ TnmsTree::update ( const TnmsMetric & metric )
             return false;
     }
 
-    // reset
+    // undo erase
     if ( node->getValue().erase )
         this->clearNodeErase(node);
 
     node->getValue().metric.message_type(METRIC_MESSAGE);
-    _updates[metric.getElementName()] = node;
+    node->getValue().metric += metric;
 
-    // rollups?
+    _updates[metric.getElementName()] = node;
 
     return true;
 }
@@ -240,7 +240,9 @@ TnmsTree::request ( const std::string & name, TnmsClient * client )
         if ( roots.empty() )
             return true;
 
-        AddForwarder adds(client);
+        //AddForwarder adds(client);
+        MetricForwarder adds(client);
+
         for ( nIter = roots.begin(); nIter != roots.end(); ++nIter )
             _tree->depthFirstTraversal(nIter->second, adds);
 
@@ -314,7 +316,8 @@ TnmsTree::subscribe ( const std::string & name, TnmsClient * client )
         NodeChildMap::iterator  nIter;
         for ( nIter = nodemap->begin(); nIter != nodemap->end(); ++nIter ) {
             if ( ! nIter->second->getValue().erase ) {
-                client->queueAdd(nIter->second);
+                //client->queueAdd(nIter->second);
+                client->queueUpdate(nIter->second);
                 _updates[nIter->second->getValue().metric.getElementName()] = nIter->second;
             }
         }
@@ -327,7 +330,8 @@ TnmsTree::subscribe ( const std::string & name, TnmsClient * client )
 
         node->getValue().nodeSubscribers.insert(client);
         node->getValue().metric.message_type(METRIC_MESSAGE);
-        client->queueAdd(node);
+        //client->queueAdd(node);
+        client->queueUpdate(node);
         _updates[node->getValue().metric.getElementName()] = node;
     }
 
@@ -490,7 +494,8 @@ TnmsTree::updateClients()
         for ( cIter = nodesubs.begin(); cIter != nodesubs.end(); ++cIter)
             (*cIter)->queueUpdate(node);
 
-        // reset interval?
+        // reset metric?
+        this->resetMetric(node->getValue().metric);
     }
     _updates.clear();
 
@@ -552,6 +557,7 @@ TnmsTree::clearNodeErase ( TnmsTree::Node * node )
 void
 TnmsTree::resetMetric   ( TnmsMetric & metric )
 {
+    return metric.reset();
 }
 
     

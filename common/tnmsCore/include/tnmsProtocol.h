@@ -92,6 +92,8 @@ typedef struct tnmsMetric
     uint16_t    metric_value_type;
     uint32_t    metric_value_len;
     char*       metric_value;
+    char*       metric_value_avg;
+    uint32_t    metric_samples;
     uint32_t    pvt_data_len;
     char*       pvt_data;
 } tnmsMetric_t;

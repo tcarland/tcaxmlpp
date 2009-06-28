@@ -14,7 +14,7 @@ using namespace tnmsCore;
 #    ifdef EXPORT_DLL
 #      define DLLOPT __declspec(dllexport)
 #    else
-#      define DLLOPT  __declspec(dllimport)
+#      define DLLOPT __declspec(dllimport)
 #    endif
 #  else
 #    define DLLOPT
@@ -72,7 +72,7 @@ class DLLOPT TnmsAPI {
     void    max_messages ( int  max );
     int     max_messages();
 
-    void    set_config ( const std::string & filename );
+    void    set_config  ( const std::string & filename );
     void    set_debug   ( bool debug );
     void    set_syslog  ( int facility );
     void    set_logfile ( const std::string & logfilename );

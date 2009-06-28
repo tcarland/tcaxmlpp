@@ -142,26 +142,6 @@ TnmsManager::timeout ( const EventTimer * timer )
 
 
 void
-TnmsManager::destroyClients ()
-{
-    ClientMap::iterator  cIter;
-
-    for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
-    {
-        TnmsClient * client = cIter->second.client;
-        if ( client ) 
-        {
-            _clientHandler->eraseMirror(client);
-            _evmgr->removeEvent(cIter->second.id);
-            client->close();
-            delete client;
-        }
-    }
-    _clients.clear();
-}
-
-
-void
 TnmsManager::createClients()
 {
     TnmsClient * client = NULL;
@@ -190,7 +170,7 @@ TnmsManager::createClients()
 
         std::string  login = TNMS_AGENT_ID;
         login.append(":").append(_tconfig.agent_name);
-        client->setClientLoginName(login);
+        client->setClientLogin(login, "");
         client->login();
 
         MirrorConnection  mirror(id, *cIter, client);
@@ -198,6 +178,26 @@ TnmsManager::createClients()
     }
 
     return;
+}
+
+
+void
+TnmsManager::destroyClients ()
+{
+    ClientMap::iterator  cIter;
+
+    for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
+    {
+        TnmsClient * client = cIter->second.client;
+        if ( client ) 
+        {
+            _clientHandler->eraseMirror(client);
+            _evmgr->removeEvent(cIter->second.id);
+            client->close();
+            delete client;
+        }
+    }
+    _clients.clear();
 }
 
 
