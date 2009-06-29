@@ -55,11 +55,11 @@ TnmsBase::TnmsBase ( const std::string & name,
       _hostName(host),
       _hostPort(port),
       _holddown(0),
-      _holddown_interval(30),
+      _holddown_interval(DEFAULT_TNMS_HOLDDOWN_INTERVAL),
       _reconnect(0),
-      _reconnect_interval(30),
+      _reconnect_interval(DEFAULT_TNMS_RECONNECT_INTERVAL),
       _reconfig(0),
-      _reconfig_interval(DEFAULT_RECONFIG_INTERVAL),
+      _reconfig_interval(DEFAULT_TNMS_RECONFIG_INTERVAL),
       _subscribed(false),
       _debug(false)
 {}
@@ -351,6 +351,7 @@ TnmsBase::checkSubscription ( const time_t & now )
 
         LogFacility::LogToStream(_logName, "TnmsAPI: authorized, subscribing server to tree");
         _subscribed = this->_tree->subscribe("*", _conn);
+        _conn->send(now);
 
         if ( _subscribed ) 
             LogFacility::LogToStream(_logName, "TnmsAPI: tree sent");

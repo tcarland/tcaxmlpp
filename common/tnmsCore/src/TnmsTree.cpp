@@ -221,10 +221,12 @@ TnmsTree::update ( const TnmsMetric & metric )
     if ( node->getValue().erase )
         this->clearNodeErase(node);
 
-    node->getValue().metric.message_type(METRIC_MESSAGE);
-    node->getValue().metric += metric;
+    TnmsMetric & m = node->getValue().metric;
 
-    _updates[metric.getElementName()] = node;
+    m.message_type(METRIC_MESSAGE);
+    m += metric;
+
+    _updates[m.getElementName()] = node;
 
     return true;
 }

@@ -13,9 +13,9 @@ using namespace tnmsCore;
 
 namespace tnmsApi {
 
-#define DEFAULT_RECONFIG_INTERVAL 120
 
 class TnmsAgent;
+
 
 
 class TnmsBase {
