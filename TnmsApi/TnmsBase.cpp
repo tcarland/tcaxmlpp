@@ -43,7 +43,17 @@ Iterator first_out_of_range( Iterator  begin,
 TnmsBase::TnmsBase ( const std::string & name )
     : _tree(new TnmsTree()),
       _agentName(name),
-      _conn(new TnmsAgent(_tree))
+      _conn(new TnmsAgent(_tree)),
+      _hostPort(0),
+      _holddown(0),
+      _holddown_interval(DEFAULT_TNMS_HOLDDOWN_INTERVAL),
+      _reconnect(0),
+      _reconnect_interval(DEFAULT_TNMS_RECONNECT_INTERVAL),
+      _reconfig(0),
+      _reconfig_interval(DEFAULT_TNMS_RECONFIG_INTERVAL),
+      _subscribed(false),
+      _debug(false)
+
 {}
 
 TnmsBase::TnmsBase ( const std::string & name,

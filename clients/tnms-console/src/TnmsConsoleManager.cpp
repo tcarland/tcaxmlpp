@@ -149,7 +149,21 @@ TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
     } 
     else if ( cmd.compare("list") == 0 ) 
     {
-        _clientHandler->listClients();
+        if ( cmdlist.size() > 3 && cmdlist[2].compare("subs") == 0 )
+        {
+            tag = cmdlist[3];
+            client = _clientHandler->find(tag);
+            if ( client == NULL )
+                return;
+
+            SubscriptionList  &  subs = client->getSubscriptionList();
+            SubscriptionList::iterator sIter;
+
+            LogFacility::LogMessage("Subscription List for " + client->getHostStr());
+            for ( sIter = subs.begin(); sIter != subs.end(); ++sIter )
+                LogFacility::LogMessage("  Sub> " + sIter->getElementName());
+        } else
+            _clientHandler->listClients();
     }
     else if ( StringUtils::startsWith(cmd, "sub") )
     {
@@ -203,7 +217,10 @@ TnmsConsoleManager::runClientCommand ( const CommandList & cmdlist )
         TnmsMetric metric;
         name = cmdlist[2];
         
-        _tree->request(name, metric);
+        if ( ! _tree->request(name, metric) ) {
+            LogFacility::LogMessage(" Metric not found for " + name);
+            return;
+        }
 
          LogFacility::LogMessage(" Node: " + metric.getElementName());
          if ( metric.getValueType() == TNMS_STRING ) {

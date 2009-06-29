@@ -867,6 +867,14 @@ TnmsSocket::unsubscribeLevel ( const std::string & name )
 
 // ------------------------------------------------------------------- //
 
+SubscriptionList&
+TnmsSocket::getSubscriptionList()
+{
+    return this->_subs;
+}
+
+// ------------------------------------------------------------------- //
+
 void
 TnmsSocket::authReply ( const TnmsAuthReply & reply )
 {

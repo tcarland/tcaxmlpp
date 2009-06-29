@@ -27,7 +27,7 @@ TnmsManager * mgr = NULL;
 
 void version()
 {
-    //printf("%s Version: %s\n", process, TnmsManager::Version());
+    printf("%s Version: %s\n", process, TnmsManager::Version().c_str());
     exit(0);
 }
 

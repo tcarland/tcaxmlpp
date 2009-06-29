@@ -237,6 +237,9 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
         this->logRotate(config.logfile, now);
     }
 
+    this->setDebug(config.debug);
+    LogFacility::SetDebug(config.debug);
+
     // set auth server
     if ( cfgmgr.haveAttribute("auth_bypass") ) {
         LogFacility::LogMessage("TnmsManager: WARNING: Enabling Auth Bypass");
@@ -382,6 +385,15 @@ const std::string&
 TnmsManager::getErrorStr() const
 {
     return this->_errstr;
+}
+
+std::string
+TnmsManager::Version()
+{
+    std::ostringstream  ostr;
+    ostr << "tnmsd Version=0.1 ; tnmsCore Version=" << TNMS_VERSION_MAJOR
+         << "." << TNMS_VERSION_MINOR;
+    return ostr.str();
 }
 
 

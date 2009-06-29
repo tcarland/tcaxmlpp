@@ -144,6 +144,9 @@ class TnmsSocket {
     int                    subscribeCount();
     bool                   resubscribe();
 
+    SubscriptionList&      getSubscriptionList();
+
+
     /*  send message handling / packing  */
 
     bool                   sendMessage       ( const Serializable  * message );

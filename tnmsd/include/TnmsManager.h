@@ -54,6 +54,8 @@ class TnmsManager : public EventTimerHandler {
                         
     const std::string&  getErrorStr() const;
 
+    static std::string  Version();
+
 
   protected:
 
