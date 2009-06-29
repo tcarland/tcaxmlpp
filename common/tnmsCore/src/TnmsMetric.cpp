@@ -54,6 +54,7 @@ TnmsMetric::~TnmsMetric() {}
 void
 TnmsMetric::operator= ( const TnmsMetric & metric )
 {
+    TnmsMessage::operator=(metric);
     _valType  = metric.getValueType();
     _value    = metric.getValue<uint64_t>();
     _valueAvg = metric.getValueAvg<uint64_t>();
@@ -61,11 +62,14 @@ TnmsMetric::operator= ( const TnmsMetric & metric )
     _samples  = metric.getSamples();
     _valueStr = metric.getValue();
     _pvt      = metric.getPvtData();
+    LogFacility::LogMessage("TnmsMetric::operator= " + this->getElementName());
 }
 
 TnmsMetric&
 TnmsMetric::operator+= ( const TnmsMetric & metric )
 {
+    LogFacility::LogMessage("TnmsMetric::operator+= " + this->getElementName());
+
     if ( _valType != metric.getValueType() || metric.getValueType() == TNMS_STRING )
     {
         (*this) = metric;
@@ -79,7 +83,7 @@ TnmsMetric::operator+= ( const TnmsMetric & metric )
         if ( _samples == 0 )
             _valueAvg = _value;
         else
-            _valueAvg  = (_valueTot / _samples);
+            _valueAvg = (_valueTot / _samples);
 
         _pvt = metric.getPvtData();
     }
