@@ -171,7 +171,7 @@ TnmsTree::add ( const std::string & name )
             ClientSet::iterator  cIter;
             std::string          addname = (*nIter)->getAbsoluteName();
 
-            (*nIter)->getValue().metric = TnmsMetric(addname);
+            (*nIter)->getValue().metric = TnmsMetric(addname, METRIC_MESSAGE);
 
             for ( cIter = _structureSubs.begin(); cIter != _structureSubs.end(); ++cIter )
                 (*cIter)->queueAdd(*nIter);

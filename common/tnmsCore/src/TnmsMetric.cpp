@@ -29,8 +29,8 @@ TnmsMetric::TnmsMetric()
       _samples(0)
 {}
 
-TnmsMetric::TnmsMetric ( const std::string & name, int message_type )
-    : TnmsMessage(name, message_type),
+TnmsMetric::TnmsMetric ( const std::string & name )
+    : TnmsMessage(name, METRIC_MESSAGE),
       _valType(TNMS_NONE),
       _value(0),
       _valueAvg(0),
@@ -54,14 +54,16 @@ TnmsMetric::~TnmsMetric() {}
 void
 TnmsMetric::operator= ( const TnmsMetric & metric )
 {
-    TnmsMessage::operator=(metric);
-    _valType  = metric.getValueType();
-    _value    = metric.getValue<uint64_t>();
-    _valueAvg = metric.getValueAvg<uint64_t>();
-    _valueTot = metric._valueTot;
-    _samples  = metric.getSamples();
-    _valueStr = metric.getValue();
-    _pvt      = metric.getPvtData();
+    _element_name = metric.getElementName();
+    _element_oid  = metric.getElementOid();
+    _message_type = metric.getMessageType();
+    _valType      = metric.getValueType();
+    _value        = metric.getValue<uint64_t>();
+    _valueAvg     = metric.getValueAvg<uint64_t>();
+    _valueTot     = metric._valueTot;
+    _samples      = metric.getSamples();
+    _valueStr     = metric.getValue();
+    _pvt          = metric.getPvtData();
     LogFacility::LogMessage("TnmsMetric::operator= " + this->getElementName());
 }
 

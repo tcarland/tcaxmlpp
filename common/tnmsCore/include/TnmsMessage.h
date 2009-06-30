@@ -31,14 +31,14 @@ public:
     TnmsMessage ( eMessageType         message_type = NO_RECORD );
 
     TnmsMessage ( const std::string  & name,
-                  eMessageType         message_type = REQUEST_MESSAGE );
+                  eMessageType         message_type);
 
     TnmsMessage ( const TnmsOid      & oid,
-                  eMessageType         message_type = REQUEST_MESSAGE );
+                  eMessageType         message_type );
 
     TnmsMessage ( const std::string  & name,
                   const TnmsOid      & oid,
-                  eMessageType         message_type = REQUEST_MESSAGE );
+                  eMessageType         message_type );
 
     virtual ~TnmsMessage();
 

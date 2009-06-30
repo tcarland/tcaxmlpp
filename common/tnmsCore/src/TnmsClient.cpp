@@ -113,7 +113,9 @@ TnmsClient::send ( const time_t & now )
                 continue;
             }
 
-            queued = this->sendMessage(&node->getValue().metric);
+            TnmsMetric & m = node->getValue().metric;
+
+            queued = this->sendMessage(&m);
 
             if ( queued ) {
                 _updates.erase(uIter++);

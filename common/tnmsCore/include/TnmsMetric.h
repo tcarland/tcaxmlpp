@@ -18,7 +18,7 @@ class TnmsMetric : public TnmsMessage {
   public:
 
     TnmsMetric();
-    TnmsMetric ( const std::string & name, int message_type = METRIC_MESSAGE );
+    TnmsMetric ( const std::string & name );
     TnmsMetric ( const std::string & name, const TnmsOid & oid );
 
     virtual ~TnmsMetric();
@@ -29,6 +29,8 @@ class TnmsMetric : public TnmsMessage {
 
 
     virtual void        reset();
+
+
 
     eValueType          getValueType() const;
 

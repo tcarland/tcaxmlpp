@@ -18,7 +18,7 @@ int main()
     
     sz   = TNMS_PACKET_SIZE * 2000;
     cbuf = new CircularBuffer(sz);
-    msg  = TnmsMessage("my.new.oid");
+    msg  = TnmsMessage("my.new.oid", REQUEST_MESSAGE);
 
     sz   = msg.size();
     ptr  = cbuf->getWritePtr(&sz);
