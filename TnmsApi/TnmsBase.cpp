@@ -215,6 +215,7 @@ TnmsBase::update ( const std::string & name,
         LogFacility::LogToStream(_logName, "TnmsAPI::update() " + name);
 
     metric.setValue(type, value);
+    metric.setTimestamp(now);
     _tree->update(metric);
 
     return true;
@@ -237,6 +238,7 @@ TnmsBase::update ( const std::string & name,
         LogFacility::LogToStream(_logName, "TnmsAPI::update() " + name);
 
     metric.setValue(TNMS_STRING, value);
+    metric.setTimestamp(now);
     _tree->update(metric);
 
     return true;
