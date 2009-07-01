@@ -26,7 +26,8 @@ TnmsMetric::TnmsMetric()
       _value(0),
       _valueAvg(0),
       _valueTot(0),
-      _samples(0)
+      _samples(0),
+      _timestamp(0)
 {}
 
 TnmsMetric::TnmsMetric ( const std::string & name )
@@ -35,7 +36,8 @@ TnmsMetric::TnmsMetric ( const std::string & name )
       _value(0),
       _valueAvg(0),
       _valueTot(0),
-      _samples(0)
+      _samples(0),
+      _timestamp(0)
 {}
 
 TnmsMetric::TnmsMetric ( const std::string & name,
@@ -45,7 +47,8 @@ TnmsMetric::TnmsMetric ( const std::string & name,
       _value(0),
       _valueAvg(0),
       _valueTot(0),
-      _samples(0)
+      _samples(0),
+      _timestamp(0)
 {}
 
 TnmsMetric::~TnmsMetric() {}
@@ -62,6 +65,7 @@ TnmsMetric::operator= ( const TnmsMetric & metric )
     _valueAvg     = metric.getValueAvg<uint64_t>();
     _valueTot     = metric._valueTot;
     _samples      = metric.getSamples();
+    _timestamp    = metric.getTimestamp();
     _valueStr     = metric.getValue();
     _pvt          = metric.getPvtData();
 }
@@ -75,8 +79,9 @@ TnmsMetric::operator+= ( const TnmsMetric & metric )
     }
     else
     {
-        _value    = metric.getValue<uint64_t>();
+        _value     = metric.getValue<uint64_t>();
         _valueTot += _value;
+        _timestamp = metric.getTimestamp();
         _samples++;
 
         if ( _samples == 0 )
@@ -137,6 +142,19 @@ TnmsMetric::setPvtData ( const std::string & data )
     _pvt = data;
     return true;
 }
+
+uint32_t
+TnmsMetric::getTimestamp() const
+{
+    return _timestamp;
+}
+
+void
+TnmsMetric::setTimestamp ( uint32_t epoch )
+{
+    _timestamp = epoch;
+}
+
 
 uint32_t
 TnmsMetric::getSamples() const
@@ -217,12 +235,16 @@ TnmsMetric::serialize ( char * buffer, size_t  buffer_len ) const
     wt   += pk;
     wptr += pk;
 
+    pk = Serializer::Pack(wptr, (wsz-wt), _timestamp);
+    if ( pk < 0 )
+        return -1;
+    wt   += pk;
+    wptr += pk;
+
     pk   = Serializer::Pack(wptr, (wsz-wt), _pvt);
     if ( pk < 0 )
         return -1;
     wt += pk;
-
-    LogFacility::LogMessage("TnmsMetric::serialize() " + StringUtils::toString<ssize_t>(wt));
 
     return wt;
 }
@@ -298,13 +320,17 @@ TnmsMetric::deserialize ( const char * buffer, size_t  buffer_len )
         return -1;
     rd   += upk;
     rptr += upk;
+ 
+    upk = Serializer::Unpack(rptr, (rsz-rd), _timestamp);
+    if ( upk < 0 )
+        return -1;
+    rd   += upk;
+    rptr += upk;
 
     upk   = Serializer::Unpack(rptr, (rsz-rd), _pvt);
     if ( upk < 0 )
         return -1;
     rd   += upk;
-
-    LogFacility::LogMessage("TnmsMetric::deserialize()");
 
     return rd;
 }
@@ -317,7 +343,7 @@ TnmsMetric::size() const
 
     sz   = _element_name.length() +_element_oid.size()
         + _valueStr.length() + _pvt.length();
-    sz  += (4 * sizeof(uint32_t)) + (2 * sizeof(uint64_t)) + sizeof(uint16_t);
+    sz  += (5 * sizeof(uint32_t)) + (2 * sizeof(uint64_t)) + sizeof(uint16_t);
 
     return sz;
 }

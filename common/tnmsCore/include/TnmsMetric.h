@@ -83,7 +83,8 @@ class TnmsMetric : public TnmsMessage {
         return false;
     }
 
-
+    uint32_t            getTimestamp() const;
+    void                setTimestamp ( uint32_t epoch );
 
     const std::string&  getPvtData() const;
     bool                setPvtData  ( const std::string & data );
@@ -104,6 +105,7 @@ class TnmsMetric : public TnmsMessage {
     uint64_t            _valueAvg;
     uint64_t            _valueTot;
     uint32_t            _samples;
+    uint32_t            _timestamp;
     std::string         _valueStr;
     std::string         _pvt;
 
