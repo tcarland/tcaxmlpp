@@ -64,14 +64,11 @@ TnmsMetric::operator= ( const TnmsMetric & metric )
     _samples      = metric.getSamples();
     _valueStr     = metric.getValue();
     _pvt          = metric.getPvtData();
-    LogFacility::LogMessage("TnmsMetric::operator= " + this->getElementName());
 }
 
 TnmsMetric&
 TnmsMetric::operator+= ( const TnmsMetric & metric )
 {
-    LogFacility::LogMessage("TnmsMetric::operator+= " + this->getElementName());
-
     if ( _valType != metric.getValueType() || metric.getValueType() == TNMS_STRING )
     {
         (*this) = metric;
