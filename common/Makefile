@@ -1,6 +1,6 @@
 # common Makefile
 #
-include ../tcamake/projectdefs
+include ../tcamake/build_defs
 
 all: tcanetpp tcaxml++ tcasnmp tcasql++ ticketmgr tnmsCore
 

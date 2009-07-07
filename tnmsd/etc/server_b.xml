@@ -2,7 +2,7 @@
 
 <tnms version="0.1">
     <tnmsd
-        agent_name="server_b"
+        agent_name="tcanms/tnmsd/server_b"
         logfile="server_b.log"
         syslog="false"
         debug="true"

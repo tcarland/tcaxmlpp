@@ -19,7 +19,7 @@ ALL_BINS=	$(BIN)
 
 all: fwtest
 
-include $(TOPDIR)/common/make/tca
+include $(TOPDIR)/tcamake/project_defs
 
 
 fwtest: $(OBJS) fwtest.o

@@ -3,7 +3,7 @@
 #
 TOPDIR = ../..
 
-include ${TOPDIR}/tcamake/builddefs
+include ${TOPDIR}/tcamake/project_defs
 
 
 all: zlib libxml2 net-snmp

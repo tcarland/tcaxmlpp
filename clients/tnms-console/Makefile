@@ -20,7 +20,7 @@ ALL_BINS=	$(BIN)
 
 all: tnms-console
 
-include $(TOPDIR)/tcamake/builddefs
+include $(TOPDIR)/tcamake/project_defs
 
 
 tnms-console: $(OBJS)

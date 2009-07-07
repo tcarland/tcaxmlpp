@@ -1,14 +1,13 @@
-#define _TNMSAUTH_TNMSAUTHTHREAD_CPP_
+#define _TNMSAUTH_AUTHDBTHREAD_CPP_
 
+#include "AuthDbThread.h"
 
-
-#include "TnmsAuthThread.h"
 
 
 namespace tnmsauth {
 
 
-TnmsAuthThread::TnmsAuthThread ( SqlSessionInterface * sql )
+AuthDbThread::AuthDbThread ( SqlSessionInterface * sql )
     : _dbpool(new SqlDbPool(sql, NULL)),
       _lock(new ThreadLock()),
       _ticketmgr(new TicketRepository())
@@ -16,7 +15,7 @@ TnmsAuthThread::TnmsAuthThread ( SqlSessionInterface * sql )
 }
 
 
-TnmsAuthThread::~TnmsAuthThread()
+AuthDbThread::~AuthDbThread()
 {
     delete _dbpool;
     delete _lock;
@@ -25,7 +24,7 @@ TnmsAuthThread::~TnmsAuthThread()
 
 
 void
-TnmsAuthThread::run()
+AuthDbThread::run()
 {
     StringList  stales;
 
@@ -58,7 +57,7 @@ TnmsAuthThread::run()
 
 
 bool
-TnmsAuthThread::authenticate ( const std::string & username, 
+AuthDbThread::authenticate ( const std::string & username, 
                                const std::string & password,
                                const std::string & ipaddr,
                                const time_t      & now,
@@ -98,7 +97,7 @@ TnmsAuthThread::authenticate ( const std::string & username,
 
 
 bool
-TnmsAuthThread::isAuthentic ( const std::string & username,
+AuthDbThread::isAuthentic ( const std::string & username,
                               const std::string & ticket,
                               const std::string & ipaddr )
 {
@@ -111,7 +110,7 @@ TnmsAuthThread::isAuthentic ( const std::string & username,
 }
  
 bool
-TnmsAuthThread::isAuthentic ( const std::string & username,
+AuthDbThread::isAuthentic ( const std::string & username,
                               const std::string & ticket,
                               const std::string & ipaddr,
                               TnmsReply         & reply )
@@ -129,7 +128,7 @@ TnmsAuthThread::isAuthentic ( const std::string & username,
 
 
 bool
-TnmsAuthThread::refreshTicket ( const std::string & username,
+AuthDbThread::refreshTicket ( const std::string & username,
                                 const std::string & ticket,
                                 const std::string & ipaddr,
                                 const time_t      & now )
@@ -139,7 +138,7 @@ TnmsAuthThread::refreshTicket ( const std::string & username,
 
 
 bool  
-TnmsAuthThread::expireTicket ( const std::string & username,
+AuthDbThread::expireTicket ( const std::string & username,
                                const std::string & ticket,
                                const std::string & ipaddr )
 {
@@ -147,12 +146,12 @@ TnmsAuthThread::expireTicket ( const std::string & username,
 }
 
 bool          
-TnmsAuthThread::getAuthTypes ( StringList & authtypes )
+AuthDbThread::getAuthTypes ( StringList & authtypes )
 {
 }
 
 bool 
-TnmsAuthThread::agentIsAuthentic ( const std::string & agentname,
+AuthDbThread::agentIsAuthentic ( const std::string & agentname,
                                    const std::string & ipaddr,
                                    TnmsReply         & reply )
 {
@@ -160,7 +159,7 @@ TnmsAuthThread::agentIsAuthentic ( const std::string & agentname,
 }
 
 void 
-TnmsAuthThread::setMinConns ( int conns )
+AuthDbThread::setMinConns ( int conns )
 {
     if ( conns > _dbpool->maxConnections() )
         conns = _dbpool->maxConnections();
@@ -168,7 +167,7 @@ TnmsAuthThread::setMinConns ( int conns )
 }
 
 void
-TnmsAuthThread::setMaxConns ( int conns )
+AuthDbThread::setMaxConns ( int conns )
 {
     if ( conns < _dbpool->minConnections() )
         conns = _dbpool->minConnections() + 1;
@@ -180,5 +179,5 @@ TnmsAuthThread::setMaxConns ( int conns )
 }  // namespace
 
 
-//  _TNMSAUTH_TNMSAUTHTHREAD_CPP_
+//  _TNMSAUTH_AUTHDBTHREAD_CPP_
 

@@ -21,7 +21,7 @@ ALL_BINS = 	$(BIN)
 
 all: snmptest
 
-include ${TOPDIR}/tcamake/builddefs
+include ${TOPDIR}/tcamake/project_defs
 
 snmptest: ${OBJS}
 	$(make-cxxbin-rule)

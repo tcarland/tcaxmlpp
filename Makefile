@@ -1,7 +1,7 @@
 # ------------------------
 #  Top-level Makefile
 #
-include ./tcamake/projectdefs
+include ./tcamake/build_defs
 
 # ------------------------
 

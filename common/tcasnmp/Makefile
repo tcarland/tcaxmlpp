@@ -28,7 +28,7 @@ ALL_BINS = 	$(BIN)
 
 all: lib
 
-include ${TOPDIR}/tcamake/builddefs
+include ${TOPDIR}/tcamake/project_defs
 
 
 lib: arlib

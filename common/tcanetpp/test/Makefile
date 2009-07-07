@@ -32,7 +32,7 @@ ALL_BINS= 	$(BIN)
 all: client server cidrtest strtest bufftest pttest ipconvert packtest
 
 
-include ${TOPDIR}/tcamake/builddefs
+include ${TOPDIR}/tcamake/project_defs
 
 
 

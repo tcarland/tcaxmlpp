@@ -26,7 +26,7 @@ ALL_BINS =      $(BIN)
 all: treetest oidtest msgtest msgsvr msgclient
 
 
-include ${TOPDIR}/tcamake/builddefs
+include ${TOPDIR}/tcamake/project_defs
 
 
 treetest: tree_test.o

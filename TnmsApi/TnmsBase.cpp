@@ -108,7 +108,8 @@ TnmsBase::send ( time_t  now )
 
     // Receive messages
     if ( (rd = _conn->receive(now)) < 0 ) {
-        LogFacility::LogToStream(_logName, "TnmsAPI: connection lost in receive(): " + _conn->getErrorStr());
+        LogFacility::LogToStream(_logName, "TnmsAPI: connection lost in receive(): " 
+            + _conn->getErrorStr());
         _conn->close();
         return TNMSERR_CONN_LOST;
     } 
@@ -120,7 +121,8 @@ TnmsBase::send ( time_t  now )
     if ( _conn->txBytesBuffered() > 0 ) 
     {
         if ( (wt = _conn->send(now)) < 0 ) {
-            LogFacility::LogToStream(_logName, "TnmsAPI: connection lost in send(): " + _conn->getErrorStr());
+            LogFacility::LogToStream(_logName, "TnmsAPI: connection lost in send(): " 
+                + _conn->getErrorStr());
             _conn->close();
             return TNMSERR_CONN_LOST;
         }
@@ -141,9 +143,6 @@ TnmsBase::send ( time_t  now )
         return TNMSERR_CONN_LOST;
     }
     
-    if ( _debug )
-        _tree->debugDump();
-
     return TNMSERR_NONE;
 }
 

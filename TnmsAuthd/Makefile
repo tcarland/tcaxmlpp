@@ -11,9 +11,9 @@ INCLUDES=       -Iinclude
 
 BIN=		tnmsauthd
 OBJS=		src/TnmsAuthdManager.o  \
-		src/SoapIOHandler.o src/AuthIOHandler.o \
-		src/SoapClient.o src/SoapThread.o \
-		src/TnmsAuthThread.o \
+		src/SoapIOHandler.o src/SoapClient.o src/SoapThread.o \
+		src/AuthIOHandler.o src/AuthdClient.o \
+		src/AuthDbThread.o \
 		src/tnmsauthd.o
 
 ALL_OBJS=	$(OBJS)
@@ -22,7 +22,7 @@ ALL_BINS=	$(BIN)
 
 all: tnmsd
 
-include $(TOPDIR)/tcamake/builddefs
+include $(TOPDIR)/tcamake/project_defs
 
 
 tnmsd: $(OBJS)

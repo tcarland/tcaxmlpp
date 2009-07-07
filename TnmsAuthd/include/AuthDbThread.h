@@ -1,5 +1,5 @@
-#ifndef _TNMSAUTH_TNMSAUTHTHREAD_H_
-#define _TNMSAUTH_TNMSAUTHTHREAD_H_
+#ifndef _TNMSAUTH_AUTHDBTHREAD_H_
+#define _TNMSAUTH_AUTHDBTHREAD_H_
 
 #include "Thread.h"
 #include "ThreadLock.h"
@@ -12,13 +12,13 @@ using namespace tcasqlplus;
 namespace tnmsauth {
 
 
-class TnmsAuthThread : public Thread {
+class AuthDbThread : public Thread {
 
   public:
 
-    TnmsAuthThread ( SqlSessionInterface * sql ) {}
+    AuthDbThread ( SqlSessionInterface * sql ) {}
 
-    virtual ~TnmsAuthThread() {}
+    virtual ~AuthDbThread() {}
 
 
     virtual void run();
@@ -89,4 +89,4 @@ class TnmsAuthThread : public Thread {
 
 }  // namespace
 
-#endif  //  _TNMSAUTH_TNMSAUTHTHREAD_H_
+#endif  //  _TNMSAUTH_AUTHDBTHREAD_H_

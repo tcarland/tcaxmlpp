@@ -106,9 +106,11 @@ AgentIOHandler::handle_read ( const EventIO * io )
         LogFacility::LogMessage("AgentIOHandler::handle_read() error: " 
             + client->getErrorStr());
         return this->handle_close(io);
-    } else if ( rd > 0 ) {
-        LogFacility::LogMessage("AgentIOHandler::handle_read() bytes = " 
-            + StringUtils::toString(client->getBytesReceived()));
+    } else if ( LogFacility::GetDebug() && rd > 0 ) {
+        LogFacility::Message  msg;
+        msg << "AgentIOHandler::handle_read (" << client->getHostStr()
+            << ") " << rd  << " records";
+        LogFacility::LogMessage(msg.str());
     }
 
     return;

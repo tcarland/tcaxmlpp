@@ -44,7 +44,18 @@ TnmsAPI::~TnmsAPI()
 }
 
 
-
+/**   send()  gives time to the the API. The API instance will only send
+  * data when this method is called.  The API is completely non-blocking
+  * and should be called as frequently as possible by the owning 
+  * application's main loop (at least once a second if not faster).  The 
+  * API will only trigger an interval of sending all updates based on 
+  * the 'holddown' attribute.  For example, if the holddown is set to 30
+  * seconds, then all updates within the 30 second interval are aggregated into 
+  * one update for the interval, sent when the holddown timer expires.
+  * Calls to send() within the window ensure that all previous updates from the 
+  * last interval have been flushed. If send() is called too infrequently, 
+  * then API will potentially not have sufficient time to flush all of updates.
+ **/ 
 int
 TnmsAPI::send ( const time_t & now )
 {
@@ -52,6 +63,11 @@ TnmsAPI::send ( const time_t & now )
 }
 
 
+/**  Adds a new element to the API. The API automatically prepends the 
+  *  agent name to the element. The method can fail if the element 
+  *  already exists, or for some reason the underlying tree insert 
+  *  failed for some reason (unlikely).
+ **/
 bool
 TnmsAPI::add ( const std::string & element_name, const time_t & now ) 
 {
@@ -59,6 +75,7 @@ TnmsAPI::add ( const std::string & element_name, const time_t & now )
 }
 
 
+/**  Removes a given element from the API */
 bool
 TnmsAPI::remove ( const std::string & element_name ) 
 {

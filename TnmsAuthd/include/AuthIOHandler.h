@@ -10,10 +10,12 @@ using namespace tcanetpp;
 namespace tnmsauth {
 
 
-class TnmsAuthThread;
-class TnmsAuthClient;
+class AuthDbThread;
+class AuthdClient;
 
-typedef std::set<TnmsAuthClient*>  ClientSet;
+
+
+typedef std::set<AuthdClient*>  ClientSet;
 
 
 
@@ -21,7 +23,7 @@ class AuthIOHandler : public EventIOHandler {
 
   public:
 
-    AuthIOHandler ( TnmsAuthThread * authThread = NULL );
+    AuthIOHandler ( AuthDbThread * authdb = NULL );
     virtual ~AuthIOHandler();
 
     /*  EventIOHandler */
@@ -38,7 +40,7 @@ class AuthIOHandler : public EventIOHandler {
 
   protected:
 
-    TnmsAuthThread*     _authThread;
+    AuthDbThread*       _authDb;
     ClientSet           _clients;
 
 };
