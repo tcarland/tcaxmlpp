@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<abridge>
+
+    <product title="SWG" host="host2.transmit.com" port="22201" protocol_version="9">
+
+        <mon_config version="1">
+        <monapi_config logfilename="logs/mon_bridge_swg.log" debug="true" syslog="false" debug_filter="etc/bridge_debuglist.txt" api_prepend="games/swg">
+            
+            <outbound holddown_interval="30" reconnect_interval="30">
+
+                <collector hostname="localhost" port="2960" max_elements="500"/>
+            </outbound>
+
+         </monapi_config>
+         </mon_config>
+
+    </product>
+
+</abridge>
