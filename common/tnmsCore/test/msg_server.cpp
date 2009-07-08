@@ -163,7 +163,7 @@ int main ( int argc, char **argv )
 	    }
 	}
 
-        printf("clist size is %lu\n", clist.size());
+        printf("clist size is %d\n", clist.size());
 
 	for ( u_int i = 0; i < clist.size(); i++ ) {
 	    TnmsSocket *c = (TnmsSocket*) clist[i];

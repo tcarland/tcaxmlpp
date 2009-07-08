@@ -6,7 +6,7 @@
 #include "tcanetpp_types.h"
 
 #include "XmlDocument.h"
-using namespace tcaxmlplus;
+using namespace tcaxmlpp;
 
 #include "tnmsCore.h"
 

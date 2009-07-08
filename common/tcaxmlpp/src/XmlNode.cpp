@@ -371,7 +371,7 @@ XmlNode::printNode ( bool recursive )
 	    attr->getKey().c_str(), attr->getValue().c_str());
     }
 
-    printf("Node has %ld children\n\n", _kids.size());
+    printf("Node has %d children\n\n", _kids.size());
 
     if ( recursive )
     {

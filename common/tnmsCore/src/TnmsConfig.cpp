@@ -4,7 +4,7 @@
 #include "TnmsConfig.h"
 
 #include "XmlDocument.h"
-using namespace tcaxmlplus;
+using namespace tcaxmlpp;
 
 #include "StringUtils.h"
 #include "CidrUtils.h"
