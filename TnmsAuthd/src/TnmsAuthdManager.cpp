@@ -1,6 +1,11 @@
 #define _TNMSAUTH_TNMSAUTHDMANAGER_CPP_
 
 #include "TnmsAuthdManager.h"
+#include "AuthDbThread.h"
+
+#include "LogFacility.h"
+using namespace tcanetpp;
+
 
 
 namespace tnmsauth {

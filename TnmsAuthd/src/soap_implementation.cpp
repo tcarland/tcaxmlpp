@@ -10,7 +10,7 @@
 using namespace tcanetpp;
 
 
-#include "TnmsAuthThread.h"
+#include "AuthDbThread.h"
 using namespace tnmsauth;
 
 
@@ -26,7 +26,7 @@ int ns1__authenticate ( soap            * s,
     std::string  ticket, user, pass, ipaddr;
     size_t       ticket_len;
 
-    TnmsAuthThread * authth = (TnmsAuthThread*) s->user;
+    AuthDbThread * authth = (AuthDbThread*) s->user;
 
     if ( username )
         user = username;
@@ -44,7 +44,7 @@ int ns1__authenticate ( soap            * s,
     strncpy(result.ticket, ticket.c_str(), ticket_len);
 
     result.timeout = TICKETD_TICKET_REFRESH_INTERVAL;
-    result.message = "soemonauthd";
+    result.message = "tnmsauth";
 
     return SOAP_OK;
 }
@@ -57,7 +57,7 @@ int ns1__refreshTicket ( soap         * s,
 {
     std::string  user, tk, ipaddr;
     
-    TnmsAuthThread * authth = (TnmsAuthThread*) s->user;
+    AuthDbThread * authth = (AuthDbThread*) s->user;
 
     if ( username )
         user = username;
@@ -79,7 +79,7 @@ int ns1__expireTicket ( soap         * s,
 {
     std::string  user, tick, ipaddr;
     
-    TnmsAuthThread * authth = (TnmsAuthThread*) s->user;
+    AuthDbThread * authth = (AuthDbThread*) s->user;
 
     if ( username )
         user = username;
@@ -102,7 +102,7 @@ int ns1__isAuthentic ( soap         * s,
 {
     std::string  user, tk, ipaddr;
     
-    TnmsAuthThread * authth = (TnmsAuthThread*) s->user;
+    AuthDbThread * authth = (AuthDbThread*) s->user;
 
     if ( username )
         user = username;
@@ -129,7 +129,7 @@ int ns1__authorized ( soap         * s,
 {
     std::string  user, tk, ipaddr, resource;
     
-    TnmsAuthThread * authth = (TnmsAuthThread*) s->user;
+    AuthDbThread * authth = (AuthDbThread*) s->user;
 
     if ( username )
         user = username;
@@ -157,7 +157,7 @@ int ns1__getAuthorizations ( soap        * s,
 {
     std::string  user, tk, ipaddr;
 
-    TnmsAuthThread * authth = (TnmsAuthThread*) s->user;
+    AuthDbThread * authth = (AuthDbThread*) s->user;
 
     if ( username )
         user = username;
@@ -204,7 +204,7 @@ int ns1__getCollectorList ( soap * s,
 {    
     std::string  user, tk, ipaddr;
 
-    TnmsAuthThread * authth = (TnmsAuthThread*) s->user;
+    AuthDbThread * authth = (AuthDbThread*) s->user;
 
     if ( username )
         user = username;
@@ -249,7 +249,7 @@ int ns1__getAuthTypesList ( soap * s,
 {    
     std::string  user, tk, ipaddr;
 
-    TnmsAuthThread * authth = (TnmsAuthThread*) s->user;
+    AuthDbThread * authth = (AuthDbThread*) s->user;
 
     if ( username )
         user = username;

@@ -208,7 +208,7 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
         return true;
 
     TnmsConfigHandler  cfgmgr(cfg, TNMSD_CONFIG_ROOT);
-    std::string        prefix = TNMSD_CONFIG_ROOT;
+    std::string        prefix    = TNMSD_CONFIG_ROOT;
 
     if ( ! cfgmgr.parse() ) {
         if ( LogFacility::IsOpen() ) {
@@ -222,7 +222,9 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
     }
     TnmsConfig & config = cfgmgr.config;
 
-    prefix.append(".").append(config.agent_name);
+    if ( ! config.agent_name.empty() )
+        prefix = config.agent_name;
+
     LogFacility::SetDefaultLogPrefix(prefix);
 
     if ( config.syslog ) {

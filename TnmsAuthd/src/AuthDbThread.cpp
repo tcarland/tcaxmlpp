@@ -7,6 +7,8 @@
 namespace tnmsauth {
 
 
+
+
 AuthDbThread::AuthDbThread ( SqlSessionInterface * sql )
     : _dbpool(new SqlDbPool(sql, NULL)),
       _lock(new ThreadLock()),

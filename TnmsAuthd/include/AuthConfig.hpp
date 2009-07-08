@@ -7,10 +7,10 @@
 namespace tnmsauth {
 
 
-#define DEFAULT_TNMSAUTHD_PORT   33701
-#define DEFAULT_SOAPAUTHD_PORT   33702
-#define DEFAULT_TNMSAUTHDB_NAME  "tcanms"
-#define DEFAULT_TNMSAUTH_USER    "tnmsauth"
+#define DEFAULT_TNMSAUTH_TNMSPORT   33701
+#define DEFAULT_TNMSAUTH_SOAPPORT   33702
+#define DEFAULT_TNMSAUTH_DBNAME     "tcanms"
+#define DEFAULT_TNMSAUTH_DBUSER     "tnmsauth"
 
 
 struct AuthConfig 
@@ -31,15 +31,15 @@ struct AuthConfig
 
     AuthConfig()
         : db_host("localhost"),
-          db_port(DEFAULT_TNMSAUTHD_PORT),
-          db_name(DEFAULT_TNMSAUTHDB_NAME),
-          db_user(DEFAULT_TNMSAUTH_USER),
+          db_port(3306),
+          db_name(DEFAULT_TNMSAUTH_DBNAME),
+          db_user(DEFAULT_TNMSAUTH_DBUSER),
           timeout(120),
           max_connections(100),
           min_threads(1),
           max_threads(75),
-          tnms_port(DEFAULT_TNMSAUTHD_PORT),
-          soap_port(DEFAULT_SOAPAUTHD_PORT)
+          tnms_port(DEFAULT_TNMSAUTH_TNMSPORT),
+          soap_port(DEFAULT_TNMSAUTH_SOAPPORT)
     {}
 };
 

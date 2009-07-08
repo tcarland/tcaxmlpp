@@ -8,6 +8,7 @@ using namespace tcanetpp;
 #include "TnmsTree.h"
 using namespace tnmsCore;
 
+
 #include "AuthConfig.hpp"
 
 
@@ -25,6 +26,7 @@ namespace tnmsauth {
 
 class SoapIOHandler;
 class AuthIOHandler;
+class AuthDbThread;
 
 
 class TnmsAuthdManager : public EventTimerHandler {
