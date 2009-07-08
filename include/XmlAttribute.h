@@ -27,7 +27,7 @@
 #include "XmlDocument.h"
 
 
-namespace tcaxmlplus {
+namespace tcaxmlpp {
 
 
 class XmlNode;

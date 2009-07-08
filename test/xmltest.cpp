@@ -5,8 +5,7 @@
 
 
 #include "XmlDocument.h"
-
-using namespace tcaxmlplus;
+using namespace tcaxmlpp;
 
 
 int main ( int argc, char ** argv )

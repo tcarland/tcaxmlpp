@@ -1,5 +1,5 @@
 #include "XmlDocument.h"
-using namespace tcaxmlplus;
+using namespace tcaxmlpp;
 
 void usage() 
 {

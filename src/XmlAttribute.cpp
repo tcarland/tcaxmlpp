@@ -25,7 +25,7 @@
 #include "XmlAttribute.h"
 
 
-namespace tcaxmlplus {
+namespace tcaxmlpp {
 
 
 
