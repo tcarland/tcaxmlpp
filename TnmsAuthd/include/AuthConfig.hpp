@@ -44,6 +44,41 @@ struct AuthConfig
 };
 
 
+struct TnmsUser {
+
+    uint32_t            uid;
+    uint32_t            gid;
+    uint32_t            auth_id;
+    std::string         username;
+    std::string         ticket;
+    std::string         ipaddr;
+    std::string         auth_method;
+    std::string         auth_bin;
+    bool                internal;
+    time_t              last;
+
+    TnmsUser() :
+        uid(0), gid(0), auth_id(0),
+        internal(false), last(0)
+    {}
+};
+
+
+struct TnmsAgent {
+    uint32_t            agent_id;
+    uint32_t            gid;
+    std::string         agent_name;
+    std::string         agent_config;
+    std::string         ipaddr;
+    time_t              last;
+
+    TnmsAgent()
+        : agent_id(0), gid(0), last(0)
+    {}
+};
+
+
+
 } // namespace
 
 #endif  // _TNMSAUTH_AUTHCONFIG_HPP_

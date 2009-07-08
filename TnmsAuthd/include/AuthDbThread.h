@@ -12,12 +12,17 @@ using namespace tcasqlpp;
 #include "TnmsAuthReply.h"
 using namespace tnmsCore;
 
+#include "TicketDatabase.h"
+using namespace tnmsSession;
+
 
 namespace tnmsauth {
 
 
 typedef std::list<std::string>  StringList;
 
+class TnmsUser;
+class TnmsAgent;
 
 
 class AuthDbThread : public tcanetpp::Thread {
@@ -82,16 +87,16 @@ class AuthDbThread : public tcanetpp::Thread {
                                      const std::string   & ticket );
 
     bool          restoreTickets   ( SqlSessionInterface * session );
-    bool          clearTickets     ( SqlSessionInterace  * session,
+    bool          clearTickets     ( SqlSessionInterface * session,
                                      StringList          & stales );
 
     
 
   private:
 
-    tcasqlplus::SqlDbPool*        _dbpool;
+    tcasqlpp::SqlDbPool*          _dbpool;
     tcanetpp::ThreadLock*         _lock;
-    ticketmgr::TicketRepository*  _ticketmgr;
+    tnmsSession::TicketDatabase*  _ticketDb;
     
 };
 

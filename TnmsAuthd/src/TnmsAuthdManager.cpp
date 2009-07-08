@@ -1,7 +1,13 @@
 #define _TNMSAUTH_TNMSAUTHDMANAGER_CPP_
 
 #include "TnmsAuthdManager.h"
+
 #include "AuthDbThread.h"
+#include "AuthIOHandler.h"
+#include "SoapIOHandler.h"
+#include "SoapClient.h"
+#include "AuthdClient.h"
+
 
 #include "LogFacility.h"
 using namespace tcanetpp;
@@ -10,20 +16,20 @@ using namespace tcanetpp;
 using namespace tnmsCore;
 
 
-
 namespace tnmsauth {
+
 
 
 TnmsAuthdManager::TnmsAuthdManager() 
     : _evmgr(new EventManager()),
       _tree(new TnmsTree()),
-      _authThread(NULL),
+      _authDb(NULL),
       _sql(NULL),
       _svr(NULL),
       _soap(NULL),
       _svrId(0), _soapId(0), _reportId(0), _logId(0),
-      _soapHandler(new SoapIOHandler(_tree)),
-      _authHandler(new AuthIOHandler(_tree)),
+      _soapHandler(new SoapIOHandler()),
+      _authHandler(new AuthIOHandler()),
       _lastTouched(0),
       _reportDelay(30),
       _logCheck(3600),
@@ -40,6 +46,9 @@ TnmsAuthdManager::~TnmsAuthdManager()
     delete _evmgr;
     delete _soapHandler;
     delete _authHandler;
+
+    if ( _authDb )
+        delete _authDb;
 }
 
 
@@ -125,8 +134,8 @@ TnmsAuthdManager::timeout ( const EventTimer * timer )
 
     // give time to our handlers
     //_auth->timeout(timer);
-    _authHandler->timeout(timer);
-    _soapHandler->timeout(timer);
+    _authHandler->timeout(now);
+    _soapHandler->timeout(now);
 
     return;
 }
@@ -222,16 +231,16 @@ TnmsAuthdManager::parseConfig ( const std::string & cfg, const time_t & now )
          acfg.db_user.compare(_aconfig.db_user) != 0 ||
          acfg.db_pass.compare(_aconfig.db_pass) != 0 )
     {
-        if ( _authThread )
-            delete _authThread;
+        if ( _authDb )
+            delete _authDb;
 
         if ( _sql )
             delete _sql;
 
         _sql        = new SqlSession(acfg.db_name, acfg.db_host, acfg.db_user,
                                      acfg.db_pass, acfg.db_port);
-        _authThread = new TnmsAuthThread((SqlSessionInterface*) _sql);
-        _authThread->start();
+        _authDb = new TnmsAuthThread((SqlSessionInterface*) _sql);
+        _authDb->start();
     }
 
     if ( acfg.tnms_port > 0 && acfg.tnms_port != _aconfig.tnms_port ) 
@@ -270,7 +279,7 @@ TnmsAuthdManager::parseConfig ( const std::string & cfg, const time_t & now )
 
         _soap = new SoapClient();
 
-        if ( _soap->bind(acfg.soap_port, _authThread) < 0 ) {
+        if ( _soap->bind(acfg.soap_port, _authDb) < 0 ) {
             LogFacility::LogMessage("Config error in bind " + _soap->getErrorStr());
             return false;
         }

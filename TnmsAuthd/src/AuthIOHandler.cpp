@@ -13,6 +13,8 @@ AuthIOHandler::AuthIOHandler ( AuthDbThread * authdb )
     : _authDb(authdb)
 {}
 
+AuthIOHandler::~AuthIOHandler()
+{}
 
 
 

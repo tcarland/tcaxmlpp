@@ -1,7 +1,7 @@
 #define _TNMSAUTH_AUTHDBTHREAD_CPP_
 
 #include "AuthDbThread.h"
-
+#include "AuthConfig.h"
 
 
 namespace tnmsauth {
@@ -12,7 +12,7 @@ namespace tnmsauth {
 AuthDbThread::AuthDbThread ( SqlSessionInterface * sql )
     : _dbpool(new SqlDbPool(sql, NULL)),
       _lock(new ThreadLock()),
-      _ticketmgr(new TicketRepository())
+      _ticketDb(new TicketDatabase())
 {
 }
 
@@ -21,7 +21,7 @@ AuthDbThread::~AuthDbThread()
 {
     delete _dbpool;
     delete _lock;
-    delete _ticketmgr;
+    delete _ticketDb;
 }
 
 
@@ -44,7 +44,7 @@ AuthDbThread::run()
     while ( ! this->_Alarm )
     {
         now = ::time(NULL);
-        _ticketmgr->clearStale(stales, now);
+        _ticketDb->clearStale(stales, now);
         if ( stales.size() > 0 ) {
             this->clearTickets(session, stales);
             stales.clear();
@@ -84,7 +84,7 @@ AuthDbThread::authenticate ( const std::string & username,
     {
         _ticketProvider->getRandomString(TICKETMGR_TICKET_LENGTH, ticket);
 
-        ticket = _ticketmgr->insert(username, ticket, ipaddr, now
+        ticket = _ticketDb->insert(username, ticket, ipaddr, now
             TICKETMGR_REFRESH_INTERVAL + TICKETMGR_GRACE_PERIOD);
 
         if ( ticket )

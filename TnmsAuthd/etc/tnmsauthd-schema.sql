@@ -86,7 +86,7 @@ CREATE  TABLE IF NOT EXISTS `tnms`.`agent_configs` (
   `agent_config` LONGBLOB NOT NULL ,
   PRIMARY KEY (`agent_id`) ,
   INDEX `agent_configs_FKidx` (`agent_id` ASC) ,
-  CONSTRAINT `fk_abf1747c-5fa0-11de-ad48-001b212ff99c`
+  CONSTRAINT `fk_agent_id`
     FOREIGN KEY (`agent_id` )
     REFERENCES `tnms`.`agents` (`agent_id` )
     ON DELETE CASCADE
@@ -111,12 +111,12 @@ CREATE  TABLE IF NOT EXISTS `tnms`.`users` (
   INDEX `username_idx` (`uid` ASC, `username` ASC) ,
   INDEX `users_gid_FKidx` (`gid` ASC) ,
   INDEX `users_authtype_FKidx` (`authtype_id` ASC) ,
-  CONSTRAINT `fk_abf1b374-5fa0-11de-ad48-001b212ff99c`
+  CONSTRAINT `fk_users_gid`
     FOREIGN KEY (`gid` )
     REFERENCES `tnms`.`groups` (`gid` )
     ON DELETE RESTRICT
     ON UPDATE RESTRICT,
-  CONSTRAINT `fk_abf1b608-5fa0-11de-ad48-001b212ff99c`
+  CONSTRAINT `fk_users_auth`
     FOREIGN KEY (`authtype_id` )
     REFERENCES `tnms`.`auth_types` (`authtype_id` )
     ON DELETE RESTRICT

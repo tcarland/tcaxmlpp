@@ -32,6 +32,7 @@ class AuthIOHandler : public EventIOHandler {
     virtual void   handle_destroy     ( const EventIO * io );
     
     virtual bool   readable           ( const EventIO * io );
+    virtual bool   writeable          ( const EventIO * io );
 
     /*  AuthIOHandler */
 
