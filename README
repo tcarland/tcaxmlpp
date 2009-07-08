@@ -1,0 +1,163 @@
+# README for tcaxmlplus
+#  comments   > tca_11@yahoo.com
+#  complaints > /dev/null
+#
+License:
+
+  tcaxmlplus is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as 
+  published by the Free Software Foundation, either version 3 of 
+  the License, or (at your option) any later version.
+  
+  tcaxmlplus is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Lesser General Public License for more details.
+  
+  You should have received a copy of the GNU Lesser General Public 
+  License along with tcaxmlplus.  
+  If not, see <http://www.gnu.org/licenses/>.
+  
+Overview:
+
+  This library provides a (C++) object-oriented interface to libxml2's 
+'Tree API' (DOM) for XML document manipulation. 
+  The XmlDocument class provides an interface to parsing any well-formed 
+xml fragment and acts as a container to the tree and it's root XmlNode 
+object. The XmlNode class provides an interface for interacting with node 
+attributes and any of its children.
+
+
+Build Requirements:
+
+ - libxml2  - just about any version will work.
+ - tcamake  - build system definition in ./tcamake
+               
+
+To build the library simply run 'make'.
+
+
+Please send comments to comments to  tca_11@yahoo.com or 
+tca@charltontechnology.net
+and any complaints to /dev/null.
+
+-------------------------------------------------------------------------
+Example 1:
+
+    It is worth noting that the XmlNode object does not hold a pointer
+to its owning XmlDocument container. This can complicate node handling 
+in certain cases, but is done intentionally to simplify the implementation. 
+Since this library 'wraps' libxml2, the user must be wary of the underlying 
+document that a node belongs too. This wrapper takes the approach of 
+managing this relationship using the XmlDocument object which is left to 
+the user to determine how the document object is passed around.
+
+    For this example, however, we provide an alternative XmlNode 
+implementation where the root node of the tree could be required to hold 
+the document pointer so that it can be retrieved directly from a node 
+object. The example also serves to demonstrate the XmlNodeFactory interface 
+and its use to create specialized XmlNode objects as well as providing a 
+means to keep the document pointer on hand. This allows for an inheritance 
+model for specialized node handling, though this method should be used only 
+if deemed really necessary.  Simply 'using' the objects is significantly 
+easier to understand and follow.
+
+<code>
+
+    class XmlNodeWithDoc : public XmlNode {
+      public:
+
+        XmlNodeWithDoc ( XmlDocument * doc,  XmlNode * parent,
+                         xmlNodePtr    node, bool      recurse )
+            : XmlNode(parent, node, recurse),
+              _doc(doc)
+        {}
+
+        virtual ~XmlNodeWithDoc(); // omitted from example for brevity
+
+        XmlDocument*  getDocument()
+        {
+            if ( this->_parent == NULL )
+                return this->_doc;
+
+            XmlNode * p = this;
+            while ( p->getParent() != NULL )
+                p = p->getParent();
+            return p->getDocument();
+        }
+
+        bool  setDocument ( XmlDocument * doc )
+        {
+            if ( this->_parent != NULL )  // NOT the doc root!
+                return false;
+            this->_doc = doc;
+            return true;
+        }
+      protected:
+        XmlDocument * _doc;
+    };
+
+    class XmlNodeWithDocFactory : public XmlNodeFactory {
+        XmlDocument * _doc;
+      public:
+        explicit XmlNodeWithDocFactory ( XmlDocument * doc )
+            : _doc(doc)
+        {}
+
+        virtual ~XmlNodeWithDocFactory() {}
+
+        virtual XmlNode* operator() ( XmlNode * p, xmlNodePtr * n, 
+                                      bool     recurse )
+        {
+            return ( (XmlNode*)(new XmlNodeWithDoc(_doc, p, n, recurse)) );
+        }
+     }; 
+
+</code>
+
+
+Example 2:
+
+  This finds a given node with a specific attribute name and value.
+This also demonstrates initializing documents from file or string.
+
+<code>
+
+    #include <stdexcept>
+    #include <iostream>
+    #include <string>
+    #include "XmlDocument.h"
+    using namespace tcaxmlplus;
+
+    int main()
+    { 
+        XmlDocument   doc;
+        XmlNode      *root   = NULL;
+        XmlNode      *mynode = NULL;
+
+        if ( ! doc.initDocument("myxmlfile") )
+            throw std::runtime_error("Error: " + doc.getErrorStr());
+
+        root  = doc.getRootNode();
+
+        if ( root == NULL )
+            throw std::runtime_error("Error in document, not well formed.");
+            
+        mynode = XmlNode::RecursiveFindNode(root, "mynodename", "myattr", "myattrval");
+
+        if ( mynode == NULL )
+            throw std::runtime_error(
+                "node 'mynodename' with attribute 'myattr=myattrval' not found");
+
+        std::string  xmlblob = doc.NodeToString(mynode);
+        std::cout << "some xml blob:\n" << xmlblob << std::endl;
+        
+        XmlDocument doc2(xmlblob.c_str(), xmlblob.length());
+        doc2.writeFile("somedoc.xml");
+
+        return 0;
+    }
+
+</code>
+
+
