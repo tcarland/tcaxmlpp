@@ -44,7 +44,7 @@ typedef unsigned u_int;
 
 
 
-namespace tcaxmlplus {
+namespace tcaxmlpp {
 
 
 class XmlNode;

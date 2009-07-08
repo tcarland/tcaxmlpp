@@ -3,8 +3,9 @@ TOPDIR = ../../..
 else
 TOPDIR = ..
 endif
+
+NEED_TCAXMLPP = 1
 NEED_LIBXML2 = 1
-NEED_TCAXML = 1
 
 ifdef DEBUG
 OPT_FLAGS =     -g
