@@ -1,0 +1,85 @@
+ifdef TCAMAKE_PROJECT
+TOPDIR = ../..
+else
+TOPDIR = .
+endif
+
+ifdef USE_POSTGRESQL
+NEED_LIBPQXX = 1
+DB_OBJS =       src/PgsqlSession.o
+endif
+
+ifdef USE_MYSQL
+NEED_MYSQL = 1
+DB_OBJS =       src/MysqlSession.o
+endif
+
+ifdef DEBUG
+OPT_FLAGS =     -g
+endif
+
+INCLUDES =	-Iinclude -I$(TOPDIR)/common/tcanetpp/include
+LIBS = 
+
+BIN =		
+OBJS = 		src/SqlDbPool.o
+OBJS +=         $(DB_OBJS)
+
+ALL_OBJS =	$(OBJS)
+ALL_BINS = 	$(BIN)
+
+
+all: lib
+
+include $(TOPDIR)/tcamake/project_defs
+
+
+lib: arlib
+
+arlib: lib/libtcasqlplus.a
+solib: libtcasqlplus.so.0.1.1
+
+
+lib/libtcasqlplus.a: $(OBJS)
+	@echo $(OBJS)
+	( mkdir -p lib )
+	ld -r -o $@ $(OBJS) $(LFLAGS)
+	@echo
+
+libtcasqlplus.so.0.1.1: $(OBJS)
+	$(make-so-rule)
+	$(RM) lib/$@ lib/libtcasqlxmlplus.so
+	( mkdir -p lib; mv $@ lib/; \
+	  cd lib; ln -s $@ libtcasqlplus.so )
+	@echo
+
+.PHONY: test
+test:
+	(cd test; $(MAKE) all)
+
+test-clean:
+	(cd test; $(MAKE) distclean)
+	
+documentation:
+	(cd docs; $(MAKE) $(MFLAGS) $(MVARS) all )
+	@echo
+
+libclean:
+	rm -rf lib
+	@echo
+
+doc-clean:
+	(cd docs; $(MAKE) clean )
+	@echo
+
+clean:
+	$(RM) $(OBJS) \
+	src/*.d src/*.D *.bd src/*.o lib/*.bd
+
+distclean: clean libclean test-clean
+	$(RM) $(BIN)
+
+install:
+ifdef TCANMS_PREFIX
+	@echo
+endif

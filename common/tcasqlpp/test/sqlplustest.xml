@@ -1,0 +1,16 @@
+<?xml version="1.0"?> 
+<!DOCTYPE soemon_config SYSTEM "soemoncfg.dtd">
+
+
+<sqlplustest 
+    version="0.1"
+    logfilename="sqltest.log"
+    syslog="false"
+    debug="true"
+    dbhost="localhost"
+    dbname="movieweb"
+    dbuser="tca"
+    dbpass="tcasql">
+</sqlplustest> 
+
+
