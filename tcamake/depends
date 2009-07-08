@@ -104,9 +104,9 @@ LFLAGS       += -L$(TCANETPP_HOME)/lib
 LIBS         += -ltcanetpp
 endif
 
-ifdef NEED_TCASQLPLUS
+ifdef NEED_TCASQL
 TCASQL_HOME = $(TOPDIR)/common/tcasql++
-INCLUDES   += -I$(TCASQL_HOME)
+INCLUDES   += -I$(TCASQL_HOME)/include
 LFLAGS     += -L$(TCASQL_HOME)/lib
 LIBS       += -ltcasqlplus
 endif

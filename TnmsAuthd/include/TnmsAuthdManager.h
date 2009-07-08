@@ -8,6 +8,9 @@ using namespace tcanetpp;
 #include "TnmsTree.h"
 using namespace tnmsCore;
 
+#include "SqlSession.hpp"
+using namespace tcasql;
+
 
 #include "AuthConfig.hpp"
 

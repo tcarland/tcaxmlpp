@@ -31,7 +31,7 @@ struct AuthConfig
 
     AuthConfig()
         : db_host("localhost"),
-          db_port(3306),
+          db_port("3306"),
           db_name(DEFAULT_TNMSAUTH_DBNAME),
           db_user(DEFAULT_TNMSAUTH_DBUSER),
           timeout(120),
