@@ -6,6 +6,9 @@
 #include "LogFacility.h"
 using namespace tcanetpp;
 
+#include "TnmsConfig.h"
+using namespace tnmsCore;
+
 
 
 namespace tnmsauth {

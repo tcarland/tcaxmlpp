@@ -1,6 +1,6 @@
 TOPDIR = ..
 
-NEED_TCASQL = 1
+NEED_TCASQLPP = 1
 NEED_TNMSCORE = 1
 NEED_TNMSSESSION = 1
 NEED_ZLIB = 1
@@ -22,12 +22,12 @@ ALL_OBJS=	$(OBJS)
 ALL_BINS=	$(BIN)
 
 
-all: tnmsd
+all: tnmsauthd
 
 include $(TOPDIR)/tcamake/project_defs
 
 
-tnmsd: $(OBJS)
+tnmsauthd: $(OBJS)
 	$(make-cxxbin-rule)
 
 clean:

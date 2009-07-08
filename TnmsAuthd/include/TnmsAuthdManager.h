@@ -6,10 +6,11 @@
 using namespace tcanetpp;
 
 #include "TnmsTree.h"
+#include "TnmsConfig.h"
 using namespace tnmsCore;
 
 #include "SqlSession.hpp"
-using namespace tcasql;
+using namespace tcasqlpp;
 
 
 #include "AuthConfig.hpp"
@@ -26,7 +27,7 @@ namespace tnmsauth {
 
 #define TNMSAUTHD_CONFIG_ROOT  "tnmsauthd"
 
-
+class SoapClient;
 class SoapIOHandler;
 class AuthIOHandler;
 class AuthDbThread;
@@ -70,13 +71,13 @@ class TnmsAuthdManager : public EventTimerHandler {
     EventManager*       _evmgr;
     TnmsTree*           _tree;
     AuthDbThread*       _authDb;
-    SqlSession*         _sql;
+    SqlSessionInterface*         _sql;
 
     Socket*             _svr;
     SoapClient*         _soap;
 
     evid_t              _svrId, _soapId;
-    evid_t              _reportId; _logId;
+    evid_t              _reportId, _logId;
 
 
     SoapIOHandler*      _soapHandler;

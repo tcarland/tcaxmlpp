@@ -6,13 +6,21 @@
 using namespace tcanetpp;
 
 #include "SqlDbPool.h"
-using namespace tcasqlplus;
+using namespace tcasqlpp;
+
+#include "TnmsMessage.h"
+#include "TnmsAuthReply.h"
+using namespace tnmsCore;
 
 
 namespace tnmsauth {
 
 
-class AuthDbThread : public Thread {
+typedef std::list<std::string>  StringList;
+
+
+
+class AuthDbThread : public tcanetpp::Thread {
 
   public:
 
@@ -39,7 +47,7 @@ class AuthDbThread : public Thread {
     bool          isAuthentic      ( const std::string & username,
                                      const std::string & ticket,
                                      const std::string & ipaddr,
-                                     TnmsReply         & reply );
+                                     TnmsAuthReply     & reply );
 
     bool          refreshTicket    ( const std::string & username,
                                      const std::string & ticket,
@@ -56,7 +64,7 @@ class AuthDbThread : public Thread {
 
     bool          agentIsAuthentic ( const std::string & agentname,
                                      const std::string & ipaddr,
-                                     TnmsReply         & reply );
+                                     TnmsAuthReply     & reply );
 
     /*  db pool attributes */
     void          setMinConns      ( int conns );
