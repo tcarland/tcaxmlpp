@@ -133,11 +133,11 @@ LFLAGS     += -L$(TNMSCORE)/lib
 LIBS       += -ltnmsCore
 endif
 
-ifdef NEED_TICKET
-TICKET      = $(TOPDIR)/common/ticketmgr
-INCLUDES   += -I$(TICKET)/include
-LFLAGS     += -L$(TICKET)/lib
-LIBS       += -lticketmgr
+ifdef NEED_TNMSSESSION
+TNMSSESSION = $(TOPDIR)/common/tnmsSession
+INCLUDES   += -I$(TNMSSESSION)/include
+LFLAGS     += -L$(TNMSSESSION)/lib
+LIBS       += -ltnmsSession
 endif
 
 ifdef NEED_GSOAP
