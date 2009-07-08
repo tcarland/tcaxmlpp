@@ -20,7 +20,7 @@
 #include "SqlException.hpp"
 
 
-namespace tcasql {
+namespace tcasqlpp {
 
 
 #define DEFAULT_CONNECT_TIMEOUT 30

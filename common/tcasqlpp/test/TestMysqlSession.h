@@ -4,7 +4,7 @@
 
 #include "MysqlSession.h"
 #include "SqlFactoryInterface.hpp"
-using namespace tcasql;
+using namespace tcasqlpp;
 
 
 namespace sqlplustest {

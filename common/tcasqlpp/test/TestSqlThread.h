@@ -7,7 +7,7 @@
 using namespace tcanetpp;
 
 #include "SqlDbPool.h"
-using namespace tcasql;
+using namespace tcasqlpp;
 
 
 namespace sqlplustest {

@@ -14,7 +14,7 @@ extern "C" {
 #include "MysqlSession.h"
 
 
-namespace tcasql {
+namespace tcasqlpp {
 
 
 

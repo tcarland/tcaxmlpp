@@ -13,7 +13,7 @@
 #include "SqlFactoryInterface.hpp"
 
 
-namespace tcasql {
+namespace tcasqlpp {
 
 
 //defaults

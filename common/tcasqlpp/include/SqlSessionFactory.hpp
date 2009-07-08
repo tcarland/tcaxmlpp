@@ -4,7 +4,7 @@
 #include "SqlFactoryInterface.hpp"
 #include "SqlSession.hpp"
 
-namespace tcasql {
+namespace tcasqlpp {
 
 
 /**  SqlSessionFactory is the 'default' factory used by SqlDbPool for 

@@ -36,21 +36,21 @@ include $(TOPDIR)/tcamake/project_defs
 
 lib: arlib
 
-arlib: lib/libtcasqlplus.a
-solib: libtcasqlplus.so.0.1.1
+arlib: lib/libtcasqlpp.a
+solib: libtcasqlpp.so.0.1.1
 
 
-lib/libtcasqlplus.a: $(OBJS)
+lib/libtcasqlpp.a: $(OBJS)
 	@echo $(OBJS)
 	( mkdir -p lib )
 	ld -r -o $@ $(OBJS) $(LFLAGS)
 	@echo
 
-libtcasqlplus.so.0.1.1: $(OBJS)
+libtcasqlpp.so.0.1.1: $(OBJS)
 	$(make-so-rule)
-	$(RM) lib/$@ lib/libtcasqlxmlplus.so
+	$(RM) lib/$@ lib/libtcasqlsqlpp.so
 	( mkdir -p lib; mv $@ lib/; \
-	  cd lib; ln -s $@ libtcasqlplus.so )
+	  cd lib; ln -s $@ libtcasqlpp.so )
 	@echo
 
 .PHONY: test

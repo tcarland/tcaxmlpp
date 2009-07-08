@@ -6,7 +6,7 @@
 #include "SqlSessionFactory.hpp"
 
 
-namespace tcasql {
+namespace tcasqlpp {
 
 
 SqlDbPool::SqlDbPool()

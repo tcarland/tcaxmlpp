@@ -2,7 +2,7 @@
 #define _TCASQL_SQLFACTORYINTERFACE_HPP_
 
 
-namespace tcasql {
+namespace tcasqlpp {
 
 
 class SqlSessionInterface;

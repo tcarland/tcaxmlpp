@@ -11,13 +11,13 @@ extern "C" {
 #include <list>
 
 #include "XmlDocument.h"
-using namespace tcaxmlplus;
+using namespace tcaxmlpp;
 
 #include "LogFacility.h"
 using namespace tcanetpp;
 
 #include "SqlSession.hpp"
-using namespace tcasql;
+using namespace tcasqlpp;
 
 #include "TestSqlThread.h"
 #include "TestSqlSession.hpp"

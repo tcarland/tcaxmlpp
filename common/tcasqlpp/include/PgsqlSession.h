@@ -9,7 +9,7 @@ using namespace pqxx;
 #include "SqlSessionInterface.hpp"
 
 
-namespace tcasql {
+namespace tcasqlpp {
 
 
 class PgsqlSession : public SqlSessionInterface {

@@ -14,7 +14,7 @@
 #endif
 
 
-namespace tcasql {
+namespace tcasqlpp {
 
 #if defined(USE_MYSQL)
   typedef MysqlSession SqlSession;

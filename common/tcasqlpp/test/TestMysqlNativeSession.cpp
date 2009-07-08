@@ -2,8 +2,8 @@
 
 #include "TestMysqlNativeSession.h"
 
-#include "Logger.h"
-using namespace tca::net;
+#include "LogFacility.h"
+using namespace tcanetpp;
 
 
 namespace sqlplustest {

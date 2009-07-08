@@ -3,7 +3,7 @@
 
 #include "PgsqlSession.h"
 
-namespace tcasql {
+namespace tcasqlpp {
 
 
 PgsqlSession::PgsqlSession() { }

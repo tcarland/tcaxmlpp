@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace tcasql {
+namespace tcasqlpp {
 
 
 class SqlSessionInterface {

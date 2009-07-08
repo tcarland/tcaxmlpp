@@ -90,7 +90,7 @@ CFLAGS      += -DWITH_OPENSSL
 LIBS        += -lssl -lcrypto
 endif
 
-ifdef NEED_TCAXML
+ifdef NEED_TCAXMLPP
 TCAXML_HOME = $(TOPDIR)/common/tcaxml++
 INCLUDES   += -I$(TCAXML_HOME)/include
 LFLAGS     += -L$(TCAXML_HOME)/lib
@@ -104,8 +104,8 @@ LFLAGS       += -L$(TCANETPP_HOME)/lib
 LIBS         += -ltcanetpp
 endif
 
-ifdef NEED_TCASQL
-TCASQL_HOME = $(TOPDIR)/common/tcasql++
+ifdef NEED_TCASQLPP
+TCASQL_HOME = $(TOPDIR)/common/tcasqlpp
 INCLUDES   += -I$(TCASQL_HOME)/include
 LFLAGS     += -L$(TCASQL_HOME)/lib
 LIBS       += -ltcasqlplus

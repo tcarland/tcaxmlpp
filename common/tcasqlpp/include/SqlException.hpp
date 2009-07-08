@@ -4,7 +4,7 @@
 #include "Exception.hpp"
 
 
-namespace tcasql {
+namespace tcasqlpp {
 
 
 class SqlException : public tcanetpp::Exception {
