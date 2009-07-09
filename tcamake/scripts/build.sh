@@ -1,10 +1,12 @@
 #!/bin/bash
 #
+#   Build script for individual projects, or any sub-project that might wish 
+#   to be extracted from the overall workspace while keeping 
 
 PARENT=".."
 TOPDIR="."
-LINKLIST="tcamake common"
-BUILDDEF="builddefs"
+LINKLIST="tcamake"
+BUILDDEF="build_defs"
 DODIST=0
 RSYNC="rsync"
 OPTIONS="-avL --delete"
@@ -148,7 +150,7 @@ usage()
     echo "Usage: $0 [command] {option} "
     echo ""
     echo "   [command] :  a standard 'make' target (eg. all, clean, etc) "
-    echo "                or one of the following commands"
+    echo "                or one of the following commands (default 'all')."
     echo ""
     echo "       'dist' [path] <dryrun> 
                             : requires a valid path as {option}"
@@ -198,7 +200,7 @@ case "$1" in
 esac
 
 echo ""
-echo "Building in $PWD"
+echo "Building in $PWD..."
 
 findTopDirectory
 retval=$?
