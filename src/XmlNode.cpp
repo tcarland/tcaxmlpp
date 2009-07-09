@@ -22,6 +22,7 @@
  **/
 #define _TCAXMLPLUS_XMLNODE_CPP_
 
+#include <iostream>
 #include <algorithm>
 
 #include "XmlNode.h"
@@ -85,10 +86,10 @@ XmlNode::~XmlNode()
     XmlAttrIter  aIter;
 
     for ( nIter = _kids.begin(); nIter != _kids.end(); nIter++ ) {
-	if ( this->_debug ) {
+	/*if ( this->_debug ) {
 	    printf("Deleting child node %s : %s \n", 
 		(*nIter)->getNodeName().c_str(), (*nIter)->getAttr("Name").c_str());
-	}
+	}*/
 	if ( (*nIter) )
 	    delete *nIter;
     }
@@ -359,7 +360,7 @@ XmlNode::printNode ( bool recursive )
     XmlNodeIter    nIter;
     XmlAttrIter    aIter;
 
-    printf(" node: <%s>\n", _name.c_str());
+    std::cout << "Node: <" << _name << ">" << std::endl;
 
     for ( aIter = _attrs.begin(); aIter != _attrs.end(); aIter++ ) {
 	attr = (XmlAttribute*) aIter->second;
@@ -367,11 +368,10 @@ XmlNode::printNode ( bool recursive )
 	if ( attr == NULL )
 	    continue;
 
-	printf("      %s  =  %s\n", 
-	    attr->getKey().c_str(), attr->getValue().c_str());
+        std::cout << "      " << attr->getKey() << "  =  " << attr->getValue() 
+                  << std::endl;
     }
-
-    printf("Node has %d children\n\n", _kids.size());
+    std::cout << " Node has " << _kids.size() << " children\n\n";
 
     if ( recursive )
     {
