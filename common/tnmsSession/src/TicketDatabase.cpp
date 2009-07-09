@@ -10,25 +10,6 @@ using namespace tcanetpp;
 namespace tnmsSession {
 
 
-/*
-class AutoMutex {
-  public:
-    AutoMutex ( ThreadLock * lock )
-    {
-        this->_mutex = lock;
-        this->_mutex->lock();
-    }
-    ~AutoMutex()
-    {
-        this->_mutex->unlock();
-    }
-    
-  private:
-    ThreadLock *  _mutex;
-};
-*/
-
-
 
 TicketDatabase::TicketDatabase()
     : _lock(new ThreadLock())
@@ -42,6 +23,7 @@ TicketDatabase::~TicketDatabase()
         delete this->_lock;
 }
 
+// ----------------------------------------------------------------------
 
 bool
 TicketDatabase::insert ( const std::string & username, 
@@ -71,6 +53,8 @@ TicketDatabase::insert ( const std::string & username,
     
     return true;
 }
+
+// ----------------------------------------------------------------------
 
 bool
 TicketDatabase::refresh ( const std::string & username,
@@ -114,6 +98,8 @@ TicketDatabase::refresh ( const std::string & username,
     return true;
 }
 
+// ----------------------------------------------------------------------
+
 bool
 TicketDatabase::expire ( const std::string & username,
                          const std::string & ticket,
@@ -155,6 +141,8 @@ TicketDatabase::expire ( const std::string & username,
     return true;
 }
 
+// ----------------------------------------------------------------------
+
 bool
 TicketDatabase::isAuthentic ( const std::string & username,
                               const std::string & ticket,
@@ -192,6 +180,8 @@ TicketDatabase::isAuthentic ( const std::string & username,
     return true;
 }
 
+// ----------------------------------------------------------------------
+
 void
 TicketDatabase::clearStale ( std::list<std::string> & ticketlist, const time_t & now )
 {
@@ -213,6 +203,7 @@ TicketDatabase::clearStale ( std::list<std::string> & ticketlist, const time_t &
     }
 }
 
+// ----------------------------------------------------------------------
 
 bool
 TicketDatabase::haveTicket ( const std::string & ticket )
@@ -221,6 +212,15 @@ TicketDatabase::haveTicket ( const std::string & ticket )
     return(_tickets.find(ticket) != _tickets.end());
 }
 
+// ----------------------------------------------------------------------
+
+const std::string&
+TicketDatabase::getErrorStr() const
+{
+    return _errStr;
+}
+
+// ----------------------------------------------------------------------
 
 }  // namespace
 

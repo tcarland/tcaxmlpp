@@ -6,9 +6,7 @@
 #include <set>
 #include <map>
 
-
 #include "ThreadLock.h"
-
 
 
 namespace tnmsSession {
@@ -16,6 +14,10 @@ namespace tnmsSession {
 
 
 class TicketDatabase {
+
+  public:
+
+    typedef std::list<std::string>    TicketList;
 
   public:
 
@@ -42,16 +44,13 @@ class TicketDatabase {
                                  const std::string & ticket,
                                  const std::string & ip_addr );
 
-    void          clearStale   ( std::list<std::string> & ticketlist,
-                                 const time_t           & now );
+    bool          haveTicket   ( const std::string & ticket );
+
+    void          clearStale   ( TicketList        & ticketlist,
+                                 const time_t      & now );
 
     const
-    std::string&  getErrorStr() { return _errStr; }
-
-
-  private:
-
-    bool          haveTicket   ( const std::string & ticket );
+    std::string&  getErrorStr() const;
 
 
   private: 
