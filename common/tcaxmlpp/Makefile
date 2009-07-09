@@ -3,7 +3,11 @@ TOPDIR = ../..
 else
 TOPDIR = .
 endif
+
+
 NEED_LIBXML2_INCLUDE = 1
+
+
 
 ifdef DEBUG
 OPT_FLAGS =     -g

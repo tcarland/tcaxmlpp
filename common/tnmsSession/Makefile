@@ -1,4 +1,9 @@
+ifdef TCAMAKE_PROJECT
 TOPDIR = ../..
+else
+TOPDIR = .
+endif
+
 
 NEED_PTHREADS = 1
 NEED_LIBDL = 1
