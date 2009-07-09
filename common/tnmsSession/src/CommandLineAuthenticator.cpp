@@ -5,7 +5,7 @@
 #include <errno.h>
 
 
-#include "CommandLineAuthenticatorenticator.h"
+#include "CommandLineAuthenticator.h"
 
 
 
@@ -77,7 +77,7 @@ CommandLineAuthenticator::authenticate ( const std::string & username, const std
 const std::string&
 CommandLineAuthenticator::getErrorStr() const 
 {
-    return _errstr.c_str();
+    return _errStr.c_str();
 }
 
 

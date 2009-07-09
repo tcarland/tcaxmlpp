@@ -11,15 +11,14 @@ endif
 
 CFLAGS =        
 INCLUDES =	-Iinclude 
-#-I$(TOPDIR)/common/ticketmgr/include
 LIBS =          
 
 BIN =		lib/libtnmsSession.a
 
-OBJS = 		src/TicketDatabase.o \
-		src/CommandLineAuth.o \
-		src/DevRandomString.o
-		
+OBJS = 		src/CommandLineAuthenticator.o \
+		src/RandomStringDevice.o \
+		src/TicketDatabase.o
+
 
 ALL_OBJS =	$(OBJS)
 ALL_BINS = 	$(BIN)
@@ -32,7 +31,7 @@ include $(TOPDIR)/tcamake/project_defs
 lib: arlib
 
 arlib: lib/libtnmsSession.a
-solib: lib/libtnmsSession.so.0.0.1
+solib: lib/libtnmsSession.so.0.1.1
 
 libtnmsSession: lib/libtnmsSession.a
 
@@ -41,7 +40,7 @@ lib/libtnmsSession.a: $(OBJS)
 	$(make-lib-rule)
 	@echo
 
-lib/libtnmsSession.so.0.0.1: $(OBJS)
+lib/libtnmsSession.so.0.1.1: $(OBJS)
 	( $(MKDIR) lib )
 	( $(RM) $@ lib/libtnmsSession.so
 	$(make-so-rule)
