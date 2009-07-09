@@ -1,5 +1,5 @@
-#ifndef _TNMSSESSION_DEVRANDOMSTRING_H_
-#define _TNMSSESSION_DEVRANDOMSTRING_H_
+#ifndef _TNMSSESSION_RANDOMSTRINGDEVICE_H_
+#define _TNMSSESSION_RANDOMSTRINGDEVICE_H_
 
 #include <string>
 
@@ -9,13 +9,13 @@
 namespace tnmsSession {
 
 
-class DevRandomString : public RandomStringInterface {
+class RandomStringDevice : public RandomStringInterface {
 
 public:
 
-    DevRandomString ( const std::string & filename = "/dev/urandom" );
+    RandomStringDevice ( const std::string & filename = "/dev/urandom" );
 
-    virtual ~DevRandomString();
+    virtual ~RandomStringDevice();
 
 
     void randomString  ( std::string & randomString,
@@ -40,5 +40,5 @@ private:
 
 } // namespace
 
-#endif // _TNMSSESSION_DEVRANDOMSTRING_H_
+#endif // _TNMSSESSION_RANDOMSTRINGDEVICE_H_
 

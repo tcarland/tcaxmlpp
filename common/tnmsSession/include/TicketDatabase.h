@@ -8,12 +8,10 @@
 
 
 #include "ThreadLock.h"
-using namespace tcanetpp;
 
 
 
 namespace tnmsSession {
-
 
 
 

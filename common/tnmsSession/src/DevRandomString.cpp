@@ -1,6 +1,6 @@
-#define _TNMSSESSION_DEVRANDOMSTRING_CPP_
+#define _TNMSSESSION_RANDOMSTRINGDEVICE_CPP_
 
-#include "DevRandomString.h"
+#include "RandomStringDevice.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -11,29 +11,33 @@
 namespace tnmsSession {
 
 
-DevRandomString::DevRandomString ( const std::string & filename )
+RandomStringDevice::RandomStringDevice ( const std::string & filename )
 {
     this->_source = ::fopen(filename.c_str(), "r" );
 }
 
-DevRandomString::~DevRandomString()
+
+RandomStringDevice::~RandomStringDevice()
 {
     if ( this->_source )
         ::fclose(_source);
 }
 
+
 void
-DevRandomString::randomString ( std::string & randomString, size_t length, 
-                                bool printable )
+RandomStringDevice::randomString ( std::string & randomString, 
+                                   size_t        length, 
+                                   bool          printable )
 {
     return this->randomString("", randomString, length, printable);
 }
 
 
 void
-DevRandomString::randomString ( const std::string & prefix, 
-                                std::string & randomString,
-                                size_t length, bool printable )
+RandomStringDevice::randomString ( const std::string & prefix, 
+                                   std::string       & randomString,
+                                   size_t              length, 
+                                   bool                printable )
 {
     if ( ! this->_source )
         return;
@@ -47,7 +51,7 @@ DevRandomString::randomString ( const std::string & prefix,
     
     rbytes = ::fread(rbuf, sizeof(char), length, this->_source);
     
-    //if ( rbytes != len ) throw
+    //if ( rbytes != len ) throw a tissy
     
     if ( printable )
         this->makePrintable(rbuf, length);
@@ -58,13 +62,14 @@ DevRandomString::randomString ( const std::string & prefix,
 }
 
 void 
-DevRandomString::makePrintable ( char * buff, size_t buff_len )
+RandomStringDevice::makePrintable ( char * buff, size_t buff_len )
 {
     for ( size_t i = 0; i < buff_len; ++i )
         buff[i] = ( (unsigned char) buff[i] % ('~' - '0')) + '0';
 }
 
+
 }  // namespace
 
+//  _TNMSSESSION_RANDOMSTRINGDEVICE_CPP_
 
-//  _TNMSSESSION_DEVRANDOMSTRING_CPP_

@@ -1,5 +1,5 @@
-#ifndef _TNMSSESSION_COMMANDLINEAUTH_H_
-#define _TNMSSESSION_COMMANDLINEAUTH_H_
+#ifndef _TNMSSESSION_COMMANDLINEAUTHENTICATOR_H_
+#define _TNMSSESSION_COMMANDLINEAUTHENTICATOR_H_
 
 #include <string>
 
@@ -9,19 +9,22 @@
 namespace tnmsSession {
 
 
-class CommandLineAuth : public AuthenticationInterface {
+class CommandLineAuthenticator : public AuthenticationInterface {
 
   public:
 
-    CommandLineAuth ( const std::string & cmdline );
+    CommandLineAuthenticator ( const std::string & cmdline );
 
-    virtual ~CommandLineAuth();
+    virtual ~CommandLineAuthenticator();
 
 
     EAuthResult  authenticate ( const std::string & username,
                                 const std::string & password );
 
-    const char*  getErrorStr() const;
+
+    const
+    std::string& getErrorStr() const;
+
 
   private:
 
@@ -30,6 +33,8 @@ class CommandLineAuth : public AuthenticationInterface {
 
 };
 
+
 }  // namespace
 
-#endif  //  _TNMSSESSION_COMMANDLINEAUTH_H_
+#endif  //  _TNMSSESSION_COMMANDLINEAUTHENTICATOR_H_
+

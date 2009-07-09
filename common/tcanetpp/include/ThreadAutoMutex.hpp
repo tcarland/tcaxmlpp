@@ -28,13 +28,19 @@
 namespace tcanetpp {
 
 
+/**  Intended to simplify the synchronization of a complete method for
+ *   convenience only. It intentionally does no checking of the underlying
+ *   ThreadLock pointer.
+ **/
 class ThreadAutoMutex {
 
   public:
 
     explicit ThreadAutoMutex ( ThreadLock * lock )
         : _mutex(lock)
-    {}
+    {
+        this->_mutex->lock();
+    }
 
     ~ThreadAutoMutex()
     {
@@ -44,7 +50,7 @@ class ThreadAutoMutex {
 
   private:
 
-    ThreadLock* _mutex;
+    ThreadLock*  _mutex;
 };
 
 

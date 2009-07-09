@@ -2,14 +2,18 @@
 
 #include "TicketDatabase.h"
 
+#include "ThreadThreadAutoMutex.hpp"
+using namespace tcanetpp;
+
+
 
 namespace tnmsSession {
 
 
-
+/*
 class AutoMutex {
   public:
-    AutoMutex ( tcanetpp::ThreadLock * lock )
+    AutoMutex ( ThreadLock * lock )
     {
         this->_mutex = lock;
         this->_mutex->lock();
@@ -22,7 +26,7 @@ class AutoMutex {
   private:
     ThreadLock *  _mutex;
 };
-
+*/
 
 
 
@@ -46,7 +50,7 @@ TicketDatabase::insert ( const std::string & username,
                          const time_t      & now,
                          time_t              refresh_interval )
 {
-    AutoMutex mutex(_lock);
+    ThreadAutoMutex mutex(_lock);
     
     if ( this->haveTicket(ticket) ) {
         _errStr = "TicketDatabase::insertTicket: ticket already exists for user:";
@@ -74,7 +78,7 @@ TicketDatabase::refresh ( const std::string & username,
                           const std::string & ipaddr,
                           const time_t      & now )
 {
-    AutoMutex  mutex(_lock);
+    ThreadAutoMutex  mutex(_lock);
     
     TicketMap::iterator tIter = _tickets.find(ticket);
     
@@ -115,7 +119,7 @@ TicketDatabase::expire ( const std::string & username,
                          const std::string & ticket,
                          const std::string & ipaddr )
 {
-    AutoMutex autoMutex(_lock);
+    ThreadAutoMutex autoMutex(_lock);
     
     TicketMap::iterator tIter = _tickets.find(ticket);
     
@@ -156,7 +160,7 @@ TicketDatabase::isAuthentic ( const std::string & username,
                               const std::string & ticket,
                               const std::string & ipaddr )
 {
-    AutoMutex autoMutex(_lock);
+    ThreadAutoMutex autoMutex(_lock);
     
     TicketMap::iterator tIter = _tickets.find(ticket);
     
@@ -191,7 +195,7 @@ TicketDatabase::isAuthentic ( const std::string & username,
 void
 TicketDatabase::clearStale ( std::list<std::string> & ticketlist, const time_t & now )
 {
-    AutoMutex autoMutex(_lock);
+    ThreadAutoMutex autoMutex(_lock);
     
     TimerSet::iterator  iIter = _timers.begin();
     
@@ -213,7 +217,7 @@ TicketDatabase::clearStale ( std::list<std::string> & ticketlist, const time_t &
 bool
 TicketDatabase::haveTicket ( const std::string & ticket )
 {
-    AutoMutex autoMutex(_lock);
+    ThreadAutoMutex autoMutex(_lock);
     return(_tickets.find(ticket) != _tickets.end());
 }
 

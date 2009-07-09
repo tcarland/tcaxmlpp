@@ -3,11 +3,13 @@
 
 #include <string>
 
+
 namespace tnmsSession {
+
 
 class AuthenticationInterface {
 
-    public:
+  public:
 
     enum EAuthResult 
     {
@@ -15,14 +17,18 @@ class AuthenticationInterface {
         AUTH_FAILURE
     };
 
+
     virtual ~AuthenticationInterface() {}
+
 
     virtual EAuthResult authenticate ( const std::string & username,
                                        const std::string & password ) = 0;
-    
+ 
+
 };
+
 
 } // namespace
 
-
 #endif //  _AUTHENTICATIONINTERFACE_HPP_
+
