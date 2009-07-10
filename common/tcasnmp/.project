@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>tnmsSession</name>
+	<name>tcasnmp</name>
 	<comment></comment>
 	<projects>
 		<project>tcanetpp</project>

@@ -77,7 +77,7 @@ CommandLineAuthenticator::authenticate ( const std::string & username, const std
 const std::string&
 CommandLineAuthenticator::getErrorStr() const 
 {
-    return _errStr.c_str();
+    return _errStr;
 }
 
 

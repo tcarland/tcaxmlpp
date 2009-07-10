@@ -155,8 +155,9 @@ usage()
     echo "       'dist' [path] <dryrun> 
                             : requires a valid path as {option}"
     echo "                     Builds the complete distribution in 'path/projectname'"
-    echo "       'link'     : Creates project links only"
-    echo "       'clean'    : Removes project links and runs 'make clean'"
+    echo "       'link'     : Creates project build links only"
+    echo "       'unlink'   : Removes build links only"
+    echo "       'clean'    : Removes build links and runs 'make clean'"
     echo "       'show'     : shows the determined project root and "
     echo "                     what links would be created. (dry run) "
     echo ""
@@ -187,7 +188,13 @@ case "$1" in
         DODIST=1
         ;;
      'link')
+        findTopDirectory
         makeLinks
+        exit 0
+        ;;
+     'unlink')
+        findTopDirectory
+        clearLinks
         exit 0
         ;;
      'show')

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>tnmsSession</name>
+	<name>tnmsCore</name>
 	<comment></comment>
 	<projects>
+		<project>tcaxmlpp</project>
 		<project>tcanetpp</project>
 	</projects>
 	<buildSpec>
