@@ -16,7 +16,7 @@ using namespace tnmsCore;
 #include "RandomStringDevice.h"
 using namespace tnmsSession;
 
-#include "AuthDbConfig.h"
+#include "AuthDbConfig.hpp"
 
 
 namespace tnmsauth {
@@ -78,12 +78,16 @@ class AuthDbThread : public tcanetpp::Thread {
 
   protected:
 
+    eAuthType     authenticateUser ( const std::string   & username,
+                                     const std::string   & password,
+                                     eAuthMethod           method );
+
     TnmsDbUser*   queryUser        ( SqlSessionInterface * session,
                                      const std::string   & username );
     TnmsDbAgent*  queryAgent       ( SqlSessionInterface * session );
     std::string   queryAgentConfig ( const std::string   & agentname );
 
-    bool          storeTicket      ( const TnmsUser      * authuser,
+    bool          storeTicket      ( const TnmsDbUser    * authuser,
                                      const std::string   & ticket );
 
     bool          restoreTickets   ( SqlSessionInterface * session );

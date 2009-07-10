@@ -153,6 +153,8 @@ AuthDbThread::expireTicket ( const std::string & username,
     return _ticketDb->expire(username, ticket, ipaddr);
 }
 
+//----------------------------------------------------------------
+
 bool          
 AuthDbThread::getAuthTypes ( StringList & authtypes )
 {
@@ -182,6 +184,48 @@ AuthDbThread::setMaxConns ( int conns )
     _dbpool->maxConnections(conns);
 }
 
+
+TnmsDbUser*
+AuthDbThread::queryUser ( SqlSessionInterface * session,
+                                     const std::string   & username )
+{
+    TnmsDbUser * user = NULL;
+
+    return user;
+}
+
+TnmsDbAgent*
+AuthDbThread::queryAgent ( SqlSessionInterface * session, const std::string & agentname )
+{
+    TnmsDbAgent * agent = NULL;
+
+    return agent;
+}
+
+std::string
+AuthDbThread::queryAgentConfig ( const std::string & agentname )
+{
+    std::string str;
+    return str;
+}
+
+bool
+AuthDbThread::storeTicket ( const TnmsDbUser * user, const std::string & ticket )
+{
+    return false;
+}
+
+bool
+AuthDbThread::restoreTickets ( SqlSessionInterface * session )
+{
+    return false;
+}
+
+bool
+AuthDbThread::clearTickets ( SqlSessionInterface * session, StringList & stales )
+{
+    return false;
+}
 
 
 }  // namespace

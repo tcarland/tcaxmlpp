@@ -21,8 +21,8 @@ namespace tnmsauth {
 
 
 TnmsAuthdManager::TnmsAuthdManager() 
-    : _evmgr(new EventManager()),
-      _tree(new TnmsTree()),
+    : _evmgr(new tcanetpp::EventManager()),
+      _tree(new tnmsCore::TnmsTree()),
       _authDb(NULL),
       _sql(NULL),
       _svr(NULL),
@@ -209,7 +209,7 @@ TnmsAuthdManager::parseConfig ( const std::string & cfg, const time_t & now )
     }
 
     // auth attributes
-    AuthConfig  acfg;
+    AuthDbConfig  acfg;
 
     acfg.db_host = cfgmgr.getAttribute("db_host");
     acfg.db_port = cfgmgr.getAttribute("db_port");
@@ -262,7 +262,7 @@ TnmsAuthdManager::parseConfig ( const std::string & cfg, const time_t & now )
             return false;
         }
     } else if ( acfg.tnms_port == 0 ) {
-        LogFacility("Config error, auth port set to zero");
+        LogFacility::LogMessage("Config error, auth port set to zero");
         return false;
     }
 

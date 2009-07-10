@@ -13,7 +13,7 @@ using namespace tnmsCore;
 using namespace tcasqlpp;
 
 
-#include "AuthConfig.hpp"
+#include "AuthDbConfig.hpp"
 
 
 namespace tnmsauth {
@@ -83,7 +83,7 @@ class TnmsAuthdManager : public EventTimerHandler {
     SoapIOHandler*      _soapHandler;
     AuthIOHandler*      _authHandler;
 
-    AuthConfig          _aconfig;
+    AuthDbConfig        _aconfig;
     TnmsConfig          _tconfig;
 
     time_t              _lastTouched;
