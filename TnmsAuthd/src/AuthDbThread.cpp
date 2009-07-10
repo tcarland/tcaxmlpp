@@ -10,9 +10,10 @@ namespace tnmsauth {
 
 
 AuthDbThread::AuthDbThread ( SqlSessionInterface * sql )
-    : _dbpool(new SqlDbPool(sql, NULL)),
-      _lock(new ThreadLock()),
-      _ticketDb(new TicketDatabase())
+    : _dbpool(new tcasqlpp::SqlDbPool(sql, NULL)),
+      _lock(new tcanetpp::ThreadLock()),
+      _ticketDb(new tnmsSession::TicketDatabase()),
+      _ticketGen(new tnmsSession::RandomStringDevice())
 {
 }
 
@@ -22,6 +23,7 @@ AuthDbThread::~AuthDbThread()
     delete _dbpool;
     delete _lock;
     delete _ticketDb;
+    delete _ticketGen;
 }
 
 
@@ -44,11 +46,15 @@ AuthDbThread::run()
     while ( ! this->_Alarm )
     {
         now = ::time(NULL);
+
         _ticketDb->clearStale(stales, now);
+
         if ( stales.size() > 0 ) {
             this->clearTickets(session, stales);
             stales.clear();
         }
+
+        sleep 1;
     }
     _dbpool->release(sql);
 
@@ -60,16 +66,16 @@ AuthDbThread::run()
 
 bool
 AuthDbThread::authenticate ( const std::string & username, 
-                               const std::string & password,
-                               const std::string & ipaddr,
-                               const time_t      & now,
-                               std::string       & ticket )
+                             const std::string & password,
+                             const std::string & ipaddr,
+                             const time_t      & now,
+                             std::string       & ticket )
 {
     bool result = false;
     bool ticket = false;
     int  retry  = 0;
 
-    TnmsUser * user = this->queryUser(username);
+    TnmsDbUser * user = this->queryUser(username);
 
     if ( user == NULL ) 
     {
@@ -80,12 +86,12 @@ AuthDbThread::authenticate ( const std::string & username,
         result = this->authenticateUser(username, password, user->auth_method);
     }
 
-    while ( result && retry++ < TICKETMGR_MAX_RETRY )
+    while ( result && retry++ < TICKET_MAX_RETRY )
     {
-        _ticketProvider->getRandomString(TICKETMGR_TICKET_LENGTH, ticket);
+        _ticketProvider->getRandomString(TNMS_TICKET_LENGTH, ticket);
 
         ticket = _ticketDb->insert(username, ticket, ipaddr, now
-            TICKETMGR_REFRESH_INTERVAL + TICKETMGR_GRACE_PERIOD);
+            TICKET_REFRESH_INTERVAL + TICKET_GRACE_PERIOD);
 
         if ( ticket )
             break;
@@ -100,12 +106,12 @@ AuthDbThread::authenticate ( const std::string & username,
 
 bool
 AuthDbThread::isAuthentic ( const std::string & username,
-                              const std::string & ticket,
-                              const std::string & ipaddr )
+                            const std::string & ticket,
+                            const std::string & ipaddr )
 {
     bool result = false;
 
-    result = _ticketMgr->isAuthentic(username, ticket, ipaddr);
+    result = _ticketDb->isAuthentic(username, ticket, ipaddr);
 
     return result;
 
@@ -113,13 +119,13 @@ AuthDbThread::isAuthentic ( const std::string & username,
  
 bool
 AuthDbThread::isAuthentic ( const std::string & username,
-                              const std::string & ticket,
-                              const std::string & ipaddr,
-                              TnmsReply         & reply )
+                            const std::string & ticket,
+                            const std::string & ipaddr,
+                            TnmsAuthReply     & reply )
 {
     bool result = false;
 
-    result = _ticketMgr->isAuthentic(username, ticket, ipaddr);
+    result = _ticketDb->isAuthentic(username, ticket, ipaddr);
 
     reply.result = AUTH_SUCCESS;
 
@@ -131,20 +137,20 @@ AuthDbThread::isAuthentic ( const std::string & username,
 
 bool
 AuthDbThread::refreshTicket ( const std::string & username,
-                                const std::string & ticket,
-                                const std::string & ipaddr,
-                                const time_t      & now )
+                              const std::string & ticket,
+                              const std::string & ipaddr,
+                              const time_t      & now )
 {
-    return _ticketMgr->refresh(username, ticket, now);
+    return _ticketDb->refresh(username, ticket, now);
 }
 
 
 bool  
 AuthDbThread::expireTicket ( const std::string & username,
-                               const std::string & ticket,
-                               const std::string & ipaddr )
+                             const std::string & ticket,
+                             const std::string & ipaddr )
 {
-    return _ticketMgr->expire(username, ticket, ipaddr);
+    return _ticketDb->expire(username, ticket, ipaddr);
 }
 
 bool          
@@ -154,8 +160,8 @@ AuthDbThread::getAuthTypes ( StringList & authtypes )
 
 bool 
 AuthDbThread::agentIsAuthentic ( const std::string & agentname,
-                                   const std::string & ipaddr,
-                                   TnmsReply         & reply )
+                                 const std::string & ipaddr,
+                                 TnmsAuthReply     & reply )
 {
 
 }

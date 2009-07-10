@@ -1,5 +1,5 @@
-#ifndef _TNMSAUTH_AUTHCONFIG_HPP_
-#define _TNMSAUTH_AUTHCONFIG_HPP_
+#ifndef _TNMSAUTH_AUTHDBCONFIG_HPP_
+#define _TNMSAUTH_AUTHDBCONFIG_HPP_
 
 #include <string>
 
@@ -9,11 +9,11 @@ namespace tnmsauth {
 
 #define DEFAULT_TNMSAUTH_TNMSPORT   33701
 #define DEFAULT_TNMSAUTH_SOAPPORT   33702
-#define DEFAULT_TNMSAUTH_DBNAME     "tcanms"
+#define DEFAULT_TNMSAUTH_DBNAME     "tnms"
 #define DEFAULT_TNMSAUTH_DBUSER     "tnmsauth"
 
 
-struct AuthConfig 
+struct AuthDbConfig 
 {
     std::string  db_host;
     std::string  db_port;
@@ -29,7 +29,7 @@ struct AuthConfig
     uint16_t     tnms_port;
     uint16_t     soap_port;
 
-    AuthConfig()
+    AuthDbConfig()
         : db_host("localhost"),
           db_port("3306"),
           db_name(DEFAULT_TNMSAUTH_DBNAME),
@@ -44,7 +44,7 @@ struct AuthConfig
 };
 
 
-struct TnmsUser {
+struct TnmsDbUser {
 
     uint32_t            uid;
     uint32_t            gid;
@@ -57,14 +57,14 @@ struct TnmsUser {
     bool                internal;
     time_t              last;
 
-    TnmsUser() :
+    TnmsDbUser() :
         uid(0), gid(0), auth_id(0),
         internal(false), last(0)
     {}
 };
 
 
-struct TnmsAgent {
+struct TnmsDbAgent {
     uint32_t            agent_id;
     uint32_t            gid;
     std::string         agent_name;
@@ -72,7 +72,7 @@ struct TnmsAgent {
     std::string         ipaddr;
     time_t              last;
 
-    TnmsAgent()
+    TnmsDbAgent()
         : agent_id(0), gid(0), last(0)
     {}
 };
@@ -81,5 +81,5 @@ struct TnmsAgent {
 
 } // namespace
 
-#endif  // _TNMSAUTH_AUTHCONFIG_HPP_
+#endif  // _TNMSAUTH_AUTHDBCONFIG_HPP_
 

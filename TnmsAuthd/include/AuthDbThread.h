@@ -13,16 +13,16 @@ using namespace tcasqlpp;
 using namespace tnmsCore;
 
 #include "TicketDatabase.h"
+#include "RandomStringDevice.h"
 using namespace tnmsSession;
+
+#include "AuthDbConfig.h"
 
 
 namespace tnmsauth {
 
 
 typedef std::list<std::string>  StringList;
-
-class TnmsUser;
-class TnmsAgent;
 
 
 class AuthDbThread : public tcanetpp::Thread {
@@ -78,9 +78,9 @@ class AuthDbThread : public tcanetpp::Thread {
 
   protected:
 
-    TnmsUser*     queryUser        ( SqlSessionInterface * session,
+    TnmsDbUser*   queryUser        ( SqlSessionInterface * session,
                                      const std::string   & username );
-    TnmsAgent*    queryAgent       ( SqlSessionInterface * session );
+    TnmsDbAgent*  queryAgent       ( SqlSessionInterface * session );
     std::string   queryAgentConfig ( const std::string   & agentname );
 
     bool          storeTicket      ( const TnmsUser      * authuser,
@@ -94,9 +94,10 @@ class AuthDbThread : public tcanetpp::Thread {
 
   private:
 
-    tcasqlpp::SqlDbPool*          _dbpool;
-    tcanetpp::ThreadLock*         _lock;
-    tnmsSession::TicketDatabase*  _ticketDb;
+    tcasqlpp::SqlDbPool*                _dbpool;
+    tcanetpp::ThreadLock*               _lock;
+    tnmsSession::TicketDatabase*        _ticketDb;
+    tnmsSession::RandomStringDevice*    _ticketGen;
     
 };
 

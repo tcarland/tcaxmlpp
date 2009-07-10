@@ -12,9 +12,9 @@
         debug="true"
 
         db_host="localhost"
-        db_name="tcanms"
+        db_name="tnms"
         db_user="tnms"
-        db_pass="penguin"
+        db_pass="tnmssql11b"
 
         soap_timeout="120"
         max_connections="500"
