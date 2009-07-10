@@ -4,7 +4,8 @@
 #include <string>
 
 
-#include "soapH.h"
+#include "tnms.nsmap"
+//#include "soapH.h"
 
 #include "CidrUtils.h"
 using namespace tcanetpp;
@@ -14,7 +15,7 @@ using namespace tcanetpp;
 using namespace tnmsauth;
 
 
-//ticketmgr
+
 
 
 int ns1__authenticate ( soap            * s,

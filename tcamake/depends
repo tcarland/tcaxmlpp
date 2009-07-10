@@ -141,7 +141,7 @@ LIBS       += -ltnmsSession
 endif
 
 ifdef NEED_GSOAP
-GSOAP_DIR = $(TOPDIR)/common/ext/gsoap/gsoap-linux
+GSOAP_DIR = $(TOPDIR)/common/ext/gsoap-linux-2.7
 INCLUDES += -I${GSOAP_DIR}
 endif
 

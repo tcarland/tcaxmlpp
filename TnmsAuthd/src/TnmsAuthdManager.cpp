@@ -10,10 +10,14 @@
 
 
 #include "LogFacility.h"
+#include "StringUtils.h"
 using namespace tcanetpp;
 
 #include "TnmsConfig.h"
 using namespace tnmsCore;
+
+#include "SqlSession.hpp"
+using namespace tcasqlpp;
 
 
 namespace tnmsauth {
@@ -34,6 +38,7 @@ TnmsAuthdManager::TnmsAuthdManager()
       _reportDelay(30),
       _logCheck(3600),
       _today(0),
+      _alarm(false),
       _hup(false),
       _usr(false),
       _debug(false)
@@ -216,14 +221,14 @@ TnmsAuthdManager::parseConfig ( const std::string & cfg, const time_t & now )
     acfg.db_name = cfgmgr.getAttribute("db_name");
     acfg.db_user = cfgmgr.getAttribute("db_user");
     acfg.db_pass = cfgmgr.getAttribute("db_pass");
-    acfg.timeout = cfgmgr.getAttribute("soap_timeout");
+    acfg.timeout = StringUtils::fromString<time_t>(cfgmgr.getAttribute("soap_timeout"));
 
-    acfg.max_connections = cfgmgr.getAttribute("max_connections");
-    acfg.min_threads     = cfgmgr.getAttribute("min_db_threads");
-    acfg.min_threads     = cfgmgr.getAttribute("min_db_threads");
+    acfg.max_connections = StringUtils::fromString<time_t>(cfgmgr.getAttribute("max_connections"));
+    acfg.min_threads     = StringUtils::fromString<int>(cfgmgr.getAttribute("min_db_threads"));
+    acfg.min_threads     = StringUtils::fromString<int>(cfgmgr.getAttribute("min_db_threads"));
 
-    acfg.tnms_port       = cfgmgr.getAttribute("tnms_port");
-    acfg.soap_port       = cfgmgr.getAttribute("soap_port");
+    acfg.tnms_port       = StringUtils::fromString<uint16_t>(cfgmgr.getAttribute("tnms_port"));
+    acfg.soap_port       = StringUtils::fromString<uint16_t>(cfgmgr.getAttribute("soap_port"));
 
     if ( acfg.db_host.compare(_aconfig.db_host) != 0 ||
          acfg.db_port.compare(_aconfig.db_port) != 0 || 
@@ -237,9 +242,12 @@ TnmsAuthdManager::parseConfig ( const std::string & cfg, const time_t & now )
         if ( _sql )
             delete _sql;
 
-        _sql        = new SqlSession(acfg.db_name, acfg.db_host, acfg.db_user,
-                                     acfg.db_pass, acfg.db_port);
-        _authDb = new TnmsAuthThread((SqlSessionInterface*) _sql);
+        _sql    = (SqlSessionInterface*) new SqlSession(acfg.db_name,
+														acfg.db_host,
+														acfg.db_user,
+                                                        acfg.db_pass,
+                                                        acfg.db_port);
+        _authDb = new AuthDbThread(_sql);
         _authDb->start();
     }
 
@@ -254,11 +262,11 @@ TnmsAuthdManager::parseConfig ( const std::string & cfg, const time_t & now )
             // delete _svr;
         }
 
-        _svr = new Socket(0, acfg.tnms_port, SOCKET_SERVER, TCP);
+        _svr = new Socket(0, acfg.tnms_port, SOCKET_SERVER, IPPROTO_TCP);
 
         if ( _svr->init(false) < 0 ) {
             LogFacility::LogMessage("Config error creating server " 
-                + _svr->getErrorStr());
+                + _svr->getErrorString());
             return false;
         }
     } else if ( acfg.tnms_port == 0 ) {

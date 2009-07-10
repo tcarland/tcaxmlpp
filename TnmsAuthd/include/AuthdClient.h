@@ -2,10 +2,11 @@
 #define _TNMSAUTH_AUTHDCLIENT_H_
 
 #include "TnmsClient.h"
+#include "TnmsAuthRequest.h"
+using namespace tnmsCore;
 
 
 namespace tnmsauth {
-
 
 class AuthDbThread;
 
@@ -20,7 +21,7 @@ class AuthdClient : public tnmsCore::TnmsClient {
     virtual ~AuthdClient();
 
 
-    virtual void    AuthRequestHandler ( const TnmsAuthRequest & request );
+    virtual void  AuthRequestHandler ( const TnmsAuthRequest & request );
 
 
   protected:

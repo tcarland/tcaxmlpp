@@ -73,7 +73,7 @@ struct ns1__AuthorizationList
 
 struct ns1__getAuthorizationResponse
 {
-    ns1__AuthorizationList  result;
+    struct ns1__AuthorizationList  result;
 };
 
 

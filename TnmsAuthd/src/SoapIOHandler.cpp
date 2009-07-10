@@ -1,9 +1,13 @@
 #define _TNMSAUTH_SOAPIOHANDLER_CPP_
 
-
 #include "SoapIOHandler.h"
 #include "SoapClient.h"
 #include "SoapThread.h"
+
+#include "LogFacility.h"
+using namespace tcanetpp;
+
+
 
 namespace tnmsauth {
 
@@ -36,7 +40,7 @@ SoapIOHandler::timeout ( const time_t & now )
     {
         SoapThread * soapth = (SoapThread*) *sIter;
 
-        if ( NULL = soapth ) {
+        if ( soapth == NULL ) {
             _sthreads.erase(sIter++);
         } else if ( ! soapth->isRunning() ) {
             delete soapth;
@@ -62,11 +66,12 @@ SoapIOHandler::event_timeout_secs ( time_t  secs )
 }
 
 
-time_t
-SoapIOHandler::event_timeout_secs()
+const time_t&
+SoapIOHandler::event_timeout_secs() const
 {
     return _event_timeout;
 }
+
 
 void
 SoapIOHandler::max_connections ( int max )
@@ -76,17 +81,18 @@ SoapIOHandler::max_connections ( int max )
 
 
 int
-SoapIOHandler::max_connections()
+SoapIOHandler::max_connections() const
 {
     return _max_threads;
 }
+
 
 void
 SoapIOHandler::handle_accept ( const EventIO * io ) 
 {
     SoapClient * svr = (SoapClient*) io->rock;
 
-    if ( ! io-->isServer )
+    if ( ! io->isServer )
         return;
 
     SoapClient * client = svr->accept();
@@ -118,14 +124,14 @@ SoapIOHandler::handle_destroy ( const EventIO * io )
 }
 
 
-void
+bool
 SoapIOHandler::readable ( const EventIO * io )
 {
     return true;
 }
 
 
-void
+bool
 SoapIOHandler::writeable ( const EventIO * io )
 {
     return false;

@@ -7,9 +7,6 @@
 #include "LogFacility.h"
 using namespace tcanetpp;
 
-#include "soapStub.h"
-#include "tnms.nsmap"
-
 
 namespace tnmsauth {
 
@@ -17,7 +14,7 @@ namespace tnmsauth {
 SoapClient::SoapClientFactory SoapClient::factory;
 
 
-SoapClient::SoapClient ( const int & fd, struct soap * tsoap )
+SoapClient::SoapClient ( const int & fd, tnmsService * tsoap )
     : _soap(tsoap),
       _fd(fd),
       _svr(false),
@@ -27,19 +24,20 @@ SoapClient::SoapClient ( const int & fd, struct soap * tsoap )
 }
 
 SoapClient::SoapClient ( const std::string & pemfile )
-    : _soap(NULL),
+    : _soap(new tnmsService()),
       _fd(-1),
       _pem(pemfile),
       _ipaddr(0),
       _svr(false),
       _ssl(false)
 {
-    this->_soap = soap_new();
+    //this->_soap = soap_new();
 }
 
 
 SoapClient::~SoapClient()
 {
+    /*
     if ( _soap ) {
         if ( ! _svr ) {
             soap_destroy(_soap);
@@ -48,16 +46,19 @@ SoapClient::~SoapClient()
         soap_done(_soap);
         ::free(_soap);
     }
+    */
+    delete _soap;
 }
 
 
 bool
 SoapClient::handle_event()
 {
-    if ( LogFacility::Debug() )
+    if ( LogFacility::GetDebug() )
         LogFacility::LogMessage("SoapClient::handle_event(): " + _ipaddr);
 
-    if ( soap_serve(_soap) != SOAP_OK ) {
+    //if ( soap_serve(_soap) != SOAP_OK ) {
+    if ( _soap->serve() != SOAP_OK ) {
         LogFacility::LogMessage("SoapClient::handle_event() soap error: " 
             + StringUtils::toString(_soap->error));
         return false;
@@ -101,7 +102,8 @@ SoapClient::bind ( uint16_t port, void * userobj )
 #endif
 
     _soap->user = userobj;
-    _fd         = soap_bind(_soap, _ipaddr.c_str(), port, 20);
+    //_fd         = soap_bind(_soap, _ipaddr.c_str(), port, 20);
+    _fd        = _soap->bind(_ipaddr.c_str(), port, 20);
 
     if ( _fd < 0 ) {
         _errstr = "SoapClient::bind() failed";
@@ -112,25 +114,22 @@ SoapClient::bind ( uint16_t port, void * userobj )
 }
 
 
-const int&
-SoapClient::getFD() const
-{
-    return _fd;
-}
-
-
 SoapClient*
 SoapClient::accept ( SoapClientFactory & factory )
 {
-    struct soap * tsoap = NULL;
+    //struct soap * tsoap = NULL;
+    tnmsService * tsoap = NULL;
     int           fd    = -1;
 
-    fd = soap_accept(_soap);
+    //fd = soap_accept(_soap);
+    fd = _soap->accept();
 
     if ( fd < 0 ) 
         return NULL;
 
-    tsoap       = soap_copy(_soap);
+    //tsoap       = soap_copy(_soap);
+    //tsoap->user = _soap->user;
+    tsoap       = _soap->copy();
     tsoap->user = _soap->user;
 
 #ifdef WITH_OPENSSL

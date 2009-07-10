@@ -4,6 +4,10 @@
 #include <string>
 
 
+#include "tnms.nsmap"
+#include "soaptnmsService.h"
+
+
 namespace tnmsauth {
 
 
@@ -23,7 +27,7 @@ class SoapClient {
         explicit SoapClientFactory() {}
         virtual ~SoapClientFactory() {}
 
-        virtual SoapClient* operator() ( const int & fd, struct soap * tsoap )
+        virtual SoapClient* operator() ( const int & fd, tnmsService * tsoap )
         {
             return( new SoapClient(fd, tsoap) );
         }
@@ -31,7 +35,7 @@ class SoapClient {
 
   protected:
     
-    SoapClient ( const int & fd, struct soap * tsoap );
+    SoapClient ( const int & fd, tnmsService * tsoap );
 
   public:
 
@@ -41,7 +45,7 @@ class SoapClient {
 
 
     virtual bool        handle_event();
-    virtual void        close()    {}
+    virtual void        close();
 
     int                 bind       ( uint16_t port, void * userobj );
     SoapClient*         accept     ( SoapClientFactory & factory );
@@ -58,7 +62,7 @@ class SoapClient {
 
   protected:
 
-    struct soap*        _soap;
+    tnmsService*        _soap;
     int                 _fd;
 
     std::string         _pem;

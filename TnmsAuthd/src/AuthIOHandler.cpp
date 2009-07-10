@@ -5,6 +5,10 @@
 #include "AuthDbThread.h"
 #include "AuthdClient.h"
 
+#include "LogFacility.h"
+using namespace tcanetpp;
+
+
 
 namespace tnmsauth { 
 
@@ -23,6 +27,7 @@ AuthIOHandler::timeout ( const time_t & now )
 {
 
 }
+
 
 void
 AuthIOHandler::handle_accept ( const EventIO * io )
@@ -62,8 +67,8 @@ AuthIOHandler::handle_read ( const EventIO * io )
         return this->handle_close(io);
     } else if ( LogFacility::GetDebug() && rd > 0 ) {
         LogFacility::Message  msg;
-        logMsg << "AuthIOHandler::handle_read (" << client->getHostStr()
-               << ") " << rd << " records";
+        msg << "AuthIOHandler::handle_read (" << client->getHostStr()
+            << ") " << rd << " records";
         LogFacility::LogMessage(msg.str());
     }
 
@@ -85,10 +90,10 @@ AuthIOHandler::handle_write ( const EventIO * io )
         LogFacility::LogMessage("AuthIOHandler::handle_read() error "
             + client->getErrorStr());
         return this->handle_close(io);
-    } else if ( LogFacility::GetDebg() && wt > 0 ) {
+    } else if ( LogFacility::GetDebug() && wt > 0 ) {
         LogFacility::Message  msg;
-        logMsg << "AuthIOHandler::handle_write (" << client->getHostStr()
-               << ") " << rd << " records";
+        msg << "AuthIOHandler::handle_write (" << client->getHostStr()
+            << ") " << wt << " records";
         LogFacility::LogMessage(msg.str());
     }
 
@@ -136,8 +141,6 @@ AuthIOHandler::handle_destroy ( const EventIO * io )
     }
 
     return;
-}
-
 }
 
 bool

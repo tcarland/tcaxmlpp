@@ -19,7 +19,7 @@ AuthdClient::~AuthdClient() {}
 
 
 void
-AuthdClient::AuthRequestHAndler ( const TnmsAuthRequest & request ) 
+AuthdClient::AuthRequestHandler ( const TnmsAuthRequest & request ) 
 {}
 
 

@@ -184,6 +184,7 @@ AuthDbThread::setMaxConns ( int conns )
     _dbpool->maxConnections(conns);
 }
 
+//----------------------------------------------------------------
 
 TnmsDbUser*
 AuthDbThread::queryUser ( SqlSessionInterface * session,

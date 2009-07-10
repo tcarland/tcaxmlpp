@@ -79,8 +79,7 @@ class AuthDbThread : public tcanetpp::Thread {
   protected:
 
     eAuthType     authenticateUser ( const std::string   & username,
-                                     const std::string   & password,
-                                     eAuthMethod           method );
+                                     const std::string   & password );
 
     TnmsDbUser*   queryUser        ( SqlSessionInterface * session,
                                      const std::string   & username );
