@@ -51,6 +51,30 @@ version()
 }
 
 
+startSlave()
+{    
+    local options="--user=$MYSQLUSER"
+
+    if [ -n "$MYSQLPASS" ]; then
+        options="${options} --password=$MYSQLPASS"
+    else
+        options="${options} -p"
+    fi
+
+    if [ $DRYRUN -eq 1 ]; then
+        echo "  startSlave()"
+        echo "mysqladmin $options start-slave"
+        echo ""
+        retval=0
+    else
+        mysqladmin $options start-slave
+        retval=$?
+    fi
+
+    return $retval
+}
+
+
 stopSlave()
 {
     local options="--user=$MYSQLUSER"
@@ -102,30 +126,6 @@ dumpSlave()
         retval=0
     else
         mysqldump $options | gzip > $targetdbfile
-        retval=$?
-    fi
-
-    return $retval
-}
-
-
-startSlave()
-{    
-    local options="--user=$MYSQLUSER"
-
-    if [ -n "$MYSQLPASS" ]; then
-        options="${options} --password=$MYSQLPASS"
-    else
-        options="${options} -p"
-    fi
-
-    if [ $DRYRUN -eq 1 ]; then
-        echo "  startSlave()"
-        echo "mysqladmin $options start-slave"
-        echo ""
-        retval=0
-    else
-        mysqladmin $options start-slave
         retval=$?
     fi
 
