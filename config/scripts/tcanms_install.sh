@@ -8,9 +8,9 @@ AUTHOR="tcarland@gmail.com"
 MYNAME=${0/#.\//}
 SYSHOME=
 CONFIGDIR=
+PREFIX=
 
 CURDIR=`dirname $0`
-PREFIX=$TCANMS_PREFIX
 
 RETVAL=0
 
@@ -78,8 +78,14 @@ while [ $# -gt 0 ]; do
 done
 
 
+PREFIX=$TCANMS_PREFIX
 if [ -n "$1" ]; then
     PREFIX=$1
+fi
+
+if [ -z "$PREFIX" ]; then
+    usage
+    exit 1
 fi
 
 

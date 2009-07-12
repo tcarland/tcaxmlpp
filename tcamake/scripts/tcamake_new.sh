@@ -1,15 +1,38 @@
 #!/bin/bash
+#
+#
+VERSION="0.1"
+AUTHOR="tcarland@gmail.com"
+MYNAME=${0/#.\//}
 
 PARENT=".."
 TOPDIR="."
 LINKLIST="tcamake common"
-BUILDDEF="builddefs"
-PROJECT=
+BUILDDEF="build_defs"
 RSYNC="rsync"
 OPTIONS="-av"
-DRYRUN="-n"
-retval=0
+PATHLIST="include src docs test"
+BUILDSH="build.sh"
 
+PROJECT=
+DRYRUN=0
+RETVAL=0
+reply=
+
+
+
+usage()
+{
+    echo ""
+    echo "Usage: $MYNAME {options} [projectname] "
+    echo "    Options:"
+    echo "       -h|--help      =  display usage information"
+    echo "       -n|--dryrun    =  enables test mode"
+    echo "       -v|--version   =  display version information"
+    echo ""
+    echo "    Creates a new project in a directory of the same name"
+    echo ""
+}
 
 findTopDirectory()
 {
@@ -17,22 +40,22 @@ findTopDirectory()
     local curdir=""
     local result=""
     
-    retval=0
+    RETVAL=1
 
     if [ -z "$BUILDDEF" ] || [ -z "$PARENT" ]; then
         echo "Error in settings"
-        return $retval
+        return $RETVAL
     fi
 
-    while [ $retval -eq 0 ]
+    while [ $RETVAL -eq 1 ]
     do
         curdir="${PWD}"
         result=`find . -name "$BUILDDEF"`
         if [ -n "$result" ]; then
-            retval=1
+            RETVAL=0
         fi
         
-        if [ $retval -eq 0 ]; then
+        if [ $RETVAL -eq 1 ]; then
             if [ "$TOPDIR" == "." ]; then
                 TOPDIR=""
             else
@@ -48,10 +71,10 @@ findTopDirectory()
     cd $srcdir
 
     if [ -z "$TOPDIR" ]; then
-        return 0
+        return 1
     fi
 
-    return 1
+    return 0
 }
 
 isLib()
@@ -63,75 +86,104 @@ isLib()
 
     case "$reply" in
         "y" | "Y" )
-            return 1
+            return 0
             ;;
     esac
 
-    return 0
+    return 1
 }
 
 createProject()
 {
     local srcpath=
     local dstpath="$1/"
-    local dryrun=$2
     local options="$OPTIONS"
     
-    if [ -n "$dryrun" ]; then
-        options="${options}${DRYRUN}"
+    if [ $DRYRUN -eq 1 ]; then
+        options="${options} --dry-run"
     fi
+
+    echo "createProject()"
 
     findTopDirectory
-    retval=$?
-    if [ $retval -eq 0 ]; then
+    RETVAL=$?
+    if [ $RETVAL -eq 1 ]; then
         echo "Failed to locate tcamake"
-        return 0
+        return 1
     fi
-
+    
     srcpath="$TOPDIR/tcamake/template"
 
     isLib
-    retval=$?
+    RETVAL=$?
 
-    if [ $retval -eq 1 ]; then
+    if [ $RETVAL -eq 0 ]; then
         srcpath="$srcpath/common/libproject/"
     else
         srcpath="$srcpath/project/"
     fi
 
+    echo "$RSYNC $options $srcpath $dstpath"
     $RSYNC $options $srcpath $dstpath
+    echo ""
 
     cd $dstpath
-
     findTopDirectory
+    
+    RETVAL=0
+    for subdir in $PATHLIST; do
+        if [ ! -d $subdir ]; then
+            if [ $DRYRUN -eq 1 ]; then
+                echo "mkdir -p $subdir"
+                RETVAL=0
+            else
+                echo "mkdir -p $subdir"
+                mkdir -p $subdir
+                RETVAL=$?
+            fi
+        fi
+        if [ $RETVAL -eq 1 ]; then
+            return 1
+        fi
+    done
 
-    if [ -n "$dryrun" ]; then
+    if [ $DRYRUN -eq 1 ]; then
         echo "ln -s ${TOPDIR}/tcamake/scripts/build.sh"
-        echo "mkdir -p include"
-        echo "mkdir -p src"
     else
-        ln -s "${TOPDIR}/tcamake/scripts/build.sh"
-        mkdir -p include
-        mkdir -p src
+        if [ ! -e $BUILDSH ]; then
+            ln -s "${TOPDIR}/tcamake/scripts/build.sh"
+        fi
     fi
 
     return 0
 }
 
 
-usage()
-{
-    echo ""
-    echo "Usage: $0 [projectname] {dryrun}"
-    echo ""
-    echo "    Creates a new project in a directory of the same name"
-    echo "    An additional parameter of 1 is a test mode where no "
-    echo "    changes occur."
-    echo ""
-}
+# --------------------------
+#  MAIN
 
 
-PROJECT=$1
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -n|--dry-run)
+            DRYRUN=1
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        -v|--version)
+            version
+            exit 0
+            ;;
+        *)
+            PROJECT=$1
+            ;;
+    esac
+    shift
+done
+
+
 
 if [ -z "$PROJECT" ]; then
     usage
@@ -144,7 +196,6 @@ if [ -d "$PROJECT" ]; then
     read reply
 
     case "$reply" in
-
         "y" | "Y")
             ;;
         *)
@@ -158,10 +209,22 @@ else
         exit 1
     else
         mkdir -p $PROJECT
+        RETVAL=$?
+        if [ $RETVAL -eq 1 ]; then
+            echo "Error creating target directory '$PROJECT'"
+            exit 1
+        fi
     fi
 fi
 
-createProject $PROJECT $2
+createProject $PROJECT
+RETVAL=$?
 
-exit 0
+if [ $RETVAL -eq 0 ]; then
+    echo "tcamake_new.sh finished successfully"
+else
+    echo "tcamake_new.sh finished with errors"
+fi
+
+exit $RETVAL
 

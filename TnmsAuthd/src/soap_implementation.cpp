@@ -16,7 +16,8 @@ using namespace tnmsauth;
 
 
 
-
+//--------------------------------------------------------------------//
+// authenticate
 
 int ns1__authenticate ( soap            * s,
                         xsd__string       username, 
@@ -50,6 +51,7 @@ int ns1__authenticate ( soap            * s,
     return SOAP_OK;
 }
 
+
 int ns1__refreshTicket ( soap         * s,
                          xsd__string    username,
                          xsd__string    ticket,
@@ -71,6 +73,7 @@ int ns1__refreshTicket ( soap         * s,
 
     return SOAP_OK;
 }
+
 
 int ns1__expireTicket ( soap         * s,
                         xsd__string    username,

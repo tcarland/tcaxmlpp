@@ -93,7 +93,12 @@ class AuthDbThread : public tcanetpp::Thread {
     bool          clearTickets     ( SqlSessionInterface * session,
                                      StringList          & stales );
 
-    
+
+  private:
+
+    typedef std::map<std::string, TnmsDbUser*>   AuthUserMap;
+    typedef std::map<std::string, TnmsDbAgent*>  AuthAgentMap;
+
 
   private:
 
@@ -101,6 +106,9 @@ class AuthDbThread : public tcanetpp::Thread {
     tcanetpp::ThreadLock*               _lock;
     tnmsSession::TicketDatabase*        _ticketDb;
     tnmsSession::RandomStringDevice*    _ticketGen;
+
+    AuthUserMap                         _userMap;
+    AuthAgentMap                        _agentMap;
     
 };
 

@@ -3,7 +3,10 @@
 #  Initializes a new workspace, source repository, or project root
 #  using the 'tcamake' project as template
 #
+VERSION="0.1"
+AUTHOR="tcarland@gmail.com"
 
+MYNAME=${0/#.\//}
 BASE=
 TARGET=
 RSYNC="rsync "
@@ -25,6 +28,13 @@ usage()
     echo ""
     return 0
 }
+
+version()
+{
+    echo "$MYNAME, Version $VERSION, $AUTHOR"
+    echo ""
+}
+
 
 setBasename()
 {
@@ -92,7 +102,7 @@ createWorkspace()
 
 if [ -z "$1" ]; then
     usage
-    return 1
+    exit 1
 fi
 
 setBasename

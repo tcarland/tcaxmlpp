@@ -75,16 +75,25 @@ AuthDbThread::authenticate ( const std::string & username,
     bool ticket = false;
     int  retry  = 0;
 
-    TnmsDbUser * user = this->queryUser(username);
+    SqlSessionInterface * sql = _dbpool->acquire();
 
-    if ( user == NULL ) 
+    if ( sql == NULL )
+    {
+        LogFacility::LogMessage("AuthDbThread::authenticate() ERROR acquiring DB instance" 
+            + _dbpool->getErrorStr());
+        return false;
+    }
+
+    user.username = username;
+    user.last     = now;
+    
+    AuthDbUser * userdb = this->queryUser(sql, username);
+    if ( userdb == NULL )
     {
         return false;
     }
-    else 
-    {
-        result = this->authenticateUser(username, password, user->auth_method);
-    }
+     
+    result = this->authenticateUser(username, password, userdb->auth_method);
 
     while ( result && retry++ < TICKET_MAX_RETRY )
     {
@@ -100,7 +109,9 @@ AuthDbThread::authenticate ( const std::string & username,
     if ( ticket )
         this->storeTicket(username, ticket, ipaddr);
 
-    return ticket;
+
+
+    return true;
 }
 
 
@@ -188,7 +199,7 @@ AuthDbThread::setMaxConns ( int conns )
 
 TnmsDbUser*
 AuthDbThread::queryUser ( SqlSessionInterface * session,
-                                     const std::string   & username )
+                          const std::string   & username )
 {
     TnmsDbUser * user = NULL;
 
