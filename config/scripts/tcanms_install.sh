@@ -2,27 +2,33 @@
 #
 #  tcanms_install.sh
 #
+VERSION="0.1"
+AUTHOR="tcarland@gmail.com"
 
+MYNAME=${0/#.\//}
+SYSHOME=
+CONFIGDIR=
 
-SYSHOME=""
 CURDIR=`dirname $0`
+PREFIX=$TCANMS_PREFIX
+
+RETVAL=0
+
+# ------------------------------------------
+#  Setup
+
 
 if [ "$CURDIR" == "." ]; then
     CURDIR=${PWD}
 fi
 
-echo ""
-echo "tcanms_install: "
-echo "   current directory: $CURDIR"
-
-
 if [ -z "$TCANMS_PREFIX" ]; then
-    echo "Variable TCANMS_PREFIX not set. aborting install"
+    echo "Variable TCANMS_PREFIX not set."
     exit 1
 fi
 
 CONFIGDIR=$CURDIR
-
+echo ""
 if [ -z "$RC_TCANMS_BASHRC" ]; then
     if [ -e $CONFIGDIR/tcanmsrc ]; then
         echo "Using rc file from $CONFIGDIR"
@@ -37,36 +43,72 @@ if [ -z "$RC_TCANMS_BASHRC" ]; then
 fi
 
 
-TCANMS_BIN=${TCANMS_PREFIX}/bin
-TCANMS_SBIN=${TCANMS_PREFIX}/sbin
-TCANMS_ETC=${TCANMS_PREFIX}/etc
-TCANMS_TMP=${TCANMS_PREFIX}/tmp
-TCANMS_LOG=${TCANMS_PREFIX}/logs
-TCANMS_RUN=${TCANMS_PREFIX}/run
+usage()
+{
+    echo ""
+    echo "Usage: $MYNAME [target_path]"
+    echo "    The target path is optional and the script will by default "
+    echo "  check for the environment variable TCANMS_PREFIX to be used"
+    echo "  as the target path"
+    echo ""
+}
 
-echo "  Creating directory structure (if needed)."
+version()
+{
+    echo "$MYNAME, Version $VERSION, $AUTHOR"
+    echo ""
+}
 
-if [ ! -d $TCANMS_BIN ]; then
-    mkdir -p $TCANMS_BIN
-fi
-if [ ! -d $TCANMS_SBIN ]; then
-    mkdir -p $TCANMS_SBIN
-fi
-if [ ! -d $TCANMS_ETC ]; then
-    mkdir -p $TCANMS_ETC
-fi
-if [ ! -d $TCANMS_TMP ]; then
-    mkdir -p $TCANMS_TMP
-fi
-if [ ! -d $TCANMS_LOG ]; then
-    mkdir -p $TCANMS_LOG
-fi
-if [ ! -d $TCANMS_RUN ]; then
-    mkdir -p $TCANMS_RUN
+
+# --------------------------
+#  MAIN
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        -v|--version)
+            version
+            exit 0
+            ;;
+    esac
+    shift
+done
+
+
+if [ -n "$1" ]; then
+    PREFIX=$1
 fi
 
-echo "tcanms_install: finished."
+
+if [ -d $PREFIX ]; then
+    echo "Install directory '$PREFIX' already exists. Continuing.."
+fi
+
+
+PATHLIST="${PREFIX}/bin ${PREFIX}/sbin ${PREFIX}/etc ${PREFIX}/tmp \
+${PREFIX}/logs ${PREFIX}/run"
+
+echo "Creating directory structure in '$TCANMS_PREFIX'"
+
+for SUBDIR in $PATHLIST; do
+    if [ ! -d $SUBDIR ]; then
+        mkdir -p $SUBDIR
+        RETVAL=$?
+    fi
+    if [ $RETVAL -eq 1 ]; then
+        break
+    fi
+done
+
+if [ $RETVAL -eq 1 ]; then
+    echo "$MYNAME: finished with errors."
+else
+    echo "$MYNAME: finished successfully."
+fi
 echo ""
 
-exit 0
+exit $RETVAL
 

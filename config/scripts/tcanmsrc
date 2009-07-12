@@ -30,6 +30,10 @@ export CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}:${TCANMS_HOME}/include
 
 if [ "$TCANMS_DB" == "mysql" ]; then
     export USE_MYSQL="true"
+    export USE_POSTGRESQL=""
+elif [ "$TCANMS_DB" == "postgres" ]; then
+    export USE_MYSQL=""
+    export USE_POSTGRESQL="true"
 fi
 
 KV=$(uname -r)
@@ -38,7 +42,6 @@ KVMINOR=${KV#*.}
 KVMINOR=${KVMINOR%%.*}
 KVMICRO=${KV#*.*.}
 KVMICRO=${KVMICRO%%[^[:digit:]]*}
-
 
 #export JAVA_HOME=""
 #export PATH=${PATH}:${JAVA_HOME}/bin
