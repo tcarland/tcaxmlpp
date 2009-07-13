@@ -2,19 +2,22 @@
 #define _TNMSAUTH_AUTHDBCONFIG_HPP_
 
 #include <string>
+#include <list>
 
 
 namespace tnmsauth {
 
 
 #define DEFAULT_TNMSAUTH_TNMSPORT   33701
-#define DEFAULT_TNMSAUTH_SOAPPORT   33702
+#define DEFAULT_TNMSAUTH_SOAPPORT   33801
 #define DEFAULT_TNMSAUTH_DBNAME     "tnms"
 #define DEFAULT_TNMSAUTH_DBUSER     "tnmsauth"
 
 
-struct AuthDbConfig 
-{
+typedef std::list<std::string>  StringList;
+
+
+struct AuthDbConfig  {
     std::string  db_host;
     std::string  db_port;
     std::string  db_name;
@@ -44,36 +47,55 @@ struct AuthDbConfig
 };
 
 
-struct TnmsDbUser {
-
-    uint32_t            uid;
+struct TnmsDbFilter {
     uint32_t            gid;
-    uint32_t            auth_id;
+    StringList          authorizations;
+    bool                isInclude;
+
+    TnmsDbFilter() 
+        : gid(0), isInclude(true) 
+    {}
+    TnmsDbFilter ( uint32_t id )
+        : gid(id), isInclude(true) 
+    {}
+};
+
+
+
+struct TnmsDbUser {
     std::string         username;
     std::string         ticket;
     std::string         ipaddr;
+
+    uint32_t            uid;
+    uint32_t            gid;
+
+    uint32_t            authtype_id;
     std::string         auth_method;
     std::string         auth_bin;
+
     bool                internal;
     time_t              last;
 
     TnmsDbUser() :
-        uid(0), gid(0), auth_id(0),
+        uid(0), gid(0), authtype_id(0),
         internal(false), last(0)
     {}
 };
 
 
 struct TnmsDbAgent {
-    uint32_t            agent_id;
-    uint32_t            gid;
     std::string         agent_name;
     std::string         agent_config;
     std::string         ipaddr;
+
+    uint32_t            uid;
+    uint32_t            gid;
+
     time_t              last;
 
     TnmsDbAgent()
-        : agent_id(0), gid(0), last(0)
+        : uid(0), gid(0), last(0)
     {}
 };
 

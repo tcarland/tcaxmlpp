@@ -172,8 +172,8 @@ TnmsAuthdManager::setDebug ( bool d )
 }
 
 
-std::string
-TnmsAuthdManager::getErrorStr()
+const std::string&
+TnmsAuthdManager::getErrorStr() const
 {
     return this->_errstr;
 }

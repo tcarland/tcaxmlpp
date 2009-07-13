@@ -28,7 +28,7 @@ DROP TABLE IF EXISTS `tnms`.`groups` ;
 CREATE  TABLE IF NOT EXISTS `tnms`.`groups` (
   `gid` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(255) NOT NULL ,
-  `description` TEXT NULL DEFAULT NULL ,
+  `description` VARCHAR(255) NULL DEFAULT NULL ,
   `internal` TINYINT NOT NULL DEFAULT '0' ,
   PRIMARY KEY (`gid`) ,
   INDEX `groupname_idx` (`gid` ASC, `name` ASC) )
@@ -58,14 +58,15 @@ DEFAULT CHARACTER SET = utf8;
 DROP TABLE IF EXISTS `tnms`.`agents` ;
 
 CREATE  TABLE IF NOT EXISTS `tnms`.`agents` (
-  `agent_id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `uid` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
   `gid` INT UNSIGNED NOT NULL ,
   `name` VARCHAR(255) NOT NULL ,
   `ipaddress` VARCHAR(45) NULL DEFAULT NULL ,
-  `parent_name` VARCHAR(255) NULL ,
+  `parent_name` VARCHAR(255) NULL DEFAULT NULL ,
+  `description` VARCHAR(255) NULL ,
   `required` TINYINT NOT NULL DEFAULT '0' ,
-  PRIMARY KEY (`agent_id`) ,
-  INDEX `agentname_idx` (`agent_id` ASC, `name` ASC) ,
+  PRIMARY KEY (`uid`) ,
+  INDEX `agentname_idx` (`uid` ASC, `name` ASC) ,
   INDEX `agents_gid_FKidx` (`gid` ASC) ,
   CONSTRAINT `fk_agent_gid`
     FOREIGN KEY (`gid` )
@@ -88,7 +89,7 @@ CREATE  TABLE IF NOT EXISTS `tnms`.`agent_configs` (
   INDEX `agent_configs_FKidx` (`agent_id` ASC) ,
   CONSTRAINT `fk_agent_id`
     FOREIGN KEY (`agent_id` )
-    REFERENCES `tnms`.`agents` (`agent_id` )
+    REFERENCES `tnms`.`agents` (`uid` )
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
@@ -105,7 +106,8 @@ CREATE  TABLE IF NOT EXISTS `tnms`.`users` (
   `gid` INT UNSIGNED NOT NULL ,
   `authtype_id` INT UNSIGNED NOT NULL ,
   `username` VARCHAR(255) NOT NULL ,
-  `password` VARCHAR(255) NULL DEFAULT NULL ,
+  `password` VARCHAR(255) NOT NULL ,
+  `description` VARCHAR(255) NULL DEFAULT NULL ,
   `internal` TINYINT NOT NULL DEFAULT '0' ,
   PRIMARY KEY (`uid`) ,
   INDEX `username_idx` (`uid` ASC, `username` ASC) ,
@@ -186,7 +188,7 @@ DROP TABLE IF EXISTS `tnms`.`access_filters` ;
 CREATE  TABLE IF NOT EXISTS `tnms`.`access_filters` (
   `filter_id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
   `ipaddress` VARCHAR(45) NOT NULL ,
-  `description` VARCHAR(45) NULL ,
+  `description` VARCHAR(255) NULL DEFAULT NULL ,
   PRIMARY KEY (`filter_id`) ,
   INDEX `ipaddr_idx` (`filter_id` ASC, `ipaddress` ASC) )
 ENGINE = InnoDB;

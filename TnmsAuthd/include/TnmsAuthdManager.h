@@ -55,8 +55,10 @@ class TnmsAuthdManager : public EventTimerHandler {
 
     void         setDebug ( bool debug = true );
     bool         getDebug() const { return _debug; }
+    
+    const
+    std::string& getErrorStr() const;
 
-    std::string  getErrorStr();
 
   protected:
 
@@ -68,38 +70,38 @@ class TnmsAuthdManager : public EventTimerHandler {
 
   private:
 
-    EventManager*       _evmgr;
-    TnmsTree*           _tree;
-    AuthDbThread*       _authDb;
-    SqlSessionInterface*         _sql;
+    EventManager*                       _evmgr;
+    TnmsTree*                           _tree;
+    AuthDbThread*                       _authDb;
+    SqlSessionInterface*                 _sql;
 
-    Socket*             _svr;
-    SoapClient*         _soap;
+    Socket*                             _svr;
+    SoapClient*                         _soap;
 
-    evid_t              _svrId, _soapId;
-    evid_t              _reportId, _logId;
+    evid_t                              _svrId, _soapId;
+    evid_t                              _reportId, _logId;
 
 
-    SoapIOHandler*      _soapHandler;
-    AuthIOHandler*      _authHandler;
+    SoapIOHandler*                      _soapHandler;
+    AuthIOHandler*                      _authHandler;
 
-    AuthDbConfig        _aconfig;
-    TnmsConfig          _tconfig;
+    AuthDbConfig                        _aconfig;
+    TnmsConfig                          _tconfig;
 
-    time_t              _lastTouched;
-    time_t              _reportDelay;
-    time_t              _logCheck;
-    time_t              _holddown;
-    int                 _today;
+    time_t                              _lastTouched;
+    time_t                              _reportDelay;
+    time_t                              _logCheck;
+    time_t                              _holddown;
+    int                                 _today;
 
-    std::string         _configfile;
-    std::string         _logname;
-    std::string         _errstr;
+    std::string                         _configfile;
+    std::string                         _logname;
+    std::string                         _errstr;
 
-    bool				_alarm;
-    bool                _hup;
-    bool                _usr;
-    bool                _debug;
+    bool                                _alarm;
+    bool                                _hup;
+    bool                                _usr;
+    bool                                _debug;
 
 };
 

@@ -22,8 +22,6 @@ using namespace tnmsSession;
 namespace tnmsauth {
 
 
-typedef std::list<std::string>  StringList;
-
 
 class AuthDbThread : public tcanetpp::Thread {
 
@@ -78,19 +76,38 @@ class AuthDbThread : public tcanetpp::Thread {
 
   protected:
 
-    eAuthType     authenticateUser ( const std::string   & username,
+    eAuthType     authenticateUser ( TnmsDbUser          & username,
                                      const std::string   & password );
+
+    TnmsDbUser*   findUser         ( const std::string   & username );
+    TnmsDbAgent*  findAgent        ( const std::string   & agentname );
+
+    /*   Database methods */
+    TnmsDbFilter* queryAuthFilter  ( uint32_t  gid );
 
     TnmsDbUser*   queryUser        ( SqlSessionInterface * session,
                                      const std::string   & username );
-    TnmsDbAgent*  queryAgent       ( SqlSessionInterface * session );
-    std::string   queryAgentConfig ( const std::string   & agentname );
 
-    bool          storeTicket      ( const TnmsDbUser    * authuser,
-                                     const std::string   & ticket );
 
-    bool          restoreTickets   ( SqlSessionInterface * session );
-    bool          clearTickets     ( SqlSessionInterface * session,
+    TnmsDbAgent*  queryAgent       ( SqlSessionInterface * session,
+                                     const std::string   & agentname );
+    bool          queryAgentConfig ( SqlSessionInterface * session, 
+                                     TnmsDbAgent         * agent );
+
+
+    bool          querySubtree     ( SqlSessionInterface * session,
+                                     uint32_t              sid,
+                                     TnmsDbFilter        * filter );
+
+    bool          dbAuthUser       ( const std::string   & username,
+                                     const std::string   & password );
+
+    bool          dbStoreTicket    ( SqlSessionInterface * session,
+                                     TnmsDbUser          * user );
+
+    bool          dbRestoreTickets ( SqlSessionInterface * session,
+                                     const time_t        & now );
+    bool          dbClearTickets   ( SqlSessionInterface * session,
                                      StringList          & stales );
 
 
@@ -98,6 +115,7 @@ class AuthDbThread : public tcanetpp::Thread {
 
     typedef std::map<std::string, TnmsDbUser*>   AuthUserMap;
     typedef std::map<std::string, TnmsDbAgent*>  AuthAgentMap;
+    typedef std::map<uint32_t, TnmsDbFilter*>    AuthFilterMap;
 
 
   private:
@@ -109,6 +127,7 @@ class AuthDbThread : public tcanetpp::Thread {
 
     AuthUserMap                         _userMap;
     AuthAgentMap                        _agentMap;
+    AuthFilterMap                       _filterMap;
     
 };
 
