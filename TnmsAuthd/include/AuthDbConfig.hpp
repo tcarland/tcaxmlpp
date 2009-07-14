@@ -66,6 +66,7 @@ struct TnmsDbUser {
     std::string         username;
     std::string         ticket;
     std::string         ipaddr;
+    std::string         config;
 
     uint32_t            uid;
     uint32_t            gid;
@@ -75,30 +76,14 @@ struct TnmsDbUser {
     std::string         auth_bin;
 
     bool                internal;
+    bool                isAgent;
     time_t              last;
 
     TnmsDbUser() :
         uid(0), gid(0), authtype_id(0),
-        internal(false), last(0)
+        internal(false), isAgent(false), last(0)
     {}
 };
-
-
-struct TnmsDbAgent {
-    std::string         agent_name;
-    std::string         agent_config;
-    std::string         ipaddr;
-
-    uint32_t            uid;
-    uint32_t            gid;
-
-    time_t              last;
-
-    TnmsDbAgent()
-        : uid(0), gid(0), last(0)
-    {}
-};
-
 
 
 } // namespace

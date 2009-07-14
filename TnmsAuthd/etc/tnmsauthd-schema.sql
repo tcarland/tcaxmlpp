@@ -53,50 +53,6 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `tnms`.`agents`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `tnms`.`agents` ;
-
-CREATE  TABLE IF NOT EXISTS `tnms`.`agents` (
-  `uid` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
-  `gid` INT UNSIGNED NOT NULL ,
-  `name` VARCHAR(255) NOT NULL ,
-  `ipaddress` VARCHAR(45) NULL DEFAULT NULL ,
-  `parent_name` VARCHAR(255) NULL DEFAULT NULL ,
-  `description` VARCHAR(255) NULL ,
-  `required` TINYINT NOT NULL DEFAULT '0' ,
-  PRIMARY KEY (`uid`) ,
-  INDEX `agentname_idx` (`uid` ASC, `name` ASC) ,
-  INDEX `agents_gid_FKidx` (`gid` ASC) ,
-  CONSTRAINT `fk_agent_gid`
-    FOREIGN KEY (`gid` )
-    REFERENCES `tnms`.`groups` (`gid` )
-    ON DELETE RESTRICT
-    ON UPDATE RESTRICT)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
-
-
--- -----------------------------------------------------
--- Table `tnms`.`agent_configs`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `tnms`.`agent_configs` ;
-
-CREATE  TABLE IF NOT EXISTS `tnms`.`agent_configs` (
-  `agent_id` INT UNSIGNED NOT NULL ,
-  `agent_config` LONGBLOB NOT NULL ,
-  PRIMARY KEY (`agent_id`) ,
-  INDEX `agent_configs_FKidx` (`agent_id` ASC) ,
-  CONSTRAINT `fk_agent_id`
-    FOREIGN KEY (`agent_id` )
-    REFERENCES `tnms`.`agents` (`uid` )
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
-
-
--- -----------------------------------------------------
 -- Table `tnms`.`users`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `tnms`.`users` ;
@@ -106,9 +62,10 @@ CREATE  TABLE IF NOT EXISTS `tnms`.`users` (
   `gid` INT UNSIGNED NOT NULL ,
   `authtype_id` INT UNSIGNED NOT NULL ,
   `username` VARCHAR(255) NOT NULL ,
-  `password` VARCHAR(255) NOT NULL ,
-  `description` VARCHAR(255) NULL DEFAULT NULL ,
+  `password` VARCHAR(255) NOT NULL DEFAULT '' ,
+  `is_agent` TINYINT NOT NULL DEFAULT 0 ,
   `internal` TINYINT NOT NULL DEFAULT '0' ,
+  `description` VARCHAR(255) NULL DEFAULT ' ' ,
   PRIMARY KEY (`uid`) ,
   INDEX `username_idx` (`uid` ASC, `username` ASC) ,
   INDEX `users_gid_FKidx` (`gid` ASC) ,
@@ -123,6 +80,25 @@ CREATE  TABLE IF NOT EXISTS `tnms`.`users` (
     REFERENCES `tnms`.`auth_types` (`authtype_id` )
     ON DELETE RESTRICT
     ON UPDATE RESTRICT)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `tnms`.`user_configs`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `tnms`.`user_configs` ;
+
+CREATE  TABLE IF NOT EXISTS `tnms`.`user_configs` (
+  `uid` INT UNSIGNED NOT NULL ,
+  `config` LONGBLOB NOT NULL ,
+  PRIMARY KEY (`uid`) ,
+  INDEX `fk_user_configs_users1` (`uid` ASC) ,
+  CONSTRAINT `fk_user_configs_users1`
+    FOREIGN KEY (`uid` )
+    REFERENCES `tnms`.`users` (`uid` )
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 

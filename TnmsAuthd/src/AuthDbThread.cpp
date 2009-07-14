@@ -89,6 +89,7 @@ AuthDbThread::authenticate ( const std::string & username,
         userdb = this->queryUser(sql, username);
 
     if ( userdb == NULL ) {
+        _dbpool->release(sql);
         return false;
     } else {
         userdb->last = now;
@@ -109,6 +110,8 @@ AuthDbThread::authenticate ( const std::string & username,
 
     if ( ticket )
         this->dbStoreTicket(sql, userdb);
+
+    _dbpool->release(sql);
 
     return true;
 }
@@ -131,6 +134,7 @@ AuthDbThread::isAuthentic ( const std::string & username,
     return result;
 
 }
+
  
 bool
 AuthDbThread::isAuthentic ( const std::string & username,
@@ -158,6 +162,7 @@ AuthDbThread::isAuthentic ( const std::string & username,
     return result;
 }
 
+//----------------------------------------------------------------
 
 bool
 AuthDbThread::refreshTicket ( const std::string & username,
@@ -183,14 +188,7 @@ AuthDbThread::expireTicket ( const std::string & username,
 bool          
 AuthDbThread::getAuthTypes ( StringList & authtypes )
 {
-}
-
-bool 
-AuthDbThread::agentIsAuthentic ( const std::string & agentname,
-                                 const std::string & ipaddr,
-                                 TnmsAuthReply     & reply )
-{
-
+    return true;
 }
 
 void 
@@ -241,20 +239,6 @@ AuthDbThread::findUser ( const std::string & username )
     return user;
 }
 
-
-TnmsDbAgent*
-AuthDbThread::findAgent ( const std::string & agentname )
-{
-    ThreadAutoMutex  mutex(_lock);
-    TnmsDbAgent *    agent = NULL;
-
-    AuthAgentMap::iterator  aIter = _agentMap.find(agentname);
-
-    if ( aIter != _agentMap.end() )
-        agent = aIter->second;
-
-    return agent;
-}
 
 //----------------------------------------------------------------
 
@@ -376,59 +360,19 @@ AuthDbThread::querySubtree ( SqlSessionInterface * session, uint32_t sid, TnmsDb
 }
 
 
-TnmsDbAgent*
-AuthDbThread::queryAgent ( SqlSessionInterface * session, const std::string & agentname )
-{
-    TnmsDbAgent*   agent = NULL;
-    SqlSession*    sql   = (SqlSession*) session;
-    Query          query = sql->newQuery();
-    Result         res;
-    Row            row;
-
-    query << "SELECT agent_id, gid, ipaddress, parent_name, required " 
-          << "FROM tnms.agents WHERE name=\"" << agentname << "\"";
-
-    if ( ! sql->submitQuery(query, res) ) {
-        LogFacility::LogMessage("AuthDbThread::queryAgent() SQL error: " + sql->getErrorStr());
-        return agent;
-    } else if ( res.size() == 0 ) {
-        return agent;
-    }
-
-    Result::iterator  rIter;
-
-    agent = new TnmsDbAgent();
-    rIter = res.begin();
-    row   = (Row) *rIter;
-
-    agent->agent_id = SqlSession::fromString<uint32_t>(std::string(row[0]));
-    agent->gid      = SqlSession::fromString<uint32_t>(std::string(row[1]));
-    agent->name     = agentname;
-    agent->ipaddr   = std::string(row[2]);
-
-    this->queryAgentConfig(session, agent);
-
-    ThreadAutoMutex  mutex(_lock);
-
-    _agentMap[agentname] = agent;
-
-    return agent;
-}
-
-
 bool
-AuthDbThread::queryAgentConfig ( SqlSessionInterface * session, TnmsDbAgent * agent )
+AuthDbThread::queryUserConfig ( SqlSessionInterface * session, TnmsDbUser * user )
 {
     SqlSession*    sql   = (SqlSession*) session;
     Query          query = sql->newQuery();
     Result         res;
     Row            row;
 
-    query << "SELECT agent_config FROM tnms.agent_configs WHERE agent_id=" 
-          << agent->agent_id;
+    query << "SELECT config FROM tnms.user_configs WHERE uid=" 
+          << user->uid;
 
     if ( ! sql->submitQuery(query, res) ) {
-        LogFacility::LogMessage("AuthDbThread::queryAgent() SQL error: " + sql->getErrorStr());
+        LogFacility::LogMessage("AuthDbThread::queryUserConfig() SQL error: " + sql->getErrorStr());
         return false;
     } else if ( res.size() == 0 ) {
         return true;
@@ -437,7 +381,7 @@ AuthDbThread::queryAgentConfig ( SqlSessionInterface * session, TnmsDbAgent * ag
     Result::iterator  rIter = res.begin();
     row = (Row) *rIter;
 
-    agent->agent_config = std::string(row[0]);
+    user->config = std::string(row[0]);
     
     return true;
 }
@@ -446,9 +390,91 @@ AuthDbThread::queryAgentConfig ( SqlSessionInterface * session, TnmsDbAgent * ag
 bool
 AuthDbThread::dbAuthUser ( const std::string & username, const std::string & password )
 {
-    return true;
+    SqlSessionInterface * session = _dbpool->acquire();
+
+    if ( session == NULL ) {
+        LogFacility::LogMessage("AuthDbThread::dbAuthUser failed to acquire DB handle");
+        return false;
+    }
+
+    SqlSession * sql   = (SqlSession*) session;
+    Query        query = sql->newQuery();
+    Result       res;
+    Row          row;
+    std::string  pass;
+    bool         result = false;
+
+    Result::iterator rIter;
+
+    query << "SELECT password FROM tnms.users WHERE username=\"" << username << "\"";
+
+    if ( ! sql->submitQuery(query, res) ) {
+        LogFacility::LogMessage("AuthDbThread::dbAuthUser() SQL error: "
+            + sql->getErrorStr());
+    } else if ( res.size() > 0 ) {
+        rIter = res.begin();
+        row   = (Row) *rIter;
+        pass  = std::string(row[0]);
+
+        if ( password.compare(pass) == 0 )
+            result = true;
+    }
+
+    _dbpool->release(session);
+
+    return result;
 }
 
+
+time_t
+AuthDbThread::dbGetRefresh ( SqlSessionInterface * session )
+{
+    SqlSession*  sql   = (SqlSession*) session;
+    Query        query = sql->newQuery();
+    Result       res;
+    Row          row;
+
+    query << "SELECT value FROM tnms.properties WHERE name=\"" 
+          << AUTHDB_REFRESH_TRIGGER << "\"";
+
+    if ( ! sql->submitQuery(query, res) ) {
+        LogFacility::LogMessage("AuthDbThread::dbGetRefresh() SQL error: "
+            + sql->getErrorStr());
+        return 0;
+    } else if ( res.size() == 0 ) {
+        return 0;
+    }
+
+    time_t  refresh = 0;
+    Result::iterator  rIter = res.begin();
+    row = (Row) *rIter;
+
+    refresh = SqlSession::fromString<time_t>(std::string(row[0]));
+
+    return refresh;
+}
+
+void
+AuthDbThread::dbSetRefresh ( SqlSessionInterface * session, const time_t & now, bool insert )
+{
+    SqlSession*  sql   = (SqlSession*) session;
+    Query        query = sql->newQuery();
+
+    if ( insert ) {
+        query << "INSERT INTO tnms.properties (name, value) "
+              << "VALUES (\"" << AUTHDB_REFRESH_TRIGGER << "\", " << now << ")";
+    } else {
+        query << "UPDATE tnms.properties SET value=" << now 
+              << " WHERE name=\"" << AUTHDB_REFRESH_TRIGGER << "\"";
+    }
+
+    if ( ! sql->submitQuery(query) )
+        LogFacility::LogMessage("AuthDbThread::dbSetRefresh() SQL error: "
+            + sql->getErrorStr());
+
+    return;
+}
+    
 
 bool
 AuthDbThread::dbStoreTicket ( SqlSessionInterface * session, TnmsDbUser * user )
