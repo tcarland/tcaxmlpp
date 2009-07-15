@@ -1,0 +1,62 @@
+
+
+local SCHEMA=$1;
+
+
+CREATE DATABASE $SCHEMA;
+
+
+GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP 
+ON $SCHEMA.*
+TO $TNMS_DBUSER@localhost
+IDENTIFIED BY '${TNMS_DBPASS}';
+
+
+GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP 
+ON $SCHEMA.*
+TO $TNMS_DBUSER@\"%\"
+IDENTIFIED BY '${TNMS_DBPASS}';
+
+
+CREATE TABLE ${SCHEMA}.element_name (
+    id          INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+    name        TEXT,
+  PRIMARY KEY ( id ),
+  INDEX name_index ( name(255) )
+) ENGINE = MYISAM;
+
+
+CREATE TABLE ${SCHEMA}.immediate (
+    idx         INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+    id          INTEGER UNSIGNED NOT NULL,
+    value       INTEGER UNSIGNED NOT NULL,
+    strval      TEXT NULL,
+    valavg      INTEGER UNSIGNED NOT NULL,
+    time        INTEGER UNSIGNED NOT NULL,
+  PRIMARY KEY ( idx ),
+  UNIQUE KEY timekey ( id, time )
+) ENGINE = HEAP;
+
+CREATE TABLE ${SCHEMA}.short (
+    idx         INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+    id          INTEGER UNSIGNED NOT NULL,
+    value       INTEGER UNSIGNED NOT NULL,
+    strval      TEXT NULL,
+    valavg      INTEGER UNSIGNED NOT NULL,
+    time        INTEGER UNSIGNED NOT NULL,
+  PRIMARY KEY ( idx ),
+  UNIQUE KEY timekey ( id, time )
+) ENGINE = MYISAM;
+
+
+CREATE TABLE ${SCHEMA}.long (
+    idx         INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+    id          INTEGER UNSIGNED NOT NULL,
+    value       INTEGER UNSIGNED NOT NULL,
+    strval      TEXT NULL,
+    valavg      INTEGER UNSIGNED NOT NULL,
+    time        INTEGER UNSIGNED NOT NULL,
+  PRIMARY KEY ( idx ),
+  UNIQUE KEY timekey ( id, time )
+) ENGINE = MYISAM;
+
