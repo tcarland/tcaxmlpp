@@ -22,17 +22,15 @@ using namespace tnmsSession;
 namespace tnmsauth {
 
 
-#define AUTHDB_REFRESH_TRIGGER  "REFRESH_TRIGGER"
-
 
 
 class AuthDbThread : public tcanetpp::Thread {
 
   public:
 
-    AuthDbThread ( SqlSessionInterface * sql ) {}
+    AuthDbThread ( SqlSessionInterface * sql );
 
-    virtual ~AuthDbThread() {}
+    virtual ~AuthDbThread();
 
 
     virtual void run();
@@ -76,13 +74,14 @@ class AuthDbThread : public tcanetpp::Thread {
 
   protected:
 
-    eAuthType     authenticateUser ( TnmsDbUser          & username,
+    eAuthType     authenticateUser ( TnmsDbUser          * user,
                                      const std::string   & password );
 
     TnmsDbUser*   findUser         ( const std::string   & username );
 
     /*   Database methods */
-    TnmsDbFilter* queryAuthFilter  ( uint32_t  gid );
+    TnmsDbFilter* queryAuthFilter  ( SqlSessionInterface * session, 
+                                     uint32_t              gid );
 
     TnmsDbUser*   queryUser        ( SqlSessionInterface * session,
                                      const std::string   & username );
@@ -96,7 +95,7 @@ class AuthDbThread : public tcanetpp::Thread {
                                      uint32_t              sid,
                                      TnmsDbFilter        * filter );
 
-    bool          dbAuthUser       ( const std::string   & username,
+    eAuthType     dbAuthUser       ( const std::string   & username,
                                      const std::string   & password );
 
     time_t        dbGetRefresh     ( SqlSessionInterface * session );

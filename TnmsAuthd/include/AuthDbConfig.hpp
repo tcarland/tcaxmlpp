@@ -13,6 +13,9 @@ namespace tnmsauth {
 #define DEFAULT_TNMSAUTH_DBNAME     "tnms"
 #define DEFAULT_TNMSAUTH_DBUSER     "tnmsauth"
 
+#define AUTHDB_METHOD_DBSTATIC      "dbstatic"
+#define AUTHDB_REFRESH_TRIGGER      "REFRESH_TRIGGER"
+
 
 typedef std::list<std::string>  StringList;
 

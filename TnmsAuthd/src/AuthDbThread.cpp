@@ -1,7 +1,15 @@
 #define _TNMSAUTH_AUTHDBTHREAD_CPP_
 
 #include "AuthDbThread.h"
-#include "AuthConfig.h"
+
+// tcanetpp
+#include "LogFacility.h"
+#include "ThreadAutoMutex.hpp"
+// tcasqlpp
+#include "SqlSession.hpp"
+// tnmsSession
+#include "CommandLineAuthenticator.h"
+
 
 
 namespace tnmsauth {
@@ -31,6 +39,7 @@ void
 AuthDbThread::run()
 {
     StringList  stales;
+    time_t      now;
 
     SqlSessionInterface * sql = _dbpool->acquire();
 
@@ -41,7 +50,8 @@ AuthDbThread::run()
         return;
     }
 
-    this->restoreTickets(sql);
+    now  = ::time(NULL);
+    this->dbRestoreTickets(sql, now);
 
     while ( ! this->_Alarm )
     {
@@ -50,11 +60,11 @@ AuthDbThread::run()
         _ticketDb->clearStale(stales, now);
 
         if ( stales.size() > 0 ) {
-            this->clearTickets(session, stales);
+            this->dbClearTickets(sql, stales);
             stales.clear();
         }
 
-        sleep 1;
+        sleep(3);
     }
     _dbpool->release(sql);
 
@@ -71,15 +81,15 @@ AuthDbThread::authenticate ( const std::string & username,
                              const time_t      & now,
                              std::string       & ticket )
 {
-    bool result = false;
-    bool ticket = false;
-    int  retry  = 0;
+    eAuthType result = AUTH_NO_RESULT;
+    bool      tick   = false;
+    int       retry  = 0;
 
     SqlSessionInterface * sql = _dbpool->acquire();
     if ( sql == NULL ) {
         LogFacility::LogMessage("AuthDbThread::authenticate() ERROR acquiring DB instance" 
             + _dbpool->getErrorStr());
-        return false;
+        return result;
     }
 
     TnmsDbUser * userdb = NULL;
@@ -90,25 +100,25 @@ AuthDbThread::authenticate ( const std::string & username,
 
     if ( userdb == NULL ) {
         _dbpool->release(sql);
-        return false;
+        return result;
     } else {
         userdb->last = now;
     }
      
     result = this->authenticateUser(userdb, password);
 
-    while ( result && retry++ < TICKET_MAX_RETRY )
+    while ( result == AUTH_SUCCESS && retry++ < TICKET_MAX_RETRY )
     {
-        _ticketProvider->getRandomString(TNMS_TICKET_LENGTH, ticket);
+        _ticketGen->randomString(ticket, TNMS_TICKET_LENGTH);
 
-        ticket = _ticketDb->insert(username, ticket, ipaddr, now
+        tick = _ticketDb->insert(username, ticket, ipaddr, now,
             TICKET_REFRESH_INTERVAL + TICKET_GRACE_PERIOD);
 
-        if ( ticket )
+        if ( tick )
             break;
     }
 
-    if ( ticket )
+    if ( tick )
         this->dbStoreTicket(sql, userdb);
 
     _dbpool->release(sql);
@@ -128,7 +138,7 @@ AuthDbThread::isAuthentic ( const std::string & username,
 
     LogFacility::Message  logmsg;
     logmsg << "AuthDbThread::isAuthentic() " << username << "@"
-           << ipaddr << " = " result;
+           << ipaddr << " = " << result;
     LogFacility::LogMessage(logmsg.str());
 
     return result;
@@ -156,7 +166,7 @@ AuthDbThread::isAuthentic ( const std::string & username,
 
     LogFacility::Message  logmsg;
     logmsg << "AuthDbThread::isAuthentic() " << username << "@"
-           << ipaddr << " = " result;
+           << ipaddr << " = " << result;
     LogFacility::LogMessage(logmsg.str());
 
     return result;
@@ -170,7 +180,7 @@ AuthDbThread::refreshTicket ( const std::string & username,
                               const std::string & ipaddr,
                               const time_t      & now )
 {
-    return _ticketDb->refresh(username, ticket, now);
+    return _ticketDb->refresh(username, ticket, ipaddr, now);
 }
 
 
@@ -210,16 +220,20 @@ AuthDbThread::setMaxConns ( int conns )
 //----------------------------------------------------------------
 
 eAuthType
-AuthDbThread::authenticateUser ( const std::string & username, const std::string & password, const std::string & authmethod )
+AuthDbThread::authenticateUser ( TnmsDbUser        * user, 
+                                 const std::string & password )
 {
-    if ( authmethod.compare(AUTHDB_METHOD_DBSTATIC) == 0 )
+    if ( user->auth_method.compare(AUTHDB_METHOD_DBSTATIC) == 0 )
     {
-        return this->dbAuthUser(username, password);
+        return this->dbAuthUser(user->username, password);
     }
 
-    tnmsSession::CommandLineAuthenticator  authp(this->getAuthCommand(authmethod));
+    tnmsSession::CommandLineAuthenticator  authp(user->auth_bin);
 
-    return authp->authenticate(username, password);
+    if ( authp.authenticate(user->username, password) )
+        return AUTH_SUCCESS;
+
+    return AUTH_INVALID;
 }
 
 //----------------------------------------------------------------
@@ -261,7 +275,7 @@ AuthDbThread::queryUser ( SqlSessionInterface * session,
 
     if ( ! sql->submitQuery(query, res) ) {
         LogFacility::LogMessage("AuthDbThread::queryUser SQL error: " 
-            + sql->getErrorStr());
+            + sql->sqlErrorStr());
         return NULL;
     } else if ( res.size() == 0 ) {
         LogFacility::LogMessage("AuthDbThread::queryUser() user not found "
@@ -297,7 +311,7 @@ AuthDbThread::queryAuthFilter ( SqlSessionInterface * session, uint32_t gid )
 
     if ( ! sql->submitQuery(query, res) ) {
         LogFacility::LogMessage("AuthDbThread::queryAuthFilter() SQL error: "
-            + sql->getErrorStr());
+            + sql->sqlErrorStr());
         return NULL;
     } else if ( res.size() == 0 ) {
         return NULL;
@@ -315,7 +329,7 @@ AuthDbThread::queryAuthFilter ( SqlSessionInterface * session, uint32_t gid )
     }
 
     ThreadAutoMutex  mutex(_lock);
-    _authFilter[gid] = filter;
+    _filterMap[gid] = filter;
 
     return filter;
 }
@@ -334,7 +348,7 @@ AuthDbThread::querySubtree ( SqlSessionInterface * session, uint32_t sid, TnmsDb
     query << "SELECT subtree_name, isInclude FROM tnms.authorizations WHERE subtree_id=" << sid;
 
     if ( ! sql->submitQuery(query, res) ) {
-        LogFacility::LogMessage("AuthDbThread::querySubtree() SQL error: " + sql->getErrorStr());
+        LogFacility::LogMessage("AuthDbThread::querySubtree() SQL error: " + sql->sqlErrorStr());
         return false;
     } else if ( res.size() == 0 ) {
         return true;
@@ -372,7 +386,7 @@ AuthDbThread::queryUserConfig ( SqlSessionInterface * session, TnmsDbUser * user
           << user->uid;
 
     if ( ! sql->submitQuery(query, res) ) {
-        LogFacility::LogMessage("AuthDbThread::queryUserConfig() SQL error: " + sql->getErrorStr());
+        LogFacility::LogMessage("AuthDbThread::queryUserConfig() SQL error: " + sql->sqlErrorStr());
         return false;
     } else if ( res.size() == 0 ) {
         return true;
@@ -387,14 +401,15 @@ AuthDbThread::queryUserConfig ( SqlSessionInterface * session, TnmsDbUser * user
 }
 
 
-bool
+eAuthType
 AuthDbThread::dbAuthUser ( const std::string & username, const std::string & password )
 {
     SqlSessionInterface * session = _dbpool->acquire();
+    eAuthType             result  = AUTH_NO_RESULT;
 
     if ( session == NULL ) {
         LogFacility::LogMessage("AuthDbThread::dbAuthUser failed to acquire DB handle");
-        return false;
+        return result;
     }
 
     SqlSession * sql   = (SqlSession*) session;
@@ -402,7 +417,6 @@ AuthDbThread::dbAuthUser ( const std::string & username, const std::string & pas
     Result       res;
     Row          row;
     std::string  pass;
-    bool         result = false;
 
     Result::iterator rIter;
 
@@ -410,14 +424,16 @@ AuthDbThread::dbAuthUser ( const std::string & username, const std::string & pas
 
     if ( ! sql->submitQuery(query, res) ) {
         LogFacility::LogMessage("AuthDbThread::dbAuthUser() SQL error: "
-            + sql->getErrorStr());
+            + sql->sqlErrorStr());
     } else if ( res.size() > 0 ) {
         rIter = res.begin();
         row   = (Row) *rIter;
         pass  = std::string(row[0]);
 
         if ( password.compare(pass) == 0 )
-            result = true;
+            result = AUTH_SUCCESS;
+        else
+            result = AUTH_INVALID;
     }
 
     _dbpool->release(session);
@@ -439,7 +455,7 @@ AuthDbThread::dbGetRefresh ( SqlSessionInterface * session )
 
     if ( ! sql->submitQuery(query, res) ) {
         LogFacility::LogMessage("AuthDbThread::dbGetRefresh() SQL error: "
-            + sql->getErrorStr());
+            + sql->sqlErrorStr());
         return 0;
     } else if ( res.size() == 0 ) {
         return 0;
@@ -470,7 +486,7 @@ AuthDbThread::dbSetRefresh ( SqlSessionInterface * session, const time_t & now, 
 
     if ( ! sql->submitQuery(query) )
         LogFacility::LogMessage("AuthDbThread::dbSetRefresh() SQL error: "
-            + sql->getErrorStr());
+            + sql->sqlErrorStr());
 
     return;
 }
@@ -480,14 +496,14 @@ bool
 AuthDbThread::dbStoreTicket ( SqlSessionInterface * session, TnmsDbUser * user )
 {    
     SqlSession*    sql   = (SqlSession*) session;
-    Query          query = sql->newQuery()
+    Query          query = sql->newQuery();
 
     query << "INSERT INTO tnms.tickets (username, ticket, ipaddress) "
           << "VALUES (\"" << user->username << "\", \"" << sql->escapeString(user->ticket)
           << "\", \"" << user->ipaddr << "\")";
 
     if ( ! sql->submitQuery(query) ) {
-        LogFacility::LogMessage("AuthDbThread::storeTicket() SQL error: " + sql->getErrorStr());
+        LogFacility::LogMessage("AuthDbThread::storeTicket() SQL error: " + sql->sqlErrorStr());
         return false;
     }
 
@@ -508,7 +524,7 @@ AuthDbThread::dbRestoreTickets ( SqlSessionInterface * session, const time_t & n
 
     if ( ! sql->submitQuery(query, res) ) {
         LogFacility::LogMessage("AuthDbThread::restoreTickets() SQL error: "
-            + sql->getErrorStr());
+            + sql->sqlErrorStr());
         return false;
     }
 
@@ -522,7 +538,7 @@ AuthDbThread::dbRestoreTickets ( SqlSessionInterface * session, const time_t & n
         ticket  = std::string(row[1]);
         ipaddr  = std::string(row[2]);
 
-        _ticketDb->insert(user, ticket, ipaddr, now, TICKET_REFRESH, TICKET_GRACE_TIME);
+        _ticketDb->insert(user, ticket, ipaddr, now, TICKET_REFRESH_INTERVAL + TICKET_GRACE_PERIOD);
     }
 
     return true;
@@ -532,24 +548,22 @@ bool
 AuthDbThread::dbClearTickets ( SqlSessionInterface * session, StringList & stales )
 {
     SqlSession*    sql   = (SqlSession*) session;
-    Query          query;
-
 
     if ( stales.size() == 0 ) 
     {
-        query = sql->newQuery();
+        Query query = sql->newQuery();
         // This is highly inefficient. DROP/CREATE TABLE is preferred, but this
         // function should be very rarely called, and authdb perf at the time 
-        // this would be used shouldn't matter, so we live with this.
+        // this would be used shouldn't matter, so we live with it.
         query << "DELETE FROM tnms.tickets"; 
         sql->submitQuery(query);
         return true;
     }
 
     StringList::iterator  sIter;
-    for ( sIter = stales.begin(); sIter != stales.end; ++sIter )
+    for ( sIter = stales.begin(); sIter != stales.end(); ++sIter )
     {
-        query = sql->newQuery();
+        Query query = sql->newQuery();
         query << "DELETE FROM tnms.tickets WHERE ticket=\""
               << sql->escapeString(*sIter) << "\"";
         sql->submitQuery(query);

@@ -14,14 +14,14 @@ public:
 
     virtual ~RandomStringInterface() {}
 
-    virtual void randomString ( size_t        length, 
-                                std::string & randomString,
+    virtual void randomString ( std::string & randomString,
+                                size_t        length, 
                                 bool          printable = true ) = 0;
     
-    virtual void randomString ( size_t              length, 
-                                const std::string & prefix, 
+    virtual void randomString ( const std::string & prefix, 
                                 std::string       & randomString,
-                                bool                 printable = true ) = 0;
+                                size_t              length, 
+                                bool                printable = true ) = 0;
 
 };
 
