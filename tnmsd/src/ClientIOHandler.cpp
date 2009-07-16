@@ -55,7 +55,7 @@ ClientIOHandler::timeout ( const EventTimer * timer )
                 int c = 0;
 
                 if ( (c = client->connect()) < 0 ) {
-                    LogFacility::LogMessage("AgentIOHandler mirror disconnected.");
+                    LogFacility::LogMessage("ClientIOHandler mirror disconnected.");
                     continue;
                 } else if ( c >= 0 ) {
                     timer->evmgr->addIOEvent(this, client->getSockFD(), client);
@@ -63,7 +63,7 @@ ClientIOHandler::timeout ( const EventTimer * timer )
                 }
 
                 if ( c > 0 ) {
-                    LogFacility::LogMessage("AgentIOHandler mirror connected " 
+                    LogFacility::LogMessage("ClientIOHandler mirror connected " 
                         + client->getHostStr());
                     continue;
                 }

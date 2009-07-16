@@ -79,6 +79,7 @@ class AuthDbThread : public tcanetpp::Thread {
 
     TnmsDbUser*   findUser         ( const std::string   & username );
 
+
     /*   Database methods */
     TnmsDbFilter* queryAuthFilter  ( SqlSessionInterface * session, 
                                      uint32_t              gid );
