@@ -11,8 +11,10 @@ IMPLEMENT_APP(TnmsWxClientMain)
 
 bool TnmsWxClientMain::OnInit()
 {
-    LogFacility::OpenLogStream("TnmsWxClient", "stdout", &std::cout);
+    LogFacility::OpenLogStream("stdout", "TnmsWxClient", &std::cout);
     LogFacility::SetBroadcast(true);
+
+    LogFacility::LogMessage("TnmsWxClient starting...");
 
     ClientFrame * cf = new ClientFrame(wxT("TnmsWxClientMain"));
     cf->Show(true);

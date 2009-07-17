@@ -11,7 +11,10 @@ using namespace tcanetpp;
 TnmsWxTreeItem::TnmsWxTreeItem ( const wxString & absoluteName, 
                      const wxString & name, 
                      bool isParent )
-    : _absName(absoluteName), _name(name), _isParent(isParent)
+    : _absName(absoluteName), 
+      _name(name), 
+      _isParent(isParent),
+      _isExpanded(false)
 {}
 
 
@@ -98,6 +101,10 @@ TnmsWxTree::Create  ( wxWindow        * parent,
     _rootId = _treeCtrl->AddRoot(rootName, 3, -1, rootData);
     _treeCtrl->SetItemHasChildren(_rootId);
 
+    this->Expand(_rootId);
+    SetInitialSize(size);
+    DoResize();
+
     return true;
 }
 
@@ -128,6 +135,7 @@ TnmsWxTree::Expand ( wxTreeItemId  parentId )
 {
     TnmsWxTreeItem * data = (TnmsWxTreeItem*) _treeCtrl->GetItemData(parentId);
 
+    LogFacility::LogMessage("TnmsWxTree::Expand");
     if ( data->isExpanded() )
         return;
 
@@ -139,6 +147,7 @@ TnmsWxTree::Expand ( wxTreeItemId  parentId )
         return;
     }
 
+    return;
 }
 
 
@@ -165,14 +174,30 @@ TnmsWxTree::Collapse ( wxTreeItemId  parentId )
 
     if ( parentId != _treeCtrl->GetRootItem())
         _treeCtrl->Collapse(parentId);
-
 }
+
 
 void
 TnmsWxTree::SetupRoot()
 {
+    wxString  itemname = wxT("/");
+    wxTreeItemId  id;
+
+    LogFacility::LogMessage("TnmsWxTree::SetupRoot()");
+
+    TnmsWxTreeItem * data = new TnmsWxTreeItem(itemname, itemname, true);
+    id = _treeCtrl->AppendItem(_rootId, itemname, -1, -1, data);
+    _treeCtrl->SetItemHasChildren(id);
+    _treeCtrl->SelectItem(_rootId);
+    _treeCtrl->EnsureVisible(_rootId);
+
+    _treeCtrl->Expand(_rootId);
+
     return;
 }
 
 
-
+void
+TnmsWxTree::DoResize()
+{
+}

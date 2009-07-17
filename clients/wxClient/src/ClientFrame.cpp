@@ -8,7 +8,6 @@
 
 
 
-
 ClientFrame::ClientFrame ( const wxString & title )
     : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(500,300))
 {
@@ -26,9 +25,12 @@ ClientFrame::ClientFrame ( const wxString & title )
                 wxPoint(-1, -1), wxSize(-1, -1), wxDIRCTRL_DIR_ONLY);
 
     _lCtrl1 = new wxListCtrl(spl2, -1, wxPoint(-1, -1), wxSize(-1, -1), wxLC_LIST);
-    _lCtrl2 = new wxListCtrl(spl2, -1, wxPoint(-1, -1), wxSize(-1, -1), wxLC_LIST);
+    _tree   = new TnmsWxTree(spl2, wxID_TREECTRL, wxT("Root"), 
+                  wxPoint(-1, -1), wxSize(-1, -1));
+    //_lCtrl2 = new wxListCtrl(spl2, -1, wxPoint(-1, -1), wxSize(-1, -1), wxLC_LIST);
 
-    spl2->SplitHorizontally(_lCtrl1, _lCtrl2);
+    //spl2->SplitHorizontally(_lCtrl1, _lCtrl2);
+    spl2->SplitHorizontally(_lCtrl1, _tree);
     spl1->SplitVertically(_gdir, spl2);
 
     Connect(_gdir->GetTreeCtrl()->GetId(), wxEVT_COMMAND_TREE_SEL_CHANGED, 
