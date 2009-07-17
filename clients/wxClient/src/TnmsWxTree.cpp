@@ -9,8 +9,8 @@ using namespace tcanetpp;
 
 
 TnmsWxTreeItem::TnmsWxTreeItem ( const wxString & absoluteName, 
-                     const wxString & name, 
-                     bool isParent )
+                                 const wxString & name, 
+                                 bool             isParent )
     : _absName(absoluteName), 
       _name(name), 
       _isParent(isParent),
@@ -38,6 +38,7 @@ TnmsWxTreeItem::hasChildren() const
 }
 
 
+// ----------------------------------------------------------------------
 
 BEGIN_EVENT_TABLE(TnmsWxTree, wxControl)
   EVT_TREE_ITEM_EXPANDING     (wxID_TREECTRL, TnmsWxTree::OnExpandItem)
@@ -45,6 +46,7 @@ BEGIN_EVENT_TABLE(TnmsWxTree, wxControl)
   EVT_SIZE                    (TnmsWxTree::OnSize)
 END_EVENT_TABLE()
 
+// ----------------------------------------------------------------------
 
 
 TnmsWxTree::TnmsWxTree()

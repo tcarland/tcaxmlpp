@@ -3,19 +3,36 @@
 
 
 #include <wx/wx.h>
+#include <wx/timer.h>
+
+
+#define TGUITIMER_ID  6999
+#define TINTERVAL_MS  1000
+
 
 
 class TnmsWxClientMain : public wxApp {
 
   public:
 
-    TnmsWxClientMain() {}
+    TnmsWxClientMain ( int msecs = TINTERVAL_MS );
 
-    virtual ~TnmsWxClientMain() {}
+    virtual ~TnmsWxClientMain();
 
 
     virtual bool   OnInit();
+    virtual int    OnRun();
+    virtual int    OnExit();
+    
+    virtual int    MainLoop();
 
+    virtual void   OnTimer ( wxTimerEvent & event );
+
+  private:
+
+    wxTimer       _guiTimer;
+
+    DECLARE_EVENT_TABLE()
 };
 
 

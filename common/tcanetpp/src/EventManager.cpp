@@ -194,24 +194,6 @@ EventManager::addIOEvent ( EventIOHandler * handler, const sockfd_t & sfd,
 
 
 bool
-EventManager::isValidEvent ( evid_t  id )
-{
-    EventIOMap::iterator     cIter;
-    EventTimerMap::iterator  tIter;
-
-    if ( (cIter = _clients.find(id)) != _clients.end() )
-        if ( (cIter->second).enabled )
-            return true;
-
-    if ( (tIter = _timers.find(id)) != _timers.end() )
-        if ( (tIter->second).enabled )
-            return true;
-
-    return false;
-}
-
-
-bool
 EventManager::removeEvent ( const evid_t & id )
 {
     EventTimerMap::iterator   tIter;
@@ -258,14 +240,15 @@ EventManager::eventLoop()
     printf("EventManager::eventLoop()\n");
 #   endif
     
-    while ( ! _alarm ) {
-
+    while ( ! _alarm ) 
+    {
 	FD_ZERO(&_rset);
 	FD_ZERO(&_wset);
 	FD_ZERO(&_xset);
 
 	// set IO events
-	for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter ) {
+	for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter ) 
+        {
 	    EventIO & io = cIter->second;
 
             if ( ! io.enabled )
@@ -306,7 +289,8 @@ EventManager::eventLoop()
 	}
 
         // handle io events
-	for ( cIter = _clients.begin(); cIter != _clients.end(); cIter++ ) {
+	for ( cIter = _clients.begin(); cIter != _clients.end(); cIter++ ) 
+        {
 	    EventIO & io = cIter->second;
 
             if ( ! io.enabled )
@@ -328,7 +312,8 @@ EventManager::eventLoop()
 	    }
 	}
 
-        for ( cIter = _clients.begin(); cIter != _clients.end(); ) {
+        for ( cIter = _clients.begin(); cIter != _clients.end(); ) 
+        {
             if ( ! cIter->second.enabled )
                 _clients.erase(cIter++);
             else
@@ -409,9 +394,27 @@ EventManager::activeClients() const
 
 
 bool
-EventManager::isActive ( evid_t  id )
+EventManager::isActive ( const evid_t & id ) const
 {
     return this->isValidEvent(id);
+}
+
+
+bool
+EventManager::isValidEvent ( const evid_t & id ) const
+{
+    EventIOMap::const_iterator     cIter;
+    EventTimerMap::const_iterator  tIter;
+
+    if ( (cIter = _clients.find(id)) != _clients.end() )
+        if ( (cIter->second).enabled )
+            return true;
+
+    if ( (tIter = _timers.find(id)) != _timers.end() )
+        if ( (tIter->second).enabled )
+            return true;
+
+    return false;
 }
 
 
@@ -422,7 +425,8 @@ EventManager::verifyTimers()
 
     this->_minevu = DEFAULT_EVU;
 
-    for ( tIter = _timers.begin(); tIter != _timers.end(); ) {
+    for ( tIter = _timers.begin(); tIter != _timers.end(); ) 
+    {
 	EventTimer & timer = tIter->second;
 
 	if ( timer.evid == 0 || ! timer.enabled ) {
@@ -443,41 +447,15 @@ EventManager::checkTimers ( const timeval & now )
 {
     EventTimerMap::iterator  tIter;
 
-    for ( tIter = _timers.begin(); tIter != _timers.end(); tIter++ ) {
+    for ( tIter = _timers.begin(); tIter != _timers.end(); tIter++ ) 
+    {
 	EventTimer & timer = tIter->second;
 
 	if ( ! timer.enabled )
 	    continue;
-/*
-	if ( timer.abstime.tv_usec > 0 ) {
 
-	    if ( timer.abstime.tv_usec <= _minevu ) {
-		timer.abstime.tv_usec = timer.evusec;
-		timer.fired++;
-		timer.handler->timeout(&timer);
-
-		if ( timer.count > 0 && timer.fired == timer.count )
-		    timer.enabled = false;
-
-	    } else {
-		timer.abstime.tv_usec -=  _minevu;
-	    }
-
-	} else if ( timer.abstime.tv_sec > 0 && timer.abstime.tv_sec <= now.tv_sec ) {
-	    timer.fired++;
-	    timer.handler->timeout(&timer);
-
-	    if ( timer.absolute ) {
-		timer.enabled = false;
-	    } else if ( timer.count > 0 && timer.fired == timer.count ) {
-		timer.enabled = false;
-	    } else {
-		timer.abstime.tv_sec = now.tv_sec + timer.evsec;
-	    }
-
-	}
-*/
-        if ( timer.abstime.tv_sec == 0 ) {
+        if ( timer.abstime.tv_sec == 0 ) 
+        {
             timer.abstime = now;
             timer.abstime.tv_sec  += timer.evsec;
             timer.abstime.tv_usec += timer.evusec;
@@ -486,17 +464,22 @@ EventManager::checkTimers ( const timeval & now )
 
         bool fired = false;
        
-        if ( timer.abstime.tv_sec < now.tv_sec ) {
+        if ( timer.abstime.tv_sec < now.tv_sec ) 
+        {
             fired = true;
-        } else if ( timer.abstime.tv_sec == now.tv_sec ) {
-            if ( timer.evusec > 0 )
+        } 
+        else if ( timer.abstime.tv_sec == now.tv_sec ) 
+        {
+            if ( timer.evusec > 0 ) {
                 if  ( timer.abstime.tv_usec <= now.tv_usec )
                     fired = true;
-            else
+            } else {
                 fired = true;
+            }
         }
 
-        if ( fired ) {
+        if ( fired ) 
+        {
             timer.abstime = now;
             timer.fired++;
 

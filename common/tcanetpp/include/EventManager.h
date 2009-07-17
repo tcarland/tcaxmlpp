@@ -128,29 +128,29 @@ class EventManager {
     virtual ~EventManager();
 
 
-    void   eventLoop();
+    void                 eventLoop();
 
 
     evid_t               addTimerEvent  ( EventTimerHandler * handler, 
-                                          uint32_t         sec, 
-                                          uint32_t         msec, 
-                                          int              count = 0 );
+                                          uint32_t            sec,
+                                          uint32_t            msec,
+                                          int                 count = 0 );
 
     evid_t               addTimerEvent  ( EventTimerHandler * handler, 
                                           time_t abstime );
 
-    evid_t               addIOEvent     ( EventIOHandler * handler, 
-                                          const sockfd_t & sfd, 
-                                          void           * rock = NULL, 
-                                          bool             isServer = false );
+    evid_t               addIOEvent     ( EventIOHandler    * handler,
+                                          const sockfd_t    & sfd,
+                                          void              * rock     = NULL,
+                                          bool                isServer = false );
 
-    bool                 removeEvent    ( const evid_t   & id );
+    bool                 removeEvent    ( const evid_t  & id );
 
-    bool                 isActive       ( evid_t  id );
-    bool                 isValidEvent   ( evid_t  id );
+    const EventTimer*    findTimerEvent ( const evid_t  & id ) const;
+    const EventIO*       findIOEvent    ( const evid_t  & id ) const;
 
-    const EventTimer*    findTimerEvent ( const evid_t   & id ) const;
-    const EventIO*       findIOEvent    ( const evid_t   & id ) const;
+    bool                 isActive       ( const evid_t  & id ) const;
+    bool                 isValidEvent   ( const evid_t  & id ) const;
 
     size_t               activeEvents()  const;
     size_t               activeTimers()  const;
@@ -161,6 +161,7 @@ class EventManager {
 
     void                 setDebug       ( bool d );
     void                 setAlarm();
+
     const std::string&   getErrorStr() const { return this->_errstr; }
 
 
@@ -180,23 +181,23 @@ class EventManager {
 
   protected:
 
-    typedef std::set<evid_t>  EventSet;
+    typedef std::set<evid_t>   EventSet;
 
-    EventSet             _events;
-    EventTimerMap        _timers;
-    EventIOMap           _clients;
+    EventSet                  _events;
+    EventTimerMap             _timers;
+    EventIOMap                _clients;
 
 
-    evid_t               _evid, _lastid;
-    fd_set               _rset, _wset, _xset;
-    long                 _minevu;
+    evid_t                    _evid, _lastid;
+    fd_set                    _rset, _wset, _xset;
+    long                      _minevu;
 
-    std::string          _errstr;
-    bool                 _dieoff;
-    bool                 _alarm;
-    bool                 _debug;
+    std::string               _errstr;
+    bool                      _dieoff;
+    bool                      _alarm;
+    bool                      _debug;
 
-    static int           _maxfdp;
+    static int                _maxfdp;
  
 };
 
