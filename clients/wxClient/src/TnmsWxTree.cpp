@@ -42,6 +42,7 @@ TnmsWxTreeItem::hasChildren() const
 BEGIN_EVENT_TABLE(TnmsWxTree, wxControl)
   EVT_TREE_ITEM_EXPANDING     (wxID_TREECTRL, TnmsWxTree::OnExpandItem)
   EVT_TREE_ITEM_COLLAPSED     (wxID_TREECTRL, TnmsWxTree::OnCollapseItem)
+  EVT_SIZE                    (TnmsWxTree::OnSize)
 END_EVENT_TABLE()
 
 
@@ -87,8 +88,9 @@ TnmsWxTree::Create  ( wxWindow        * parent,
     if ( ! wxControl::Create(parent, id, pos, size, style, wxDefaultValidator, name) )
         return false;
 
-    long treeStyle = wxTR_HAS_BUTTONS;
-    treeStyle |= style;
+    long treeStyle  = wxTR_HAS_BUTTONS;
+    treeStyle      |= wxTR_HIDE_ROOT;
+    treeStyle      |= style;
 
     _treeCtrl = new wxTreeCtrl(parent, wxID_TREECTRL, pos, size, treeStyle);
 
@@ -98,7 +100,7 @@ TnmsWxTree::Create  ( wxWindow        * parent,
 
     wxString  rootName = wxT("/");
 
-    _rootId = _treeCtrl->AddRoot(rootName, 3, -1, rootData);
+    _rootId = _treeCtrl->AddRoot(rootName, -1, -1, rootData);
     _treeCtrl->SetItemHasChildren(_rootId);
 
     this->Expand(_rootId);
@@ -128,6 +130,12 @@ TnmsWxTree::OnCollapseItem ( wxTreeEvent & event )
 {
     LogFacility::LogMessage("TnmsWxTree::OnCollapseItem");
     return this->Collapse(event.GetItem());
+}
+
+void
+TnmsWxTree::OnSize ( wxSizeEvent & WXUNUSED(event) )
+{
+    this->DoResize();
 }
 
 void
@@ -181,16 +189,15 @@ void
 TnmsWxTree::SetupRoot()
 {
     wxString  itemname = wxT("tcanms");
-    wxTreeItemId  id;
 
     LogFacility::LogMessage("TnmsWxTree::SetupRoot()");
 
     TnmsWxTreeItem * data = new TnmsWxTreeItem(itemname, itemname, true);
-    id = _treeCtrl->AppendItem(_rootId, itemname, -1, -1, data);
+    wxTreeItemId     id   = _treeCtrl->AppendItem(_rootId, itemname, -1, -1, data);
+
     _treeCtrl->SetItemHasChildren(id);
     _treeCtrl->SelectItem(_rootId);
     _treeCtrl->EnsureVisible(_rootId);
-
     _treeCtrl->Expand(_rootId);
 
     return;
@@ -200,4 +207,6 @@ TnmsWxTree::SetupRoot()
 void
 TnmsWxTree::DoResize()
 {
+    wxSize sz = GetClientSize();
+    _treeCtrl->SetSize(0, 0, sz.x, sz.y);
 }

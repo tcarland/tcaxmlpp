@@ -64,7 +64,7 @@ class TnmsWxTree : public wxControl {
     void          Init();
 
 
-
+    void          OnSize          ( wxSizeEvent & event );
     void          OnExpandItem    ( wxTreeEvent & event );
     void          OnCollapseItem  ( wxTreeEvent & event );
 
