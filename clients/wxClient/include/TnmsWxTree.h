@@ -36,6 +36,8 @@ class TnmsWxTreeItem : public wxTreeItemData {
 
 #define wxID_TREECTRL  7000
 
+
+
 class TnmsWxTree : public wxControl {
 
   public:
@@ -76,7 +78,7 @@ class TnmsWxTree : public wxControl {
 
     void          Collapse        ( wxTreeItemId     parentId );
     void          Expand          ( wxTreeItemId     parentId );
-
+    void          DoResize();
     void          SetupRoot();
 
   private:
