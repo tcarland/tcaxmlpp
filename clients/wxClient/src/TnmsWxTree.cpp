@@ -180,7 +180,7 @@ TnmsWxTree::Collapse ( wxTreeItemId  parentId )
 void
 TnmsWxTree::SetupRoot()
 {
-    wxString  itemname = wxT("/");
+    wxString  itemname = wxT("tcanms");
     wxTreeItemId  id;
 
     LogFacility::LogMessage("TnmsWxTree::SetupRoot()");

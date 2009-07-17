@@ -1,6 +1,5 @@
 # Makefile
 #
-#   Template Makefile for projects
 #
 
 # TOPDIR is the relative path to our workspace root
