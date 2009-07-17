@@ -9,14 +9,21 @@ using namespace tnmsCore;
 using namespace tcanetpp;
 
 
+class TnmsClientIOThread;
+
 struct TnmsTree_R
 {
-    TnmsTree   * tree;
-    ThreadLock * mutex;
+    TnmsClientIOThread  * iomgr;
+    TnmsTree            * tree;
+    ThreadLock          * mutex;
 
-    TnmsTree_R ( TnmsTree   * tree_ = NULL,
-                 ThreadLock * lock_ = NULL )
-        : tree(tree_), 
+    bool         updated;
+
+    TnmsTree_R ( TnmsClientIOThread * iomgr_ = NULL,
+                 TnmsTree           * tree_  = NULL,
+                 ThreadLock         * lock_  = NULL )
+        : iomgr(iomgr_),
+          tree(tree_), 
           mutex(lock_)
     {}
 };
