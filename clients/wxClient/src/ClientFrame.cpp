@@ -25,10 +25,12 @@ ClientFrame::ClientFrame ( const wxString & title )
     _gdir   = new wxGenericDirCtrl(spl1, -1, wxT("/home/"),
                 wxPoint(-1, -1), wxSize(-1, -1), wxDIRCTRL_DIR_ONLY);
 
+    _tree   = new TnmsWxTree(spl2, wxID_ANY, wxT("tcanms"), wxPoint(-1, -1), wxSize(-1, -1));
+
     _lCtrl1 = new wxListCtrl(spl2, -1, wxPoint(-1, -1), wxSize(-1, -1), wxLC_LIST);
     _lCtrl2 = new wxListCtrl(spl2, -1, wxPoint(-1, -1), wxSize(-1, -1), wxLC_LIST);
 
-    spl2->SplitHorizontally(_lCtrl1, _lCtrl2);
+    spl2->SplitHorizontally(_lCtrl1, _tree);
     spl1->SplitVertically(_gdir, spl2);
 
     Connect(_gdir->GetTreeCtrl()->GetId(), wxEVT_COMMAND_TREE_SEL_CHANGED, 
