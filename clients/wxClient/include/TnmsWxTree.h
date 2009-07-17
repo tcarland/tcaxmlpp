@@ -6,6 +6,7 @@
 #include <wx/imaglist.h>
 #include <wx/treectrl.h>
 
+#include "TnmsTree_R.hpp"
 
 
 class TnmsWxTreeItem : public wxTreeItemData {
@@ -53,6 +54,7 @@ class TnmsWxTree : public wxControl {
 
     virtual ~TnmsWxTree();
 
+
     bool          Create ( wxWindow        * parent,
                            const wxWindowID  id    = wxID_ANY,
                            const wxString  & name  = wxT("TnmsWxTree"),
@@ -75,15 +77,22 @@ class TnmsWxTree : public wxControl {
                                     const wxString & path,
                                     bool             done );
 
-
     void          Collapse        ( wxTreeItemId     parentId );
     void          Expand          ( wxTreeItemId     parentId );
+
     void          DoResize();
     void          SetupRoot();
 
+  public:
+
+    void          SetTnmsTree     ( TnmsTree_R * stree );
+    TnmsTree_R*   GetTnmsTree();
+
   private:
 
-    wxTreeCtrl *        _treeCtrl;
+    TnmsTree_R*         _stree;
+    wxTreeCtrl*         _treeCtrl;
+
     wxTreeItemId        _rootId;
 
     DECLARE_EVENT_TABLE()

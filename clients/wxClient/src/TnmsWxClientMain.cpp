@@ -16,20 +16,27 @@ END_EVENT_TABLE()
 TnmsWxClientMain::TnmsWxClientMain ( int msecs )
     : _guiTimer(this, TGUITIMER_ID)
 {
+    _stree.tree  = new TnmsTree();
+    _stree.mutex = new ThreadLock();
+    
     _guiTimer.Start(msecs);
 }
 
-TnmsWxClientMain::~TnmsWxClientMain() {}
+TnmsWxClientMain::~TnmsWxClientMain()
+{
+    delete _stree.tree;
+    delete _stree.mutex;
+}
+
 
 bool 
 TnmsWxClientMain::OnInit()
 {
     LogFacility::OpenLogStream("stdout", "TnmsWxClient", &std::cout);
     LogFacility::SetBroadcast(true);
-
     LogFacility::LogMessage("TnmsWxClient starting...");
 
-    ClientFrame * cf = new ClientFrame(wxT("TnmsWxClientMain"));
+    ClientFrame * cf = new ClientFrame(wxT("TnmsWxClientMain"), _stree);
     cf->Show(true);
 
     return true;

@@ -1,4 +1,4 @@
-
+#define _TNMSWXTREE_CPP_
 
 #include "TnmsWxTree.h"
 
@@ -212,3 +212,18 @@ TnmsWxTree::DoResize()
     wxSize sz = GetClientSize();
     _treeCtrl->SetSize(0, 0, sz.x, sz.y);
 }
+
+
+void
+TnmsWxTree::SetTnmsTree ( TnmsTree_R * tree )
+{
+    _stree = tree;
+}
+
+TnmsTree_R*
+TnmsWxTree::GetTnmsTree()
+{
+    return _stree;
+}
+
+// _TNMSWXTREE_CPP_

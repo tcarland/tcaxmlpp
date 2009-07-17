@@ -11,7 +11,8 @@ class ClientFrame : public wxFrame {
 
   public:
 
-    ClientFrame ( const wxString & title );
+    ClientFrame ( const wxString & title, 
+                  TnmsTree_R     & tree );
 
 
     void        OnSelect        ( wxCommandEvent & event );
@@ -25,15 +26,17 @@ class ClientFrame : public wxFrame {
 
   private:
 
-    wxPanel *           _mainPanel;
-    wxMenuBar *         _menuBar;
-    wxMenu *            _menuFile;
+    TnmsTree_R &        _stree;
 
-    TnmsWxTree *        _tree;
+    wxPanel*            _mainPanel;
+    wxMenuBar*          _menuBar;
+    wxMenu*             _menuFile;
+
+    TnmsWxTree*         _tree;
 
     wxGenericDirCtrl*   _gdir;
-    wxListCtrl *        _lCtrl1;
-    wxListCtrl *        _lCtrl2;
+    wxListCtrl*         _lCtrl1;
+    wxListCtrl*         _lCtrl2;
 
 };
 

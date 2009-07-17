@@ -6,6 +6,8 @@
 #include <wx/timer.h>
 
 
+#include "TnmsTree_R.hpp"
+
 #define TGUITIMER_ID  6999
 #define TINTERVAL_MS  1000
 
@@ -30,7 +32,8 @@ class TnmsWxClientMain : public wxApp {
 
   private:
 
-    wxTimer       _guiTimer;
+    TnmsTree_R          _stree;
+    wxTimer             _guiTimer;
 
     DECLARE_EVENT_TABLE()
 };

@@ -1,6 +1,7 @@
-
+#define _CLIENTFRAME_CPP_
 
 #include "ClientFrame.h"
+
 #include <wx/treectrl.h>
 #include <wx/dirctrl.h>
 #include <wx/dir.h>
@@ -12,8 +13,9 @@ using namespace tcanetpp;
 
 
 
-ClientFrame::ClientFrame ( const wxString & title )
-    : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(500,300))
+ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R & tree )
+    : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(500,300)),
+      _stree(tree)
 {
     _menuBar   = new wxMenuBar();
     _menuFile  = new wxMenu();
@@ -23,6 +25,7 @@ ClientFrame::ClientFrame ( const wxString & title )
 
     _tree   = new TnmsWxTree(spl1, wxID_TREECTRL, wxT("tcanms"), 
                 wxPoint(-1, -1), spl1->GetSize());
+    _tree->SetTnmsTree(&_stree);
 
     _gdir   = new wxGenericDirCtrl(spl2, -1, wxT("/home/"),
                 wxPoint(-1, -1), wxSize(-1, -1), wxDIRCTRL_DIR_ONLY);
