@@ -7,6 +7,7 @@
 #include <wx/dir.h>
 #include <wx/splitter.h>
 
+#include "ConnectDialog.h"
 
 #include "LogFacility.h"
 using namespace tcanetpp;
@@ -51,18 +52,43 @@ ClientFrame::initMenuBar()
 {
     // Top-level :  File
 
-    _menuFile->Append(wxID_ANY, wxT("&Connect"));
-    _menuFile->Append(wxID_ANY, wxT("&Disconnect"));
+    //_menuFile->Append(TNMS_ID_CONNECT, wxT("&Connect"));
+    //_menuFile->Append(TNMS_ID_DISCONN, wxT("&Disconnect"));
+    //_menuFile->AppendSeparator();
+
+    //wxMenuItem * quitMenu = new wxMenuItem(_menuFile, wxID_EXIT, wxT("&Quit"));
+
+    _menuFile->Append(new wxMenuItem(_menuFile, TNMS_ID_CONNECT, wxT("&Connect")));
+    _menuFile->Append(new wxMenuItem(_menuFile, TNMS_ID_DISCONN, wxT("&Disconnect")));
     _menuFile->AppendSeparator();
-
-    wxMenuItem * quitMenu = new wxMenuItem(_menuFile, wxID_EXIT, wxT("&Quit"));
-
-    _menuFile->Append(quitMenu);
+    _menuFile->Append(new wxMenuItem(_menuFile, wxID_EXIT, wxT("&Quit")));
     _menuBar->Append(_menuFile, wxT("&File"));
 
     SetMenuBar(_menuBar);
 
+    Connect(TNMS_ID_CONNECT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(ClientFrame::OnConnect));
+    Connect(TNMS_ID_DISCONN, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(ClientFrame::OnDisconnect));
     Connect(wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(ClientFrame::OnQuit));
+}
+
+
+void
+ClientFrame::OnConnect ( wxCommandEvent & event )
+{
+    ConnectDialog * dlg = new ConnectDialog(wxT("Connect"));
+
+    if ( dlg->ShowModal() == wxID_OK ) {
+        LogFacility::LogMessage("OnConnect() OK");
+    } else {
+        LogFacility::LogMessage("OnConnect() Cancelled");
+    }
+
+    dlg->Destroy();
+}
+
+void
+ClientFrame::OnDisconnect ( wxCommandEvent & event )
+{
 }
 
 

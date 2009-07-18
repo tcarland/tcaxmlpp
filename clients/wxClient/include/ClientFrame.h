@@ -6,6 +6,9 @@
 #include "TnmsWxTree.h"
 
 
+#define TNMS_ID_CONNECT  7010
+#define TNMS_ID_DISCONN  7011
+
 
 class ClientFrame : public wxFrame {
 
@@ -16,6 +19,8 @@ class ClientFrame : public wxFrame {
 
 
     void        OnSelect        ( wxCommandEvent & event );
+    void        OnConnect       ( wxCommandEvent & event );
+    void        OnDisconnect    ( wxCommandEvent & event );
     void        OnQuit          ( wxCommandEvent & event );
 
 
