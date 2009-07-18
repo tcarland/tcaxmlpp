@@ -28,6 +28,7 @@ class ClientFrame : public wxFrame {
     void        OnDisconnect    ( wxCommandEvent & event );
     void        OnQuit          ( wxCommandEvent & event );
 
+    void        OnTimer         ( wxTimerEvent & event );
 
   protected:
 

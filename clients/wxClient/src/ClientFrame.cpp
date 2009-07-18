@@ -164,3 +164,10 @@ ClientFrame::OnQuit ( wxCommandEvent & event )
 }
 
 
+void
+ClientFrame::OnTimer ( wxTimerEvent & event )
+{
+    _tree->SyncTree();
+}
+
+

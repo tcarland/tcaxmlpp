@@ -83,17 +83,30 @@ class TnmsWxTree : public wxControl {
     void          DoResize();
     void          SetupRoot();
 
+    void          SyncTree();
+
+
   public:
 
     void          SetTnmsTree     ( TnmsTree_R * stree );
     TnmsTree_R*   GetTnmsTree();
 
+  
+  public:
+
+    typedef std::map<wxString, wxTreeItemId>  TreeItemMap;
+
+
   private:
 
-    TnmsTree_R*         _stree;
-    wxTreeCtrl*         _treeCtrl;
+    TnmsTree_R *        _stree;
+    wxTreeCtrl *        _treeCtrl;
 
     wxTreeItemId        _rootId;
+
+    TreeItemMap         _visible;
+    TreeItemMap         _roots;
+
 
     DECLARE_EVENT_TABLE()
 };

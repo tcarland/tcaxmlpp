@@ -7,6 +7,7 @@
 using namespace tcanetpp;
 
 
+// ----------------------------------------------------------------------
 
 TnmsWxTreeItem::TnmsWxTreeItem ( const wxString & absoluteName, 
                                  const wxString & name, 
@@ -45,6 +46,9 @@ BEGIN_EVENT_TABLE(TnmsWxTree, wxControl)
   EVT_TREE_ITEM_COLLAPSED     (wxID_TREECTRL, TnmsWxTree::OnCollapseItem)
   EVT_SIZE                    (TnmsWxTree::OnSize)
 END_EVENT_TABLE()
+
+// EVT_TREE_ITEM_ACTIVATED
+// EVT_TREE_ITEM_SEL_CHANGED
 
 // ----------------------------------------------------------------------
 
@@ -213,6 +217,44 @@ TnmsWxTree::DoResize()
     _treeCtrl->SetSize(0, 0, sz.x, sz.y);
 }
 
+void
+TnmsWxTree::SyncTree()
+{
+    if ( _stree->mutex->trylock() <= 0 )
+        return;
+
+    TnmsTree::StringSet  roots;
+    TnmsTree::StringSet::iterator  sIter;
+
+    _stree->tree->getRootNames(roots);
+
+    if ( roots.size() > 0 )
+        _treeCtrl->DeleteChildren(_rootId);
+    
+    TnmsMetric  metric;
+    
+    for ( sIter = roots.begin(); sIter != roots.end(); ++sIter )
+    {
+        wxString  tname;
+        tname.FromAscii(sIter->c_str());
+
+        
+        _stree->tree->request(*sIter, metric);
+
+        LogFacility::LogMessage(" Adding root node " + *sIter);
+
+        TnmsWxTreeItem * data = new TnmsWxTreeItem(tname, tname, true);
+        wxTreeItemId     id   = _treeCtrl->AppendItem(_rootId, tname, -1, -1, data);
+        
+        _treeCtrl->SetItemHasChildren(id);
+        _treeCtrl->EnsureVisible(id);
+    }
+
+    _stree->mutex->unlock();
+
+    return;
+}
+
 
 void
 TnmsWxTree::SetTnmsTree ( TnmsTree_R * tree )
@@ -227,3 +269,4 @@ TnmsWxTree::GetTnmsTree()
 }
 
 // _TNMSWXTREE_CPP_
+

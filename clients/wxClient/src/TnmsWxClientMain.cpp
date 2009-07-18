@@ -6,6 +6,7 @@
 #include "LogFacility.h"
 using namespace tcanetpp;
 
+// ----------------------------------------------------------------------
 
 IMPLEMENT_APP(TnmsWxClientMain)
 
@@ -13,9 +14,11 @@ BEGIN_EVENT_TABLE(TnmsWxClientMain, wxApp)
     EVT_TIMER(TGUITIMER_ID, TnmsWxClientMain::OnTimer)
 END_EVENT_TABLE()
 
+// ----------------------------------------------------------------------
 
 TnmsWxClientMain::TnmsWxClientMain ( int msecs )
-    : _guiTimer(this, TGUITIMER_ID)
+    : _guiTimer(this, TGUITIMER_ID),
+      _mframe(NULL)
 {
     _stree.tree  = new TnmsTree();
     _stree.mutex = new ThreadLock();
@@ -42,8 +45,8 @@ TnmsWxClientMain::OnInit()
 
     _stree.iomgr->start();
 
-    ClientFrame * cf = new ClientFrame(wxT("TnmsWxClientMain"), _stree);
-    cf->Show(true);
+    _mframe = new ClientFrame(wxT("TnmsWxClientMain"), _stree);
+    _mframe->Show(true);
 
     return true;
 }
@@ -80,6 +83,7 @@ TnmsWxClientMain::MainLoop()
 void
 TnmsWxClientMain::OnTimer ( wxTimerEvent & event )
 {
+    _mframe->OnTimer(event);
     return;
 }
 

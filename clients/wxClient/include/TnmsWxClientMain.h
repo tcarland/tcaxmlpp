@@ -12,6 +12,8 @@
 #define TINTERVAL_MS  1000
 
 
+class ClientFrame;
+
 
 class TnmsWxClientMain : public wxApp {
 
@@ -35,6 +37,8 @@ class TnmsWxClientMain : public wxApp {
 
     TnmsTree_R          _stree;
     wxTimer             _guiTimer;
+
+    ClientFrame *       _mframe;
 
     DECLARE_EVENT_TABLE()
 };
