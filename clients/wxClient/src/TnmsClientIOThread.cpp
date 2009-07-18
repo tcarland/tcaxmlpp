@@ -16,11 +16,11 @@ TnmsClientIOThread::ClientIOTimer::timeout ( const EventTimer * timer )
 }
 
 
-TnmsClientIOThread::TnmsClientIOThread ( TnmsTree_R * tree )
+TnmsClientIOThread::TnmsClientIOThread ( ThreadLock * rlock )
     : _evmgr(new tcanetpp::EventManager()),
-      _tree(tree)
+      _mutex(rlock)
 {
-    _clientHandler = new TnmsClientIOHandler(tree->mutex);
+    _clientHandler = new TnmsClientIOHandler(_mutex);
 }
 
 
@@ -45,11 +45,11 @@ TnmsClientIOThread::run()
 void
 TnmsClientIOThread::timeout ( const EventTimer * timer )
 {
-    LogFacility::LogMessage("TnmsClientIOThread::timeout()");
+    //LogFacility::LogMessage("TnmsClientIOThread::timeout()");
 
     if ( this->_Alarm ) {
         _evmgr->setAlarm();
-        _tree->mutex->notify();
+        _mutex->notify();
         return;
     }
 
@@ -82,6 +82,7 @@ TnmsClientIOThread::removeClient ( TnmsClient * client )
         return;
 
     _evmgr->removeEvent(cIter->second);
+    _clients.erase(cIter);
 
     return;
 }

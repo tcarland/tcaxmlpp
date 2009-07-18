@@ -17,9 +17,9 @@ END_EVENT_TABLE()
 TnmsWxClientMain::TnmsWxClientMain ( int msecs )
     : _guiTimer(this, TGUITIMER_ID)
 {
-    _stree.iomgr = new TnmsClientIOThread(&_stree);
     _stree.tree  = new TnmsTree();
     _stree.mutex = new ThreadLock();
+    _stree.iomgr = new TnmsClientIOThread(_stree.mutex);
 
     _guiTimer.Start(msecs);
 }
@@ -27,8 +27,8 @@ TnmsWxClientMain::TnmsWxClientMain ( int msecs )
 TnmsWxClientMain::~TnmsWxClientMain()
 {
     delete _stree.tree;
-    delete _stree.mutex;
     delete _stree.iomgr;
+    delete _stree.mutex;
 }
 
 

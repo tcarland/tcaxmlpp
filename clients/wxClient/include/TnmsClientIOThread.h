@@ -4,9 +4,9 @@
 #include <map>
 
 
-#include "TnmsTree_R.hpp"
 
 #include "Thread.h"
+#include "ThreadLock.h"
 #include "EventManager.h"
 using namespace tcanetpp;
 
@@ -21,7 +21,7 @@ class TnmsClientIOThread : public Thread {
 
   public:
 
-    TnmsClientIOThread ( TnmsTree_R * tree );
+    TnmsClientIOThread ( ThreadLock * tree );
     
     virtual ~TnmsClientIOThread();
 
@@ -56,7 +56,7 @@ class TnmsClientIOThread : public Thread {
   private:
 
     EventManager *       _evmgr;
-    TnmsTree_R *         _tree;
+    ThreadLock *         _mutex;
 
     TnmsClientIOHandler* _clientHandler;
 

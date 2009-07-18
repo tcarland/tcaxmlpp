@@ -1,6 +1,7 @@
 #define _CLIENTFRAME_CPP_
 
 #include "ClientFrame.h"
+#include "TnmsClientIOThread.h"
 
 #include <wx/treectrl.h>
 #include <wx/dirctrl.h>
@@ -9,6 +10,7 @@
 
 #include "ConnectDialog.h"
 
+#include "StringUtils.h"
 #include "LogFacility.h"
 using namespace tcanetpp;
 
@@ -81,7 +83,29 @@ ClientFrame::OnConnect ( wxCommandEvent & event )
         LogFacility::LogMessage("OnConnect() OK");
     } else {
         LogFacility::LogMessage("OnConnect() Cancelled");
+        return;
     }
+
+    wxString  servname = dlg->tcServer->GetValue();
+    wxString  portname = dlg->tcPort->GetValue();
+    wxString  username = dlg->tcUser->GetValue();
+    wxString  password = dlg->tcPass->GetValue();
+
+    ClientInstance  cl;
+    cl.servername  = StringUtils::wtocstr(servname.c_str());
+    cl.username    = StringUtils::wtocstr(username.c_str());
+    cl.password    = StringUtils::wtocstr(password.c_str());
+    cl.port        = StringUtils::fromString<uint16_t>(StringUtils::wtocstr(portname.c_str()));
+    cl.client      = new TnmsClient(_stree.tree);
+
+    //uint16_t pn = StringUtils::fromString<uint16_t>(port);
+
+    cl.client->openConnection(cl.servername, cl.port);
+    _stree.iomgr->addClient(cl.client);
+    
+    //user.append("@").append(sn).append(":").append(port);
+    username.append(_T("@")).append(servname).append(_T(":")).append(portname);
+    _clientMap[username] = cl;
 
     dlg->Destroy();
 }
@@ -89,6 +113,18 @@ ClientFrame::OnConnect ( wxCommandEvent & event )
 void
 ClientFrame::OnDisconnect ( wxCommandEvent & event )
 {
+    // for now just drop all our connections
+    ClientMap::iterator  cIter;
+    for ( cIter = _clientMap.begin(); cIter != _clientMap.end(); ++cIter )
+    {
+        ClientInstance & clin = cIter->second;
+
+        if ( clin.client ) {
+            clin.client->close();
+            _stree.iomgr->removeClient(clin.client);
+        }
+    }
+    _clientMap.clear();
 }
 
 
