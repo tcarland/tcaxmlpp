@@ -6,6 +6,7 @@
 
 #include "EventHandlers.hpp"
 #include "Exception.hpp"
+#include "ThreadLock.h"
 using namespace tcanetpp;
 
 #include "TnmsClient.h"

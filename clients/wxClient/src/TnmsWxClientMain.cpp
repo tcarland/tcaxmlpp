@@ -20,7 +20,7 @@ TnmsWxClientMain::TnmsWxClientMain ( int msecs )
     _stree.iomgr = new TnmsClientIOThread(&_stree);
     _stree.tree  = new TnmsTree();
     _stree.mutex = new ThreadLock();
-    
+
     _guiTimer.Start(msecs);
 }
 
@@ -28,6 +28,7 @@ TnmsWxClientMain::~TnmsWxClientMain()
 {
     delete _stree.tree;
     delete _stree.mutex;
+    delete _stree.iomgr;
 }
 
 
@@ -38,6 +39,8 @@ TnmsWxClientMain::OnInit()
     LogFacility::OpenLogStream("stdout", "TnmsWxClient", &std::cout);
     LogFacility::SetBroadcast(true);
     LogFacility::LogMessage("TnmsWxClient starting...");
+
+    _stree.iomgr->start();
 
     ClientFrame * cf = new ClientFrame(wxT("TnmsWxClientMain"), _stree);
     cf->Show(true);
@@ -57,7 +60,11 @@ TnmsWxClientMain::OnRun()
 int
 TnmsWxClientMain::OnExit()
 {
+    _stree.iomgr->setAlarm();
+    _stree.mutex->wait();
+
     LogFacility::LogMessage("OnExit()");
+
     return wxApp::OnExit();
 }
 

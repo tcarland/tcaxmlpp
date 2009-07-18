@@ -1,5 +1,10 @@
 #define _TNMSCLIENTIOHANDLER_CPP_
 
+#include "TnmsClientIOHandler.h"
+
+#include "EventManager.h"
+#include "LogFacility.h"
+using namespace tcanetpp;
 
 
 TnmsClientIOHandler::TnmsClientIOHandler ( ThreadLock * readLock ) 
@@ -115,7 +120,8 @@ TnmsClientIOHandler::handle_read ( const EventIO * io )
     _rlock->unlock();
 
     if ( rd < 0 ) {
-        LogFacility::LogMessage("ClientIOHandler::handle_read() error: " + client->getErrorStr());
+        LogFacility::LogMessage("ClientIOHandler::handle_read() error: " 
+            + client->getErrorStr());
         return this->handle_close(io);
     } else if ( rd > 0 ) {
         LogFacility::LogMessage("ClientIOHandler::handle_read() " 
@@ -136,7 +142,8 @@ TnmsClientIOHandler::handle_write ( const EventIO * io )
     TnmsClient * client = (TnmsClient*) io->rock;
 
     if ( (wt = client->send(io->abstime.tv_sec)) < 0 ) {
-        LogFacility::LogMessage("ClientIOHandler::handle_write() error: " + client->getErrorStr());
+        LogFacility::LogMessage("ClientIOHandler::handle_write() error: " 
+            + client->getErrorStr());
         return this->handle_close(io);
     } else if ( wt > 0 ) {
         LogFacility::LogMessage("ClientIOHandler::handle_write() " 
@@ -158,7 +165,8 @@ TnmsClientIOHandler::handle_close ( const EventIO * io )
     if ( client == NULL )
         return;
 
-    LogFacility::LogMessage("ClientIOHandler::handle_close() " + client->getHostStr());
+    LogFacility::LogMessage("ClientIOHandler::handle_close() " 
+        + client->getHostStr());
 
     client->close();
     _clients.erase(client);

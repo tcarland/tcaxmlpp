@@ -31,7 +31,9 @@ LIBS=		`wx-config --libs`
 CFLAGS=		`wx-config --cxxflags`
 
 BIN=		TnmsWxClient
-OBJS=		src/ClientFrame.o src/TnmsWxTree.o src/TnmsWxClientMain.o
+OBJS=		src/ClientFrame.o src/TnmsWxTree.o \
+		src/TnmsClientIOHandler.o src/TnmsClientIOThread.o \
+		src/TnmsWxClientMain.o
 
 ALL_OBJS=	$(OBJS)
 ALL_BINS=	$(BIN)

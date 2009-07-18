@@ -14,6 +14,8 @@ using namespace tcanetpp;
 using namespace tnmsCore;
 
 
+class TnmsClientIOHandler;
+
 
 class TnmsClientIOThread : public Thread {
 
@@ -24,22 +26,39 @@ class TnmsClientIOThread : public Thread {
     virtual ~TnmsClientIOThread();
 
 
-    virtual void run();
+    virtual void  run();
+    
+    void          timeout      ( const EventTimer * timer );
 
-
-    void          addClient    ( TnmsClient * client );
+    bool          addClient    ( TnmsClient * client );
     void          removeClient ( TnmsClient * client );
 
   public:
 
-    typedef std::map<evid_t, TnmsClient*>   ClientEventMap;
+    typedef std::map<TnmsClient*, evid_t>   ClientEventMap;
+
+
+  protected:
+
+    class ClientIOTimer : public EventTimerHandler {
+      public:
+
+        explicit ClientIOTimer ( TnmsClientIOThread * iothread_ )
+            : iothread(iothread_)
+        {}
+
+        void timeout ( const EventTimer * timer );
+
+        TnmsClientIOThread * iothread;
+    };
+
 
   private:
 
     EventManager *       _evmgr;
     TnmsTree_R *         _tree;
 
-    TnmsClientIOHandler  _clientHandler;
+    TnmsClientIOHandler* _clientHandler;
 
     ClientEventMap       _clients;
 };

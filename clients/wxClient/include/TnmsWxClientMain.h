@@ -30,6 +30,7 @@ class TnmsWxClientMain : public wxApp {
 
     virtual void   OnTimer ( wxTimerEvent & event );
 
+
   private:
 
     TnmsTree_R          _stree;
