@@ -6,7 +6,8 @@
 
 
 
-TnmsClientIOThread::TnmsClientIOThread
+TnmsClientIOThread::TnmsClientIOThread ( TnmsTree_R * tree )
+    : 
 TnmsClientIOThread::~TnmsClientIOThread()
 {}
 
@@ -20,6 +21,9 @@ TnmsClientIOThread::run()
 void
 TnmsClientIOThread::addClient ( TnmsClient * client )
 {
+    if ( client == NULL )
+        return;
+
     _clients.insert(client);
 }
 

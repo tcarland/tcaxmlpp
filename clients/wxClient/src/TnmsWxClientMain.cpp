@@ -17,6 +17,7 @@ END_EVENT_TABLE()
 TnmsWxClientMain::TnmsWxClientMain ( int msecs )
     : _guiTimer(this, TGUITIMER_ID)
 {
+    _stree.iomgr = new TnmsClientIOThread(&_stree);
     _stree.tree  = new TnmsTree();
     _stree.mutex = new ThreadLock();
     

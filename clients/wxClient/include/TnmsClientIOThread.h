@@ -36,10 +36,12 @@ class TnmsClientIOThread : public Thread {
 
   private:
 
-    EventManager *      _evmgr;
-    TnmsTree_R *        _tree;
+    EventManager *       _evmgr;
+    TnmsTree_R *         _tree;
 
-    ClientEventMap      _clients;
+    TnmsClientIOHandler  _clientHandler;
+
+    ClientEventMap       _clients;
 };
 
 
