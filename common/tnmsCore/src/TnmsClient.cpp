@@ -2,6 +2,7 @@
 
 #include "TnmsClient.h"
 
+#include "TnmsSubscriber.h"
 #include "TnmsMessageHandler.h"
 #include "AuthClient.h"
 #include "TnmsAuthRequest.h"
@@ -18,6 +19,7 @@ namespace tnmsCore {
 TnmsClient::TnmsClient ( TnmsTree * tree )
     : TnmsSocket(new TnmsMessageHandler(tree, this)),
       _tree(tree),
+      _notifier(new TnmsSubscriber()),
       _isAgent(false),
       _isMirror(true)
 {
@@ -28,6 +30,7 @@ TnmsClient::TnmsClient ( TnmsTree * tree, AuthClient * auth,
                          BufferedSocket * sock, bool isAgent )
     : TnmsSocket(sock, new TnmsMessageHandler(tree, this)),
       _tree(tree),
+      _notifier(new TnmsSubscriber()),
       _auth(auth),
       _isAgent(isAgent),
       _isMirror(false)
@@ -37,6 +40,7 @@ TnmsClient::TnmsClient ( TnmsTree * tree, AuthClient * auth,
 
 TnmsClient::~TnmsClient()
 {
+    delete _notifier;
 }
 
 
@@ -50,8 +54,8 @@ TnmsClient::send ( const time_t & now )
     TnmsAdd     add;
     TnmsRemove  remove;
 
-    UpdateSet::iterator  uIter;
-    RemoveSet::iterator  rIter;
+    TreeUpdateSet::iterator  uIter;
+    TreeRemoveSet::iterator  rIter;
 
     wt  = TnmsSocket::send(now);
 
@@ -59,72 +63,76 @@ TnmsClient::send ( const time_t & now )
         return wt;
 
     // ADDs
-    qsz = _adds.size();
-    for ( uIter = _adds.begin(); uIter != _adds.end(); ) 
+    TreeUpdateSet & adds = _notifier->adds;
+    qsz = adds.size();
+    for ( uIter = adds.begin(); uIter != adds.end(); ) 
     {
         TnmsTree::Node * node = *uIter;
 
         if ( node->getValue().erase ) {
-            _adds.erase(uIter++);
+            adds.erase(uIter++);
             continue;
         }
 
-        add = TnmsAdd(node->getValue().metric.getElementName());
-        if ( (queued = this->sendMessage(&add)) == true ) {
-            _adds.erase(uIter++);
+        add    = TnmsAdd(node->getValue().metric.getElementName());
+        queued = this->sendMessage(&add);
+
+        if ( queued ) {
+            adds.erase(uIter++);
         } else {
             LogFacility::LogMessage("TnmsClient::send() error: " + this->getErrorStr());
             break;
         }
     }
-    if ( qsz && _adds.size() == 0 )
+    if ( qsz && adds.size() == 0 )
         this->setLastRecord();
 
     // REMOVEs
-    qsz  = _removes.size();
-    if ( queued && _adds.size() == 0 )
+    TreeRemoveSet & removes = _notifier->removes;
+    qsz  = removes.size();
+    if ( queued && adds.size() == 0 )
     {
-        for ( rIter = _removes.begin(); rIter != _removes.end(); ) 
+        for ( rIter = removes.begin(); rIter != removes.end(); ) 
         {
             remove = TnmsRemove(*rIter);
             queued = this->sendMessage(&remove);
 
             if ( queued ) {
-                _removes.erase(rIter++);
+                removes.erase(rIter++);
             } else {
                 LogFacility::LogMessage("TnmsClient::send() error: " + this->getErrorStr());
                 break;
             }
         }
-        if ( qsz && _removes.size() == 0 )
+        if ( qsz && removes.size() == 0 )
             this->setLastRecord();
     }
 
     // UPDATES
-    qsz = _updates.size(); 
-    if ( queued && _removes.size() == 0 ) 
+    TreeUpdateSet & updates = _notifier->updates;
+    qsz = updates.size(); 
+    if ( queued && removes.size() == 0 ) 
     {
-        for ( uIter = _updates.begin(); uIter != _updates.end(); ) 
+        for ( uIter = updates.begin(); uIter != updates.end(); ) 
         {
             TnmsTree::Node * node = *uIter;
 
             if ( node->getValue().erase ) {
-                _updates.erase(uIter++);
+                updates.erase(uIter++);
                 continue;
             }
 
             TnmsMetric & m = node->getValue().metric;
-
-            queued = this->sendMessage(&m);
+            queued         = this->sendMessage(&m);
 
             if ( queued ) {
-                _updates.erase(uIter++);
+                updates.erase(uIter++);
             } else {
                 LogFacility::LogMessage("TnmsClient::send() error: " + this->getErrorStr());
                 break;
             }
         }
-        if ( qsz && _updates.size() == 0 )
+        if ( qsz && updates.size() == 0 )
             this->setLastRecord();
     }
 
@@ -143,30 +151,6 @@ void
 TnmsClient::close()
 {
     TnmsSocket::close();
-}
-
-void
-TnmsClient::queueAdd ( TnmsTree::Node * node )
-{
-    if ( _removes.erase(node->getValue().metric.getElementName()) )
-        return;
-    _adds.insert(node);
-    return;
-}
-
-void
-TnmsClient::queueRemove ( TnmsTree::Node * node )
-{
-    _adds.erase(node);
-    _updates.erase(node);
-    _removes.insert(node->getValue().metric.getElementName());
-}
-
-
-void
-TnmsClient::queueUpdate ( TnmsTree::Node * node )
-{
-    _updates.insert(node);
 }
 
 bool
@@ -337,6 +321,11 @@ TnmsClient::AuthRequestHandler ( const TnmsAuthRequest & request )
     */
 }
 
+TnmsSubscriber*
+TnmsClient::getUpdateNotifier()
+{
+    return this->_notifier;
+}
 
 
 

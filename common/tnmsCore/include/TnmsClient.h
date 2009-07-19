@@ -3,12 +3,13 @@
 
 #include <set>
 
-#include "TnmsTree.h"
 #include "TnmsSocket.h"
+#include "TnmsTree.h"
 
 
 namespace tnmsCore {
 
+class TnmsSubscriber;
 class AuthClient;
 
 
@@ -32,9 +33,6 @@ class TnmsClient : public TnmsSocket {
     virtual void    AuthRequestHandler  ( const TnmsAuthRequest & request );
 
     bool            login();
-    void            queueAdd     ( TnmsTree::Node  * node );
-    void            queueUpdate  ( TnmsTree::Node  * node );
-    void            queueRemove  ( TnmsTree::Node  * node );
 
     bool            isAgent()  const;
     bool            isMirror() const;
@@ -46,21 +44,15 @@ class TnmsClient : public TnmsSocket {
     const
     std::string&    getConfig() const { return _xmlConfig; }
 
-
-  public:
-
-    typedef std::set<TnmsTree::Node*>  UpdateSet;
-    typedef std::set<std::string>      RemoveSet;
+    TnmsSubscriber* getUpdateNotifier();
 
 
   protected:
 
     TnmsTree*            _tree;
+    TnmsSubscriber*      _notifier;
 
     AuthClient*          _auth;
-    UpdateSet            _adds;
-    UpdateSet            _updates;
-    RemoveSet            _removes;
 
     std::string          _xmlConfig;
 

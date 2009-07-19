@@ -11,20 +11,20 @@
 
 namespace tnmsCore {
 
-class TnmsClient;
+class TnmsSubscriber;
 
 
 class TnmsTree {
 
   public:
 
-    typedef std::set<TnmsClient*>   ClientSet;
+    typedef std::set<TnmsSubscriber*>   NotifySet;
 
     struct TnmsTreeNode
     {
         TnmsMetric  metric;
-        ClientSet   nodeSubscribers;
-        ClientSet   levelSubscribers;
+        NotifySet   nodeSubscribers;
+        NotifySet   levelSubscribers;
         bool        erase;
 
         TnmsTreeNode()
@@ -46,53 +46,54 @@ class TnmsTree {
     TnmsTree();
     virtual ~TnmsTree();
 
-    bool       add              ( const std::string & name );
-    bool       remove           ( const std::string & name );
-    bool       update           ( const TnmsMetric  & metric );
+    bool       add              ( const std::string  & name );
+    bool       remove           ( const std::string  & name );
+    bool       update           ( const TnmsMetric   & metric );
 
-    bool       request          ( const std::string & name,
-                                 TnmsClient        * client );
-    bool       request          ( const std::string & name,
-                                  TnmsMetric        & metric );
+    bool       request          ( const std::string  & name,
+                                 TnmsSubscriber      * sub );
+    bool       request          ( const std::string  & name,
+                                  TnmsMetric         & metric );
 
-    bool       exists           ( const std::string & name );
+    bool       exists           ( const std::string  & name );
 
-    bool       subscribe        ( const std::string & name, 
-                                  TnmsClient        * client );
-    bool       unsubscribe      ( const std::string & name, 
-                                  TnmsClient        * client );
+    bool       subscribe        ( const std::string  & name, 
+                                  TnmsSubscriber     * sub );
+    bool       unsubscribe      ( const std::string  & name, 
+                                  TnmsSubscriber     * sub );
 
-    bool       subStructure     ( TnmsClient        * client );
-    bool       unsubStructure   ( TnmsClient        * client );
+    bool       subStructure     ( TnmsSubscriber     * sub );
+    bool       unsubStructure   ( TnmsSubscriber     * sub );
 
-    void       updateClients();
-    void       removeClient     ( TnmsClient        * client );
+    void       updateSubscribers();
+    void       removeSubscriber ( TnmsSubscriber     * sub );
 
     void       sweep();
-    void       sweep            ( TnmsTree::Node    * node );
-    void       sweep            ( const std::string & name );
+    void       sweep            ( TnmsTree::Node     * node );
+    void       sweep            ( const std::string  & name );
 
     size_t     size() const;
     void       clear();
 
     void       debugDump() const;
-    void       debugDump        ( const std::string & name ) const;
+    void       debugDump        ( const std::string  & name ) const;
 
+    void       getRootNames     ( StringSet & rootnames ) const;
 
   protected:
 
-    bool       markForRemove    ( const std::string & name );
-    void       clearNodeErase   ( TnmsTree::Node    * node );
+    bool       markForRemove    ( const std::string  & name );
+    void       clearNodeErase   ( TnmsTree::Node     * node );
 
-    void       resetMetric      ( TnmsMetric        & metric );
+    void       resetMetric      ( TnmsMetric         & metric );
 
 
   private:
 
     Tree  *             _tree;
-    ClientSet           _structureSubs;
-    ClientSet           _allSubs;
-    ClientSet           _rootSubs;
+    NotifySet           _structureSubs;
+    NotifySet           _allSubs;
+    NotifySet           _rootSubs;
 
     NameNodeMap         _updates;
 };

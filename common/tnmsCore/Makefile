@@ -18,7 +18,8 @@ OBJS =                  src/TnmsOid.o src/TnmsSocket.o \
 			src/TnmsAuthRequest.o src/TnmsAuthReply.o \
 			src/AuthClient.o src/AuthIOHandler.o \
 			src/TnmsConfig.o src/TnmsMessageHandler.o \
-			src/TnmsTree.o src/TnmsClient.o
+			src/TnmsTree.o src/TnmsClient.o \
+			src/TnmsSubscriber.o
 
 BIN =                        
 ALL_OBJS =              $(OBJS)

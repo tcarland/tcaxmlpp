@@ -103,7 +103,7 @@ TnmsMessageHandler::SubscribeHandler   ( const std::string & name )
     if ( LogFacility::GetDebug() )
         LogFacility::LogMessage("TnmsMessageHandler::SubscribeHandler() " + name);
 
-    if ( ! _tree->subscribe(name, _client) )
+    if ( ! _tree->subscribe(name, _client->getUpdateNotifier()) )
         _client->unsubscribe(name);
 
     return;
@@ -119,7 +119,7 @@ TnmsMessageHandler::UnsubscribeHandler ( const std::string & name )
     if ( LogFacility::GetDebug() )
         LogFacility::LogMessage("TnmsMessageHandler::UnsubscribeHandler() " + name);
 
-    _tree->unsubscribe(name, _client);
+    _tree->unsubscribe(name, _client->getUpdateNotifier());
 
     return;
 }
@@ -135,9 +135,9 @@ TnmsMessageHandler::StructureHandler ( bool  subscribe )
         LogFacility::LogMessage("TnmsMessageHandler::StructureHandler()");
 
     if ( subscribe )
-        _tree->subStructure(_client);
+        _tree->subStructure(_client->getUpdateNotifier());
     else
-        _tree->unsubStructure(_client);
+        _tree->unsubStructure(_client->getUpdateNotifier());
 
     return;
 }
