@@ -1,10 +1,15 @@
+#define _TNMSWXCLIENTMAIN_CPP_
 
 #include "TnmsWxClientMain.h"
+
 #include "ClientFrame.h"
 #include "TnmsClientIOThread.h"
+#include "ClientSubscriber.h"
 
 #include "LogFacility.h"
 using namespace tcanetpp;
+
+
 
 // ----------------------------------------------------------------------
 
@@ -20,18 +25,20 @@ TnmsWxClientMain::TnmsWxClientMain ( int msecs )
     : _guiTimer(this, TGUITIMER_ID),
       _mframe(NULL)
 {
-    _stree.tree  = new TnmsTree();
-    _stree.mutex = new ThreadLock();
-    _stree.iomgr = new TnmsClientIOThread(_stree.mutex);
+    _stree.tree     = new TnmsTree();
+    _stree.notifier = new ClientSubscriber();
+    _stree.mutex    = new ThreadLock();
+    _stree.iomgr    = new TnmsClientIOThread(_stree.tree, _stree.mutex);
 
     _guiTimer.Start(msecs);
 }
 
 TnmsWxClientMain::~TnmsWxClientMain()
 {
-    delete _stree.tree;
     delete _stree.iomgr;
     delete _stree.mutex;
+    delete _stree.notifier;
+    delete _stree.tree;
 }
 
 

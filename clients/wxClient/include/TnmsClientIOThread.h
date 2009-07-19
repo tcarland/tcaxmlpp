@@ -21,7 +21,7 @@ class TnmsClientIOThread : public Thread {
 
   public:
 
-    TnmsClientIOThread ( ThreadLock * tree );
+    TnmsClientIOThread ( TnmsTree * tree, ThreadLock * tree );
     
     virtual ~TnmsClientIOThread();
 
@@ -55,12 +55,14 @@ class TnmsClientIOThread : public Thread {
 
   private:
 
-    EventManager *       _evmgr;
-    ThreadLock *         _mutex;
+    EventManager *          _evmgr;
+    TnmsTree *              _tree;
+    ThreadLock *            _mutex;
 
-    TnmsClientIOHandler* _clientHandler;
+    TnmsClientIOHandler *   _clientHandler;
 
-    ClientEventMap       _clients;
+    ClientEventMap          _clients;
+
 };
 
 

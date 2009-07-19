@@ -322,11 +322,16 @@ TnmsClient::AuthRequestHandler ( const TnmsAuthRequest & request )
 }
 
 TnmsSubscriber*
-TnmsClient::getUpdateNotifier()
+TnmsClient::getSubscriberNotifier()
 {
     return this->_notifier;
 }
 
+TnmsTree*
+TnmsClient::getTree()
+{
+    return this->_tree;
+}
 
 
 } // namespace

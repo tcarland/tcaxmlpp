@@ -10,19 +10,22 @@ using namespace tcanetpp;
 
 
 class TnmsClientIOThread;
+class ClientSubscriber;
+
 
 struct TnmsTree_R
 {
-    TnmsClientIOThread  * iomgr;
+    TnmsClientIOThread  * iomgr;  
+    ClientSubscriber    * notifier;
     TnmsTree            * tree;
     ThreadLock          * mutex;
 
-    bool         updated;
-
-    TnmsTree_R ( TnmsClientIOThread * iomgr_ = NULL,
-                 TnmsTree           * tree_  = NULL,
-                 ThreadLock         * lock_  = NULL )
+    TnmsTree_R ( TnmsClientIOThread * iomgr_   = NULL,
+                 ClientSubscriber   * notify_  = NULL,
+                 TnmsTree           * tree_    = NULL,
+                 ThreadLock         * lock_    = NULL )
         : iomgr(iomgr_),
+          notifier(notify_),
           tree(tree_), 
           mutex(lock_)
     {}

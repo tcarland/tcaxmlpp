@@ -320,7 +320,7 @@ TnmsTree::subscribe ( const std::string & name, TnmsSubscriber * sub )
             if ( ! nIter->second->getValue().erase ) {
                 //sub->queueAdd(nIter->second);
                 sub->queueUpdate(nIter->second);
-                _updates[nIter->second->getValue().metric.getElementName()] = nIter->second;
+                //_updates[nIter->second->getValue().metric.getElementName()] = nIter->second;
             }
         }
 

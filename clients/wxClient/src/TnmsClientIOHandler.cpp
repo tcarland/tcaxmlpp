@@ -50,7 +50,7 @@ TnmsClientIOHandler::timeout ( const EventTimer * timer )
             else 
             {
                 if ( client->isAuthorized() && ! client->isSubscribed() ) {
-                    client->subscribeAll();
+                    client->subscribeStructure();
                 } else if ( ! client->isAuthorized() ) {
                     client->login();
                 }
@@ -80,9 +80,6 @@ TnmsClientIOHandler::timeout ( const EventTimer * timer )
         } // else report wt;
 
     }
-
-    //if ( _tree )
-        //_tree->updateClients();
 
     return;
 }

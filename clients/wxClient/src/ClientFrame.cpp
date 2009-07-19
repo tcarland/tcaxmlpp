@@ -18,7 +18,8 @@ using namespace tcanetpp;
 
 ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R & tree )
     : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(500,300)),
-      _stree(tree)
+      _stree(tree),
+      _tree(NULL)
 {
     _menuBar   = new wxMenuBar();
     _menuFile  = new wxMenu();
@@ -53,13 +54,6 @@ void
 ClientFrame::initMenuBar()
 {
     // Top-level :  File
-
-    //_menuFile->Append(TNMS_ID_CONNECT, wxT("&Connect"));
-    //_menuFile->Append(TNMS_ID_DISCONN, wxT("&Disconnect"));
-    //_menuFile->AppendSeparator();
-
-    //wxMenuItem * quitMenu = new wxMenuItem(_menuFile, wxID_EXIT, wxT("&Quit"));
-
     _menuFile->Append(new wxMenuItem(_menuFile, TNMS_ID_CONNECT, wxT("&Connect")));
     _menuFile->Append(new wxMenuItem(_menuFile, TNMS_ID_DISCONN, wxT("&Disconnect")));
     _menuFile->AppendSeparator();
@@ -166,7 +160,7 @@ ClientFrame::OnQuit ( wxCommandEvent & event )
 
 void
 ClientFrame::OnTimer ( wxTimerEvent & event )
-{
+{    
     _tree->SyncTree();
 }
 

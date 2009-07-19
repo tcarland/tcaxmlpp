@@ -44,7 +44,8 @@ class TnmsClient : public TnmsSocket {
     const
     std::string&    getConfig() const { return _xmlConfig; }
 
-    TnmsSubscriber* getUpdateNotifier();
+    TnmsSubscriber* getSubscribeNotifier();
+    TnmsTree*       getTree();
 
 
   protected:

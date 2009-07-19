@@ -11,6 +11,7 @@
 #include "TnmsClient.h"
 using namespace tnmsCore;
 
+
 #define TNMS_ID_CONNECT  7010
 #define TNMS_ID_DISCONN  7011
 
@@ -55,19 +56,18 @@ class ClientFrame : public wxFrame {
 
   private:
 
-    TnmsTree_R &        _stree;
-    
-    TnmsWxTree*         _tree;
+    TnmsTree_R &         _stree;
+    TnmsWxTree *         _tree;
 
-    ClientMap           _clientMap;
+    ClientMap            _clientMap;
 
-    wxPanel*            _mainPanel;
-    wxMenuBar*          _menuBar;
-    wxMenu*             _menuFile;
+    wxPanel *            _mainPanel;
+    wxMenuBar *          _menuBar;
+    wxMenu *             _menuFile;
 
-    wxGenericDirCtrl*   _gdir;
-    wxListCtrl*         _lCtrl1;
-    wxListCtrl*         _lCtrl2;
+    wxGenericDirCtrl *   _gdir;
+    wxListCtrl *         _lCtrl1;
+    wxListCtrl *         _lCtrl2;
 
 };
 
