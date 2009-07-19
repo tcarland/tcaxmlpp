@@ -133,7 +133,7 @@ TnmsBase::send ( time_t  now )
         LogFacility::LogToStream(_logName, "TnmsAPI: holddown reached, triggering updates");
         _holddown = now + _holddown_interval;
         _tree->sweep();
-        _tree->updateClients();
+        _tree->updateSubscribers();
         wt = _conn->send(now);
     }
 
@@ -361,7 +361,7 @@ TnmsBase::checkSubscription ( const time_t & now )
         }
 
         LogFacility::LogToStream(_logName, "TnmsAPI: authorized, subscribing server to tree");
-        _subscribed = this->_tree->subscribe("*", _conn);
+        _subscribed = this->_tree->subscribe("*", _conn->getUpdateNotifier());
         _conn->send(now);
 
         if ( _subscribed ) 

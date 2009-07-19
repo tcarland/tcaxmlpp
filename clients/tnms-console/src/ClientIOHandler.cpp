@@ -94,7 +94,7 @@ ClientIOHandler::timeout ( const EventTimer * timer )
     }
 
     if ( _tree )
-        _tree->updateClients();
+        _tree->updateSubscribers();
 
     return;
 }
@@ -159,7 +159,7 @@ ClientIOHandler::handle_close ( const EventIO * io )
     }
 
     if ( _tree ) 
-        _tree->removeClient(client);
+        _tree->removeSubscriber(client->getUpdateNotifier());
     
     return;
 }

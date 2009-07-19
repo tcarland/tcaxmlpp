@@ -150,7 +150,7 @@ AgentIOHandler::handle_close ( const EventIO * io )
         return;
 
     if ( _tree )
-        _tree->removeClient(client);
+        _tree->removeSubscriber(client->getUpdateNotifier());
 
     LogFacility::LogMessage("AgentIOHandler::handle_close() " + client->getHostStr());
 
