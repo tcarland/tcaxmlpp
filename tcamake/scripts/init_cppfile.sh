@@ -14,6 +14,7 @@ SOURCENAME=
 NAMESPACE=
 EXT=
 DEFNAME=
+CLASS=1
 
 usage()
 {
@@ -68,7 +69,6 @@ createHeader()
 {
     local filename=$1
     local namespace=$2
-    local class=$3
 
     echo "#ifndef $DEFNAME" > $filename
     echo "#define $DEFNAME" >> $filename
@@ -82,7 +82,7 @@ createHeader()
 
     echo "" >> $filename
 
-    if [ -n "$class" ]; then
+    if [ -n "$CLASS" ]; then
         echo "" >> $filename
         echo "class ${SOURCENAME} {" >> $filename
         echo "" >> $filename
@@ -104,14 +104,13 @@ createHeader()
     fi
 
     echo "" >> $filename
-    echo "#endif  //$DEFNAME" >> $filename
+    echo "#endif  // $DEFNAME" >> $filename
 }
 
 createSource()
 {
     local filename=$1
     local namespace=$2
-    local class=$3
 
     echo "#define $DEFNAME" > $filename
     echo "" >> $filename
@@ -125,7 +124,7 @@ createSource()
 
     echo "" >> $filename
 
-    if [ -n "$class" ]; then
+    if [ -n "$CLASS" ]; then
         echo "" >> $filename
         echo "${SOURCENAME}::${SOURCENAME}()" >> $filename
         echo "{" >> $filename
@@ -155,7 +154,6 @@ createSource()
 # --------------------------
 #  MAIN
 
-CLASS=1
 filename=
 namespace=
 
@@ -189,9 +187,9 @@ echo "File: $filename  Sourcename: $SOURCENAME"
 
 testext=${EXT%c*}
 if [ -n "$testext" ]; then
-    createHeader $filename $namespace $CLASS
+    createHeader $filename $namespace
 else 
-    createSource $filename $namespace $CLASS
+    createSource $filename $namespace
 fi
 
 

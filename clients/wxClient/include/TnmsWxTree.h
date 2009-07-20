@@ -25,13 +25,13 @@ class TnmsWxTreeItem : public wxTreeItemData {
 
   public:
 
-    //TnmsMetric  metric;
+    TnmsMetric  metric;
 
-    std::list<wxString>  _children;
-    wxString             _absName;
-    wxString             _name;
-    bool                 _isParent;
-    bool                 _isExpanded;
+    std::list<wxString>  children;
+    wxString             absName;
+    wxString             name;
+    bool                 isparent;
+    bool                 isexpanded;
 
 };
 

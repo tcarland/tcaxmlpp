@@ -1,7 +1,7 @@
 #define _TNMSWXTREE_CPP_
 
 #include "TnmsWxTree.h"
-
+#include "ClientSubscriber.h"
 
 #include "LogFacility.h"
 using namespace tcanetpp;
@@ -12,30 +12,30 @@ using namespace tcanetpp;
 TnmsWxTreeItem::TnmsWxTreeItem ( const wxString & absoluteName, 
                                  const wxString & name, 
                                  bool             isParent )
-    : _absName(absoluteName), 
-      _name(name), 
-      _isParent(isParent),
-      _isExpanded(false)
+    : absName(absoluteName), 
+      name(name), 
+      isparent(isParent),
+      isexpanded(false)
 {}
 
 
 bool
 TnmsWxTreeItem::isParent() const
 {
-    return _isParent;
+    return isparent;
 }
 
 bool
 TnmsWxTreeItem::isExpanded() const
 {
-    return _isExpanded;
+    return isexpanded;
 }
 
 
 bool
 TnmsWxTreeItem::hasChildren() const
 {
-    return(_children.size() > 0);
+    return(children.size() > 0);
 }
 
 
@@ -108,6 +108,8 @@ TnmsWxTree::Create  ( wxWindow        * parent,
 
     _rootId = _treeCtrl->AddRoot(rootName, -1, -1, rootData);
     _treeCtrl->SetItemHasChildren(_rootId);
+    
+    _stree->tree->subscribe("/", _stree->notifier);
 
     this->Expand(_rootId);
     SetInitialSize(size);
@@ -147,19 +149,26 @@ TnmsWxTree::OnSize ( wxSizeEvent & WXUNUSED(event) )
 void
 TnmsWxTree::Expand ( wxTreeItemId  parentId )
 {
+    std::string  absoluteName;
+
     TnmsWxTreeItem * data = (TnmsWxTreeItem*) _treeCtrl->GetItemData(parentId);
 
     LogFacility::LogMessage("TnmsWxTree::Expand");
     if ( data->isExpanded() )
         return;
 
-    data->_isExpanded = true;
+    data->isexpanded = true;
 
     if ( parentId == _treeCtrl->GetRootItem())
     {
         this->SetupRoot();
         return;
     }
+
+    absoluteName = StringUtils::wtocstr(data->absName.c_str());
+    _stree->tree->subscribe(absoluteName, _stree->notifier);
+
+    _visible[data->absName] = parentId;
 
     return;
 }
@@ -175,7 +184,7 @@ TnmsWxTree::Collapse ( wxTreeItemId  parentId )
     if ( ! data->isExpanded() )
         return;
 
-    data->_isExpanded = false;
+    data->isexpanded = false;
 
     wxTreeItemIdValue  cookie;
 
@@ -194,10 +203,11 @@ TnmsWxTree::Collapse ( wxTreeItemId  parentId )
 void
 TnmsWxTree::SetupRoot()
 {
-    wxString  itemname = wxT("tcanms");
 
     LogFacility::LogMessage("TnmsWxTree::SetupRoot()");
 
+/*
+    wxString  itemname = wxT("tcanms");
     TnmsWxTreeItem * data = new TnmsWxTreeItem(itemname, itemname, true);
     wxTreeItemId     id   = _treeCtrl->AppendItem(_rootId, itemname, -1, -1, data);
 
@@ -205,6 +215,40 @@ TnmsWxTree::SetupRoot()
     _treeCtrl->SelectItem(_rootId);
     _treeCtrl->EnsureVisible(_rootId);
     _treeCtrl->Expand(_rootId);
+*/
+    
+    //if ( _stree->notifier->haveUpdates() )
+
+    TnmsTree::StringSet  troots;
+    TnmsTree::StringSet::iterator  sIter;
+
+    _stree->tree->getRootNames(troots);
+
+    TreeItemMap  rootsold = _roots;
+    TreeItemMap::iterator    tIter;
+
+    for ( sIter = troots.begin(); sIter != troots.end(); ++sIter )
+    {
+        wxString  tname  = StringUtils::ctowstr(*sIter);
+
+        tIter  = _roots.find(tname);
+        if ( tIter == _roots.end() ) {
+            TnmsWxTreeItem * data = new TnmsWxTreeItem(tname, tname, true);
+            wxTreeItemId     id   = _treeCtrl->AppendItem(_rootId, tname, -1, -1, data);
+
+            _treeCtrl->SetItemHasChildren(id);
+
+            _roots[tname] = id;
+            _visible[tname] = id;
+        } else {
+            rootsold.erase(tname);
+            _visible.erase(tname);
+        }
+    }
+
+    for ( tIter = rootsold.begin(); tIter != rootsold.end(); ++tIter )
+        _treeCtrl->Delete(tIter->second);
+
 
     return;
 }
@@ -220,37 +264,80 @@ TnmsWxTree::DoResize()
 void
 TnmsWxTree::SyncTree()
 {
-    if ( _stree->mutex->trylock() <= 0 )
+    ClientSubscriber * notifier = _stree->notifier;
+
+    this->SetupRoot();
+
+    if ( ! notifier->haveUpdates() )
         return;
 
-    TnmsTree::StringSet  roots;
-    TnmsTree::StringSet::iterator  sIter;
+    if ( ! notifier->trylock() )
+        return;
 
-    _stree->tree->getRootNames(roots);
+    TreeUpdateSet::iterator  nIter;
+    TreeRemoveSet::iterator  rIter;
+    TreeItemMap::iterator    vIter;
 
-    if ( roots.size() > 0 )
-        _treeCtrl->DeleteChildren(_rootId);
-    
-    TnmsMetric  metric;
-    
-    for ( sIter = roots.begin(); sIter != roots.end(); ++sIter )
+    wxString         name, parentname;
+    wxTreeItemId     pid, id;
+    TnmsWxTreeItem * data = NULL;
+
+    TreeUpdateSet & adds = notifier->adds;
+    for ( nIter = adds.begin(); nIter != adds.end(); )
     {
-        wxString  tname;
-        tname.FromAscii(sIter->c_str());
+        TnmsTree::Node * node = *nIter;
 
-        
-        _stree->tree->request(*sIter, metric);
+        if ( node->getValue().erase ) {
+            adds.erase(nIter++);
+            continue;
+        }
 
-        LogFacility::LogMessage(" Adding root node " + *sIter);
+        parentname = StringUtils::ctowstr(node->getParent()->getAbsoluteName());
 
-        TnmsWxTreeItem * data = new TnmsWxTreeItem(tname, tname, true);
-        wxTreeItemId     id   = _treeCtrl->AppendItem(_rootId, tname, -1, -1, data);
-        
-        _treeCtrl->SetItemHasChildren(id);
-        _treeCtrl->EnsureVisible(id);
+        vIter = _visible.find(parentname);
+
+        if ( vIter != _visible.end() ) 
+        {
+            pid   = vIter->second;
+            data  = new TnmsWxTreeItem(StringUtils::ctowstr(node->getAbsoluteName()), 
+                                       StringUtils::ctowstr(node->getName()), true);
+            data->metric = node->getValue().metric;
+            id    = _treeCtrl->AppendItem(pid, data->name, -1, -1, data);
+
+            _visible[data->name] = id;
+        }
+        adds.erase(nIter++);
     }
 
-    _stree->mutex->unlock();
+    TreeRemoveSet & removes = notifier->removes;
+    for ( rIter = removes.begin(); rIter != removes.end(); ) 
+    {
+        name = StringUtils::ctowstr(*rIter);
+
+        vIter = _visible.find(name);
+
+        if ( vIter != _visible.end() )
+            _treeCtrl->Delete(vIter->second);
+
+        removes.erase(rIter++);
+    }
+
+    TreeUpdateSet & updates = notifier->updates;
+    for ( nIter = updates.begin(); nIter != updates.end(); ) 
+    {
+        TnmsTree::Node * node = *nIter;
+
+        name  = StringUtils::ctowstr(node->getAbsoluteName());
+        vIter = _visible.find(name);
+
+        if ( vIter != _visible.end() )
+        {
+            data = (TnmsWxTreeItem*) _treeCtrl->GetItemData(vIter->second);
+            data->metric = node->getValue().metric;
+        }
+
+        updates.erase(nIter++);
+    }
 
     return;
 }
