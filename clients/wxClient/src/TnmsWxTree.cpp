@@ -109,8 +109,6 @@ TnmsWxTree::Create  ( wxWindow        * parent,
     _rootId = _treeCtrl->AddRoot(rootName, -1, -1, rootData);
     _treeCtrl->SetItemHasChildren(_rootId);
     
-    _stree->tree->subscribe("/", _stree->notifier);
-
     this->Expand(_rootId);
     SetInitialSize(size);
     DoResize();
@@ -166,7 +164,7 @@ TnmsWxTree::Expand ( wxTreeItemId  parentId )
     }
 
     absoluteName = StringUtils::wtocstr(data->absName.c_str());
-    _stree->tree->subscribe(absoluteName, _stree->notifier);
+    _stree->tree->subscribe(absoluteName, (TnmsSubscriber*) _stree->notifier);
 
     _visible[data->absName] = parentId;
 
@@ -203,8 +201,8 @@ TnmsWxTree::Collapse ( wxTreeItemId  parentId )
 void
 TnmsWxTree::SetupRoot()
 {
-
-    LogFacility::LogMessage("TnmsWxTree::SetupRoot()");
+    if ( _stree == NULL || _stree->tree == NULL )
+        return;
 
 /*
     wxString  itemname = wxT("tcanms");

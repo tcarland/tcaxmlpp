@@ -9,7 +9,7 @@
 #include "TnmsTree_R.hpp"
 
 #define TGUITIMER_ID  6999
-#define TINTERVAL_MS  1000
+#define TINTERVAL_MS  3000
 
 
 class ClientFrame;

@@ -21,7 +21,7 @@ class ClientFrame : public wxFrame {
   public:
 
     ClientFrame ( const wxString & title, 
-                  TnmsTree_R     & tree );
+                  TnmsTree_R     * tree );
 
 
     void        OnSelect        ( wxCommandEvent & event );
@@ -56,7 +56,7 @@ class ClientFrame : public wxFrame {
 
   private:
 
-    TnmsTree_R &         _stree;
+    TnmsTree_R *         _stree;
     TnmsWxTree *         _tree;
 
     ClientMap            _clientMap;

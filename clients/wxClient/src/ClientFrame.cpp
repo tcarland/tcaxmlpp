@@ -16,7 +16,7 @@ using namespace tcanetpp;
 
 
 
-ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R & tree )
+ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
     : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(500,300)),
       _stree(tree),
       _tree(NULL)
@@ -29,7 +29,7 @@ ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R & tree )
 
     _tree   = new TnmsWxTree(spl1, wxID_TREECTRL, wxT("tcanms"), 
                 wxPoint(-1, -1), spl1->GetSize());
-    _tree->SetTnmsTree(&_stree);
+    _tree->SetTnmsTree(_stree);
 
     _gdir   = new wxGenericDirCtrl(spl2, -1, wxT("/home/"),
                 wxPoint(-1, -1), wxSize(-1, -1), wxDIRCTRL_DIR_ONLY);
@@ -90,12 +90,13 @@ ClientFrame::OnConnect ( wxCommandEvent & event )
     cl.username    = StringUtils::wtocstr(username.c_str());
     cl.password    = StringUtils::wtocstr(password.c_str());
     cl.port        = StringUtils::fromString<uint16_t>(StringUtils::wtocstr(portname.c_str()));
-    cl.client      = new TnmsClient(_stree.tree);
+    cl.client      = new TnmsClient(_stree->tree);
 
     //uint16_t pn = StringUtils::fromString<uint16_t>(port);
 
     cl.client->openConnection(cl.servername, cl.port);
-    _stree.iomgr->addClient(cl.client);
+    _stree->iomgr->addClient(cl.client);
+    _stree->tree->subscribe("/", (TnmsSubscriber*) _stree->notifier);
     
     //user.append("@").append(sn).append(":").append(port);
     username.append(_T("@")).append(servname).append(_T(":")).append(portname);
@@ -115,7 +116,7 @@ ClientFrame::OnDisconnect ( wxCommandEvent & event )
 
         if ( clin.client ) {
             clin.client->close();
-            _stree.iomgr->removeClient(clin.client);
+            _stree->iomgr->removeClient(clin.client);
         }
     }
     _clientMap.clear();

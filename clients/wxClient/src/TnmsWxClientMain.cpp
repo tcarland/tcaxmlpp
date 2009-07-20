@@ -52,7 +52,7 @@ TnmsWxClientMain::OnInit()
 
     _stree.iomgr->start();
 
-    _mframe = new ClientFrame(wxT("TnmsWxClientMain"), _stree);
+    _mframe = new ClientFrame(wxT("TnmsWxClientMain"), &_stree);
     _mframe->Show(true);
 
     return true;
