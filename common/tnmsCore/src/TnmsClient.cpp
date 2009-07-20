@@ -322,7 +322,7 @@ TnmsClient::AuthRequestHandler ( const TnmsAuthRequest & request )
 }
 
 TnmsSubscriber*
-TnmsClient::getSubscriberNotifier()
+TnmsClient::getSubscribeNotifier()
 {
     return this->_notifier;
 }

@@ -361,7 +361,7 @@ TnmsBase::checkSubscription ( const time_t & now )
         }
 
         LogFacility::LogToStream(_logName, "TnmsAPI: authorized, subscribing server to tree");
-        _subscribed = this->_tree->subscribe("*", _conn->getUpdateNotifier());
+        _subscribed = this->_tree->subscribe("*", _conn->getSubscribeNotifier());
         _conn->send(now);
 
         if ( _subscribed ) 
