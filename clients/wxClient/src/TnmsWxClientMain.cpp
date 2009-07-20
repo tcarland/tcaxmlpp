@@ -48,6 +48,7 @@ TnmsWxClientMain::OnInit()
     LogFacility::InitThreaded();
     LogFacility::OpenLogStream("stdout", "TnmsWxClient", &std::cout);
     LogFacility::SetBroadcast(true);
+    LogFacility::SetDebug(true);
     LogFacility::LogMessage("TnmsWxClient starting...");
 
     _stree.iomgr->start();

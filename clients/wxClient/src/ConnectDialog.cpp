@@ -19,12 +19,12 @@ ConnectDialog::ConnectDialog ( const wxString & title )
     wxStaticText * user    = new wxStaticText(panel, -1, wxT("Username"));
     wxStaticText * pass    = new wxStaticText(panel, -1, wxT("Password"));
 
-    tcServer  = new wxTextCtrl(panel, -1);
+    tcServer  = new wxTextCtrl(panel, -1, wxT("localhost"));
     wxSize sz = tcServer->GetSize();
     sz.x  += 35;
     tcServer->SetSize(sz);
 
-    tcPort    = new wxTextCtrl(panel, -1, wxT(""), wxPoint(-1, -1), sz);
+    tcPort    = new wxTextCtrl(panel, -1, wxT("15600"), wxPoint(-1, -1), sz);
     tcUser    = new wxTextCtrl(panel, -1, wxT(""), wxPoint(-1, -1), sz);
     tcPass    = new wxTextCtrl(panel, -1, wxT(""), wxPoint(-1, -1), wxSize(-1, -1), wxTE_PASSWORD);
 

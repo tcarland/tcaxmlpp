@@ -42,8 +42,9 @@ TnmsWxTreeItem::hasChildren() const
 // ----------------------------------------------------------------------
 
 BEGIN_EVENT_TABLE(TnmsWxTree, wxControl)
-  EVT_TREE_ITEM_EXPANDING     (wxID_TREECTRL, TnmsWxTree::OnExpandItem)
+  EVT_TREE_ITEM_EXPANDED      (wxID_TREECTRL, TnmsWxTree::OnExpandItem)
   EVT_TREE_ITEM_COLLAPSED     (wxID_TREECTRL, TnmsWxTree::OnCollapseItem)
+  EVT_TREE_SEL_CHANGED        (wxID_TREECTRL, TnmsWxTree::OnSelect)
   EVT_SIZE                    (TnmsWxTree::OnSize)
 END_EVENT_TABLE()
 
@@ -145,6 +146,18 @@ TnmsWxTree::OnSize ( wxSizeEvent & WXUNUSED(event) )
 }
 
 void
+TnmsWxTree::OnSelect ( wxTreeEvent & event )
+{
+    wxTreeItemId     id   = event.GetItem();
+    TnmsWxTreeItem * data = (TnmsWxTreeItem*) _treeCtrl->GetItemData(id);
+
+    std::string select = StringUtils::wtocstr(data->absName.c_str());
+    LogFacility::LogMessage("OnSelect " + select);
+
+    _stree->tree->subscribe(select, _stree->notifier);
+}
+
+void
 TnmsWxTree::Expand ( wxTreeItemId  parentId )
 {
     std::string  absoluteName;
@@ -204,23 +217,15 @@ TnmsWxTree::SetupRoot()
     if ( _stree == NULL || _stree->tree == NULL )
         return;
 
-/*
-    wxString  itemname = wxT("tcanms");
-    TnmsWxTreeItem * data = new TnmsWxTreeItem(itemname, itemname, true);
-    wxTreeItemId     id   = _treeCtrl->AppendItem(_rootId, itemname, -1, -1, data);
-
-    _treeCtrl->SetItemHasChildren(id);
-    _treeCtrl->SelectItem(_rootId);
-    _treeCtrl->EnsureVisible(_rootId);
-    _treeCtrl->Expand(_rootId);
-*/
-    
-    //if ( _stree->notifier->haveUpdates() )
-
     TnmsTree::StringSet  troots;
     TnmsTree::StringSet::iterator  sIter;
 
     _stree->tree->getRootNames(troots);
+
+    if ( troots.size() > 0 )
+        LogFacility::LogMessage("SetupRoot()");
+    else
+        _stree->tree->subscribe("/", _stree->notifier);
 
     TreeItemMap  rootsold = _roots;
     TreeItemMap::iterator    tIter;
@@ -234,7 +239,9 @@ TnmsWxTree::SetupRoot()
             TnmsWxTreeItem * data = new TnmsWxTreeItem(tname, tname, true);
             wxTreeItemId     id   = _treeCtrl->AppendItem(_rootId, tname, -1, -1, data);
 
+            LogFacility::LogMessage("Adding root " + *sIter);
             _treeCtrl->SetItemHasChildren(id);
+            _stree->tree->subscribe((*sIter + "/"), _stree->notifier);
 
             _roots[tname] = id;
             _visible[tname] = id;
@@ -272,6 +279,8 @@ TnmsWxTree::SyncTree()
     if ( ! notifier->trylock() )
         return;
 
+    LogFacility::LogMessage("SyncTree() has updates");
+
     TreeUpdateSet::iterator  nIter;
     TreeRemoveSet::iterator  rIter;
     TreeItemMap::iterator    vIter;
@@ -301,6 +310,10 @@ TnmsWxTree::SyncTree()
                                        StringUtils::ctowstr(node->getName()), true);
             data->metric = node->getValue().metric;
             id    = _treeCtrl->AppendItem(pid, data->name, -1, -1, data);
+
+            LogFacility::LogMessage("Add " + node->getAbsoluteName());
+
+            _treeCtrl->SetItemHasChildren(id);
 
             _visible[data->name] = id;
         }
@@ -332,6 +345,7 @@ TnmsWxTree::SyncTree()
         {
             data = (TnmsWxTreeItem*) _treeCtrl->GetItemData(vIter->second);
             data->metric = node->getValue().metric;
+            LogFacility::LogMessage("Update " + node->getAbsoluteName());
         }
 
         updates.erase(nIter++);

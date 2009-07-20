@@ -51,6 +51,7 @@ TnmsClientIOHandler::timeout ( const EventTimer * timer )
             {
                 if ( client->isAuthorized() && ! client->isSubscribed() ) {
                     client->subscribeStructure();
+                    client->subscribe("/");
                 } else if ( ! client->isAuthorized() ) {
                     client->login();
                 }
