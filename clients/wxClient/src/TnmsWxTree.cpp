@@ -41,19 +41,6 @@ TnmsWxTreeItem::hasChildren() const
 
 // ----------------------------------------------------------------------
 
-BEGIN_EVENT_TABLE(TnmsWxTree, wxControl)
-  EVT_TREE_ITEM_EXPANDED      (wxID_TREECTRL, TnmsWxTree::OnExpandItem)
-  EVT_TREE_ITEM_COLLAPSED     (wxID_TREECTRL, TnmsWxTree::OnCollapseItem)
-  EVT_TREE_SEL_CHANGED        (wxID_TREECTRL, TnmsWxTree::OnSelect)
-  EVT_TREE_ITEM_ACTIVATED     (wxID_TREECTRL, TnmsWxTree::OnSelect)
-  EVT_TREE_ITEM_RIGHT_CLICK   (wxID_TREECTRL, TnmsWxTree::OnSelect)
-  EVT_TREE_ITEM_MIDDLE_CLICK  (wxID_TREECTRL, TnmsWxTree::OnSelect)
-  EVT_TREE_DELETE_ITEM        (wxID_TREECTRL, TnmsWxTree::OnDelete)
-  EVT_SIZE                    (TnmsWxTree::OnSize)
-END_EVENT_TABLE()
-
-// EVT_TREE_ITEM_ACTIVATED
-// EVT_TREE_ITEM_SEL_CHANGED
 
 // ----------------------------------------------------------------------
 
@@ -105,11 +92,8 @@ TnmsWxTree::Create  ( wxWindow        * parent,
 
     _treeCtrl = new wxTreeCtrl(parent, wxID_TREECTRL, pos, size, treeStyle);
 
-    //_treeCtrl->SetImageList
-
     TnmsWxTreeItem * rootData = new TnmsWxTreeItem(wxEmptyString, wxEmptyString, true);
-
-    wxString  rootName = wxT("/");
+    wxString         rootName = wxT("/");
 
     _rootId = _treeCtrl->AddRoot(rootName, -1, -1, rootData);
     _treeCtrl->SetItemHasChildren(_rootId);
@@ -117,6 +101,21 @@ TnmsWxTree::Create  ( wxWindow        * parent,
     this->Expand(_rootId);
     SetInitialSize(size);
     DoResize();
+
+    Connect(wxID_TREECTRL, wxEVT_COMMAND_TREE_ITEM_EXPANDED, 
+        wxTreeEventHandler(TnmsWxTree::OnExpandItem));
+    Connect(wxID_TREECTRL, wxEVT_COMMAND_TREE_ITEM_COLLAPSED,
+        wxTreeEventHandler(TnmsWxTree::OnCollapseItem));
+    Connect(wxID_TREECTRL, wxEVT_COMMAND_TREE_SEL_CHANGED,
+        wxTreeEventHandler(TnmsWxTree::OnSelect));
+    Connect(wxID_TREECTRL, wxEVT_COMMAND_TREE_ITEM_ACTIVATED,
+        wxTreeEventHandler(TnmsWxTree::OnSelect));
+    Connect(wxID_TREECTRL, wxEVT_COMMAND_TREE_ITEM_RIGHT_CLICK,
+        wxTreeEventHandler(TnmsWxTree::OnContext));
+    Connect(wxID_TREECTRL, wxEVT_COMMAND_TREE_DELETE_ITEM,
+        wxTreeEventHandler(TnmsWxTree::OnDelete));
+    Connect(wxID_TREECTRL, wxEVT_SIZE,
+        wxSizeEventHandler(TnmsWxTree::OnSize));
 
     return true;
 }

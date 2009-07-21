@@ -110,8 +110,6 @@ class TnmsWxTree : public wxControl {
     TreeItemMap         _visible;
     TreeItemMap         _roots;
 
-
-    DECLARE_EVENT_TABLE()
 };
 
 

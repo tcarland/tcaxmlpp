@@ -23,6 +23,7 @@ class ClientFrame : public wxFrame {
     ClientFrame ( const wxString & title, 
                   TnmsTree_R     * tree );
 
+    virtual ~ClientFrame();
 
     void        OnSelect        ( wxCommandEvent & event );
     void        OnConnect       ( wxCommandEvent & event );
