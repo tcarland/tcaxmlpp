@@ -520,6 +520,10 @@ TnmsTree::removeSubscriber ( TnmsSubscriber * sub )
     for ( cIter = roots.begin(); cIter != roots.end(); ++cIter )
         _tree->depthFirstTraversal(cIter->second, eraser); 
 
+    _allSubs.erase(sub);
+    _structureSubs.erase(sub);
+    _rootSubs.erase(sub);
+
     return;
 }
 

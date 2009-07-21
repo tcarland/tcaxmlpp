@@ -45,6 +45,10 @@ BEGIN_EVENT_TABLE(TnmsWxTree, wxControl)
   EVT_TREE_ITEM_EXPANDED      (wxID_TREECTRL, TnmsWxTree::OnExpandItem)
   EVT_TREE_ITEM_COLLAPSED     (wxID_TREECTRL, TnmsWxTree::OnCollapseItem)
   EVT_TREE_SEL_CHANGED        (wxID_TREECTRL, TnmsWxTree::OnSelect)
+  EVT_TREE_ITEM_ACTIVATED     (wxID_TREECTRL, TnmsWxTree::OnSelect)
+  EVT_TREE_ITEM_RIGHT_CLICK   (wxID_TREECTRL, TnmsWxTree::OnSelect)
+  EVT_TREE_ITEM_MIDDLE_CLICK  (wxID_TREECTRL, TnmsWxTree::OnSelect)
+  EVT_TREE_DELETE_ITEM        (wxID_TREECTRL, TnmsWxTree::OnDelete)
   EVT_SIZE                    (TnmsWxTree::OnSize)
 END_EVENT_TABLE()
 
@@ -139,11 +143,13 @@ TnmsWxTree::OnCollapseItem ( wxTreeEvent & event )
     return this->Collapse(event.GetItem());
 }
 
+
 void
 TnmsWxTree::OnSize ( wxSizeEvent & WXUNUSED(event) )
 {
     this->DoResize();
 }
+
 
 void
 TnmsWxTree::OnSelect ( wxTreeEvent & event )
@@ -156,6 +162,25 @@ TnmsWxTree::OnSelect ( wxTreeEvent & event )
 
     _stree->tree->subscribe(select, _stree->notifier);
 }
+
+
+void
+TnmsWxTree::OnDelete ( wxTreeEvent & event )
+{
+    LogFacility::LogMessage("OnDelete ");
+}
+
+
+void
+TnmsWxTree::OnContext ( wxTreeEvent & event )
+{
+    wxTreeItemId     id   = event.GetItem();
+    TnmsWxTreeItem * data = (TnmsWxTreeItem*) _treeCtrl->GetItemData(id);
+
+    std::string select = StringUtils::wtocstr(data->absName.c_str());
+    LogFacility::LogMessage("OnContext " + select);
+}
+
 
 void
 TnmsWxTree::Expand ( wxTreeItemId  parentId )
@@ -266,6 +291,7 @@ TnmsWxTree::DoResize()
     _treeCtrl->SetSize(0, 0, sz.x, sz.y);
 }
 
+
 void
 TnmsWxTree::SyncTree()
 {
@@ -285,7 +311,7 @@ TnmsWxTree::SyncTree()
     TreeRemoveSet::iterator  rIter;
     TreeItemMap::iterator    vIter;
 
-    wxString         name, parentname;
+    wxString         name;
     wxTreeItemId     pid, id;
     TnmsWxTreeItem * data = NULL;
 
@@ -299,9 +325,15 @@ TnmsWxTree::SyncTree()
             continue;
         }
 
-        parentname = StringUtils::ctowstr(node->getParent()->getAbsoluteName());
+        if ( ! node->getParent() ) {  
+            LogFacility::LogMessage("Add has no parent!");
+            // recursively add? setuproot?
+            continue;
+        }
 
-        vIter = _visible.find(parentname);
+        wxString parentname;
+        parentname = StringUtils::ctowstr(node->getParent()->getAbsoluteName());
+        vIter      = _visible.find(parentname);
 
         if ( vIter != _visible.end() ) 
         {
@@ -313,9 +345,9 @@ TnmsWxTree::SyncTree()
 
             LogFacility::LogMessage("Add " + node->getAbsoluteName());
 
-            _treeCtrl->SetItemHasChildren(id);
+            //_treeCtrl->SetItemHasChildren(id);
 
-            _visible[data->name] = id;
+            _visible[data->absName] = id;
         }
         adds.erase(nIter++);
     }
@@ -337,19 +369,40 @@ TnmsWxTree::SyncTree()
     for ( nIter = updates.begin(); nIter != updates.end(); ) 
     {
         TnmsTree::Node * node = *nIter;
+        wxString parentname;
 
-        name  = StringUtils::ctowstr(node->getAbsoluteName());
-        vIter = _visible.find(name);
+        LogFacility::LogMessage("Update " + node->getAbsoluteName());
 
-        if ( vIter != _visible.end() )
+        name   = StringUtils::ctowstr(node->getAbsoluteName());
+        vIter  = _visible.find(name);
+
+        if ( vIter == _visible.end() ) 
+        {
+            if ( node->getParent() )
+                parentname = StringUtils::ctowstr(node->getParent()->getAbsoluteName());
+            
+            vIter = _visible.find(parentname);
+
+            if ( vIter != _visible.end() ) {
+                data = new TnmsWxTreeItem(StringUtils::ctowstr(node->getAbsoluteName()), 
+                                          StringUtils::ctowstr(node->getName()), true);
+                data->metric  = node->getValue().metric;
+                _treeCtrl->SetItemHasChildren(vIter->second);
+                id    = _treeCtrl->AppendItem(vIter->second, data->name, -1, -1, data);
+
+                _visible[data->absName] = id;
+            }
+        } 
+        else 
         {
             data = (TnmsWxTreeItem*) _treeCtrl->GetItemData(vIter->second);
             data->metric = node->getValue().metric;
-            LogFacility::LogMessage("Update " + node->getAbsoluteName());
         }
 
         updates.erase(nIter++);
     }
+
+    _stree->notifier->unlock();
 
     return;
 }
@@ -360,6 +413,7 @@ TnmsWxTree::SetTnmsTree ( TnmsTree_R * tree )
 {
     _stree = tree;
 }
+
 
 TnmsTree_R*
 TnmsWxTree::GetTnmsTree()

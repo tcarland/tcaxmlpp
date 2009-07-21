@@ -68,8 +68,10 @@ class TnmsWxTree : public wxControl {
 
     void          OnSize          ( wxSizeEvent & event );
     void          OnSelect        ( wxTreeEvent & event );
+    void          OnDelete        ( wxTreeEvent & event );
     void          OnExpandItem    ( wxTreeEvent & event );
     void          OnCollapseItem  ( wxTreeEvent & event );
+    void          OnContext       ( wxTreeEvent & event );
 
 
     wxTreeCtrl*   GetTreeCtrl()   { return _treeCtrl; }
