@@ -35,7 +35,12 @@ class TnmsWxTreeItem : public wxTreeItemData {
 
 };
 
-#define wxID_TREECTRL  7000
+
+#define TNMS_ID_TREE     7000
+#define TNMS_ID_WXTREE   7001
+#define TNMS_ID_CONNECT  7010
+#define TNMS_ID_DISCONN  7011
+
 
 
 
@@ -66,7 +71,8 @@ class TnmsWxTree : public wxControl {
     void          Init();
 
 
-    void          OnSize          ( wxSizeEvent & event );
+    void          OnSize          ( wxSizeEvent     & event );
+
     void          OnSelect        ( wxTreeEvent & event );
     void          OnDelete        ( wxTreeEvent & event );
     void          OnExpandItem    ( wxTreeEvent & event );

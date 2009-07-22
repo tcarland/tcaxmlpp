@@ -92,7 +92,7 @@ TnmsWxTree::Create  ( wxWindow        * parent,
     treeStyle      |= wxTR_HIDE_ROOT;
     treeStyle      |= style;
 
-    _treeCtrl = new wxTreeCtrl(parent, wxID_TREECTRL, pos, size, treeStyle);
+    _treeCtrl = new wxTreeCtrl(parent, TNMS_ID_WXTREE, pos, size, treeStyle);
 
     TnmsWxTreeItem * rootData = new TnmsWxTreeItem(wxEmptyString, wxEmptyString, true);
     wxString         rootName = wxT("/");
@@ -104,20 +104,7 @@ TnmsWxTree::Create  ( wxWindow        * parent,
     SetInitialSize(size);
     DoResize();
 
-    Connect(wxID_TREECTRL, wxEVT_COMMAND_TREE_ITEM_EXPANDED, 
-        wxTreeEventHandler(TnmsWxTree::OnExpandItem));
-    Connect(wxID_TREECTRL, wxEVT_COMMAND_TREE_ITEM_COLLAPSED,
-        wxTreeEventHandler(TnmsWxTree::OnCollapseItem));
-    Connect(wxID_TREECTRL, wxEVT_COMMAND_TREE_SEL_CHANGED,
-        wxTreeEventHandler(TnmsWxTree::OnSelect));
-    Connect(wxID_TREECTRL, wxEVT_COMMAND_TREE_ITEM_ACTIVATED,
-        wxTreeEventHandler(TnmsWxTree::OnSelect));
-    Connect(wxID_TREECTRL, wxEVT_COMMAND_TREE_ITEM_RIGHT_CLICK,
-        wxTreeEventHandler(TnmsWxTree::OnContext));
-    Connect(wxID_TREECTRL, wxEVT_COMMAND_TREE_DELETE_ITEM,
-        wxTreeEventHandler(TnmsWxTree::OnDelete));
-    Connect(wxID_TREECTRL, wxEVT_SIZE,
-        wxSizeEventHandler(TnmsWxTree::OnSize));
+    Connect(TNMS_ID_TREE, wxEVT_SIZE, wxSizeEventHandler(TnmsWxTree::OnSize));
 
     return true;
 }

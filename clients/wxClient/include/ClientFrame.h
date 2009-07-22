@@ -12,9 +12,6 @@
 using namespace tnmsCore;
 
 
-#define TNMS_ID_CONNECT  7010
-#define TNMS_ID_DISCONN  7011
-
 
 class ClientFrame : public wxFrame {
 
@@ -25,13 +22,17 @@ class ClientFrame : public wxFrame {
 
     virtual ~ClientFrame();
 
-    void        OnSelect        ( wxCommandEvent & event );
-    void        OnConnect       ( wxCommandEvent & event );
-    void        OnDisconnect    ( wxCommandEvent & event );
-    void        OnQuit          ( wxCommandEvent & event );
+    void          OnSelect        ( wxCommandEvent & event );
+    void          OnConnect       ( wxCommandEvent & event );
+    void          OnDisconnect    ( wxCommandEvent & event );
+    void          OnQuit          ( wxCommandEvent & event );
 
-    void        OnTimer         ( wxTimerEvent & event );
+    void          OnTimer         ( wxTimerEvent & event );
 
+    void          OnDelete        ( wxCommandEvent & event );
+    void          OnExpandItem    ( wxCommandEvent & event );
+    void          OnCollapseItem  ( wxCommandEvent & event );
+    void          OnContext       ( wxCommandEvent & event );
   protected:
 
     void        initMenuBar();

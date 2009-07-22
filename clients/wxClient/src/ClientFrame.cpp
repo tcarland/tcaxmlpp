@@ -28,25 +28,37 @@ ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
     wxSplitterWindow * spl1 = new wxSplitterWindow(this, -1); 
     wxSplitterWindow * spl2 = new wxSplitterWindow(spl1, -1);
 
-    _tree   = new TnmsWxTree(spl1, wxID_TREECTRL, wxT("tcanms"), 
+    _tree   = new TnmsWxTree(spl1, TNMS_ID_TREE, wxT("tcanms"), 
                 wxPoint(-1, -1), spl1->GetSize());
     _tree->SetTnmsTree(_stree);
 
     spl1->SplitVertically(_tree, spl2);
-    
-    //_gdir   = new wxGenericDirCtrl(spl2, -1, wxT("/home/"),
-                //wxPoint(-1, -1), wxSize(-1, -1), wxDIRCTRL_DIR_ONLY);
     
     _lCtrl1 = new wxListCtrl(spl2, -1, wxPoint(-1, -1), wxSize(-1, -1), wxLC_LIST);
     _lCtrl2 = new wxListCtrl(spl2, -1, wxPoint(-1, -1), wxSize(-1, -1), wxLC_LIST);
     
     spl2->SplitHorizontally(_lCtrl1, _lCtrl2);
 
-    //Connect(_gdir->GetTreeCtrl()->GetId(), wxEVT_COMMAND_TREE_SEL_CHANGED, 
-        //wxCommandEventHandler(ClientFrame::OnSelect));
+    //Connect(TNMS_ID_TREE, wxEVT_SIZE,
+        //wxSizeEventHandler(TnmsWxTree::OnSize));
+    Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_EXPANDED, 
+        wxCommandEventHandler(ClientFrame::OnExpandItem));
+    Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_COLLAPSED,
+        wxCommandEventHandler(ClientFrame::OnCollapseItem));
+    Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_COLLAPSING,
+        wxCommandEventHandler(ClientFrame::OnCollapseItem));
+    Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_SEL_CHANGED,
+        wxCommandEventHandler(ClientFrame::OnSelect));
+    Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_ACTIVATED,
+        wxCommandEventHandler(ClientFrame::OnSelect));
+    Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_RIGHT_CLICK,
+        wxCommandEventHandler(ClientFrame::OnContext));
+    Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_DELETE_ITEM,
+        wxCommandEventHandler(ClientFrame::OnDelete));
+
 
     this->initMenuBar();
-
+ 
     Center();
 }
 
@@ -68,9 +80,12 @@ ClientFrame::initMenuBar()
 
     SetMenuBar(_menuBar);
 
-    Connect(TNMS_ID_CONNECT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(ClientFrame::OnConnect));
-    Connect(TNMS_ID_DISCONN, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(ClientFrame::OnDisconnect));
-    Connect(wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(ClientFrame::OnQuit));
+    Connect(TNMS_ID_CONNECT, wxEVT_COMMAND_MENU_SELECTED, 
+        wxCommandEventHandler(ClientFrame::OnConnect));
+    Connect(TNMS_ID_DISCONN, wxEVT_COMMAND_MENU_SELECTED, 
+        wxCommandEventHandler(ClientFrame::OnDisconnect));
+    Connect(wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, 
+        wxCommandEventHandler(ClientFrame::OnQuit));
 }
 
 
@@ -170,5 +185,35 @@ ClientFrame::OnTimer ( wxTimerEvent & event )
 {    
     _tree->SyncTree();
 }
+
+
+
+void
+ClientFrame::OnExpandItem ( wxCommandEvent & event )
+{
+    LogFacility::LogMessage("ClientFrame::OnExpandItem");
+}
+
+
+void
+ClientFrame::OnCollapseItem ( wxCommandEvent & event )
+{
+    LogFacility::LogMessage("ClientFrame::OnCollapseItem");
+}
+
+
+void
+ClientFrame::OnDelete ( wxCommandEvent & event )
+{
+    LogFacility::LogMessage("ClientFrame::OnDelete ");
+}
+
+
+void
+ClientFrame::OnContext ( wxCommandEvent & event )
+{
+    LogFacility::LogMessage("ClientFrame::OnContext ");
+}
+
 
 
