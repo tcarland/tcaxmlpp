@@ -21,7 +21,7 @@ using namespace tcanetpp;
 // ----------------------------------------------------------------------
 
 ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
-    : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(500,300)),
+    : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(900,500)),
       _stree(tree),
       _tree(NULL)
 {
@@ -34,31 +34,35 @@ ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
 
     spl1->SplitVertically(_tree, spl2);
     
-    _lCtrl1 = new wxListCtrl(spl2, -1, wxPoint(-1, -1), wxSize(-1, -1), wxLC_LIST);
+    //_lCtrl1 = new wxListCtrl(spl2, -1, wxPoint(-1, -1), wxSize(-1, -1), wxLC_LIST);
+    _mlist  = new MetricListView(spl2, TNMS_ID_MLIST,  wxPoint(-1, -1), wxSize(-1, -1), 
+                wxSUNKEN_BORDER);
     _lCtrl2 = new wxListCtrl(spl2, -1, wxPoint(-1, -1), wxSize(-1, -1), wxLC_LIST);
     
-    spl2->SplitHorizontally(_lCtrl1, _lCtrl2);
+    spl2->SplitHorizontally(_mlist, _lCtrl2);
+    //spl2->SplitHorizontally(_lCtrl1, _lCtrl2);
 
     //Connect(TNMS_ID_TREE, wxEVT_SIZE,
         //wxSizeEventHandler(TnmsWxTree::OnSize));
+    //Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_EXPANDED, 
+        //wxCommandEventHandler(ClientFrame::OnExpandItem));
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_EXPANDED, 
-        wxCommandEventHandler(ClientFrame::OnExpandItem));
-    Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_COLLAPSED,
-        wxCommandEventHandler(ClientFrame::OnCollapseItem));
+        wxTreeEventHandler(TnmsWxTree::OnExpandItem));
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_COLLAPSING,
-        wxCommandEventHandler(ClientFrame::OnCollapseItem));
+        wxTreeEventHandler(TnmsWxTree::OnCollapseItem));
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_SEL_CHANGED,
         wxCommandEventHandler(ClientFrame::OnSelect));
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_ACTIVATED,
-        wxCommandEventHandler(ClientFrame::OnSelect));
+        wxTreeEventHandler(TnmsWxTree::OnSelect));
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_RIGHT_CLICK,
-        wxCommandEventHandler(ClientFrame::OnContext));
+        wxTreeEventHandler(TnmsWxTree::OnContext));
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_DELETE_ITEM,
-        wxCommandEventHandler(ClientFrame::OnDelete));
+        wxTreeEventHandler(TnmsWxTree::OnDelete));
 
 
     this->initMenuBar();
- 
+
+    CreateStatusBar(3);
     Center();
 }
 

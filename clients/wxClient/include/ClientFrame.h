@@ -7,6 +7,7 @@
 #include <wx/wx.h>
 
 #include "TnmsWxTree.h"
+#include "MetricListView.h"
 
 #include "TnmsClient.h"
 using namespace tnmsCore;
@@ -59,6 +60,8 @@ class ClientFrame : public wxFrame {
 
     TnmsTree_R *         _stree;
     TnmsWxTree *         _tree;
+    
+    MetricListView *     _mlist;
 
     ClientMap            _clientMap;
 

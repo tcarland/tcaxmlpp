@@ -113,14 +113,15 @@ TnmsWxTree::Create  ( wxWindow        * parent,
 void
 TnmsWxTree::OnExpandItem ( wxTreeEvent & event )
 {
+    /*
     wxTreeItemId  parentId = event.GetItem();
 
     if ( ! _rootId.IsOk() )
         _rootId = _treeCtrl->GetRootItem();
-
+    */
     LogFacility::LogMessage("TnmsWxTree::OnExpandItem");
 
-    return this->Expand(parentId);
+    //return this->Expand(parentId);
 }
 
 
@@ -173,54 +174,14 @@ TnmsWxTree::OnContext ( wxTreeEvent & event )
 void
 TnmsWxTree::Expand ( wxTreeItemId  parentId )
 {
-    std::string  absoluteName;
 
-    TnmsWxTreeItem * data = (TnmsWxTreeItem*) _treeCtrl->GetItemData(parentId);
-
-    LogFacility::LogMessage("TnmsWxTree::Expand");
-    if ( data->isExpanded() )
-        return;
-
-    data->isexpanded = true;
-
-    if ( parentId == _treeCtrl->GetRootItem())
-    {
-        this->SetupRoot();
-        return;
-    }
-
-    absoluteName = StringUtils::wtocstr(data->absName.c_str());
-    _stree->tree->subscribe(absoluteName, (TnmsSubscriber*) _stree->notifier);
-
-    _visible[data->absName] = parentId;
-
-    return;
 }
 
 
 void
 TnmsWxTree::Collapse ( wxTreeItemId  parentId )
 {
-    wxTreeItemId  child;
 
-    TnmsWxTreeItem * data = (TnmsWxTreeItem*) _treeCtrl->GetItemData(parentId);
-
-    if ( ! data->isExpanded() )
-        return;
-
-    data->isexpanded = false;
-
-    wxTreeItemIdValue  cookie;
-
-    child = _treeCtrl->GetFirstChild(parentId, cookie);
-    while ( child.IsOk() )
-    {
-        _treeCtrl->Delete(child);
-        child = _treeCtrl->GetFirstChild(parentId, cookie);
-    }
-
-    if ( parentId != _treeCtrl->GetRootItem())
-        _treeCtrl->Collapse(parentId);
 }
 
 
@@ -328,6 +289,9 @@ TnmsWxTree::addItems ( wxString & absoluteName )
         data  = new TnmsWxTreeItem(pname, *aIter, true);
         pid   = _treeCtrl->AppendItem(pid, *aIter, -1, -1, data);
         _treeCtrl->SetItemHasChildren(pid);
+
+        if ( pname.empty() )
+            break;
 
         std::string  pstr  = StringUtils::wtocstr(pname.c_str());
         LogFacility::LogMessage("addItems() adding " + pstr);
