@@ -88,6 +88,7 @@ class TnmsWxTree : public wxControl {
 
     void          SyncTree();
 
+    void          addItems        ( wxString & absoluteName );
 
   public:
 

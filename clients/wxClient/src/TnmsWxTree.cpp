@@ -1,5 +1,7 @@
 #define _TNMSWXTREE_CPP_
 
+#include <iostream> 
+
 #include "TnmsWxTree.h"
 #include "ClientSubscriber.h"
 
@@ -246,10 +248,8 @@ TnmsWxTree::SetupRoot()
 
     _stree->tree->getRootNames(troots);
 
-    if ( troots.size() > 0 )
-        LogFacility::LogMessage("SetupRoot()");
-    else
-        _stree->tree->subscribe("/", _stree->notifier);
+    if ( troots.size() == 0 )
+        _stree->tree->subscribe("*", _stree->notifier);
 
     TreeItemMap  rootsold = _roots;
     TreeItemMap::iterator    tIter;
@@ -265,7 +265,7 @@ TnmsWxTree::SetupRoot()
 
             LogFacility::LogMessage("Adding root " + *sIter);
             _treeCtrl->SetItemHasChildren(id);
-            _stree->tree->subscribe((*sIter + "/"), _stree->notifier);
+            //_stree->tree->subscribe((*sIter + "/"), _stree->notifier);
 
             _roots[tname] = id;
             _visible[tname] = id;
@@ -290,13 +290,73 @@ TnmsWxTree::DoResize()
     _treeCtrl->SetSize(0, 0, sz.x, sz.y);
 }
 
+void
+TnmsWxTree::addItems ( wxString & absoluteName )
+{
+    wxString  pname, name;
+    int       indx;
+
+    std::wstring delim = L"/";
+
+    TnmsWxTreeItem * data = NULL;
+    wxTreeItemId     pid;
+
+    std::list<wxString>            addlist;
+    std::list<wxString>::iterator  aIter;
+    TreeItemMap::iterator          vIter = _visible.end();
+
+    pname = absoluteName;
+    indx  = StringUtils::lastIndexOf(absoluteName.c_str(), delim);
+
+    if ( indx < 0 && absoluteName.length() > 0 )
+        addlist.push_back(absoluteName);
+
+    while ( indx > 0 ) {
+        pname = pname.substr(0,indx);
+        name  = pname.substr(indx+1);
+
+        vIter = _visible.find(wxString(pname));
+
+        if ( vIter == _visible.end() ) {
+            indx = StringUtils::lastIndexOf(pname.c_str(), delim);
+            addlist.push_back(name);
+        } else 
+            break;
+    }
+
+    pname = wxT("");
+    pid   = _rootId;
+
+    if ( vIter != _visible.end() ) {
+        pname = vIter->first;
+        pid   = vIter->second;
+    }
+
+    for ( aIter = addlist.begin(); aIter != addlist.end(); ++aIter )
+    {
+        if ( ! pname.empty() )
+            pname = pname + delim + *aIter;
+        else
+            pname = *aIter;
+        data  = new TnmsWxTreeItem(pname, *aIter, true);
+        pid   = _treeCtrl->AppendItem(pid, *aIter, -1, -1, data);
+        _treeCtrl->SetItemHasChildren(pid);
+
+        _visible[pname] = pid;
+    }
+
+    return; 
+}
+
 
 void
 TnmsWxTree::SyncTree()
 {
     ClientSubscriber * notifier = _stree->notifier;
 
-    this->SetupRoot();
+    //this->SetupRoot();
+    if ( _visible.empty() )
+        _stree->tree->subscribe("*", _stree->notifier);
 
     if ( ! notifier->haveUpdates() )
         return;
@@ -318,6 +378,7 @@ TnmsWxTree::SyncTree()
     for ( nIter = adds.begin(); nIter != adds.end(); )
     {
         TnmsTree::Node * node = *nIter;
+        wxString         name = StringUtils::ctowstr(node->getAbsoluteName());
 
         if ( node->getValue().erase ) {
             adds.erase(nIter++);
@@ -326,13 +387,13 @@ TnmsWxTree::SyncTree()
 
         if ( ! node->getParent() ) {  
             LogFacility::LogMessage("Add has no parent!");
-            // recursively add? setuproot?
+            this->addItems(name);
+            adds.erase(nIter++);
             continue;
         }
 
-        wxString parentname;
-        parentname = StringUtils::ctowstr(node->getParent()->getAbsoluteName());
-        vIter      = _visible.find(parentname);
+        name   = StringUtils::ctowstr(node->getParent()->getAbsoluteName());
+        vIter  = _visible.find(name);
 
         if ( vIter != _visible.end() ) 
         {
@@ -344,10 +405,11 @@ TnmsWxTree::SyncTree()
 
             LogFacility::LogMessage("Add " + node->getAbsoluteName());
 
-            //_treeCtrl->SetItemHasChildren(id);
-
             _visible[data->absName] = id;
+        } else {
+            this->addItems(name);
         }
+
         adds.erase(nIter++);
     }
 
@@ -358,8 +420,10 @@ TnmsWxTree::SyncTree()
 
         vIter = _visible.find(name);
 
-        if ( vIter != _visible.end() )
+        if ( vIter != _visible.end() ) {
             _treeCtrl->Delete(vIter->second);
+            _visible.erase(vIter);
+        }
 
         removes.erase(rIter++);
     }
@@ -368,7 +432,7 @@ TnmsWxTree::SyncTree()
     for ( nIter = updates.begin(); nIter != updates.end(); ) 
     {
         TnmsTree::Node * node = *nIter;
-        wxString parentname;
+        wxString  parentname  = wxT("/");
 
         LogFacility::LogMessage("Update " + node->getAbsoluteName());
 
@@ -390,6 +454,9 @@ TnmsWxTree::SyncTree()
                 id    = _treeCtrl->AppendItem(vIter->second, data->name, -1, -1, data);
 
                 _visible[data->absName] = id;
+            } else {
+                LogFacility::LogMessage("addItems " + node->getAbsoluteName());
+                this->addItems(name);
             }
         } 
         else 
