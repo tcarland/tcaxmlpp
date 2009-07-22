@@ -342,6 +342,9 @@ TnmsWxTree::addItems ( wxString & absoluteName )
         pid   = _treeCtrl->AppendItem(pid, *aIter, -1, -1, data);
         _treeCtrl->SetItemHasChildren(pid);
 
+        std::string  pstr  = StringUtils::wtocstr(pname.c_str());
+        LogFacility::LogMessage("addItems() adding " + pstr);
+
         _visible[pname] = pid;
     }
 
