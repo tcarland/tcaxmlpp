@@ -21,7 +21,7 @@ using namespace tcanetpp;
 // ----------------------------------------------------------------------
 
 ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
-    : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(900,500)),
+    : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(750,500)),
       _stree(tree),
       _tree(NULL)
 {
@@ -51,11 +51,11 @@ ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_COLLAPSING,
         wxTreeEventHandler(TnmsWxTree::OnCollapseItem));
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_SEL_CHANGED,
-        wxCommandEventHandler(ClientFrame::OnSelect));
-    Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_ACTIVATED,
-        wxTreeEventHandler(TnmsWxTree::OnSelect));
+        wxTreeEventHandler(ClientFrame::OnSelect));
+    //Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_ACTIVATED,
+        //wxTreeEventHandler(TnmsWxTree::OnSelect));
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_RIGHT_CLICK,
-        wxTreeEventHandler(TnmsWxTree::OnContext));
+        wxTreeEventHandler(ClientFrame::OnContext));
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_DELETE_ITEM,
         wxTreeEventHandler(TnmsWxTree::OnDelete));
 
@@ -149,31 +149,14 @@ ClientFrame::OnDisconnect ( wxCommandEvent & event )
 
 
 void
-ClientFrame::OnSelect ( wxCommandEvent & event )
+ClientFrame::OnSelect ( wxTreeEvent & event )
 {
-    /*
-    wxString  filename, path;
-    bool      cont;
-    int       i;
+    wxTreeItemId     id   = event.GetItem();
+    TnmsWxTreeItem * data = _tree->GetItemData(id);
 
-    path  = _gdir->GetPath();
-    i     = 0;
-    wxDir dir(path); 
+    _mlist->AddMetricItem(&data->metric);
 
-    cont  = dir.GetFirst(&filename, wxEmptyString, wxDIR_FILES);
-
-    _lCtrl1->ClearAll();
-
-    while ( cont ) 
-    {
-        _lCtrl1->InsertItem(i, filename);
-        cont = dir.GetNext(&filename);
-        i++;
-    }
-
-    return;    
-    */
-
+    LogFacility::LogMessage("ClientFrame::OnSelect");
 }
 
 
@@ -214,7 +197,7 @@ ClientFrame::OnDelete ( wxCommandEvent & event )
 
 
 void
-ClientFrame::OnContext ( wxCommandEvent & event )
+ClientFrame::OnContext ( wxTreeEvent & event )
 {
     LogFacility::LogMessage("ClientFrame::OnContext ");
 }

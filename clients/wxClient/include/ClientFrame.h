@@ -23,7 +23,7 @@ class ClientFrame : public wxFrame {
 
     virtual ~ClientFrame();
 
-    void          OnSelect        ( wxCommandEvent & event );
+    void          OnSelect        ( wxTreeEvent    & event );
     void          OnConnect       ( wxCommandEvent & event );
     void          OnDisconnect    ( wxCommandEvent & event );
     void          OnQuit          ( wxCommandEvent & event );
@@ -33,7 +33,7 @@ class ClientFrame : public wxFrame {
     void          OnDelete        ( wxCommandEvent & event );
     void          OnExpandItem    ( wxCommandEvent & event );
     void          OnCollapseItem  ( wxCommandEvent & event );
-    void          OnContext       ( wxCommandEvent & event );
+    void          OnContext       ( wxTreeEvent    & event );
   protected:
 
     void        initMenuBar();

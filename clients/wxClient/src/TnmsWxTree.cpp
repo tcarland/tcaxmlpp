@@ -110,6 +110,13 @@ TnmsWxTree::Create  ( wxWindow        * parent,
 }
 
 
+TnmsWxTreeItem*
+TnmsWxTree::GetItemData ( wxTreeItemId  id )
+{
+    return( (TnmsWxTreeItem*) _treeCtrl->GetItemData(id) );
+}
+
+
 void
 TnmsWxTree::OnExpandItem ( wxTreeEvent & event )
 {
@@ -293,8 +300,8 @@ TnmsWxTree::addItems ( wxString & absoluteName )
         if ( pname.empty() )
             break;
 
-        std::string  pstr  = StringUtils::wtocstr(pname.c_str());
-        LogFacility::LogMessage("addItems() adding " + pstr);
+        //std::string  pstr  = StringUtils::wtocstr(pname.c_str());
+        //LogFacility::LogMessage("addItems() adding " + pstr);
 
         _visible[pname] = pid;
     }

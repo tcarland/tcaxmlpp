@@ -82,6 +82,8 @@ class TnmsWxTree : public wxControl {
 
     wxTreeCtrl*   GetTreeCtrl()   { return _treeCtrl; }
 
+    TnmsWxTreeItem* GetItemData   ( wxTreeItemId     id );
+
     wxTreeItemId  FindChild       ( wxTreeItemId     parentId, 
                                     const wxString & path,
                                     bool             done );

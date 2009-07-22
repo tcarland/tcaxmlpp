@@ -3,6 +3,8 @@
 
 #include <wx/listctrl.h>
 
+#include "ClientSubscriber.h"
+
 
 #define TNMS_ID_MLIST  7005
 
@@ -20,7 +22,9 @@ class MetricListView : public wxListCtrl {
 
 
     void        Init();
+
     void        AddDefaultItem();
+    void        AddMetricItem   ( TnmsMetric * metric );
 
 
   private:

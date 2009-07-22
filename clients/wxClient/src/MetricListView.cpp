@@ -69,5 +69,12 @@ MetricListView::AddDefaultItem()
 }
 
 
+void
+MetricListView::AddMetricItem ( TnmsMetric * metric )
+{
+
+}
+
 
 // _METRICLISTVIEW_CPP_
+
