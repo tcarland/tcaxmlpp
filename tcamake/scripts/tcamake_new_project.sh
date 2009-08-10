@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #
-VERSION="0.1"
+VERSION="0.2"
 AUTHOR="tcarland@gmail.com"
 MYNAME=${0/#.\//}
 
