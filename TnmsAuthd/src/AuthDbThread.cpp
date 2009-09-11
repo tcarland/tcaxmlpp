@@ -82,7 +82,7 @@ AuthDbThread::authenticate ( const std::string & username,
                              std::string       & ticket )
 {
     eAuthType result = AUTH_NO_RESULT;
-    bool      tick   = false;
+    bool      gotit  = false;
     int       retry  = 0;
 
     SqlSessionInterface * sql = _dbpool->acquire();
@@ -111,10 +111,10 @@ AuthDbThread::authenticate ( const std::string & username,
     {
         _ticketGen->randomString(ticket, TNMS_TICKET_LENGTH);
 
-        tick = _ticketDb->insert(username, ticket, ipaddr, now,
+        gotit = _ticketDb->insert(username, ticket, ipaddr, now,
             TICKET_REFRESH_INTERVAL + TICKET_GRACE_PERIOD);
 
-        if ( tick )
+        if ( gotit )
             break;
     }
 
@@ -162,7 +162,19 @@ AuthDbThread::isAuthentic ( const std::string & username,
         reply.authResult(AUTH_INVALID);
 
     // add user authorization list to result
+    if ( result )
+    {
+        TnmsDbUser * user = this->findUser(username);
+        if ( user != NULL )
+        {
+            TnmsDbFilter * filter = this->findAuthFilter(user->gid);
+            std::string    fstr   = this->createFilter(filter);
+            reply.authReason(fstr);
+        }
 
+        if ( ! user->config.empty() )
+            reply.authData(user->config);
+    }
 
     LogFacility::Message  logmsg;
     logmsg << "AuthDbThread::isAuthentic() " << username << "@"
@@ -171,6 +183,7 @@ AuthDbThread::isAuthentic ( const std::string & username,
 
     return result;
 }
+
 
 //----------------------------------------------------------------
 
@@ -190,6 +203,7 @@ AuthDbThread::expireTicket ( const std::string & username,
                              const std::string & ipaddr )
 {
     // clear User object from cache
+    this->clearUser(username);
     return _ticketDb->expire(username, ticket, ipaddr);
 }
 
@@ -238,7 +252,6 @@ AuthDbThread::authenticateUser ( TnmsDbUser        * user,
 
 //----------------------------------------------------------------
 
-
 TnmsDbUser*
 AuthDbThread::findUser ( const std::string & username )
 {
@@ -253,6 +266,21 @@ AuthDbThread::findUser ( const std::string & username )
     return user;
 }
 
+
+//----------------------------------------------------------------
+
+void
+AuthDbThread::clearUser ( const std::string & username ) 
+{
+    ThreadAutoMutex  mutex(_lock);
+
+    AuthUserMap::iterator  uIter = _userMap.find(username);
+
+    if ( uIter != _userMap.end() )
+        _userMap.erase(uIter);
+
+    return;
+}
 
 //----------------------------------------------------------------
 
@@ -286,12 +314,19 @@ AuthDbThread::queryUser ( SqlSessionInterface * session,
     Result::iterator  rIter = res.begin();
     row  = (Row) *rIter;
     user = new TnmsDbUser();
-
+    user->username    = username;
     user->uid         = SqlSession::fromString<uint32_t>(std::string(row[0]));
     user->gid         = SqlSession::fromString<uint32_t>(std::string(row[1]));
     user->internal    = SqlSession::fromString<bool>(std::string(row[4]));
     user->auth_method = std::string(row[6]);
     user->auth_bin    = std::string(row[7]);
+
+    this->_userMap[username] = user;
+
+    // pre-cache user data
+    this->queryUserConfig(session, user);
+    this->queryAuthFilter(session, user->gid);
+
 
     return user;
 }
@@ -570,6 +605,26 @@ AuthDbThread::dbClearTickets ( SqlSessionInterface * session, StringList & stale
     }
 
     return true;
+}
+
+
+std::string
+AuthDbFilter::createFilter ( TnmsDbFilter * filter )
+{
+    std::ostringstream  fstr;
+
+    if ( filter->isInclude )
+        fstr << "I";
+    else
+        fstr << "E";
+
+    StringList & alist  = filter->authorizations;
+    StringList::iterator  sIter;
+
+    for ( sIter = alist.begin(); sIter != alist.end(); ++sIter )
+        fstr << ":" << *sIter;
+
+    return fstr.str();
 }
 
 

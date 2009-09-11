@@ -78,6 +78,9 @@ class AuthDbThread : public tcanetpp::Thread {
                                      const std::string   & password );
 
     TnmsDbUser*   findUser         ( const std::string   & username );
+    void          clearUser        ( const std::string   & username );
+
+    TnmsDbFilter* findAuthFilter   ( uint32_t gid );
 
 
     /*   Database methods */
@@ -110,6 +113,10 @@ class AuthDbThread : public tcanetpp::Thread {
                                      const time_t        & now );
     bool          dbClearTickets   ( SqlSessionInterface * session,
                                      StringList          & stales );
+
+  protected:
+
+    std::string   createFilter     ( TnmsDbFilter * filter );
 
 
   private:

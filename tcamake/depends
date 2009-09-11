@@ -104,6 +104,14 @@ LFLAGS       += -L$(TCANETPP_HOME)/lib
 LIBS         += -ltcanetpp
 endif
 
+ifdef NEED_TCACMDBUF
+TCANETPP_HOME = $(TOPDIR)/common/tcanetpp
+INCLUDES     += -I$(TCANETPP_HOME)/include
+LFLAGS       += -L$(TCANETPP_HOME)/lib
+LIBS         += -lcmdbuf
+endif
+
+
 ifdef NEED_TCASQLPP
 TCASQL_HOME = $(TOPDIR)/common/tcasqlpp
 INCLUDES   += -I$(TCASQL_HOME)/include

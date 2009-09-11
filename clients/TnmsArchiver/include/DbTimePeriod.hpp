@@ -61,5 +61,6 @@ typedef std::set<DbTimePeriod>   PeriodSet;
 
 } // namespace
 
+
 #endif  //  _TNMSARCHIVE_ARCHIVETIMEPERIOD_HPP_
 

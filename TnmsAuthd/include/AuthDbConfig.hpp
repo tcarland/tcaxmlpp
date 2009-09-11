@@ -86,6 +86,13 @@ struct TnmsDbUser {
         uid(0), gid(0), authtype_id(0),
         internal(false), isAgent(false), last(0)
     {}
+
+    TnmsDbUser ( const std::string & username_ ) :
+        username(username_),
+        uid(0), gid(0), authtype_id(0),
+        internal(false), isAgent(false), last(0)
+    {}
+
 };
 
 

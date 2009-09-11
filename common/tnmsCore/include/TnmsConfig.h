@@ -168,9 +168,9 @@ class TnmsConfigHandler {
 
   protected:
 
-    bool                parseRoot    ( XmlNode * node );
-    bool                parseServer  ( XmlNode * node );
-    bool                parseClient  ( XmlNode * node );
+    virtual bool        parseRoot    ( XmlNode * node );
+    virtual bool        parseServer  ( XmlNode * node );
+    virtual bool        parseClient  ( XmlNode * node );
 
     XmlNode*            findRootNode ( XmlNode * node, std::string & name );
 
