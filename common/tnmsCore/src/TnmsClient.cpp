@@ -19,7 +19,7 @@ namespace tnmsCore {
 TnmsClient::TnmsClient ( TnmsTree * tree )
     : TnmsSocket(new TnmsMessageHandler(tree, this)),
       _tree(tree),
-      _notifier(new TnmsSubscriber()),
+      _treeNotifier(new TnmsSubscriber()),
       _isAgent(false),
       _isMirror(true)
 {
@@ -30,7 +30,7 @@ TnmsClient::TnmsClient ( TnmsTree * tree, AuthClient * auth,
                          BufferedSocket * sock, bool isAgent )
     : TnmsSocket(sock, new TnmsMessageHandler(tree, this)),
       _tree(tree),
-      _notifier(new TnmsSubscriber()),
+      _treeNotifier(new TnmsSubscriber()),
       _auth(auth),
       _isAgent(isAgent),
       _isMirror(false)
@@ -40,7 +40,7 @@ TnmsClient::TnmsClient ( TnmsTree * tree, AuthClient * auth,
 
 TnmsClient::~TnmsClient()
 {
-    delete _notifier;
+    delete _treeNotifier;
 }
 
 
@@ -63,7 +63,7 @@ TnmsClient::send ( const time_t & now )
         return wt;
 
     // ADDs
-    TreeUpdateSet & adds = _notifier->adds;
+    TreeUpdateSet & adds = _treeNotifier->adds;
     qsz = adds.size();
     for ( uIter = adds.begin(); uIter != adds.end(); ) 
     {
@@ -88,7 +88,7 @@ TnmsClient::send ( const time_t & now )
         this->setLastRecord();
 
     // REMOVEs
-    TreeRemoveSet & removes = _notifier->removes;
+    TreeRemoveSet & removes = _treeNotifier->removes;
     qsz  = removes.size();
     if ( queued && adds.size() == 0 )
     {
@@ -109,7 +109,7 @@ TnmsClient::send ( const time_t & now )
     }
 
     // UPDATES
-    TreeUpdateSet & updates = _notifier->updates;
+    TreeUpdateSet & updates = _treeNotifier->updates;
     qsz = updates.size(); 
     if ( queued && removes.size() == 0 ) 
     {
@@ -217,6 +217,7 @@ TnmsClient::AuthReplyHandler ( const TnmsAuthReply & reply )
     LogFacility::LogMessage(msg.str());
 
     if ( this->_isMirror ) {
+        // track this client
         //time_t  now = ::time(NULL);
         //init client stats
         ;
@@ -322,9 +323,9 @@ TnmsClient::AuthRequestHandler ( const TnmsAuthRequest & request )
 }
 
 TnmsSubscriber*
-TnmsClient::getSubscribeNotifier()
+TnmsClient::getSubscriber()
 {
-    return this->_notifier;
+    return this->_treeNotifier;
 }
 
 TnmsTree*

@@ -26,7 +26,7 @@ struct  SchemaConfig
     int            flush_interval;
     bool           cache_index;
 
-    ArchiverConfig()
+    SchemaConfig()
         : commit_interval_s(DEFAULT_COMMIT_INTERVAL),
           tables_to_keep(DEFAULT_TABLE_COUNT),
           flush_interval(DEFAULT_FLUSH_INTERVAL),
@@ -39,18 +39,18 @@ typedef std::list< SchemaConfig >  ArchiveDbConfig;
 
 
 
-class ArchiverConfig : public TnmsConfigHandler {
+class ArchiverConfigHandler : public TnmsConfigHandler {
 
   public:
 
-    ArchiverConfig ( const std::string & xmlfilename,
-                     const std::string & rootname );
+    ArchiverConfigHandler ( const std::string & xmlfilename,
+                            const std::string & rootname );
 
-    ArchiverConfig ( const char * xmlblob, size_t len,
-                     const std::string & rootname );
+    ArchiverConfigHandler ( const char * xmlblob, size_t len,
+                            const std::string & rootname );
 
 
-    virtual ~ArchiverConfig();
+    virtual ~ArchiverConfigHandler();
 
 
     virtual bool        parseServer  ( XmlNode * node );

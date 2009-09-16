@@ -5,7 +5,7 @@ using namespace tcanetpp;
 
 
 #include "TnmsTree.h"
-#include "TnmsSubscriber.h"
+#include "TreeSubscriber.hpp"
 
 
 namespace tnmsCore {
@@ -15,10 +15,10 @@ namespace TnmsTreeInternal {
 
     struct AddForwarder {
 
-        TnmsSubscriber * sub;
+        TreeSubscriber * sub;
         bool             abort;
 
-        AddForwarder ( TnmsSubscriber * sub_ )
+        AddForwarder ( TreeSubscriber * sub_ )
             : sub(sub_), abort(false)
         {}
 
@@ -30,9 +30,9 @@ namespace TnmsTreeInternal {
     };
 
     struct RemoveForwarder {
-        TnmsSubscriber * sub;
+        TreeSubscriber * sub;
 
-        RemoveForwarder ( TnmsSubscriber * sub_ )
+        RemoveForwarder ( TreeSubscriber * sub_ )
             : sub(sub_) 
         {}
 
@@ -44,9 +44,9 @@ namespace TnmsTreeInternal {
     };
 
     struct MetricForwarder {
-        TnmsSubscriber * sub;
+        TreeSubscriber * sub;
 
-        MetricForwarder ( TnmsSubscriber * sub_ )
+        MetricForwarder ( TreeSubscriber * sub_ )
             : sub(sub_)
         {}
 
@@ -77,9 +77,9 @@ namespace TnmsTreeInternal {
     };
 
     struct RemoveClient {
-        TnmsSubscriber * sub;
+        TreeSubscriber * sub;
 
-        RemoveClient ( TnmsSubscriber * sub_ )
+        RemoveClient ( TreeSubscriber * sub_ )
             : sub(sub_)
         {}
 
@@ -93,9 +93,9 @@ namespace TnmsTreeInternal {
     };
 
     struct MarkNodes {
-        std::set<TnmsSubscriber*>  subs;
+        std::set<TreeSubscriber*>  subs;
 
-        MarkNodes ( std::set<TnmsSubscriber*> subs_ )
+        MarkNodes ( std::set<TreeSubscriber*> subs_ )
             : subs(subs_)
         {}
 
@@ -107,9 +107,9 @@ namespace TnmsTreeInternal {
             TnmsTree::TnmsTreeNode & tnode = node->getValue();
             tnode.erase = true;
 
-            std::set<TnmsSubscriber*>::iterator  cIter;
+            std::set<TreeSubscriber*>::iterator  cIter;
             for ( cIter = subs.begin(); cIter != subs.end(); ++cIter ) {
-                TnmsSubscriber * sub = (TnmsSubscriber*) *cIter;
+                TreeSubscriber * sub = (TreeSubscriber*) *cIter;
                 if ( sub )
                     sub->queueRemove(node);
             }
@@ -233,7 +233,7 @@ TnmsTree::update ( const TnmsMetric & metric )
 
 
 bool
-TnmsTree::request ( const std::string & name, TnmsSubscriber * sub )
+TnmsTree::request ( const std::string & name, TreeSubscriber * sub )
 {
     if ( name.compare("*") == 0 ) {  // requesting tree
         NodeChildMap  & roots = _tree->getRoots();
@@ -280,7 +280,7 @@ TnmsTree::request ( const std::string & name, TnmsMetric & metric )
 
 
 bool
-TnmsTree::subscribe ( const std::string & name, TnmsSubscriber * sub )
+TnmsTree::subscribe ( const std::string & name, TreeSubscriber * sub )
 {
     if ( name.empty() )
         return false;
@@ -342,7 +342,7 @@ TnmsTree::subscribe ( const std::string & name, TnmsSubscriber * sub )
 
 
 bool
-TnmsTree::unsubscribe ( const std::string & name, TnmsSubscriber * sub )
+TnmsTree::unsubscribe ( const std::string & name, TreeSubscriber * sub )
 {
     if ( name.empty() )
         return false;
@@ -383,14 +383,14 @@ TnmsTree::unsubscribe ( const std::string & name, TnmsSubscriber * sub )
 
 
 bool
-TnmsTree::subStructure ( TnmsSubscriber * sub )
+TnmsTree::subStructure ( TreeSubscriber * sub )
 {
     _structureSubs.insert(sub);
     return true;
 }
 
 bool
-TnmsTree::unsubStructure ( TnmsSubscriber * sub )
+TnmsTree::unsubStructure ( TreeSubscriber * sub )
 {
     _structureSubs.erase(sub);
     return true;
@@ -506,7 +506,7 @@ TnmsTree::updateSubscribers()
 
 
 void
-TnmsTree::removeSubscriber ( TnmsSubscriber * sub )
+TnmsTree::removeSubscriber ( TreeSubscriber * sub )
 {
     NodeChildMap &  roots = _tree->getRoots();
 

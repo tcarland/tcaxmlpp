@@ -7,6 +7,7 @@ namespace tnmsCore {
 
 
 TnmsSubscriber::TnmsSubscriber()
+    : TreeSubscriber()
 {
 }
 

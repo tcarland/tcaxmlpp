@@ -4,7 +4,7 @@
 #include <string>
 #include <set>
 
-#include "TnmsTree.h"
+#include "TreeSubscriber.hpp"
 
 namespace tnmsCore {
 
@@ -13,7 +13,8 @@ typedef std::set<TnmsTree::Node*>  TreeUpdateSet;
 typedef std::set<std::string>      TreeRemoveSet;
 
 
-class TnmsSubscriber {
+
+class TnmsSubscriber : public TreeSubscriber {
 
   public:
 
@@ -32,6 +33,7 @@ class TnmsSubscriber {
     TreeUpdateSet        adds;
     TreeUpdateSet        updates;
     TreeRemoveSet        removes;
+
 };
 
 

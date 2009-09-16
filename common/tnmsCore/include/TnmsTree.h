@@ -1,5 +1,5 @@
-#ifndef _TNMSD_TNMSTREE_H_
-#define _TNMSD_TNMSTREE_H_
+#ifndef _TNMSCORE_TNMSTREE_H_
+#define _TNMSCORE_TNMSTREE_H_
 
 #include <set>
 #include <list>
@@ -11,21 +11,23 @@
 
 namespace tnmsCore {
 
-class TnmsSubscriber;
+
+class TreeSubscriber;
 
 
 class TnmsTree {
 
   public:
 
-    typedef std::set<TnmsSubscriber*>   NotifySet;
+    typedef std::set<TreeSubscriber*>   NotifySet;
+    
 
     struct TnmsTreeNode
     {
-        TnmsMetric  metric;
-        NotifySet   nodeSubscribers;
-        NotifySet   levelSubscribers;
-        bool        erase;
+        TnmsMetric    metric;
+        NotifySet     nodeSubscribers;
+        NotifySet     levelSubscribers;
+        bool          erase;
 
         TnmsTreeNode()
             : erase(false)
@@ -51,22 +53,25 @@ class TnmsTree {
     bool       update           ( const TnmsMetric   & metric );
 
     bool       request          ( const std::string  & name,
-                                 TnmsSubscriber      * sub );
+                                 TreeSubscriber      * sub );
+
     bool       request          ( const std::string  & name,
                                   TnmsMetric         & metric );
 
     bool       exists           ( const std::string  & name );
 
-    bool       subscribe        ( const std::string  & name, 
-                                  TnmsSubscriber     * sub );
-    bool       unsubscribe      ( const std::string  & name, 
-                                  TnmsSubscriber     * sub );
 
-    bool       subStructure     ( TnmsSubscriber     * sub );
-    bool       unsubStructure   ( TnmsSubscriber     * sub );
+    bool       subscribe        ( const std::string  & name, 
+                                  TreeSubscriber     * sub );
+
+    bool       unsubscribe      ( const std::string  & name, 
+                                  TreeSubscriber     * sub );
+
+    bool       subStructure     ( TreeSubscriber     * sub );
+    bool       unsubStructure   ( TreeSubscriber     * sub );
 
     void       updateSubscribers();
-    void       removeSubscriber ( TnmsSubscriber     * sub );
+    void       removeSubscriber ( TreeSubscriber     * sub );
 
     void       sweep();
     void       sweep            ( TnmsTree::Node     * node );
@@ -79,6 +84,7 @@ class TnmsTree {
     void       debugDump        ( const std::string  & name ) const;
 
     void       getRootNames     ( StringSet & rootnames ) const;
+
 
   protected:
 
@@ -100,4 +106,5 @@ class TnmsTree {
 
 }  // namespace
 
-#endif  //  _TNMSD_TNMSTREE_H_
+#endif  //  _TNMSCORE_TNMSTREE_H_
+
