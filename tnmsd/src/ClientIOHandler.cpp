@@ -193,7 +193,7 @@ ClientIOHandler::handle_close ( const EventIO * io )
         return;
 
     if ( _tree ) 
-        _tree->removeSubscriber(client->getSubscribeNotifier());
+        _tree->removeSubscriber((TreeSubscriber*) client->getSubscriber());
 
     LogFacility::LogMessage("ClientIOHandler::handle_close() " + client->getHostStr());
 

@@ -45,7 +45,7 @@ AgentIOHandler::timeout ( const EventTimer * timer )
             client->close();
             continue;
         } else {
-            // rd = ?
+            // rd stats
             ;
         }
 
@@ -150,7 +150,7 @@ AgentIOHandler::handle_close ( const EventIO * io )
         return;
 
     if ( _tree )
-        _tree->removeSubscriber(client->getSubscribeNotifier());
+        _tree->removeSubscriber((TreeSubscriber*) client->getSubscriber());
 
     LogFacility::LogMessage("AgentIOHandler::handle_close() " + client->getHostStr());
 
