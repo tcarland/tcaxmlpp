@@ -94,6 +94,24 @@ ClientFrame::initMenuBar()
 
 
 void
+ClientFrame::OnSelect ( wxTreeEvent & event )
+{
+    wxTreeItemId     id   = event.GetItem();
+    TnmsWxTreeItem * data = _tree->GetItemData(id);
+
+    _mlist->AddMetricItem(&data->metric);
+
+    LogFacility::LogMessage("ClientFrame::OnSelect");
+}
+
+
+void
+ClientFrame::OnContext ( wxTreeEvent & event )
+{
+    LogFacility::LogMessage("ClientFrame::OnContext ");
+}
+
+void
 ClientFrame::OnConnect ( wxCommandEvent & event )
 {
     ConnectDialog * dlg = new ConnectDialog(wxT("Connect"));
@@ -149,30 +167,10 @@ ClientFrame::OnDisconnect ( wxCommandEvent & event )
 
 
 void
-ClientFrame::OnSelect ( wxTreeEvent & event )
-{
-    wxTreeItemId     id   = event.GetItem();
-    TnmsWxTreeItem * data = _tree->GetItemData(id);
-
-    _mlist->AddMetricItem(&data->metric);
-
-    LogFacility::LogMessage("ClientFrame::OnSelect");
-}
-
-
-void
 ClientFrame::OnQuit ( wxCommandEvent & event )
 {
     Close(true);
 }
-
-
-void
-ClientFrame::OnTimer ( wxTimerEvent & event )
-{    
-    _tree->SyncTree();
-}
-
 
 
 void
@@ -197,9 +195,9 @@ ClientFrame::OnDelete ( wxCommandEvent & event )
 
 
 void
-ClientFrame::OnContext ( wxTreeEvent & event )
-{
-    LogFacility::LogMessage("ClientFrame::OnContext ");
+ClientFrame::OnTimer ( wxTimerEvent & event )
+{    
+    _tree->SyncTree();
 }
 
 

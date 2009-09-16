@@ -25,7 +25,7 @@ class TnmsWxTreeItem : public wxTreeItemData {
 
   public:
 
-    TnmsMetric  metric;
+    TnmsMetric           metric;
 
     std::list<wxString>  children;
     wxString             absName;
@@ -112,6 +112,7 @@ class TnmsWxTree : public wxControl {
   private:
 
     TnmsTree_R *        _stree;
+
     wxTreeCtrl *        _treeCtrl;
 
     wxTreeItemId        _rootId;

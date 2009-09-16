@@ -24,16 +24,19 @@ class ClientFrame : public wxFrame {
     virtual ~ClientFrame();
 
     void          OnSelect        ( wxTreeEvent    & event );
+    void          OnContext       ( wxTreeEvent    & event );
+
     void          OnConnect       ( wxCommandEvent & event );
     void          OnDisconnect    ( wxCommandEvent & event );
     void          OnQuit          ( wxCommandEvent & event );
 
-    void          OnTimer         ( wxTimerEvent & event );
-
     void          OnDelete        ( wxCommandEvent & event );
     void          OnExpandItem    ( wxCommandEvent & event );
     void          OnCollapseItem  ( wxCommandEvent & event );
-    void          OnContext       ( wxTreeEvent    & event );
+
+    void          OnTimer         ( wxTimerEvent & event );
+
+
   protected:
 
     void        initMenuBar();

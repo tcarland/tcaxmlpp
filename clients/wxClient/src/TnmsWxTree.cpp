@@ -94,8 +94,8 @@ TnmsWxTree::Create  ( wxWindow        * parent,
 
     _treeCtrl = new wxTreeCtrl(parent, TNMS_ID_WXTREE, pos, size, treeStyle);
 
-    TnmsWxTreeItem * rootData = new TnmsWxTreeItem(wxEmptyString, wxEmptyString, true);
     wxString         rootName = wxT("/");
+    TnmsWxTreeItem * rootData = new TnmsWxTreeItem(wxEmptyString, rootName, true);
 
     _rootId = _treeCtrl->AddRoot(rootName, -1, -1, rootData);
     _treeCtrl->SetItemHasChildren(_rootId);
@@ -156,7 +156,7 @@ TnmsWxTree::OnSelect ( wxTreeEvent & event )
     std::string select = StringUtils::wtocstr(data->absName.c_str());
     LogFacility::LogMessage("OnSelect " + select);
 
-    _stree->tree->subscribe(select, _stree->notifier);
+    _stree->tree->subscribe(select, (TreeSubscriber*) _stree->notifier);
 }
 
 
@@ -211,7 +211,8 @@ TnmsWxTree::SetupRoot()
 
     for ( sIter = troots.begin(); sIter != troots.end(); ++sIter )
     {
-        wxString  tname  = StringUtils::ctowstr(*sIter);
+        //wxString  tname  = StringUtils::ctowstr(*sIter);
+        wxString  tname = wxString::FromAscii(sIter->c_str());
 
         tIter  = _roots.find(tname);
         if ( tIter == _roots.end() ) {
@@ -244,6 +245,7 @@ TnmsWxTree::DoResize()
     wxSize sz = GetClientSize();
     _treeCtrl->SetSize(0, 0, sz.x, sz.y);
 }
+
 
 void
 TnmsWxTree::addItems ( wxString & absoluteName )
@@ -319,10 +321,10 @@ TnmsWxTree::SyncTree()
     if ( _visible.empty() )
         _stree->tree->subscribe("*", _stree->notifier);
 
-    if ( ! notifier->haveUpdates() )
+    if ( ! notifier->trylock() )
         return;
 
-    if ( ! notifier->trylock() )
+    if ( ! notifier->haveUpdates() )
         return;
 
     LogFacility::LogMessage("SyncTree() has updates");
@@ -339,7 +341,8 @@ TnmsWxTree::SyncTree()
     for ( nIter = adds.begin(); nIter != adds.end(); )
     {
         TnmsTree::Node * node = *nIter;
-        wxString         name = StringUtils::ctowstr(node->getAbsoluteName());
+        //wxString         name = StringUtils::ctowstr(node->getAbsoluteName());
+        wxString         name = wxString::FromAscii(node->getAbsoluteName().c_str());
 
         if ( node->getValue().erase ) {
             adds.erase(nIter++);
@@ -353,15 +356,19 @@ TnmsWxTree::SyncTree()
             continue;
         }
 
-        name   = StringUtils::ctowstr(node->getParent()->getAbsoluteName());
+        name   = wxString::FromAscii(node->getParent()->getAbsoluteName().c_str());
         vIter  = _visible.find(name);
 
         if ( vIter != _visible.end() ) 
         {
+            wxString aval, nval;
+            aval  = wxString::FromAscii(node->getAbsoluteName().c_str());
+            nval  = wxString::FromAscii(node->getName().c_str());
             pid   = vIter->second;
-            data  = new TnmsWxTreeItem(StringUtils::ctowstr(node->getAbsoluteName()), 
-                                       StringUtils::ctowstr(node->getName()), true);
+            data  = new TnmsWxTreeItem(aval, nval, true);
+            
             data->metric = node->getValue().metric;
+
             id    = _treeCtrl->AppendItem(pid, data->name, -1, -1, data);
 
             LogFacility::LogMessage("Add " + node->getAbsoluteName());
@@ -377,7 +384,7 @@ TnmsWxTree::SyncTree()
     TreeRemoveSet & removes = notifier->removes;
     for ( rIter = removes.begin(); rIter != removes.end(); ) 
     {
-        name = StringUtils::ctowstr(*rIter);
+        name = wxString::FromAscii(rIter->c_str());
 
         vIter = _visible.find(name);
 
@@ -397,21 +404,26 @@ TnmsWxTree::SyncTree()
 
         LogFacility::LogMessage("Update " + node->getAbsoluteName());
 
-        name   = StringUtils::ctowstr(node->getAbsoluteName());
+        name   = wxString::FromAscii(node->getAbsoluteName().c_str());
         vIter  = _visible.find(name);
 
         if ( vIter == _visible.end() ) 
         {
             if ( node->getParent() )
-                parentname = StringUtils::ctowstr(node->getParent()->getAbsoluteName());
+                parentname = wxString::FromAscii(node->getParent()->getAbsoluteName().c_str());
             
             vIter = _visible.find(parentname);
 
             if ( vIter != _visible.end() ) {
-                data = new TnmsWxTreeItem(StringUtils::ctowstr(node->getAbsoluteName()), 
-                                          StringUtils::ctowstr(node->getName()), true);
+                wxString  aval, nval;
+                aval = wxString::FromAscii(node->getAbsoluteName().c_str());
+                nval = wxString::FromAscii(node->getName().c_str());
+                data = new TnmsWxTreeItem(aval, nval, true);
+                
                 data->metric  = node->getValue().metric;
+                
                 _treeCtrl->SetItemHasChildren(vIter->second);
+
                 id    = _treeCtrl->AppendItem(vIter->second, data->name, -1, -1, data);
 
                 _visible[data->absName] = id;

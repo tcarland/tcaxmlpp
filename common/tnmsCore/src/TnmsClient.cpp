@@ -322,6 +322,16 @@ TnmsClient::AuthRequestHandler ( const TnmsAuthRequest & request )
     */
 }
 
+void
+TnmsClient::setSubscriber ( TnmsSubscriber * subscriber )
+{
+    if ( NULL != subscriber )
+    {
+        delete _treeNotifier;
+        _treeNotifier = subscriber;
+    }
+}
+
 TnmsSubscriber*
 TnmsClient::getSubscriber()
 {

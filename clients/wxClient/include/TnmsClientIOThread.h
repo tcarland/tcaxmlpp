@@ -21,7 +21,7 @@ class TnmsClientIOThread : public Thread {
 
   public:
 
-    TnmsClientIOThread ( TnmsTree * tree, ThreadLock * tree );
+    TnmsClientIOThread ( TnmsTree * tree, ThreadLock * rlock );
     
     virtual ~TnmsClientIOThread();
 

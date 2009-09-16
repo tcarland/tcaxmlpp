@@ -57,8 +57,7 @@ TnmsClientIOThread::addClient ( TnmsClient * client )
     if ( client == NULL )
         return false;
 
-    evid_t  id = _evmgr->addIOEvent(_clientHandler, client->getDescriptor(),
-                    client);
+    evid_t  id = _evmgr->addIOEvent(_clientHandler, client->getDescriptor(), client);
 
     _clients[client] = id;
     _clientHandler->addClient(client);
@@ -80,7 +79,7 @@ TnmsClientIOThread::removeClient ( TnmsClient * client )
 
     return;
 }
-    
+
 
 void
 TnmsClientIOThread::ClientIOTimer::timeout ( const EventTimer * timer )

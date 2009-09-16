@@ -44,6 +44,7 @@ class TnmsClient : public TnmsSocket {
     const
     std::string&    getConfig() const { return _xmlConfig; }
 
+    void            setSubscriber ( TnmsSubscriber * subscriber );
     TnmsSubscriber* getSubscriber();
     TnmsTree*       getTree();
 
