@@ -149,7 +149,8 @@ class TnmsSocket {
 
     /*  send message handling / packing  */
 
-    bool                   sendMessage       ( const Serializable  * message );
+    bool                   sendMessage       ( const Serializable  * message, 
+                                               bool  flushNow      = false );
 
   protected:
 

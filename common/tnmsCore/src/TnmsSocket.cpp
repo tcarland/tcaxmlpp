@@ -796,7 +796,7 @@ TnmsSocket::subscribe ( const std::string & name )
 {
     TnmsSubscribe msg(name);
     _subs.insert(msg);
-    _subscribed = this->sendMessage(&msg);
+    _subscribed = this->sendMessage(&msg, true);
     return _subscribed;
 }
 
@@ -804,7 +804,7 @@ bool
 TnmsSocket::subscribe ( const TnmsOid & oid )
 {
     TnmsSubscribe msg(oid);
-    return this->sendMessage(&msg);
+    return this->sendMessage(&msg, true);
 }
 
 // ------------------------------------------------------------------- //
@@ -816,14 +816,14 @@ TnmsSocket::unsubscribe ( const std::string & name )
     _subs.erase(msg);
     if ( _subs.size() == 0 )
         _subscribed = false;
-    return this->sendMessage(&msg);
+    return this->sendMessage(&msg, true);
 }
 
 bool
 TnmsSocket::unsubscribe ( const TnmsOid & oid )
 {
     TnmsUnsubscribe  msg(oid);
-    return this->sendMessage(&msg);
+    return this->sendMessage(&msg, true);
 }
 
 // ------------------------------------------------------------------- //
@@ -914,7 +914,7 @@ TnmsSocket::authReply ( const TnmsAuthReply & reply )
 // ------------------------------------------------------------------- //
 
 bool
-TnmsSocket::sendMessage ( const Serializable * message )
+TnmsSocket::sendMessage ( const Serializable * message, bool flushNow )
 {
     size_t  msz, wt;
 
@@ -937,8 +937,9 @@ TnmsSocket::sendMessage ( const Serializable * message )
     _hdr->message_count++;
     _hdr->payload_size += wt;
 
-    if ( this->flush() < 0 )
-        return false;
+    if ( flushNow )
+        if ( this->flush() < 0 )
+            return false;
 
     return true;
 }

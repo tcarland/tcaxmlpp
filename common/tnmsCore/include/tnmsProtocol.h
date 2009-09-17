@@ -97,6 +97,14 @@ typedef struct tnmsMetric
     uint32_t    timestamp;
     uint32_t    pvt_data_len;
     char*       pvt_data;
+
+    tnmsMetric()
+        : oid_len(0), oid(NULL), metric_name_len(0), metric_name(NULL),
+          metric_value_type(0), metric_value_len(0), metric_value(NULL),
+          metric_value_avg(NULL), metric_samples(0), timestamp(0),
+          pvt_data_len(0), pvt_data(NULL)
+    {}
+
 } tnmsMetric_t;
 
 

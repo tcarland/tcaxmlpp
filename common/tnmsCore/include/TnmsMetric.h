@@ -75,8 +75,9 @@ class TnmsMetric : public TnmsMessage {
     bool                setValueAvg ( eValueType   valtype, 
                                       T &          value )
     {
-        if ( valtype > TNMS_NONE && valtype < TNMS_STRING ) {
-            _valType  = valtype;
+        if ( (valtype > TNMS_NONE && valtype < TNMS_STRING) 
+              && valtype == _valType ) 
+        {
             _valueAvg = static_cast<uint64_t>(value);
             return true;
         }
@@ -103,7 +104,7 @@ class TnmsMetric : public TnmsMessage {
     eValueType          _valType;
     uint64_t            _value;
     uint64_t            _valueAvg;
-    uint64_t            _valueTot;
+    uint64_t            _valueT;
     uint32_t            _samples;
     uint32_t            _timestamp;
     std::string         _valueStr;

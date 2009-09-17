@@ -25,7 +25,7 @@ TnmsMetric::TnmsMetric()
       _valType(TNMS_NONE),
       _value(0),
       _valueAvg(0),
-      _valueTot(0),
+      _valueT(0),
       _samples(0),
       _timestamp(0)
 {}
@@ -35,7 +35,7 @@ TnmsMetric::TnmsMetric ( const std::string & name )
       _valType(TNMS_NONE),
       _value(0),
       _valueAvg(0),
-      _valueTot(0),
+      _valueT(0),
       _samples(0),
       _timestamp(0)
 {}
@@ -46,7 +46,7 @@ TnmsMetric::TnmsMetric ( const std::string & name,
       _valType(TNMS_NONE),
       _value(0),
       _valueAvg(0),
-      _valueTot(0),
+      _valueT(0),
       _samples(0),
       _timestamp(0)
 {}
@@ -63,7 +63,7 @@ TnmsMetric::operator= ( const TnmsMetric & metric )
     _valType      = metric.getValueType();
     _value        = metric.getValue<uint64_t>();
     _valueAvg     = metric.getValueAvg<uint64_t>();
-    _valueTot     = metric._valueTot;
+    _valueT       = metric._valueT;
     _samples      = metric.getSamples();
     _timestamp    = metric.getTimestamp();
     _valueStr     = metric.getValue();
@@ -80,14 +80,14 @@ TnmsMetric::operator+= ( const TnmsMetric & metric )
     else
     {
         _value     = metric.getValue<uint64_t>();
-        _valueTot += _value;
+        _valueT   += _value;
         _timestamp = metric.getTimestamp();
         _samples++;
 
         if ( _samples == 0 )
             _valueAvg = _value;
         else
-            _valueAvg = (_valueTot / _samples);
+            _valueAvg = (_valueT / _samples);
 
         _pvt = metric.getPvtData();
     }
@@ -99,7 +99,7 @@ void
 TnmsMetric::reset()
 {
     _valueAvg = _value;
-    _valueTot = 0;
+    _valueT   = 0;
     _samples  = 0;
 }
 
@@ -121,11 +121,13 @@ TnmsMetric::getValueType() const
 bool
 TnmsMetric::setValue ( eValueType valtype, const std::string & value )
 {
-    _valType  = TNMS_STRING;
+    if ( _valType != TNMS_STRING )
+    {
+        _valType  = TNMS_STRING;
+        this->reset();
+    }
     _valueStr = value;
-    _value    = 0;
-    _valueAvg = 0;
-    _samples  = 0;
+
     return true;
 }
 
