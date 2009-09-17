@@ -12,7 +12,7 @@
             name="server_a"
             host="localhost"
             port="15300"
-            holddown="30"
+            holddown="1"
             reconnect="30"/>
     </tnmsapi>
 

@@ -135,11 +135,9 @@ ClientFrame::OnConnect ( wxCommandEvent & event )
     cl.client      = new TnmsClient(_stree->tree);
 
     //uint16_t pn = StringUtils::fromString<uint16_t>(port);
-
+    
     cl.client->openConnection(cl.servername, cl.port);
     _stree->iomgr->addClient(cl.client);
-    cl.client->subscribeStructure();
-    _stree->tree->subStructure((TnmsSubscriber*) _stree->notifier);
     
     //user.append("@").append(sn).append(":").append(port);
     username.append(_T("@")).append(servname).append(_T(":")).append(portname);

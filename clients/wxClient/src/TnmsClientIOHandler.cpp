@@ -51,22 +51,18 @@ TnmsClientIOHandler::timeout ( const EventTimer * timer )
             else 
             {
                 if ( client->isAuthorized() && ! client->isSubscribed() ) {
+                    TnmsRequest reqTree("*", REQUEST_MESSAGE);
                     client->subscribeStructure();
-                    //client->subscribe("/");
-                    client->subscribe("*");
+                    client->subscribe("/");
+                    client->sendMessage(&reqTree, true);
                 } else if ( ! client->isAuthorized() ) {
                     client->login();
                 }
             }
         }
 
-        if ( ! _rlock->lock() )
-            return;
-
         rd = client->receive(now);
         
-        _rlock->unlock();
-
         if ( rd < 0 ) {
             LogFacility::LogMessage("ClientIOHandler error in receive() from client " 
                 + client->getHostStr());
@@ -141,7 +137,14 @@ TnmsClientIOHandler::handle_write ( const EventIO * io )
 
     TnmsClient * client = (TnmsClient*) io->rock;
 
-    if ( (wt = client->send(io->abstime.tv_sec)) < 0 ) {
+    if ( ! _rlock->lock() )
+        return;
+    
+    wt = client->send(io->abstime.tv_sec);
+
+    _rlock->unlock();
+
+    if ( wt < 0 ) {
         LogFacility::LogMessage("ClientIOHandler::handle_write() error: " 
             + client->getErrorStr());
         return this->handle_close(io);
@@ -161,16 +164,21 @@ TnmsClientIOHandler::handle_close ( const EventIO * io )
         return;
 
     TnmsClient * client = (TnmsClient*) io->rock;
-
+    
     if ( client == NULL )
         return;
 
     LogFacility::LogMessage("ClientIOHandler::handle_close() " 
         + client->getHostStr());
 
+    if ( ! _rlock->lock() )
+        return;
+
     client->close();
     _clients.erase(client);
     io->evmgr->removeEvent(io->evid);
+
+    _rlock->unlock();
 
     return;
 }
@@ -181,6 +189,9 @@ TnmsClientIOHandler::handle_destroy ( const EventIO * io )
 {    
     LogFacility::LogMessage("ClientIOHandler::handle_destroy()");
 
+    if ( ! _rlock->lock() )
+        return;
+
     if ( io->isServer ) {
         Socket * svr = (Socket*) io->rock;
         if ( svr )
@@ -190,6 +201,8 @@ TnmsClientIOHandler::handle_destroy ( const EventIO * io )
         if ( client && ! client->isMirror() )
             delete client;
     }
+
+    _rlock->unlock();
 
     return;
 }

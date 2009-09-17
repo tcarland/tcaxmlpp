@@ -156,7 +156,7 @@ TnmsWxTree::OnSelect ( wxTreeEvent & event )
     std::string select = StringUtils::wtocstr(data->absName.c_str());
     LogFacility::LogMessage("OnSelect " + select);
 
-    _stree->tree->subscribe(select, (TreeSubscriber*) _stree->notifier);
+    return;
 }
 
 
@@ -331,6 +331,17 @@ void
 TnmsWxTree::SetTnmsTree ( TnmsTree_R * tree )
 {
     _stree = tree;
+
+    if ( tree == NULL )
+        return;
+
+    if ( _stree->mutex->lock() )
+    {
+        _stree->tree->subStructure((TnmsSubscriber*) _stree->notifier);
+        _stree->mutex->unlock();
+    }
+
+    return;
 }
 
 

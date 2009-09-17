@@ -37,17 +37,21 @@ TnmsClientIOThread::run()
 void
 TnmsClientIOThread::timeout ( const EventTimer * timer )
 {
-    //LogFacility::LogMessage("TnmsClientIOThread::timeout()");
-
     if ( this->_Alarm ) {
         _evmgr->setAlarm();
         _mutex->notify();
         return;
     }
 
-    _tree->updateSubscribers();
+    if ( ! this->_mutex->lock() )
+        return;
 
-    return this->_clientHandler->timeout(timer);
+    _tree->updateSubscribers();
+    this->_clientHandler->timeout(timer);
+
+    this->_mutex->unlock();
+
+    return;
 }
 
 
