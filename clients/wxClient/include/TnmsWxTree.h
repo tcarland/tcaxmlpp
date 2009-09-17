@@ -15,7 +15,7 @@ class TnmsWxTreeItem : public wxTreeItemData {
 
     TnmsWxTreeItem ( const wxString & absoluteName, 
                      const wxString & name, 
-                     bool isParent );
+                     bool  isParent );
 
     virtual ~TnmsWxTreeItem() {}
 
@@ -40,7 +40,6 @@ class TnmsWxTreeItem : public wxTreeItemData {
 #define TNMS_ID_WXTREE   7001
 #define TNMS_ID_CONNECT  7010
 #define TNMS_ID_DISCONN  7011
-
 
 
 
@@ -92,17 +91,20 @@ class TnmsWxTree : public wxControl {
     void          Expand          ( wxTreeItemId     parentId );
 
     void          DoResize();
-    void          SetupRoot();
+
+
 
     void          SyncTree();
 
-    void          addItems        ( wxString & absoluteName );
 
   public:
 
     void          SetTnmsTree     ( TnmsTree_R * stree );
     TnmsTree_R*   GetTnmsTree();
 
+  protected:
+
+    wxTreeItemId  RecursiveAdd    ( TnmsTree::Node * node, bool parent );
   
   public:
 

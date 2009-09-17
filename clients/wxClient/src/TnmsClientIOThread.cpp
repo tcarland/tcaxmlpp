@@ -57,10 +57,15 @@ TnmsClientIOThread::addClient ( TnmsClient * client )
     if ( client == NULL )
         return false;
 
+    if ( ! this->_mutex->lock() )
+        return false;
+
     evid_t  id = _evmgr->addIOEvent(_clientHandler, client->getDescriptor(), client);
 
     _clients[client] = id;
     _clientHandler->addClient(client);
+
+    this->_mutex->unlock();
 
     return true;
 }
@@ -70,12 +75,16 @@ TnmsClientIOThread::removeClient ( TnmsClient * client )
 {
     ClientEventMap::iterator  cIter;
 
-    cIter = _clients.find(client);
-    if ( cIter == _clients.end() )
+    if ( ! this->_mutex->lock() )
         return;
 
-    _evmgr->removeEvent(cIter->second);
-    _clients.erase(cIter);
+    cIter = _clients.find(client);
+    if ( cIter != _clients.end() )
+    {
+        _evmgr->removeEvent(cIter->second);
+        _clients.erase(cIter);
+    }
+    this->_mutex->unlock();
 
     return;
 }
@@ -86,6 +95,7 @@ TnmsClientIOThread::ClientIOTimer::timeout ( const EventTimer * timer )
 {
     if ( this->iothread == NULL )
         return;
+
     return this->iothread->timeout(timer);
 }
 

@@ -34,13 +34,12 @@ ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
 
     spl1->SplitVertically(_tree, spl2);
     
-    //_lCtrl1 = new wxListCtrl(spl2, -1, wxPoint(-1, -1), wxSize(-1, -1), wxLC_LIST);
-    _mlist  = new MetricListView(spl2, TNMS_ID_MLIST,  wxPoint(-1, -1), wxSize(-1, -1), 
-                wxSUNKEN_BORDER);
-    _lCtrl2 = new wxListCtrl(spl2, -1, wxPoint(-1, -1), wxSize(-1, -1), wxLC_LIST);
+    _mlist  = new MetricListView(spl2, TNMS_ID_MLIST,  
+                 wxPoint(-1, -1), wxSize(-1, -1), wxSUNKEN_BORDER);
+    _lCtrl2 = new wxListCtrl(spl2, -1, 
+                 wxPoint(-1, -1), wxSize(-1, -1), wxLC_LIST);
     
     spl2->SplitHorizontally(_mlist, _lCtrl2);
-    //spl2->SplitHorizontally(_lCtrl1, _lCtrl2);
 
     //Connect(TNMS_ID_TREE, wxEVT_SIZE,
         //wxSizeEventHandler(TnmsWxTree::OnSize));
@@ -139,7 +138,8 @@ ClientFrame::OnConnect ( wxCommandEvent & event )
 
     cl.client->openConnection(cl.servername, cl.port);
     _stree->iomgr->addClient(cl.client);
-    _stree->tree->subscribe("/", (TnmsSubscriber*) _stree->notifier);
+    cl.client->subscribeStructure();
+    _stree->tree->subStructure((TnmsSubscriber*) _stree->notifier);
     
     //user.append("@").append(sn).append(":").append(port);
     username.append(_T("@")).append(servname).append(_T(":")).append(portname);

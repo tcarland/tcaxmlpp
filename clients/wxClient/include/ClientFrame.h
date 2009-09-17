@@ -44,7 +44,7 @@ class ClientFrame : public wxFrame {
 
   protected:
 
-    struct  ClientInstance
+    struct ClientInstance
     {
         std::string  username;
         std::string  password;
