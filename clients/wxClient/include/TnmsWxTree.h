@@ -105,6 +105,7 @@ class TnmsWxTree : public wxControl {
   protected:
 
     wxTreeItemId  RecursiveAdd    ( TnmsTree::Node * node, bool parent );
+    bool          RecursiveDelete ( wxTreeItemId & id );
   
   public:
 

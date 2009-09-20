@@ -85,12 +85,12 @@ TnmsMessageHandler::RequestHandler ( const TnmsRequest & request )
 
     TnmsMetric  metric;
 
-    if ( LogFacility::GetDebug() )
+    if ( LogFacility::GetDebug() ) {
         LogFacility::LogMessage("TnmsMessageHandler::RequestHandler() " 
             + request.getElementName());
+    }
 
-    if ( _tree->request(request.getElementName(), metric) )
-        _client->sendMessage(&metric);
+    _tree->request(request.getElementName(), (TreeSubscriber*)_client->getSubscriber());
 
     return;
 }

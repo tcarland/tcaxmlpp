@@ -189,9 +189,6 @@ TnmsClientIOHandler::handle_destroy ( const EventIO * io )
 {    
     LogFacility::LogMessage("ClientIOHandler::handle_destroy()");
 
-    if ( ! _rlock->lock() )
-        return;
-
     if ( io->isServer ) {
         Socket * svr = (Socket*) io->rock;
         if ( svr )
@@ -201,8 +198,6 @@ TnmsClientIOHandler::handle_destroy ( const EventIO * io )
         if ( client && ! client->isMirror() )
             delete client;
     }
-
-    _rlock->unlock();
 
     return;
 }

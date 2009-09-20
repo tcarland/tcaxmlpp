@@ -242,6 +242,7 @@ TnmsTree::request ( const std::string & name, TreeSubscriber * sub )
         if ( roots.empty() )
             return true;
 
+        LogFacility::LogMessage("TnmsTree::request * from subscriber");
         //AddForwarder adds(sub);
         MetricForwarder adds(sub);
 

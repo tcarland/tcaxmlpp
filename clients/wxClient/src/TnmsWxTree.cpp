@@ -163,7 +163,9 @@ TnmsWxTree::OnSelect ( wxTreeEvent & event )
 void
 TnmsWxTree::OnDelete ( wxTreeEvent & event )
 {
-    LogFacility::LogMessage("OnDelete ");
+    wxTreeItemId     id   = event.GetItem();
+    LogFacility::LogMessage("TnmsWxTree::OnDelete ");
+    this->RecursiveDelete(id);
 }
 
 
@@ -236,6 +238,12 @@ TnmsWxTree::RecursiveAdd ( TnmsTree::Node * node, bool parent )
     return id;
 }
 
+bool
+TnmsWxTree::RecursiveDelete ( wxTreeItemId  &  id )
+{
+    return true;
+}
+
 void
 TnmsWxTree::SyncTree()
 {
@@ -289,9 +297,10 @@ TnmsWxTree::SyncTree()
     TreeRemoveSet & removes = notifier->removes;
     for ( rIter = removes.begin(); rIter != removes.end(); ) 
     {
-        name = wxString::FromAscii(rIter->c_str());
-
+        name  = wxString::FromAscii(rIter->c_str());
         vIter = _visible.find(name);
+
+        LogFacility::LogMessage("TnmsWxTree::SyncTree() remove for " + *rIter);
 
         if ( vIter != _visible.end() ) {
             _treeCtrl->Delete(vIter->second);
