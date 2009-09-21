@@ -8,14 +8,27 @@
 
 #include "TnmsTree_R.hpp"
 
+#include "HeirarchicalStringTree.hpp"
+using namespace tnmsCore;
 
+
+
+#define TNMS_ID_TREE     7000
+#define TNMS_ID_WXTREE   7001
+#define TNMS_ID_CONNECT  7010
+#define TNMS_ID_DISCONN  7011
+
+
+
+/*
 class TnmsWxTreeItem : public wxTreeItemData {
 
   public:
 
-    TnmsWxTreeItem ( const wxString & absoluteName, 
-                     const wxString & name, 
-                     bool  isParent );
+    TnmsWxTreeItem ( wxTreeItemId   & id_,
+                     const wxString & absoluteName, 
+                     const wxString & name_, 
+                     bool             isParent_ );
 
     virtual ~TnmsWxTreeItem() {}
 
@@ -26,24 +39,43 @@ class TnmsWxTreeItem : public wxTreeItemData {
   public:
 
     TnmsMetric           metric;
-
+    wxTreeItemId         id;
     std::list<wxString>  children;
-    wxString             absName;
+    wxString             absoluteName;
     wxString             name;
-    bool                 isparent;
-    bool                 isexpanded;
+    bool                 isParent;
+    bool                 isExpanded;
 
 };
+*/
 
+class TnmsWxTreeItem : public wxTreeItemData {
 
-#define TNMS_ID_TREE     7000
-#define TNMS_ID_WXTREE   7001
-#define TNMS_ID_CONNECT  7010
-#define TNMS_ID_DISCONN  7011
+  public:
 
+    std::string   absoluteName;
 
+    TnmsWxTreeItem ( const std::string & name )
+        : absoluteName(name) {}
+ 
+};
 
 class TnmsWxTree : public wxControl {
+ 
+  public:
+
+    struct TreeItem 
+    {
+        TnmsMetric    metric;
+        wxTreeItemId  id;
+    };
+
+    typedef HeirarchicalStringTree<TreeItem>   TreeItemMap;
+    typedef TreeItemMap::Node                  Node;
+    typedef std::set<Node*>                    NodeSet;
+
+    typedef std::set<std::string>              StringSet;
+
 
   public:
 
@@ -82,6 +114,8 @@ class TnmsWxTree : public wxControl {
     wxTreeCtrl*   GetTreeCtrl()   { return _treeCtrl; }
 
     TnmsWxTreeItem* GetItemData   ( wxTreeItemId     id );
+    
+    TnmsMetric&   GetItemMetric   ( wxTreeItemId   & id );
 
     wxTreeItemId  FindChild       ( wxTreeItemId     parentId, 
                                     const wxString & path,
@@ -104,24 +138,19 @@ class TnmsWxTree : public wxControl {
 
   protected:
 
-    wxTreeItemId  RecursiveAdd    ( TnmsTree::Node * node, bool parent );
-    bool          RecursiveDelete ( wxTreeItemId & id );
-  
-  public:
-
-    typedef std::map<wxString, wxTreeItemId>  TreeItemMap;
-
-
+    void          Add             ( const std::string & name );
+    wxTreeItemId  RecursiveAdd    ( Node * node );
+    //wxTreeItemId  RecursiveAdd    ( TnmsTree::Node * node, bool parent );
+    //bool          RecursiveDelete ( wxTreeItemId & id );
+ 
   private:
 
     TnmsTree_R *        _stree;
 
     wxTreeCtrl *        _treeCtrl;
-
     wxTreeItemId        _rootId;
 
-    TreeItemMap         _visible;
-    TreeItemMap         _roots;
+    TreeItemMap *       _visible;
 
 };
 
