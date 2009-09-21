@@ -108,7 +108,8 @@ namespace TnmsTreeInternal {
             tnode.erase = true;
 
             std::set<TreeSubscriber*>::iterator  cIter;
-            for ( cIter = subs.begin(); cIter != subs.end(); ++cIter ) {
+            for ( cIter = subs.begin(); cIter != subs.end(); ++cIter ) 
+            {
                 TreeSubscriber * sub = (TreeSubscriber*) *cIter;
                 if ( sub )
                     sub->queueRemove(node);
@@ -157,7 +158,8 @@ TnmsTree::add ( const std::string & name )
 {
     Node * node = _tree->find(name);
 
-    if ( node == NULL ) {
+    if ( node == NULL ) 
+    {
         NodeSet  addset;
 
         node = _tree->insert(name, std::inserter(addset, addset.begin()));
@@ -167,7 +169,8 @@ TnmsTree::add ( const std::string & name )
 
         NodeSet::iterator nIter;
 
-        for ( nIter = addset.begin(); nIter != addset.end(); ++nIter ) {
+        for ( nIter = addset.begin(); nIter != addset.end(); ++nIter ) 
+        {
             NotifySet::iterator  cIter;
             std::string          addname = (*nIter)->getAbsoluteName();
 
@@ -176,7 +179,9 @@ TnmsTree::add ( const std::string & name )
             for ( cIter = _structureSubs.begin(); cIter != _structureSubs.end(); ++cIter )
                 (*cIter)->queueAdd(*nIter);
         }
-    } else if ( node->getValue().erase ) {
+    } 
+    else if ( node->getValue().erase ) 
+    {
         this->clearNodeErase(node);
     }
 
@@ -207,8 +212,8 @@ TnmsTree::update ( const TnmsMetric & metric )
 {
     Node * node = _tree->find(metric.getElementName());
 
-    if ( node == NULL ) {  // implicit add
-
+    if ( node == NULL )  // implicit add
+    {
         if ( ! this->add(metric.getElementName()) )
             return false;
 
@@ -235,7 +240,8 @@ TnmsTree::update ( const TnmsMetric & metric )
 bool
 TnmsTree::request ( const std::string & name, TreeSubscriber * sub )
 {
-    if ( name.compare("*") == 0 ) {  // requesting tree
+    if ( name.compare("*") == 0 )   // requesting tree
+    {
         NodeChildMap  & roots = _tree->getRoots();
         NodeChildMap::iterator  nIter;
 
@@ -243,13 +249,14 @@ TnmsTree::request ( const std::string & name, TreeSubscriber * sub )
             return true;
 
         LogFacility::LogMessage("TnmsTree::request * from subscriber");
-        //AddForwarder adds(sub);
         MetricForwarder adds(sub);
 
         for ( nIter = roots.begin(); nIter != roots.end(); ++nIter )
             _tree->depthFirstTraversal(nIter->second, adds);
 
-    } else {
+    } 
+    else 
+    {
         Node * node = _tree->find(name);
 
         if ( node == NULL || sub == NULL )
@@ -290,23 +297,28 @@ TnmsTree::subscribe ( const std::string & name, TreeSubscriber * sub )
     std::string::size_type  len = name.length();
     char lvl = name.at(len-1);
 
-    if ( len == 1 && lvl == '*') {
+    if ( len == 1 && lvl == '*') 
+    {
         _allSubs.insert(sub);
         _structureSubs.insert(sub);
 
         // trigger tree send?
         return this->request("*", sub);
-
-    } else if ( lvl == '/' ) {
+    } 
+    else if ( lvl == '/' ) 
+    {
         NodeChildMap  * nodemap = NULL;
         std::string     element = name;
 
         element.erase(len-1, 1);
 
-        if ( element.empty() ) {
+        if ( element.empty() ) 
+        {
             _rootSubs.insert(sub);
             nodemap = &_tree->getRoots();
-        } else {
+        }
+        else
+        {
             node  = _tree->find(element);
 
             if ( node == NULL || node->getValue().erase )
@@ -317,15 +329,14 @@ TnmsTree::subscribe ( const std::string & name, TreeSubscriber * sub )
         }
 
         NodeChildMap::iterator  nIter;
-        for ( nIter = nodemap->begin(); nIter != nodemap->end(); ++nIter ) {
-            if ( ! nIter->second->getValue().erase ) {
-                //sub->queueAdd(nIter->second);
+        for ( nIter = nodemap->begin(); nIter != nodemap->end(); ++nIter ) 
+        {
+            if ( ! nIter->second->getValue().erase ) 
                 sub->queueUpdate(nIter->second);
-                //_updates[nIter->second->getValue().metric.getElementName()] = nIter->second;
-            }
         }
-
-    } else {
+    }
+    else 
+    {
         node = _tree->find(name);
 
         if ( node == NULL )
@@ -333,7 +344,6 @@ TnmsTree::subscribe ( const std::string & name, TreeSubscriber * sub )
 
         node->getValue().nodeSubscribers.insert(sub);
         node->getValue().metric.message_type(METRIC_MESSAGE);
-        //sub->queueAdd(node);
         sub->queueUpdate(node);
         _updates[node->getValue().metric.getElementName()] = node;
     }
@@ -353,10 +363,13 @@ TnmsTree::unsubscribe ( const std::string & name, TreeSubscriber * sub )
     char   lvl  = name.at(len-1);
     Node * node = NULL;
 
-    if ( len == 1 && lvl == '*' ) {
+    if ( len == 1 && lvl == '*' ) 
+    {
         _allSubs.erase(sub);
         _structureSubs.erase(sub);
-    } else if ( lvl == '/' ) {
+    } 
+    else if ( lvl == '/' ) 
+    {
         std::string  element = name;
 
         element.erase(len-1, 1);
@@ -370,7 +383,9 @@ TnmsTree::unsubscribe ( const std::string & name, TreeSubscriber * sub )
 
             node->getValue().levelSubscribers.erase(sub);
         }
-    } else {
+    }
+    else 
+    {
         node = _tree->find(name);
 
         if ( node == NULL ) 
@@ -446,7 +461,8 @@ TnmsTree::sweep ( TnmsTree::Node * node )
 
     _tree->depthFirstTraversal(node, sweep);
 
-    for ( nIter = sweep.nodes.begin(); nIter != sweep.nodes.end(); ++nIter ) {
+    for ( nIter = sweep.nodes.begin(); nIter != sweep.nodes.end(); ++nIter ) 
+    {
         StringSet  removes;
 
         nptr = (Node*) *nIter;
@@ -476,7 +492,8 @@ TnmsTree::updateSubscribers()
     NameNodeMap::iterator  mIter;
     NotifySet::iterator    cIter;
 
-    for ( mIter = _updates.begin(); mIter != _updates.end(); ++mIter ) {
+    for ( mIter = _updates.begin(); mIter != _updates.end(); ++mIter ) 
+    {
         Node * node   = mIter->second;
         Node * parent = node->getParent();
 
@@ -536,6 +553,13 @@ TnmsTree::size() const
 }
 
 
+bool
+TnmsTree::empty() const
+{
+    return _tree->empty();
+}
+
+
 void
 TnmsTree::clearNodeErase ( TnmsTree::Node * node )
 {
@@ -543,8 +567,8 @@ TnmsTree::clearNodeErase ( TnmsTree::Node * node )
 
     TnmsTree::Node * nptr = node;
 
-    while ( nptr ) {
-
+    while ( nptr ) 
+    {
         if ( ! nptr->getValue().erase )
             break;
 
@@ -603,7 +627,8 @@ TnmsTree::debugDump() const
 
     LogFacility::LogMessage("TnmsTree::debugDump(): " + StringUtils::toString(_tree->size()));
 
-    for ( nIter = flattenedTree.nodes.begin(); nIter != flattenedTree.nodes.end(); ++nIter ) {
+    for ( nIter = flattenedTree.nodes.begin(); nIter != flattenedTree.nodes.end(); ++nIter ) 
+    {
         LogFacility::Message  msg;
         msg << "    Node: " << "  " << (*nIter)->getValue().metric.getElementName();
         if ( (*nIter)->getValue().erase )
@@ -628,7 +653,8 @@ TnmsTree::debugDump ( const std::string & name ) const
     std::list<TnmsTree::Node*>::iterator nIter;
     LogFacility::LogMessage("TnmsTree::debugDump() for " + name);
     
-    for ( nIter = flattenedTree.nodes.begin(); nIter != flattenedTree.nodes.end(); ++nIter ) {
+    for ( nIter = flattenedTree.nodes.begin(); nIter != flattenedTree.nodes.end(); ++nIter ) 
+    {
         LogFacility::Message  msg;
         msg << "    Node: " << "  " << (*nIter)->getValue().metric.getElementName();
         if ( (*nIter)->getValue().erase )

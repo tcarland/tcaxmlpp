@@ -98,7 +98,8 @@ class HeirarchicalStringTree {
     bool            erase  ( Node * node,
                              OutputIterator_ outIter );
 
-    int             size() const;
+    int             size()  const;
+    bool            empty() const;
     void            clear();
 
 

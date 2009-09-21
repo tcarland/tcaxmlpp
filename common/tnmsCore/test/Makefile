@@ -18,7 +18,7 @@ OBJS =
 TEST_OBJS =     tree_test.o oid_test.o msg_test.o \
 		msg_server.o msg_client.o
 
-BIN =           treetest oidtest msgtest msgsvr msgclient
+BIN =           treetest oidtest msgtest msgsvr msgclient vertest
 ALL_OBJS =      $(OBJS) $(TEST_OBJS)
 ALL_BINS =      $(BIN)
 

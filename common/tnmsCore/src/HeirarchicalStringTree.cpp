@@ -161,6 +161,14 @@ HeirarchicalStringTree<ValueType>::size() const
 
 
 template<typename ValueType>
+bool
+HeirarchicalStringTree<ValueType>::empty() const
+{
+    return(_size == 0);
+}
+
+
+template<typename ValueType>
 typename HeirarchicalStringTree<ValueType>::Node*
 HeirarchicalStringTree<ValueType>::find ( const std::string & absoluteName )
 {
