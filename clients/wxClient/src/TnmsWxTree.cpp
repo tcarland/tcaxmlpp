@@ -328,29 +328,29 @@ TnmsWxTree::SyncTree()
 {
     ClientSubscriber * notifier = _stree->notifier;
 
-    if ( _visible->empty() )
-        _stree->tree->subscribe("/", _stree->notifier);
-
-    if ( ! notifier->haveUpdates() )
+    if ( ! notifier->haveUpdates() && ! _visible->empty() )
         return;
 
     if ( ! notifier->trylock() )
         return;
 
-    LogFacility::LogMessage("SyncTree() has updates");
+    if ( _visible->empty() )
+        _stree->tree->subscribe("/", _stree->notifier);
+
+    LogFacility::LogMessage("TnmsWxTree::SyncTree() ");
 
     TreeUpdateSet::iterator  nIter;
     TreeRemoveSet::iterator  rIter;
-    Node *      tnode;
 
+    Node *           tnode;
     wxString         name;
     wxTreeItemId     pid, id;
 
     TreeUpdateSet & adds = notifier->adds;
+
     for ( nIter = adds.begin(); nIter != adds.end(); )
     {
         TnmsTree::Node * node = *nIter;
-        //wxString         name = wxString::FromAscii(node->getAbsoluteName().c_str());
 
         if ( node->getValue().erase ) {
             adds.erase(nIter++);
@@ -407,6 +407,8 @@ TnmsWxTree::SyncTree()
 
         updates.erase(nIter++);
     }
+
+    _stree->tree->debugDump();
 
     _stree->notifier->unlock();
 

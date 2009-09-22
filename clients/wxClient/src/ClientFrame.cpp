@@ -196,6 +196,17 @@ ClientFrame::OnDelete ( wxCommandEvent & event )
 void
 ClientFrame::OnTimer ( wxTimerEvent & event )
 {    
+    ClientMap::iterator  cIter;
+    for ( cIter = _clientMap.begin(); cIter != _clientMap.end(); ++cIter )
+    {
+        ClientInstance & clin = cIter->second;
+
+        if ( clin.client->isAuthorized() && ! clin.req ) 
+        {
+            _stree->tree->request("*", _stree->notifier);
+            clin.req = true;
+        }
+    }
     _tree->SyncTree();
 }
 

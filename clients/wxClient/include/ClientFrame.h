@@ -51,7 +51,7 @@ class ClientFrame : public wxFrame {
 
         std::string  servername;
         uint16_t     port;
-
+        bool         req;
         TnmsClient*  client;
 
         ClientInstance() : port(0), client(NULL) {}

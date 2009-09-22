@@ -22,7 +22,7 @@ namespace tnmsCore {
 
 TnmsMetric::TnmsMetric()
     : TnmsMessage(METRIC_MESSAGE),
-      _valType(TNMS_NONE),
+      _valType(TNMS_UINT64),
       _value(0),
       _valueAvg(0),
       _valueT(0),
@@ -32,7 +32,7 @@ TnmsMetric::TnmsMetric()
 
 TnmsMetric::TnmsMetric ( const std::string & name )
     : TnmsMessage(name, METRIC_MESSAGE),
-      _valType(TNMS_NONE),
+      _valType(TNMS_UINT64),
       _value(0),
       _valueAvg(0),
       _valueT(0),
@@ -43,7 +43,7 @@ TnmsMetric::TnmsMetric ( const std::string & name )
 TnmsMetric::TnmsMetric ( const std::string & name,
                          const TnmsOid     & oid )
     : TnmsMessage(name, oid, METRIC_MESSAGE),
-      _valType(TNMS_NONE),
+      _valType(TNMS_UINT64),
       _value(0),
       _valueAvg(0),
       _valueT(0),
@@ -203,7 +203,7 @@ TnmsMetric::serialize ( char * buffer, size_t  buffer_len ) const
     wt   += pk;
     wptr += pk;
 
-    // val len + value
+    // val len + value + avg
     if ( _valType == TNMS_STRING ) {
         pk = Serializer::Pack(wptr, (wsz-wt), _valueStr);
         if ( pk < 0 )
@@ -218,12 +218,14 @@ TnmsMetric::serialize ( char * buffer, size_t  buffer_len ) const
         wt   += pk;
         wptr += pk;
 
+        // value
         pk = Serializer::Pack(wptr, (wsz-wt), _value);
         if ( pk < 0 )
             return -1;
         wt   += pk;
         wptr += pk;
 
+        // value avg
         pk = Serializer::Pack(wptr, (wsz-wt), _valueAvg);
         if ( pk < 0 )
             return -1;
@@ -231,18 +233,21 @@ TnmsMetric::serialize ( char * buffer, size_t  buffer_len ) const
         wptr += pk;
     }
 
+    // samples
     pk = Serializer::Pack(wptr, (wsz-wt), _samples);
     if ( pk < 0 )
         return -1;
     wt   += pk;
     wptr += pk;
 
+    // timestamp
     pk = Serializer::Pack(wptr, (wsz-wt), _timestamp);
     if ( pk < 0 )
         return -1;
     wt   += pk;
     wptr += pk;
 
+    // private data
     pk   = Serializer::Pack(wptr, (wsz-wt), _pvt);
     if ( pk < 0 )
         return -1;
@@ -258,8 +263,8 @@ TnmsMetric::deserialize ( const char * buffer, size_t  buffer_len )
     const char * rptr;
     ssize_t      upk;
     size_t       rsz, rd = 0;
-    uint16_t     value_type = 0;
-    uint32_t     vallen = 0;
+    uint16_t     type    = 0;
+    uint32_t     vallen  = 0;
 
     if ( buffer_len < this->size() )
         return -1;
@@ -267,26 +272,30 @@ TnmsMetric::deserialize ( const char * buffer, size_t  buffer_len )
     rptr  = buffer;
     rsz   = buffer_len;
 
+    // oidlen + oid
     upk   = this->_element_oid.deserialize(rptr, (rsz-rd));
     if ( upk < 0 )
         return -1;
     rd   += upk;
     rptr += upk;
 
+    // element name
     upk   = Serializer::Unpack(rptr, (rsz-rd), _element_name);
     if ( upk < 0 )
         return -1;
     rd   += upk;
     rptr += upk;
 
-    upk   = Serializer::Unpack(rptr, (rsz-rd), value_type);
+    // value type
+    upk   = Serializer::Unpack(rptr, (rsz-rd), type);
     if ( upk < 0 )
         return -1;
     rd   += upk;
     rptr += upk;
 
-    this->_valType = (eValueType) value_type;
+    this->_valType = (eValueType) type;
 
+    // value len + value + avg
     if ( _valType == TNMS_STRING ) {
         upk = Serializer::Unpack(rptr, (rsz-rd), _valueStr);
         if ( upk < 0 )
@@ -294,6 +303,7 @@ TnmsMetric::deserialize ( const char * buffer, size_t  buffer_len )
         rd   += upk;
         rptr += upk;
     } else if ( _valType > 0 ) {
+        // val len
         upk = Serializer::Unpack(rptr, (rsz-rd), vallen);
         if ( upk < 0 )
             return -1;
@@ -303,12 +313,14 @@ TnmsMetric::deserialize ( const char * buffer, size_t  buffer_len )
         if ( vallen != sizeof(_value) )
             return -1;
 
+        // value
         upk = Serializer::Unpack(rptr, (rsz-rd), _value);
         if ( upk < 0 )
             return -1;
         rd   += upk;
         rptr += upk;
 
+        // value avg
         upk = Serializer::Unpack(rptr, (rsz-rd), _valueAvg);
         if ( upk < 0 )
             return -1;
@@ -316,19 +328,22 @@ TnmsMetric::deserialize ( const char * buffer, size_t  buffer_len )
         rptr += upk;
 
     }
-        
+    
+    // samples
     upk = Serializer::Unpack(rptr, (rsz-rd), _samples);
     if ( upk < 0 )
         return -1;
     rd   += upk;
     rptr += upk;
- 
+    
+    // timestamp
     upk = Serializer::Unpack(rptr, (rsz-rd), _timestamp);
     if ( upk < 0 )
         return -1;
     rd   += upk;
     rptr += upk;
 
+    // private data
     upk   = Serializer::Unpack(rptr, (rsz-rd), _pvt);
     if ( upk < 0 )
         return -1;
@@ -344,8 +359,10 @@ TnmsMetric::size() const
     size_t  sz  = 0;
 
     sz   = _element_name.length() +_element_oid.size()
-        + _valueStr.length() + _pvt.length();
-    sz  += (5 * sizeof(uint32_t)) + (2 * sizeof(uint64_t)) + sizeof(uint16_t);
+        + _valueStr.length() + _pvt.length() + (3 * sizeof(uint32_t));  // string fields
+    sz  += (sizeof(uint16_t) + (3 * sizeof(uint32_t))); // type, len, samples, ts
+    sz  += (2 * sizeof(uint64_t));  // value, valueavg
+    //sz  += (5 * sizeof(uint32_t)) + (2 * sizeof(uint64_t)) + sizeof(uint16_t);
 
     return sz;
 }
