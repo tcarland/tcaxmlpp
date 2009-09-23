@@ -400,6 +400,8 @@ TnmsBase::reconfigure ( const time_t & now )
         LogFacility::LogToStream(_logName, "TnmsAPI::reconfigure using 'local' config.");
     }
 
+    configHandler.setDebug(_debug);
+
     if ( ! configHandler.parse() )
         return TNMSERR_CONFIG;
 
@@ -572,6 +574,7 @@ void
 TnmsBase::set_debug ( bool debug )
 {
     _debug = debug;
+    LogFacility::SetDebug(_debug);
 }
 
 
