@@ -4,8 +4,8 @@
 
     <TnmsAuthd
         agent_name="TnmsAuth"
-        tnms_port="15701"
-        soap_port="15702"
+        tnms_port="15901"
+        soap_port="15902"
 
         logfile="tnms-authd.log"
         syslog="false"
