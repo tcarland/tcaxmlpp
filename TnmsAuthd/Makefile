@@ -19,7 +19,6 @@ INCLUDES=       -Iinclude -I.
 
 BIN=		tnmsauthd
 
-#GSOAP_OBJS =	soapC.o $(GSOAP_DIR)/stdsoap2.o soapTnmsAuthProxy.o soapTnmsAuthService.o
 GSOAP_OBJS =	soapC.o $(GSOAP_DIR)/stdsoap2.o soapServer.o soapClient.o
 SOAP_OBJS =     src/soap_implementation.o
 
@@ -33,12 +32,14 @@ ALL_OBJS=	$(GSOAP_OBJS) $(SOAP_OBJS) $(OBJS)
 ALL_BINS=	$(BIN)
 
 
-all: gsoap tnmsauthd
+all: soap tnmsauthd
+soap: gsoap
 
 include $(TOPDIR)/tcamake/project_defs
 
 gsoap:
 	$(GSOAP_DIR)/bin/soapcpp2 -I$(GSOAP_DIR) include/soap_definitions.h
+	@echo
 
 gsoap-clean:
 	$(RM) soapC.* soapServer.* soapServerLib.* soapClient.* \
