@@ -4,9 +4,9 @@
 #include <string>
 
 
-#include "tnms.nsmap"
-#include "soaptnmsService.h"
-
+#include "soapH.h"
+//#include "soapTnmsAuthService.h"
+//#include "TnmsAuth.nsmap"
 
 namespace tnmsauth {
 
@@ -24,10 +24,11 @@ class SoapClient {
 
     class SoapClientFactory {
       public:
+
         explicit SoapClientFactory() {}
         virtual ~SoapClientFactory() {}
 
-        virtual SoapClient* operator() ( const int & fd, tnmsService * tsoap )
+        virtual SoapClient* operator() ( const int & fd, struct soap * tsoap )
         {
             return( new SoapClient(fd, tsoap) );
         }
@@ -35,7 +36,7 @@ class SoapClient {
 
   protected:
     
-    SoapClient ( const int & fd, tnmsService * tsoap );
+    SoapClient ( const int & fd, struct soap * tsoap );
 
   public:
 
@@ -62,7 +63,7 @@ class SoapClient {
 
   protected:
 
-    tnmsService*        _soap;
+    struct soap*        _soap;
     int                 _fd;
 
     std::string         _pem;

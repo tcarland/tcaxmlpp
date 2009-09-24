@@ -118,12 +118,12 @@ AuthDbThread::authenticate ( const std::string & username,
             break;
     }
 
-    if ( tick )
+    if ( gotit )
         this->dbStoreTicket(sql, userdb);
 
     _dbpool->release(sql);
 
-    return true;
+    return gotit;
 }
 
 
@@ -209,11 +209,40 @@ AuthDbThread::expireTicket ( const std::string & username,
 
 //----------------------------------------------------------------
 
+bool
+AuthDbThread::isAuthorized ( const std::string & username,
+                             const std::string & ticket,
+                             const std::string & ipaddr, 
+                             const std::string & resource )
+{
+    return true;
+}
+
+bool
+AuthDbThread::authorizations ( const std::string & username,
+                               const std::string & ticket,
+                               const std::string & ipaddr, 
+                               StringList        & authlist )
+{
+    return true;
+}
+
 bool          
 AuthDbThread::getAuthTypes ( StringList & authtypes )
 {
     return true;
 }
+
+bool
+AuthDbThread::getCollectors ( const std::string & username,
+                              const std::string & ticket,
+                              const std::string & ipaddr, 
+                              StringList        & serverlist )
+{
+    return true;
+}
+
+//----------------------------------------------------------------
 
 void 
 AuthDbThread::setMinConns ( int conns )
@@ -284,16 +313,32 @@ AuthDbThread::clearUser ( const std::string & username )
 
 //----------------------------------------------------------------
 
+TnmsDbFilter*
+AuthDbThread::findAuthFilter ( uint32_t gid )
+{
+    TnmsDbFilter * filter = NULL;
+
+    AuthFilterMap::iterator  fIter;
+    
+    fIter = _filterMap.find(gid);
+    if ( fIter != _filterMap.end() )
+        filter = fIter->second;
+
+    return filter;
+}
+
+//----------------------------------------------------------------
+
 TnmsDbUser*
 AuthDbThread::queryUser ( SqlSessionInterface * session,
                           const std::string   & username )
 {
-    TnmsDbUser * user = NULL;
-    
-    SqlSession * sql = (SqlSession*) session;
-    Query        query = sql->newQuery();
-    Result       res;
-    Row          row;
+    ThreadAutoMutex  mutex(_lock);
+    TnmsDbUser *     user = NULL;
+    SqlSession *     sql = (SqlSession*) session;
+    Query            query = sql->newQuery();
+    Result           res;
+    Row              row;
 
     query << "SELECT u.uid, u.gid, u.authtype_id, u.username, u.internal "
           << "g.name, m.method_name, m.authbin_name "
@@ -312,6 +357,7 @@ AuthDbThread::queryUser ( SqlSessionInterface * session,
     }
 
     Result::iterator  rIter = res.begin();
+
     row  = (Row) *rIter;
     user = new TnmsDbUser();
     user->username    = username;
@@ -363,7 +409,6 @@ AuthDbThread::queryAuthFilter ( SqlSessionInterface * session, uint32_t gid )
         this->querySubtree(session, sid, filter);
     }
 
-    ThreadAutoMutex  mutex(_lock);
     _filterMap[gid] = filter;
 
     return filter;
@@ -609,7 +654,7 @@ AuthDbThread::dbClearTickets ( SqlSessionInterface * session, StringList & stale
 
 
 std::string
-AuthDbFilter::createFilter ( TnmsDbFilter * filter )
+AuthDbThread::createFilter ( TnmsDbFilter * filter )
 {
     std::ostringstream  fstr;
 

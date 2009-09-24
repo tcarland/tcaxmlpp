@@ -37,7 +37,7 @@ class TnmsAuthdManager : public EventTimerHandler {
 
   public:
 
-    TnmsAuthdManager();
+    TnmsAuthdManager ( const std::string & config );
     virtual ~TnmsAuthdManager();
 
 
@@ -58,6 +58,8 @@ class TnmsAuthdManager : public EventTimerHandler {
     
     const
     std::string& getErrorStr() const;
+    static const
+    std::string& Version();
 
 
   protected:
@@ -103,6 +105,7 @@ class TnmsAuthdManager : public EventTimerHandler {
     bool                                _usr;
     bool                                _debug;
 
+    static std::string                  _Version;
 };
 
   

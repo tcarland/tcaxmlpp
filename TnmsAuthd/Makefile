@@ -3,6 +3,7 @@ TOPDIR = ..
 NEED_TCASQLPP = 1
 NEED_TNMSCORE = 1
 NEED_TNMSSESSION = 1
+NEED_PTHREADS = 1
 NEED_ZLIB = 1
 NEED_LIBXML2 = 1
 NEED_GSOAP = 1
@@ -18,8 +19,9 @@ INCLUDES=       -Iinclude -I.
 
 BIN=		tnmsauthd
 
-GSOAP_OBJS=	soapC.o ${GSOAP_DIR}/stdsoap2.o soaptnmsProxy.o soaptnmsService.o
-SOAP_OBJS=	src/soap_imlementation.o
+#GSOAP_OBJS =	soapC.o $(GSOAP_DIR)/stdsoap2.o soapTnmsAuthProxy.o soapTnmsAuthService.o
+GSOAP_OBJS =	soapC.o $(GSOAP_DIR)/stdsoap2.o soapServer.o soapClient.o
+SOAP_OBJS =     src/soap_implementation.o
 
 OBJS=		src/TnmsAuthdManager.o  \
 		src/SoapIOHandler.o src/SoapClient.o src/SoapThread.o \
@@ -27,7 +29,7 @@ OBJS=		src/TnmsAuthdManager.o  \
 		src/AuthDbThread.o \
 		src/tnmsauthd.o
 
-ALL_OBJS=	${GSOAP_OBJS} ${SOAP_OJBS} $(OBJS)
+ALL_OBJS=	$(GSOAP_OBJS) $(SOAP_OBJS) $(OBJS)
 ALL_BINS=	$(BIN)
 
 
@@ -36,13 +38,13 @@ all: gsoap tnmsauthd
 include $(TOPDIR)/tcamake/project_defs
 
 gsoap:
-	${GSOAP_DIR}/bin/soapcpp2 -I${GSOAP_DIR} -i include/soap_definitions.h
+	$(GSOAP_DIR)/bin/soapcpp2 -I$(GSOAP_DIR) include/soap_definitions.h
 
 gsoap-clean:
 	$(RM) soapC.* soapServer.* soapServerLib.* soapClient.* \
 	soapClientLib.* soapStub.h soapH.h $(GSOAP_DIR)/*.d
 	$(RM) *req.xml *res.xml *.wsdl *.xsd *.nsmap
-	$(RM) soaptnms*
+	$(RM) soapTnmsAuth*
 
 tnmsauthd: $(ALL_OBJS)
 	$(make-cxxbin-rule)

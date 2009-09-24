@@ -2,10 +2,14 @@
 
 #include "SoapClient.h"
 
+#include "soapStub.h"
+#include "TnmsAuth.nsmap"
+
 #include "CidrUtils.h"
 #include "StringUtils.h"
 #include "LogFacility.h"
 using namespace tcanetpp;
+
 
 
 namespace tnmsauth {
@@ -14,7 +18,7 @@ namespace tnmsauth {
 SoapClient::SoapClientFactory SoapClient::factory;
 
 
-SoapClient::SoapClient ( const int & fd, tnmsService * tsoap )
+SoapClient::SoapClient ( const int & fd, struct soap * tsoap )
     : _soap(tsoap),
       _fd(fd),
       _svr(false),
@@ -24,20 +28,20 @@ SoapClient::SoapClient ( const int & fd, tnmsService * tsoap )
 }
 
 SoapClient::SoapClient ( const std::string & pemfile )
-    : _soap(new tnmsService()),
+    : _soap(NULL),
       _fd(-1),
       _pem(pemfile),
       _ipaddr(0),
       _svr(false),
       _ssl(false)
 {
-    //this->_soap = soap_new();
+    this->_soap = soap_new();
 }
 
 
 SoapClient::~SoapClient()
 {
-    /*
+    
     if ( _soap ) {
         if ( ! _svr ) {
             soap_destroy(_soap);
@@ -46,8 +50,8 @@ SoapClient::~SoapClient()
         soap_done(_soap);
         ::free(_soap);
     }
-    */
-    delete _soap;
+    
+    //delete _soap;
 }
 
 
@@ -57,8 +61,8 @@ SoapClient::handle_event()
     if ( LogFacility::GetDebug() )
         LogFacility::LogMessage("SoapClient::handle_event(): " + _ipaddr);
 
-    //if ( soap_serve(_soap) != SOAP_OK ) {
-    if ( _soap->serve() != SOAP_OK ) {
+    //if ( _soap->serve() != SOAP_OK ) {
+    if ( soap_serve(_soap) != SOAP_OK ) {
         LogFacility::LogMessage("SoapClient::handle_event() soap error: " 
             + StringUtils::toString(_soap->error));
         return false;
@@ -102,8 +106,8 @@ SoapClient::bind ( uint16_t port, void * userobj )
 #endif
 
     _soap->user = userobj;
-    //_fd         = soap_bind(_soap, _ipaddr.c_str(), port, 20);
-    _fd        = _soap->bind(_ipaddr.c_str(), port, 20);
+    _fd         = soap_bind(_soap, _ipaddr.c_str(), port, 20);
+    //_fd        = _soap->bind(_ipaddr.c_str(), port, 20);
 
     if ( _fd < 0 ) {
         _errstr = "SoapClient::bind() failed";
@@ -117,20 +121,20 @@ SoapClient::bind ( uint16_t port, void * userobj )
 SoapClient*
 SoapClient::accept ( SoapClientFactory & factory )
 {
-    //struct soap * tsoap = NULL;
-    tnmsService * tsoap = NULL;
-    int           fd    = -1;
+    struct soap * tsoap = NULL;
+    //TnmsAuthService * tsoap = NULL;
+    int  fd  = -1;
 
-    //fd = soap_accept(_soap);
-    fd = _soap->accept();
+    fd = soap_accept(_soap);
+    //fd = _soap->accept();
 
     if ( fd < 0 ) 
         return NULL;
 
-    //tsoap       = soap_copy(_soap);
-    //tsoap->user = _soap->user;
-    tsoap       = _soap->copy();
+    tsoap       = soap_copy(_soap);
     tsoap->user = _soap->user;
+    //tsoap       = _soap->copy();
+    //tsoap->user = _soap->user;
 
 #ifdef WITH_OPENSSL
     if ( _pem.length() > 0 ) {
@@ -151,6 +155,11 @@ SoapClient::accept ( SoapClientFactory & factory )
     return( (SoapClient*) factory(fd, tsoap) );
 }
 
+SoapClient*
+SoapClient::accept()
+{
+    return this->accept(factory);
+}
 
 const int&
 SoapClient::getFD() const

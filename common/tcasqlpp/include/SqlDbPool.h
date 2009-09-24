@@ -21,6 +21,10 @@ namespace tcasqlpp {
 #define MAXIMUM_DB_CONNS   100
 #define DEFAULT_MAX_CONNS  30
 
+// hard limit to pool
+#ifndef HARDMAX_DB_CONNS
+#define HARDMAX_DB_CONNS   512
+#endif
 
 
 class SqlDbPool {
@@ -49,7 +53,7 @@ class SqlDbPool {
     SQLSI        acquire();
     void         release           ( SQLSI  conn );
 
-    void         maxConnections    ( int max );
+    bool         maxConnections    ( int max );
     int          maxConnections() const;
     void         minConnections    ( int min );
     int          minConnections() const;

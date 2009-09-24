@@ -61,11 +61,24 @@ class AuthDbThread : public tcanetpp::Thread {
     bool          expireTicket     ( const std::string & username,
                                      const std::string & ticket,
                                      const std::string & ipaddr );
+
+    bool          isAuthorized     ( const std::string & username,
+                                     const std::string & ticket,
+                                     const std::string & ipaddr,
+                                     const std::string & resource );
  
     /*  retrieves list of currently accepted authentication types */
 
     bool          getAuthTypes     ( StringList        & authtypes );
+    bool          authorizations   ( const std::string & username,
+                                     const std::string & ticket,
+                                     const std::string & ipaddr,
+                                     StringList        & authlist );
 
+    bool          getCollectors    ( const std::string & usrname,
+                                     const std::string & ticket,
+                                     const std::string & ipaddr,
+                                     StringList        & serverlist );
 
     /*  db pool attributes */
     void          setMinConns      ( int conns );

@@ -1,15 +1,11 @@
 #define _SOAP_IMPLEMENTATION_CPP_
 
-
 #include <string>
 
-
-#include "tnms.nsmap"
-//#include "soapH.h"
+#include "soapH.h"
 
 #include "CidrUtils.h"
 using namespace tcanetpp;
-
 
 #include "AuthDbThread.h"
 using namespace tnmsauth;
@@ -27,6 +23,7 @@ int ns1__authenticate ( soap            * s,
 {
     std::string  ticket, user, pass, ipaddr;
     size_t       ticket_len;
+    time_t       now  = ::time(NULL);
 
     AuthDbThread * authth = (AuthDbThread*) s->user;
 
@@ -37,7 +34,7 @@ int ns1__authenticate ( soap            * s,
     if ( ipaddress )
         ipaddr = ipaddress;
     
-    result.success = authth->authenticate(user, pass, ipaddr, ticket);
+    result.success = authth->authenticate(user, pass, ipaddr, now, ticket);
     ticket_len     = ticket.length();
 
     result.ticket = (char*) soap_malloc(s, ticket_len + 1);
@@ -45,20 +42,21 @@ int ns1__authenticate ( soap            * s,
 
     strncpy(result.ticket, ticket.c_str(), ticket_len);
 
-    result.timeout = TICKETD_TICKET_REFRESH_INTERVAL;
+    result.timeout = TICKET_REFRESH_INTERVAL;
     result.message = "tnmsauth";
 
     return SOAP_OK;
 }
 
 
-int ns1__refreshTicket ( soap         * s,
-                         xsd__string    username,
-                         xsd__string    ticket,
-                         xsd__string    ipaddress,
-                         xsd__boolean & result )
+int ns1__refresh ( soap         * s,
+                   xsd__string    username,
+                   xsd__string    ticket,
+                   xsd__string    ipaddress,
+                   xsd__boolean & result )
 {
     std::string  user, tk, ipaddr;
+    time_t       now  = ::time(NULL);
     
     AuthDbThread * authth = (AuthDbThread*) s->user;
 
@@ -69,17 +67,17 @@ int ns1__refreshTicket ( soap         * s,
     if ( ipaddress )
         ipaddr = ipaddress;
 
-    result = authth->refreshTicket(user, tk, ipaddr);
+    result = authth->refreshTicket(user, tk, ipaddr, now);
 
     return SOAP_OK;
 }
 
 
-int ns1__expireTicket ( soap         * s,
-                        xsd__string    username,
-		        xsd__string    ticket,
-		        xsd__string    ipaddress,
-		        xsd__boolean & result )
+int ns1__expire ( soap         * s,
+                  xsd__string    username,
+                  xsd__string    ticket,
+                  xsd__string    ipaddress,
+                  xsd__boolean & result )
 {
     std::string  user, tick, ipaddr;
     
@@ -131,7 +129,7 @@ int ns1__authorized ( soap         * s,
 		      xsd__string    resourcename,
 		      xsd__boolean & result)
 {
-    std::string  user, tk, ipaddr, resource;
+    std::string   user, tk, ipaddr, resource;
     
     AuthDbThread * authth = (AuthDbThread*) s->user;
 
@@ -144,10 +142,10 @@ int ns1__authorized ( soap         * s,
     if ( ipaddress )
         ipaddr = ipaddress;
 
-    result = authth->isAuthentic(user, tick, ipaddr);
+    result = authth->isAuthentic(user, tk, ipaddr);
 
     if ( result ) 
-        result = authth->isAuthorized(user, resource);
+        result = authth->isAuthorized(user, tk, ipaddr, resource);
 
     return SOAP_OK;
 }
@@ -175,20 +173,20 @@ int ns1__getAuthorizations ( soap        * s,
 
     StringList   authlist;
 
-    if ( ! authth->authorizations(user, authlist) )
+    if ( ! authth->authorizations(user, tk, ipaddr, authlist) )
         return SOAP_OK;
 
     StringList::iterator  sIter;
 
-    result._return.__size = authlist.size();
-    result._return.__ptr  = (char**) soap_malloc(s, (sizeof(char*) * authlist.size()));
+    result.result.size = authlist.size();
+    result.result.ptr  = (char**) soap_malloc(s, (sizeof(char*) * authlist.size()));
  
     // this makes my head hurt
     int  i = 0;
     for ( sIter = authlist.begin(); sIter != authlist.end(); ++sIter, ++i ) {
-        result._return.__ptr[i] = (char*) soap_malloc(s, sIter->length()+ 1);
-        strncpy(result._return.__ptr[i], sIter->c_str(), sIter->length());
-        result._return.__ptr[i][sIter->length()] = '\0';
+        result.result.ptr[i] = (char*) soap_malloc(s, sIter->length()+ 1);
+        strncpy(result.result.ptr[i], sIter->c_str(), sIter->length());
+        result.result.ptr[i][sIter->length()] = '\0';
     }
     
     return SOAP_OK;
@@ -222,19 +220,19 @@ int ns1__getCollectorList ( soap * s,
 
     StringList   reflist;
 
-    if ( ! authth->getCollectors(user, reflist) )
+    if ( ! authth->getCollectors(user, tk, ipaddr, reflist) )
         return SOAP_OK;
 
     StringList::iterator  sIter;
 
-    result._return.__size = reflist.size();
-    result._return.__ptr  = (char**) soap_malloc(s, (sizeof(char*) * reflist.size()));
+    result.result.size = reflist.size();
+    result.result.ptr  = (char**) soap_malloc(s, (sizeof(char*) * reflist.size()));
 
     int i = 0;
     for ( sIter = reflist.begin(); sIter != reflist.end(); ++sIter, ++i ) {
-        result._return.__ptr[i] = (char*) soap_malloc(s, sIter->length() + 1);
-        strncpy(result._return.__ptr[i], sIter->c_str(), sIter->length());
-        result._return.__ptr[i][sIter->length()] = '\0';
+        result.result.ptr[i] = (char*) soap_malloc(s, sIter->length() + 1);
+        strncpy(result.result.ptr[i], sIter->c_str(), sIter->length());
+        result.result.ptr[i][sIter->length()] = '\0';
     }
 
     return SOAP_OK;
@@ -272,14 +270,14 @@ int ns1__getAuthTypesList ( soap * s,
 
     StringList::iterator  sIter;
 
-    result._return.__size = reflist.size();
-    result._return.__ptr  = (char**) soap_malloc(s, (sizeof(char*) * reflist.size()));
+    result.result.size = reflist.size();
+    result.result.ptr  = (char**) soap_malloc(s, (sizeof(char*) * reflist.size()));
 
     int i = 0;
     for ( sIter = reflist.begin(); sIter != reflist.end(); ++sIter, ++i ) {
-        result._return.__ptr[i] = (char*) soap_malloc(s, sIter->length() + 1);
-        strncpy(result._return.__ptr[i], sIter->c_str(), sIter->length());
-        result._return.__ptr[i][sIter->length()] = '\0';
+        result.result.ptr[i] = (char*) soap_malloc(s, sIter->length() + 1);
+        strncpy(result.result.ptr[i], sIter->c_str(), sIter->length());
+        result.result.ptr[i][sIter->length()] = '\0';
     }
 
     return SOAP_OK;

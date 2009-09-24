@@ -154,27 +154,6 @@ SqlDbPool::release ( SqlSessionInterface * conn )
 
 
 int
-SqlDbPool::flush()
-{
-    int  cleared = 0;
-
-    this->lock();
-
-    if ( _dbin.size() > (u_int) _mincnt ) {
-        SqlSessionInterface * conn = _dbin.front();
-        _dbin.pop_front();
-        if ( conn )
-            delete conn;
-        cleared++;
-    }
-    _conncnt -= cleared;
-
-    this->unlock();
-
-    return cleared;
-}
-
-int
 SqlDbPool::connsAvailable()
 {
     int cnt = 0;
@@ -204,16 +183,22 @@ SqlDbPool::connsCreated()
     return(conns);
 }
 
-void
+bool
 SqlDbPool::maxConnections ( int max )
 {
+    bool  result  = false;
+
     this->lock();
-
-    if ( max < _mincnt )
-        _mincnt = max;
-    _maxcnt = max;
-
+    if ( max <= HARDMAX_DB_CONNS ) 
+    {
+        if ( max < _mincnt )
+            _mincnt = max;
+        _maxcnt = max;
+        result  = true;
+    }
     this->unlock();
+
+    return result;
 }
 
 int
@@ -243,6 +228,7 @@ SqlDbPool::minConnections() const
     return _mincnt;
 }
 
+ 
 void
 SqlDbPool::createInstances()
 {
@@ -278,6 +264,27 @@ SqlDbPool::createInstances()
     }
 
     return;
+}
+
+int
+SqlDbPool::flush()
+{
+    int  cleared = 0;
+
+    this->lock();
+
+    if ( _dbin.size() > (u_int) _mincnt ) {
+        SqlSessionInterface * conn = _dbin.front();
+        _dbin.pop_front();
+        if ( conn )
+            delete conn;
+        cleared++;
+    }
+    _conncnt -= cleared;
+
+    this->unlock();
+
+    return cleared;
 }
 
 bool

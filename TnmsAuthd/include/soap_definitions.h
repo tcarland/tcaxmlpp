@@ -7,8 +7,8 @@
 #include <vector>
 
 
-//gsoap ns1 service name: tnms
-//gsoap ns1 service namespace: urn:tnms
+//gsoap ns1 service name: TnmsAuth
+//gsoap ns1 service namespace: urn:tnms-auth
 
 /*  service port: http://localhost:8080  */
 
@@ -49,12 +49,12 @@ int  ns1__refresh       ( xsd__string       username,
                           xsd__string       ipaddress,
                           xsd__boolean    & result);
 
-int  ns1_expire         ( xsd__string       username,
+int  ns1__expire        ( xsd__string       username,
                           xsd__string       ticket,
                           xsd__string       ipaddress,
                           xsd__boolean    & result );
 
-int  ns1_isAuthentic    ( xsd__string       username,
+int  ns1__isAuthentic   ( xsd__string       username,
                           xsd__string       ticket,
                           xsd__string       ipaddress,
                           xsd__boolean    & result );
@@ -71,22 +71,22 @@ struct ns1__AuthorizationList
     xsd__boolean   isInclude;
 };
 
-struct ns1__getAuthorizationResponse
+struct ns1__getAuthorizationsResponse
 {
     struct ns1__AuthorizationList  result;
 };
 
 
-int  ns1__isAuthorized ( xsd__string    username,
-                         xsd__string    ticket,
-                         xsd__string    ipaddress,
-                         xsd__string    resource,
-                         xsd__boolean & result );
+int  ns1__authorized ( xsd__string    username,
+                       xsd__string    ticket,
+                       xsd__string    ipaddress,
+                       xsd__string    resource,
+                       xsd__boolean & result );
 
 int  ns1__getAuthorizations ( xsd__string    username,
                               xsd__string    ticket,
                               xsd__string    ipaddress,
-                              struct ns1__getAuthorizationResponse & result );
+                              struct ns1__getAuthorizationsResponse & result );
 
 
 //--------------------------------------------------------------------//

@@ -22,9 +22,10 @@ using namespace tcasqlpp;
 
 namespace tnmsauth {
 
+std::string TnmsAuthdManager::_Version = "TnmsAuthdManager: v0.15";
 
 
-TnmsAuthdManager::TnmsAuthdManager() 
+TnmsAuthdManager::TnmsAuthdManager ( const std::string & config ) 
     : _evmgr(new tcanetpp::EventManager()),
       _tree(new tnmsCore::TnmsTree()),
       _authDb(NULL),
@@ -38,6 +39,7 @@ TnmsAuthdManager::TnmsAuthdManager()
       _reportDelay(30),
       _logCheck(3600),
       _today(0),
+      _configfile(config),
       _alarm(false),
       _hup(false),
       _usr(false),
@@ -243,8 +245,8 @@ TnmsAuthdManager::parseConfig ( const std::string & cfg, const time_t & now )
             delete _sql;
 
         _sql    = (SqlSessionInterface*) new SqlSession(acfg.db_name,
-														acfg.db_host,
-														acfg.db_user,
+                                                        acfg.db_host,
+                                                        acfg.db_user,
                                                         acfg.db_pass,
                                                         acfg.db_port);
         _authDb = new AuthDbThread(_sql);
@@ -326,7 +328,11 @@ TnmsAuthdManager::logRotate ( std::string logfile, const time_t & now )
     return;
 }
 
-
+const std::string&
+TnmsAuthdManager::Version()
+{
+    return _Version;
+}
 
 
 }  // namespace
