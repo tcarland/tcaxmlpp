@@ -10,7 +10,7 @@
 #define TESTPASS  "myuserpass"
 
 
-//#define DEFAULT_URL      "https://localhost:2981"
+//#define DEFAULT_URL      "https://localhost:15990"
 #define DEFAULT_URL      "http://localhost:15999"
 #define DEFAULT_TIMEOUT  30
 
@@ -47,7 +47,7 @@ class TestAuthThread : public tcanetpp::Thread {
 
         user = TESTUSER;
         pw   = TESTPASS;
-        ip   = "1.1.1.1";
+        ip   = "0.0.0.0";
 
         const char * action = "";
 
