@@ -1,8 +1,6 @@
 #ifndef _INCLUDE_SOAPCLIENT_H_
 #define _INCLUDE_SOAPCLIENT_H_
 
-#include <string>
-
 #include "soapH.h"
 
 
@@ -38,8 +36,7 @@ class SoapClient {
 
   public:
 
-    SoapClient();
-    SoapClient ( const std::string & pemfile );
+    SoapClient ( const std::string & pemfile = "" );
 
     virtual ~SoapClient();
 
@@ -67,7 +64,7 @@ class SoapClient {
 
     std::string         _pem;
     std::string         _ipaddr;
-    std::string         _errstr;
+    std::string         _errStr;
 
     bool                _isSvr;
 };

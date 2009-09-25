@@ -27,19 +27,10 @@ SoapClient::SoapClient ( const int & fd, struct soap * tsoap )
     _ipaddr = CidrUtils::ntop(ntohl(tsoap->ip));
 }
 
-SoapClient::SoapClient()
-    : _soap(soap_new()),
-      _fd(-1),
-      _ipaddr(0),
-      _isSvr(false)
-{
-}
-
 SoapClient::SoapClient ( const std::string & pemfile )
     : _soap(soap_new()),
       _fd(-1),
       _pem(pemfile),
-      _ipaddr(0),
       _isSvr(false)
 {
 }
@@ -95,13 +86,14 @@ SoapClient::bind ( uint16_t port, void * userobj )
 #ifdef WITH_OPENSSL
     if ( _pem.length() > 0 ) {
         if ( ! FileUtils::IsReadable(_pem) ) {
-            _errstr = "SoapClient SSL PEM file not readable";
+            _errStr = "SoapClient SSL PEM file not readable";
             return -1;
         } else {
+            soap_ssl_init(); 
             if ( soap_ssl_server_context(_soap, SOAP_SSL_DEFAULT, _pem.c_str(), 
                                          NULL, NULL, NULL, NULL, NULL, NULL) ) 
             {
-                _errstr = "SoapClient::bind() SSL context init failed";
+                _errStr = "SoapClient::bind() SSL context init failed";
                 return -1;
             }
         }
@@ -113,7 +105,7 @@ SoapClient::bind ( uint16_t port, void * userobj )
     //_fd        = _soap->bind(_ipaddr.c_str(), port, 20);
 
     if ( _fd < 0 ) {
-        _errstr = "SoapClient::bind() failed";
+        _errStr = "SoapClient::bind() failed";
         return _fd;
     }
 
@@ -141,9 +133,9 @@ SoapClient::accept ( SoapClientFactory & factory )
 
 #ifdef WITH_OPENSSL
     if ( _pem.length() > 0 ) {
-        if (soap_ssl_accept(tsoap) != SOAP_OK) {
-            _errstr = "  Error in soap_ssl_accept() "; 
-            _errstr.append(StringUtils::toString(tsoap->error));
+        if ( soap_ssl_accept(tsoap) != SOAP_OK ) {
+            _errStr = "  Error in soap_ssl_accept() "; 
+            _errStr.append(StringUtils::toString(tsoap->error));
             soap_destroy(tsoap);
             soap_end(tsoap);
             soap_done(tsoap);
@@ -178,7 +170,7 @@ SoapClient::getAddrStr() const
 const std::string&
 SoapClient::getErrorStr() const
 {
-    return _errstr;
+    return _errStr;
 }
 
 bool
