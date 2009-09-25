@@ -7,6 +7,7 @@
 
 #include "CidrUtils.h"
 #include "StringUtils.h"
+#include "FileUtils.h"
 #include "LogFacility.h"
 using namespace tcanetpp;
 
@@ -91,7 +92,7 @@ SoapClient::bind ( uint16_t port, void * userobj )
 
 #ifdef WITH_OPENSSL
     if ( _pem.length() > 0 ) {
-        if ( ! FileUtils::isReadable(_pem.c_str()) ) {
+        if ( ! FileUtils::IsReadable(_pem) ) {
             _errstr = "SoapClient SSL PEM file not readable";
             return -1;
         } else {
