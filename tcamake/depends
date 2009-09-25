@@ -83,7 +83,7 @@ INCLUDES    += -I/usr/include/libxml2
 endif
 
 ifdef NEED_OPENSSL
-OPENSSL_HOME = $(TOPDIR)/common/ext/openssl
+OPENSSL_HOME = $(TOPDIR)/common/ext/openssl-0.9.8k
 INCLUDES    += -I$(OPENSSL_HOME)/include
 LFLAGS      += -L$(OPENSSL_HOME)
 CFLAGS      += -DWITH_OPENSSL
