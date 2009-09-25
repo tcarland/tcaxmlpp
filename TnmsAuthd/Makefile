@@ -39,8 +39,8 @@ soap: gsoap
 include $(TOPDIR)/tcamake/project_defs
 
 gsoap:
-	$(MKDIR) soap
-	$(GSOAP_DIR)/bin/linux386/soapcpp2 -dsoap -I$(GSOAP_DIR) include/soap_definitions.h
+	@if [ ! -d soap ]; then $(MKDIR) soap; \
+	$(GSOAP_DIR)/bin/linux386/soapcpp2 -dsoap -I$(GSOAP_DIR) include/soap_definitions.h; fi
 	@echo
 
 gsoap-clean:
@@ -51,7 +51,7 @@ tnmsauthd: $(ALL_OBJS)
 	$(make-cxxbin-rule)
 	@echo
 
-clean:
+clean:	
 	$(RM) $(ALL_OBJS) \
 	*.d *.D *.o src/*.d src/*.D src/*.bd src/*.o
 
