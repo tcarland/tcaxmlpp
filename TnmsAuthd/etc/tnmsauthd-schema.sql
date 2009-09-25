@@ -2,15 +2,15 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
 
-CREATE SCHEMA IF NOT EXISTS `tnms` ;
-USE `tnms`;
+CREATE SCHEMA IF NOT EXISTS `tnmsauth` ;
+USE `tnmsauth`;
 
 -- -----------------------------------------------------
--- Table `tnms`.`auth_types`
+-- Table `tnmsauth`.`auth_types`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `tnms`.`auth_types` ;
+DROP TABLE IF EXISTS `tnmsauth`.`auth_types` ;
 
-CREATE  TABLE IF NOT EXISTS `tnms`.`auth_types` (
+CREATE  TABLE IF NOT EXISTS `tnmsauth`.`auth_types` (
   `authtype_id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
   `method_name` VARCHAR(255) NOT NULL ,
   `authbin_name` VARCHAR(255) NOT NULL ,
@@ -21,11 +21,11 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `tnms`.`groups`
+-- Table `tnmsauth`.`groups`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `tnms`.`groups` ;
+DROP TABLE IF EXISTS `tnmsauth`.`groups` ;
 
-CREATE  TABLE IF NOT EXISTS `tnms`.`groups` (
+CREATE  TABLE IF NOT EXISTS `tnmsauth`.`groups` (
   `gid` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(255) NOT NULL ,
   `description` VARCHAR(255) NULL DEFAULT NULL ,
@@ -37,11 +37,11 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `tnms`.`authorizations`
+-- Table `tnmsauth`.`authorizations`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `tnms`.`authorizations` ;
+DROP TABLE IF EXISTS `tnmsauth`.`authorizations` ;
 
-CREATE  TABLE IF NOT EXISTS `tnms`.`authorizations` (
+CREATE  TABLE IF NOT EXISTS `tnmsauth`.`authorizations` (
   `subtree_id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
   `subtree_name` VARCHAR(255) NOT NULL ,
   `isInclude` TINYINT NOT NULL ,
@@ -53,11 +53,11 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `tnms`.`users`
+-- Table `tnmsauth`.`users`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `tnms`.`users` ;
+DROP TABLE IF EXISTS `tnmsauth`.`users` ;
 
-CREATE  TABLE IF NOT EXISTS `tnms`.`users` (
+CREATE  TABLE IF NOT EXISTS `tnmsauth`.`users` (
   `uid` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
   `gid` INT UNSIGNED NOT NULL ,
   `authtype_id` INT UNSIGNED NOT NULL ,
@@ -72,12 +72,12 @@ CREATE  TABLE IF NOT EXISTS `tnms`.`users` (
   INDEX `users_authtype_FKidx` (`authtype_id` ASC) ,
   CONSTRAINT `fk_users_gid`
     FOREIGN KEY (`gid` )
-    REFERENCES `tnms`.`groups` (`gid` )
+    REFERENCES `tnmsauth`.`groups` (`gid` )
     ON DELETE RESTRICT
     ON UPDATE RESTRICT,
   CONSTRAINT `fk_users_auth`
     FOREIGN KEY (`authtype_id` )
-    REFERENCES `tnms`.`auth_types` (`authtype_id` )
+    REFERENCES `tnmsauth`.`auth_types` (`authtype_id` )
     ON DELETE RESTRICT
     ON UPDATE RESTRICT)
 ENGINE = InnoDB
@@ -85,18 +85,18 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `tnms`.`user_configs`
+-- Table `tnmsauth`.`user_configs`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `tnms`.`user_configs` ;
+DROP TABLE IF EXISTS `tnmsauth`.`user_configs` ;
 
-CREATE  TABLE IF NOT EXISTS `tnms`.`user_configs` (
+CREATE  TABLE IF NOT EXISTS `tnmsauth`.`user_configs` (
   `uid` INT UNSIGNED NOT NULL ,
   `config` LONGBLOB NOT NULL ,
   PRIMARY KEY (`uid`) ,
   INDEX `fk_user_configs_users1` (`uid` ASC) ,
   CONSTRAINT `fk_user_configs_users1`
     FOREIGN KEY (`uid` )
-    REFERENCES `tnms`.`users` (`uid` )
+    REFERENCES `tnmsauth`.`users` (`uid` )
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
@@ -104,11 +104,11 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `tnms`.`tickets`
+-- Table `tnmsauth`.`tickets`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `tnms`.`tickets` ;
+DROP TABLE IF EXISTS `tnmsauth`.`tickets` ;
 
-CREATE  TABLE IF NOT EXISTS `tnms`.`tickets` (
+CREATE  TABLE IF NOT EXISTS `tnmsauth`.`tickets` (
   `username` VARCHAR(255) NOT NULL ,
   `ticket` VARCHAR(255) NOT NULL ,
   `ipaddress` VARCHAR(255) NOT NULL ,
@@ -118,11 +118,11 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `tnms`.`properties`
+-- Table `tnmsauth`.`properties`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `tnms`.`properties` ;
+DROP TABLE IF EXISTS `tnmsauth`.`properties` ;
 
-CREATE  TABLE IF NOT EXISTS `tnms`.`properties` (
+CREATE  TABLE IF NOT EXISTS `tnmsauth`.`properties` (
   `name` VARCHAR(32) NOT NULL DEFAULT '' ,
   `value` INT UNSIGNED NOT NULL DEFAULT '0' ,
   PRIMARY KEY (`name`) )
@@ -131,11 +131,11 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `tnms`.`mgr_usergroups`
+-- Table `tnmsauth`.`mgr_usergroups`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `tnms`.`mgr_usergroups` ;
+DROP TABLE IF EXISTS `tnmsauth`.`mgr_usergroups` ;
 
-CREATE  TABLE IF NOT EXISTS `tnms`.`mgr_usergroups` (
+CREATE  TABLE IF NOT EXISTS `tnmsauth`.`mgr_usergroups` (
   `mgr_uid` INT UNSIGNED NOT NULL ,
   `mgr_gid` INT UNSIGNED NOT NULL ,
   `is_superuser` TINYINT UNSIGNED NOT NULL DEFAULT 0 ,
@@ -145,23 +145,23 @@ CREATE  TABLE IF NOT EXISTS `tnms`.`mgr_usergroups` (
   INDEX `fk_mgr_gid` (`mgr_gid` ASC) ,
   CONSTRAINT `fk_mgr_uid`
     FOREIGN KEY (`mgr_uid` )
-    REFERENCES `tnms`.`users` (`uid` )
+    REFERENCES `tnmsauth`.`users` (`uid` )
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_mgr_gid`
     FOREIGN KEY (`mgr_gid` )
-    REFERENCES `tnms`.`groups` (`gid` )
+    REFERENCES `tnmsauth`.`groups` (`gid` )
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `tnms`.`access_filters`
+-- Table `tnmsauth`.`access_filters`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `tnms`.`access_filters` ;
+DROP TABLE IF EXISTS `tnmsauth`.`access_filters` ;
 
-CREATE  TABLE IF NOT EXISTS `tnms`.`access_filters` (
+CREATE  TABLE IF NOT EXISTS `tnmsauth`.`access_filters` (
   `filter_id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
   `ipaddress` VARCHAR(45) NOT NULL ,
   `description` VARCHAR(255) NULL DEFAULT NULL ,
@@ -171,11 +171,11 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `tnms`.`group_servers`
+-- Table `tnmsauth`.`group_servers`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `tnms`.`group_servers` ;
+DROP TABLE IF EXISTS `tnmsauth`.`group_servers` ;
 
-CREATE  TABLE IF NOT EXISTS `tnms`.`group_servers` (
+CREATE  TABLE IF NOT EXISTS `tnmsauth`.`group_servers` (
   `server_id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
   `gid` INT UNSIGNED NOT NULL ,
   `host` VARCHAR(45) NOT NULL ,
@@ -184,18 +184,18 @@ CREATE  TABLE IF NOT EXISTS `tnms`.`group_servers` (
   INDEX `fk_server_gid` (`gid` ASC) ,
   CONSTRAINT `fk_server_gid`
     FOREIGN KEY (`gid` )
-    REFERENCES `tnms`.`groups` (`gid` )
+    REFERENCES `tnmsauth`.`groups` (`gid` )
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `tnms`.`group_access_filters`
+-- Table `tnmsauth`.`group_access_filters`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `tnms`.`group_access_filters` ;
+DROP TABLE IF EXISTS `tnmsauth`.`group_access_filters` ;
 
-CREATE  TABLE IF NOT EXISTS `tnms`.`group_access_filters` (
+CREATE  TABLE IF NOT EXISTS `tnmsauth`.`group_access_filters` (
   `gid` INT UNSIGNED NOT NULL ,
   `filter_id` INT UNSIGNED NOT NULL ,
   PRIMARY KEY (`gid`, `filter_id`) ,
@@ -203,23 +203,23 @@ CREATE  TABLE IF NOT EXISTS `tnms`.`group_access_filters` (
   INDEX `fk_access_fid` (`filter_id` ASC) ,
   CONSTRAINT `fk_access_gid`
     FOREIGN KEY (`gid` )
-    REFERENCES `tnms`.`groups` (`gid` )
+    REFERENCES `tnmsauth`.`groups` (`gid` )
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_access_fid`
     FOREIGN KEY (`filter_id` )
-    REFERENCES `tnms`.`access_filters` (`filter_id` )
+    REFERENCES `tnmsauth`.`access_filters` (`filter_id` )
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `tnms`.`group_authorizations`
+-- Table `tnmsauth`.`group_authorizations`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `tnms`.`group_authorizations` ;
+DROP TABLE IF EXISTS `tnmsauth`.`group_authorizations` ;
 
-CREATE  TABLE IF NOT EXISTS `tnms`.`group_authorizations` (
+CREATE  TABLE IF NOT EXISTS `tnmsauth`.`group_authorizations` (
   `gid` INT UNSIGNED NOT NULL ,
   `subtree_id` INT UNSIGNED NOT NULL ,
   PRIMARY KEY (`gid`, `subtree_id`) ,
@@ -227,12 +227,12 @@ CREATE  TABLE IF NOT EXISTS `tnms`.`group_authorizations` (
   INDEX `fk_auth_sid` (`subtree_id` ASC) ,
   CONSTRAINT `fk_auth_gid`
     FOREIGN KEY (`gid` )
-    REFERENCES `tnms`.`groups` (`gid` )
+    REFERENCES `tnmsauth`.`groups` (`gid` )
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_auth_sid`
     FOREIGN KEY (`subtree_id` )
-    REFERENCES `tnms`.`authorizations` (`subtree_id` )
+    REFERENCES `tnmsauth`.`authorizations` (`subtree_id` )
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
