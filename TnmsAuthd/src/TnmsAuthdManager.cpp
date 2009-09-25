@@ -1,6 +1,6 @@
-#define _TNMSAUTH_TNMSAUTHDMANAGER_CPP_
+#define _TNMSAUTH_TNMSAUTHMANAGER_CPP_
 
-#include "TnmsAuthdManager.h"
+#include "TnmsAuthManager.h"
 
 #include "AuthDbThread.h"
 #include "AuthIOHandler.h"
@@ -22,10 +22,10 @@ using namespace tcasqlpp;
 
 namespace tnmsauth {
 
-std::string TnmsAuthdManager::_Version = "TnmsAuthdManager: v0.15";
+std::string TnmsAuthManager::_Version = "TnmsAuthManager: v0.15";
 
 
-TnmsAuthdManager::TnmsAuthdManager ( const std::string & config ) 
+TnmsAuthManager::TnmsAuthManager ( const std::string & config ) 
     : _evmgr(new tcanetpp::EventManager()),
       _tree(new tnmsCore::TnmsTree()),
       _authDb(NULL),
@@ -47,7 +47,7 @@ TnmsAuthdManager::TnmsAuthdManager ( const std::string & config )
 {}
 
 
-TnmsAuthdManager::~TnmsAuthdManager() 
+TnmsAuthManager::~TnmsAuthManager() 
 {
     delete _tree;
     delete _evmgr;
@@ -61,7 +61,7 @@ TnmsAuthdManager::~TnmsAuthdManager()
 
 
 void
-TnmsAuthdManager::run()
+TnmsAuthManager::run()
 {
     time_t  now = ::time(NULL);
 
@@ -69,7 +69,7 @@ TnmsAuthdManager::run()
 
     if ( _debug ) {
         LogFacility::OpenLogStream("stdout", "", &std::cout);
-        LogFacility::LogMessage("TnmsAuthdManager::run()");
+        LogFacility::LogMessage("TnmsAuthManager::run()");
         LogFacility::SetBroadcast(true);
     }
 
@@ -96,7 +96,7 @@ TnmsAuthdManager::run()
 }
 
 void
-TnmsAuthdManager::timeout ( const EventTimer * timer ) 
+TnmsAuthManager::timeout ( const EventTimer * timer ) 
 {
     const time_t & now = timer->abstime.tv_sec;
 
@@ -111,7 +111,7 @@ TnmsAuthdManager::timeout ( const EventTimer * timer )
 
     // internal metrics
     if ( timer->evid == _reportId ) {
-        LogFacility::LogMessage("TnmsAuthdManager::run()"); // <<add some stats
+        LogFacility::LogMessage("TnmsAuthManager::run()"); // <<add some stats
         return;
     }
 /*
@@ -148,51 +148,51 @@ TnmsAuthdManager::timeout ( const EventTimer * timer )
 }
 
 void
-TnmsAuthdManager::setAlarm()
+TnmsAuthManager::setAlarm()
 {
     this->_alarm = true;
 }
 
 
 void
-TnmsAuthdManager::setHUP()
+TnmsAuthManager::setHUP()
 {
     this->_hup = true;
 }
 
 
 void
-TnmsAuthdManager::setUSR()
+TnmsAuthManager::setUSR()
 {
     this->_usr = true;
 }
 
 void
-TnmsAuthdManager::setDebug ( bool d )
+TnmsAuthManager::setDebug ( bool d )
 {
     _debug = d;
 }
 
 
 const std::string&
-TnmsAuthdManager::getErrorStr() const
+TnmsAuthManager::getErrorStr() const
 {
     return this->_errstr;
 }
 
 
 bool
-TnmsAuthdManager::parseConfig ( const std::string & cfg, const time_t & now )
+TnmsAuthManager::parseConfig ( const std::string & cfg, const time_t & now )
 {
     TnmsConfigHandler  cfgmgr(cfg, TNMSAUTHD_CONFIG_ROOT);
     std::string        prefix    = TNMSAUTHD_CONFIG_ROOT;
 
     if ( ! cfgmgr.parse() ) {
         if ( LogFacility::IsOpen() ) {
-            LogFacility::LogMessage("TnmsAuthdManager::parseConfig() error: " 
+            LogFacility::LogMessage("TnmsAuthManager::parseConfig() error: " 
                     + cfgmgr.getErrorStr());
         } else {
-            fprintf(stderr, "TnmsAuthdManager::parseConfig() error: %s\n",
+            fprintf(stderr, "TnmsAuthManager::parseConfig() error: %s\n",
                     cfgmgr.getErrorStr().c_str());
         }
         return false;
@@ -303,7 +303,7 @@ TnmsAuthdManager::parseConfig ( const std::string & cfg, const time_t & now )
 }
 
 void
-TnmsAuthdManager::logRotate ( std::string logfile, const time_t & now )
+TnmsAuthManager::logRotate ( std::string logfile, const time_t & now )
 {
     if ( logfile.empty() ) 
         return;
@@ -329,7 +329,7 @@ TnmsAuthdManager::logRotate ( std::string logfile, const time_t & now )
 }
 
 const std::string&
-TnmsAuthdManager::Version()
+TnmsAuthManager::Version()
 {
     return _Version;
 }
@@ -338,5 +338,5 @@ TnmsAuthdManager::Version()
 }  // namespace
 
 
-// _TNMSAUTH_TNMSAUTHDMANAGER_CPP_
+// _TNMSAUTH_TNMSAUTHMANAGER_CPP_
 

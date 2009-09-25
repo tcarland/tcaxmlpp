@@ -13,7 +13,7 @@ extern "C" {
 #include "FileUtils.h"
 using namespace tcanetpp;
 
-#include "TnmsAuthdManager.h"
+#include "TnmsAuthManager.h"
 using namespace tnmsauth;
 
 
@@ -138,7 +138,7 @@ int main ( int argc, char **argv )
     signal(SIGHUP,  &sigHandler);
     signal(SIGUSR1, &sigHandler);
 
-    mgr = new TnmsAuthdManager(cfgfile);
+    mgr = new TnmsAuthManager(cfgfile);
     mgr->setDebug(debug);
     //mgr->setVerbose(verbose);
 

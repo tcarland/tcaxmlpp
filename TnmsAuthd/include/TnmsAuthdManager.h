@@ -1,5 +1,5 @@
-#ifndef TNMSAUTH_TNMSAUTHDMANAGER_H_
-#define TNMSAUTH_TNMSAUTHDMANAGER_H_
+#ifndef TNMSAUTH_TNMSAUTHMANAGER_H_
+#define TNMSAUTH_TNMSAUTHMANAGER_H_
 
 #include "Socket.h"
 #include "EventManager.h"
@@ -25,7 +25,7 @@ namespace tnmsauth {
 #define DEFAULT_REPORT_INTERVAL    30
 
 
-#define TNMSAUTHD_CONFIG_ROOT  "tnmsauthd"
+#define TNMSAUTHD_CONFIG_ROOT  "TnmsAuthd"
 
 class SoapClient;
 class SoapIOHandler;
@@ -33,12 +33,12 @@ class AuthIOHandler;
 class AuthDbThread;
 
 
-class TnmsAuthdManager : public EventTimerHandler {
+class TnmsAuthManager : public EventTimerHandler {
 
   public:
 
-    TnmsAuthdManager ( const std::string & config );
-    virtual ~TnmsAuthdManager();
+    TnmsAuthManager ( const std::string & config );
+    virtual ~TnmsAuthManager();
 
 
     // EventTimerHandler
@@ -111,5 +111,5 @@ class TnmsAuthdManager : public EventTimerHandler {
   
 }  // namespace
 
-#endif  //  TNMSAUTH_TNMSAUTHDMANAGER_H_
+#endif  //  TNMSAUTH_TNMSAUTHMANAGER_H_
 
