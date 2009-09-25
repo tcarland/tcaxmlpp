@@ -40,7 +40,7 @@ include $(TOPDIR)/tcamake/project_defs
 
 gsoap:
 	$(MKDIR) soap
-	$(GSOAP_DIR)/bin/soapcpp2 -dsoap -I$(GSOAP_DIR) include/soap_definitions.h
+	$(GSOAP_DIR)/bin/linux386/soapcpp2 -dsoap -I$(GSOAP_DIR) include/soap_definitions.h
 	@echo
 
 gsoap-clean:

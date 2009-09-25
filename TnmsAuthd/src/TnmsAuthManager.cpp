@@ -185,7 +185,7 @@ bool
 TnmsAuthManager::parseConfig ( const std::string & cfg, const time_t & now )
 {
     TnmsConfigHandler  cfgmgr(cfg, TNMSAUTHD_CONFIG_ROOT);
-    std::string        prefix    = TNMSAUTHD_CONFIG_ROOT;
+    std::string        prefix    = "tcanms";
 
     if ( ! cfgmgr.parse() ) {
         if ( LogFacility::IsOpen() ) {
@@ -284,7 +284,7 @@ TnmsAuthManager::parseConfig ( const std::string & cfg, const time_t & now )
         if ( _soap ) {
             _soap->close();
             _evmgr->removeEvent(_soapId);
-            // delete _soap;
+            delete _soap;
         }
 
         _soap = new SoapClient();

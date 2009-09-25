@@ -22,37 +22,39 @@ SoapClient::SoapClientFactory SoapClient::factory;
 SoapClient::SoapClient ( const int & fd, struct soap * tsoap )
     : _soap(tsoap),
       _fd(fd),
-      _svr(false),
-      _ssl(false)
+      _isSvr(false)
 {
     _ipaddr = CidrUtils::ntop(ntohl(tsoap->ip));
 }
 
+SoapClient::SoapClient()
+    : _soap(soap_new()),
+      _fd(-1),
+      _ipaddr(0),
+      _isSvr(false)
+{
+}
+
 SoapClient::SoapClient ( const std::string & pemfile )
-    : _soap(NULL),
+    : _soap(soap_new()),
       _fd(-1),
       _pem(pemfile),
       _ipaddr(0),
-      _svr(false),
-      _ssl(false)
+      _isSvr(false)
 {
-    this->_soap = soap_new();
 }
 
 
 SoapClient::~SoapClient()
 {
-    
     if ( _soap ) {
-        if ( ! _svr ) {
+        if ( ! _isSvr ) {
             soap_destroy(_soap);
             soap_end(_soap);
         }
         soap_done(_soap);
         ::free(_soap);
     }
-    
-    //delete _soap;
 }
 
 
@@ -87,7 +89,7 @@ SoapClient::bind ( uint16_t port, void * userobj )
     _soap->recv_timeout    = 45;
     _soap->max_keep_alive  = 100;
 
-    _svr    = true;
+    _isSvr    = true;
     _ipaddr = "0.0.0.0";
 
 #ifdef WITH_OPENSSL
@@ -149,7 +151,6 @@ SoapClient::accept ( SoapClientFactory & factory )
             return NULL;
         }
 
-        _ssl = true;;
     }
 #endif
 
@@ -183,7 +184,7 @@ SoapClient::getErrorStr() const
 bool
 SoapClient::sslEnabled() const
 {
-    return _ssl;
+    return(! _pem.empty());
 }
 
 

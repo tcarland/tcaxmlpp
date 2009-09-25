@@ -3,8 +3,6 @@
 
 #include <string.h>
 #include <time.h>
-#include <string>
-#include <vector>
 
 
 //gsoap ns1 service name: TnmsAuth
@@ -24,9 +22,8 @@ typedef unsigned int xsd__unsignedInt;
 // authenticate
 
 
-class ns1__AuthResult 
+struct ns1__AuthResult 
 {
-  public:
     xsd__string         ticket;
     xsd__string         message;
     xsd__boolean        success;
@@ -35,14 +32,14 @@ class ns1__AuthResult
 
 struct ns1__AuthResponse
 {
-    ns1__AuthResult     result;
+    struct ns1__AuthResult     result;
 };
 
 
 int  ns1__authenticate  ( xsd__string       username,
                           xsd__string       password,
                           xsd__string       ipaddress,
-                          ns1__AuthResult & result );
+                          struct ns1__AuthResponse & result );
 
 int  ns1__refresh       ( xsd__string       username,
                           xsd__string       ticket,

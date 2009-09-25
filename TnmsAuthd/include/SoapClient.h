@@ -3,10 +3,8 @@
 
 #include <string>
 
-
 #include "soapH.h"
-//#include "soapTnmsAuthService.h"
-//#include "TnmsAuth.nsmap"
+
 
 namespace tnmsauth {
 
@@ -40,7 +38,8 @@ class SoapClient {
 
   public:
 
-    SoapClient ( const std::string & pemfile = "" );
+    SoapClient();
+    SoapClient ( const std::string & pemfile );
 
     virtual ~SoapClient();
 
@@ -63,16 +62,14 @@ class SoapClient {
 
   protected:
 
-    struct soap*        _soap;
+    struct soap *       _soap;
     int                 _fd;
 
     std::string         _pem;
     std::string         _ipaddr;
     std::string         _errstr;
 
-    bool                _svr;
-    bool                _ssl;
-
+    bool                _isSvr;
 };
 
 

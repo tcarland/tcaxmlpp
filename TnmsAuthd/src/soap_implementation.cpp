@@ -15,14 +15,14 @@ using namespace tnmsauth;
 //--------------------------------------------------------------------//
 // authenticate
 
-int ns1__authenticate ( soap            * s,
-                        xsd__string       username, 
-		        xsd__string       password,
-		        xsd__string       ipaddress,
-		        ns1__AuthResult & result )
+int ns1__authenticate ( soap              * s,
+                        xsd__string         username, 
+		        xsd__string         password,
+		        xsd__string         ipaddress,
+		        ns1__AuthResponse & r )
 {
-    std::string  ticket, user, pass, ipaddr;
-    size_t       ticket_len;
+    std::string  ticket, user, pass, ipaddr, msg;
+    size_t       len;
     time_t       now  = ::time(NULL);
 
     AuthDbThread * authth = (AuthDbThread*) s->user;
@@ -34,16 +34,22 @@ int ns1__authenticate ( soap            * s,
     if ( ipaddress )
         ipaddr = ipaddress;
     
-    result.success = authth->authenticate(user, pass, ipaddr, now, ticket);
-    ticket_len     = ticket.length();
+    r.result.success = authth->authenticate(user, pass, ipaddr, now, ticket);
 
-    result.ticket = (char*) soap_malloc(s, ticket_len + 1);
-    result.ticket[ticket_len] = '\0';
+    len   = ticket.length();
+    r.result.ticket = (char*) soap_malloc(s, len + 1);
+    r.result.ticket[len] = '\0';
 
-    strncpy(result.ticket, ticket.c_str(), ticket_len);
+    strncpy(r.result.ticket, ticket.c_str(), len);
+    
+    msg = "tnmsauth";
+    len = msg.length();
+    r.result.message = (char*) soap_malloc(s, len + 1);
+    r.result.message[len] = '\0';
 
-    result.timeout = TICKET_REFRESH_INTERVAL;
-    result.message = "tnmsauth";
+    strncpy(r.result.message, msg.c_str(), len);
+
+    r.result.timeout = TICKET_REFRESH_INTERVAL;
 
     return SOAP_OK;
 }
@@ -155,7 +161,7 @@ int ns1__getAuthorizations ( soap        * s,
 			     xsd__string   username,
 			     xsd__string   ticket,
 			     xsd__string   ipaddress,
-			     struct ns1__getAuthorizationsResponse & result)
+			     struct ns1__getAuthorizationsResponse & r)
 {
     std::string  user, tk, ipaddr;
 
@@ -178,15 +184,15 @@ int ns1__getAuthorizations ( soap        * s,
 
     StringList::iterator  sIter;
 
-    result.result.size = authlist.size();
-    result.result.ptr  = (char**) soap_malloc(s, (sizeof(char*) * authlist.size()));
+    r.result.size = authlist.size();
+    r.result.ptr  = (char**) soap_malloc(s, (sizeof(char*) * authlist.size()));
  
     // this makes my head hurt
     int  i = 0;
     for ( sIter = authlist.begin(); sIter != authlist.end(); ++sIter, ++i ) {
-        result.result.ptr[i] = (char*) soap_malloc(s, sIter->length()+ 1);
-        strncpy(result.result.ptr[i], sIter->c_str(), sIter->length());
-        result.result.ptr[i][sIter->length()] = '\0';
+        r.result.ptr[i] = (char*) soap_malloc(s, sIter->length()+ 1);
+        strncpy(r.result.ptr[i], sIter->c_str(), sIter->length());
+        r.result.ptr[i][sIter->length()] = '\0';
     }
     
     return SOAP_OK;
@@ -202,7 +208,7 @@ int ns1__getCollectorList ( soap * s,
                             xsd__string username,
                             xsd__string ticket,
                             xsd__string ipaddress,
-                            struct ns1__getCollectorListResponse & result )
+                            struct ns1__getCollectorListResponse & r )
 {    
     std::string  user, tk, ipaddr;
 
@@ -225,14 +231,14 @@ int ns1__getCollectorList ( soap * s,
 
     StringList::iterator  sIter;
 
-    result.result.size = reflist.size();
-    result.result.ptr  = (char**) soap_malloc(s, (sizeof(char*) * reflist.size()));
+    r.result.size = reflist.size();
+    r.result.ptr  = (char**) soap_malloc(s, (sizeof(char*) * reflist.size()));
 
     int i = 0;
     for ( sIter = reflist.begin(); sIter != reflist.end(); ++sIter, ++i ) {
-        result.result.ptr[i] = (char*) soap_malloc(s, sIter->length() + 1);
-        strncpy(result.result.ptr[i], sIter->c_str(), sIter->length());
-        result.result.ptr[i][sIter->length()] = '\0';
+        r.result.ptr[i] = (char*) soap_malloc(s, sIter->length() + 1);
+        strncpy(r.result.ptr[i], sIter->c_str(), sIter->length());
+        r.result.ptr[i][sIter->length()] = '\0';
     }
 
     return SOAP_OK;
@@ -247,7 +253,7 @@ int ns1__getAuthTypesList ( soap * s,
                             xsd__string username,
                             xsd__string ticket,
                             xsd__string ipaddress,
-                            struct ns1__getAuthTypesListResponse & result )
+                            struct ns1__getAuthTypesListResponse & r )
 {    
     std::string  user, tk, ipaddr;
 
@@ -270,14 +276,14 @@ int ns1__getAuthTypesList ( soap * s,
 
     StringList::iterator  sIter;
 
-    result.result.size = reflist.size();
-    result.result.ptr  = (char**) soap_malloc(s, (sizeof(char*) * reflist.size()));
+    r.result.size = reflist.size();
+    r.result.ptr  = (char**) soap_malloc(s, (sizeof(char*) * reflist.size()));
 
     int i = 0;
     for ( sIter = reflist.begin(); sIter != reflist.end(); ++sIter, ++i ) {
-        result.result.ptr[i] = (char*) soap_malloc(s, sIter->length() + 1);
-        strncpy(result.result.ptr[i], sIter->c_str(), sIter->length());
-        result.result.ptr[i][sIter->length()] = '\0';
+        r.result.ptr[i] = (char*) soap_malloc(s, sIter->length() + 1);
+        strncpy(r.result.ptr[i], sIter->c_str(), sIter->length());
+        r.result.ptr[i][sIter->length()] = '\0';
     }
 
     return SOAP_OK;
