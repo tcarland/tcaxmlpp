@@ -15,11 +15,11 @@ endif
 OPT_FLAGS= 	-g
 
 LIBS=
-INCLUDES=       -Iinclude -I.
+INCLUDES=       -Iinclude -Isoap 
 
 BIN=		tnmsauthd
 
-GSOAP_OBJS =	soapC.o $(GSOAP_DIR)/stdsoap2.o soapServer.o soapClient.o
+GSOAP_OBJS =	soap/soapC.o $(GSOAP_DIR)/stdsoap2.o soap/soapServer.o soap/soapClient.o
 SOAP_OBJS =     src/soap_implementation.o
 
 OBJS=		src/TnmsAuthdManager.o  \
@@ -38,14 +38,13 @@ soap: gsoap
 include $(TOPDIR)/tcamake/project_defs
 
 gsoap:
-	$(GSOAP_DIR)/bin/soapcpp2 -I$(GSOAP_DIR) include/soap_definitions.h
+	$(MKDIR) soap
+	$(GSOAP_DIR)/bin/soapcpp2 -dsoap -I$(GSOAP_DIR) include/soap_definitions.h
 	@echo
 
 gsoap-clean:
-	$(RM) soapC.* soapServer.* soapServerLib.* soapClient.* \
-	soapClientLib.* soapStub.h soapH.h $(GSOAP_DIR)/*.d
-	$(RM) *req.xml *res.xml *.wsdl *.xsd *.nsmap
-	$(RM) soapTnmsAuth*
+	$(RM) $(GSOAP_DIR)/*.d
+	$(RM) soap
 
 tnmsauthd: $(ALL_OBJS)
 	$(make-cxxbin-rule)

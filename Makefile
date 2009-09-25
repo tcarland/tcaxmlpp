@@ -5,7 +5,8 @@ include ./tcamake/build_defs
 
 # ------------------------
 
-all: print-env external common TnmsApi tnmsd tnms-console wxClient
+all: print-env external common TnmsApi tnmsd tnmsauthd \
+	tnms-console wxClient
 
 
 print-env:
