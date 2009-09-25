@@ -29,8 +29,8 @@ soap: gsoap
 include $(TOPDIR)/tcamake/project_defs
 
 gsoap:
-	$(MKDIR) soap
-	$(GSOAP_DIR)/bin/soapcpp2 -dsoap -I$(GSOAP_DIR) ../include/soap_definitions.h
+	@if [ ! -d soap ]; then $(MKDIR) soap; \
+	$(GSOAP_BIN)/soapcpp2 -dsoap -I$(GSOAP_DIR) ../include/soap_definitions.h; fi
 	@echo
 
 gsoap-clean:

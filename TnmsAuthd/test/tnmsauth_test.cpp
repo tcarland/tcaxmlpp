@@ -37,13 +37,13 @@ class TestAuthThread : public tcanetpp::Thread {
     void run()
     {
         std::string  user, pw, tk, ip;
-        int          r = 0;
+        int          ret = 0;
 
-        struct ns1__AuthResult result;
-        result.ticket  = 0;
-        result.message = 0;
-        result.success = false;
-        result.timeout = 0;
+        struct ns1__AuthResponse  r;
+        r.result.ticket  = 0;
+        r.result.message = 0;
+        r.result.success = false;
+        r.result.timeout = 0;
 
         user = TESTUSER;
         pw   = TESTPASS;
@@ -55,10 +55,10 @@ class TestAuthThread : public tcanetpp::Thread {
         char  * passc = strdup(pw.c_str());
         char  * addrc = strdup(ip.c_str());
 
-        r = soap_call_ns1__authenticate(_soap, _url.c_str(), action,
-            userc, passc, addrc, result);
+        ret = soap_call_ns1__authenticate(_soap, _url.c_str(), action,
+            userc, passc, addrc, r);
 
-        if ( r != SOAP_OK )
+        if ( ret != SOAP_OK )
         {
             _result = 2;
             _errStr = "Fatal error in soap call: ";
@@ -66,7 +66,7 @@ class TestAuthThread : public tcanetpp::Thread {
             return;
         }
 
-        if  ( result.success )
+        if  ( r.result.success )
             _result = 6;
         else
             _result = 3;
@@ -97,7 +97,7 @@ class TestAuthThread : public tcanetpp::Thread {
 static 
 const char TNMSAUTHTEST_VERSION [] = "0.10";
 static
-const char process [] = "auth_validate";
+const char process [] = "tnmsauth_test";
 
 
 

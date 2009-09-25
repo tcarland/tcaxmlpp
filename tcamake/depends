@@ -150,6 +150,7 @@ endif
 
 ifdef NEED_GSOAP
 GSOAP_DIR = $(TOPDIR)/common/ext/gsoap-2.7.14/gsoap
+GSOAP_BIN = $(GSOAP_DIR)/bin/linux386
 INCLUDES += -I${GSOAP_DIR}
 endif
 

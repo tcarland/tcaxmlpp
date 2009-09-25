@@ -13,7 +13,7 @@ int ns1__authenticate ( soap            * s,
                         xsd__string       username, 
 		        xsd__string       password,
 		        xsd__string       ipaddress,
-		        ns1__AuthResult & result )
+		        ns1__AuthResponse & result )
 {
     return SOAP_NO_METHOD;
 }
