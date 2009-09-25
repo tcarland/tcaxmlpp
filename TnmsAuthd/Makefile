@@ -6,6 +6,7 @@ NEED_TNMSSESSION = 1
 NEED_PTHREADS = 1
 NEED_ZLIB = 1
 NEED_LIBXML2 = 1
+NEED_OPENSSL = 1
 NEED_GSOAP = 1
 
 ifdef USE_MYSQL
@@ -48,12 +49,16 @@ gsoap-clean:
 
 tnmsauthd: $(ALL_OBJS)
 	$(make-cxxbin-rule)
+	@echo
 
 clean:
 	$(RM) $(ALL_OBJS) \
 	*.d *.D *.o src/*.d src/*.D src/*.bd src/*.o
 
-distclean: clean gsoap-clean
+test-clean:
+	( cd test; make distclean )
+
+distclean: clean gsoap-clean test-clean
 	$(RM) $(ALL_BINS)
 
 install:
