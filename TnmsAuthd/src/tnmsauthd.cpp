@@ -21,13 +21,13 @@ static const
 char process[] = "tnmsauthd";
 
 
-TnmsAuthdManager * mgr = NULL;
+TnmsAuthManager * mgr = NULL;
 
 
 
 void version()
 {
-    printf("%s Version: %s\n", process, TnmsAuthdManager::Version().c_str());
+    printf("%s Version: %s\n", process, TnmsAuthManager::Version().c_str());
     exit(0);
 }
 

@@ -23,7 +23,7 @@ BIN=		tnmsauthd
 GSOAP_OBJS =	soap/soapC.o $(GSOAP_DIR)/stdsoap2.o soap/soapServer.o soap/soapClient.o
 SOAP_OBJS =     src/soap_implementation.o
 
-OBJS=		src/TnmsAuthdManager.o  \
+OBJS=		src/TnmsAuthManager.o  \
 		src/SoapIOHandler.o src/SoapClient.o src/SoapThread.o \
 		src/AuthIOHandler.o src/AuthdClient.o \
 		src/AuthDbThread.o \
