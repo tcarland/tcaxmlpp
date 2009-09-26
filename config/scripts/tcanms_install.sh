@@ -28,19 +28,22 @@ if [ -z "$TCANMS_PREFIX" ]; then
 fi
 
 CONFIGDIR=$CURDIR
+
 echo ""
+echo "$MYNAME: "
 if [ -z "$RC_TCANMS_BASHRC" ]; then
     if [ -e $CONFIGDIR/tcanmsrc ]; then
-        echo "Using rc file from $CONFIGDIR"
+        echo "  Using rc from: $CONFIGDIR"
         source $CONFIGDIR/tcanmsrc
     elif [ -e $HOME/tcanmsrc ]; then
-        echo "Using rc file from $HOME"
+        echo "  Using rc from: $HOME"
         source $HOME/tcanmsrc
     else
         echo "Failed to locate rc file"
         exit 1
     fi
 fi
+echo ""
 
 # remap our destination
 export TCANMS_HOME="${TCANMS_PREFIX}"
@@ -69,19 +72,20 @@ init_db()
     echo "" >> $SQL
 
     if [ ${TCANMS_USEDB} == "mysql" ]; then
-        echo " executing mysql init script '$SQL' "
+        echo "  Executing mysql init script '$SQL' "
         mysql -u root -p < $SQL
     fi
 
     return 1
 }
 
+
 init_env_configs()
 {
     local cfgenv=$1
     local cfghost=$2
 
-    if [ -z "$cfgenv"] || [ -z "$cfghost" ]; then
+    if [ -z "$cfgenv" ] || [ -z "$cfghost" ]; then
         echo "Invalid environment settings"
         return -1
     fi
@@ -89,13 +93,34 @@ init_env_configs()
     local cfgpath="$CONFIGDIR/../environment/$cfgenv/$cfghost/"
     local target="$TCANMS_PREFIX/"
 
-    echo "rsync -av $cfgpath $target"
+    echo "  Syncing configs from '$cfgenv/$cfghost'"
 
     if [ -d $cfgpath ]; then
-        rsync -av $cfgpath $target
+        rsync -r $cfgpath $target
+    else
+        echo " Error, path not valid: $cfgpath"
+        return -1
     fi
 
     return 1
+}
+
+createSubdirs()
+{
+    local subdir=
+
+    for subdir in $PATHLIST; do
+        if [ ! -d $subdir ]; then
+            mkdir -p $subdir
+            RETVAL=$?
+        fi
+        if [ $RETVAL -eq 1 ]; then
+            break
+        fi
+        chown $TCANMS_USER $subdir
+        chgrp $TCANMS_USER $subdir
+        chmod g+w $subdir
+    done
 }
 
 
@@ -107,9 +132,9 @@ usage()
     echo "   -D | --database    : generate and run database init script "
     echo "   -h | --help        : display this help and exit"
     echo "   -v | --version     : display verion info and exit"
-    echo "   -e | --environment : argument matching environment name $(TOPDIR)/config/environment"
+    echo "   -e | --environment : argument matching environment name ../config/environment/name"
     echo "   -t | --target      : target host configs to sync (requires -e)"
-    echo "   -f | --force       : force overwrite of install target '$(TCANMS_PREFIX)'"
+    echo "   -f | --force       : force overwrite of install target '${TCANMS_PREFIX}'"
     echo ""
     echo "   The 'environment' flag will sync the configs for the provided environment and host."
     echo "   The script will by default use the environment variable TCANMS_PREFIX as the "
@@ -133,6 +158,7 @@ ${PREFIX}/logs ${PREFIX}/run"
 
 INITDB=
 ENVIR=
+FORCE=
 HOST=localhost
 
 while [ $# -gt 0 ]; do
@@ -143,6 +169,9 @@ while [ $# -gt 0 ]; do
         -e|--environment)
             ENVIR="$2"
             shift
+            ;;
+        -f|--force)
+            FORCE="true"
             ;;
         -t|--target)
             HOST="$2"
@@ -168,21 +197,29 @@ if [ -z "$PREFIX" ]; then
 fi
 
 if [ -d $PREFIX ]; then
-    echo "Install directory '$PREFIX' already exists. Continuing.."
+    if [ -n "$FORCE" ]; then
+        echo "  Install directory '$PREFIX' already exists. Continuing.."
+    else
+        echo "Error: Install directory '$PREFIX' exists."
+        echo "Use the '--force' option to overwrite"
+        exit 1
+    fi
 fi
 
 
-echo "Creating directory structure in '$PREFIX'"
+echo "  Creating directory structure in '$PREFIX'"
+createSubdirs
 
-for SUBDIR in $PATHLIST; do
-    if [ ! -d $SUBDIR ]; then
-        mkdir -p $SUBDIR
-        RETVAL=$?
-    fi
-    if [ $RETVAL -eq 1 ]; then
-        break
-    fi
-done
+
+if [ -n "$INITDB" ] && [ -n "$TCANMS_USEDB" ]; then
+    init_db
+fi
+
+
+if [ -n "$ENVIR" ]; then
+    init_env_configs $ENVIR $HOST
+fi
+
 
 if [ $RETVAL -eq 1 ]; then
     echo "$MYNAME: finished with errors."
@@ -191,13 +228,6 @@ else
 fi
 echo ""
 
-if [ -n "$INITDB" ] && [ -n "$TCANMS_USEDB" ]; then
-    init_db
-fi
-
-if [ -n "$ENVIR" ]; then
-    init_env_configs $ENVIR $HOST
-fi
 
 exit $RETVAL
 
