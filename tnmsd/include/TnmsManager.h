@@ -49,8 +49,10 @@ class TnmsManager : public EventTimerHandler {
     void                setHUP();
     void                setUSR();
 
-    void                setDebug  ( bool d = true );
+    void                setDebug   ( bool d = true );
     bool                getDebug() const;
+    void                setVerbose ( bool v = true );
+    bool                getVerbose() const;
                         
     const std::string&  getErrorStr() const;
 
@@ -122,6 +124,7 @@ class TnmsManager : public EventTimerHandler {
     bool                        _hup;
     bool                        _usr;
     bool                        _debug;
+    bool                        _verbose;
 
 };
 

@@ -38,7 +38,8 @@ TnmsManager::TnmsManager ( const std::string & configfile )
       _configfile(configfile),
       _hup(false),
       _usr(false),
-      _debug(false)
+      _debug(false),
+      _verbose(false)
 {}
 
 
@@ -61,7 +62,7 @@ TnmsManager::run()
 
     LogFacility::SetLogTime(now);
 
-    if ( _debug ) {
+    if ( _verbose ) {
         LogFacility::OpenLogStream("stdout", "", &std::cout);
         LogFacility::LogMessage("TnmsManager::run()");
         LogFacility::SetBroadcast(true);
@@ -382,6 +383,17 @@ TnmsManager::getDebug() const
     return this->_debug;
 }
 
+void
+TnmsManager::setVerbose ( bool v )
+{
+    this->_verbose = v;
+}
+
+bool
+TnmsManager::getVerbose() const
+{
+    return this->_verbose;
+}
 
 const std::string&
 TnmsManager::getErrorStr() const

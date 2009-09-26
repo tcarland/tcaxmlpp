@@ -16,7 +16,7 @@ fi
 if [ -n "$TCANMS_HOME" ] && [ -d $TCANMS_HOME ]; then
     SYSHOME="$TCANMS_HOME"
 fi
-if [ -z "$SYSHOME" ] && [ -d "$TCANMS_PREFIX" ]; then
+if [ -z "$SYSHOME" ] && [ -d $TCANMS_PREFIX ]; then
     SYSHOME="$TCANMS_PREFIX"
 fi
 if [ -z "$SYSHOME" ]; then
@@ -52,7 +52,7 @@ fi
 
 
 
-if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ${SYSHOME}/sbin/init.tcanms_functions.sh ]; then
+if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ${SYSHOME}/bin/init.tcanms_functions.sh ]; then
     source ${SYSHOME}/bin/init.tcanms_functions.sh
 fi
 if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ./bin/init.tcanms_functions.sh ]; then
