@@ -100,7 +100,6 @@ class TnmsAuthManager : public EventTimerHandler {
     std::string                         _logname;
     std::string                         _errstr;
 
-    bool                                _alarm;
     bool                                _hup;
     bool                                _usr;
     bool                                _debug;

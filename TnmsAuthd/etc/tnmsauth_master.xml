@@ -13,9 +13,9 @@
         debug="true"
 
         db_host="localhost"
-        db_name="tnms"
-        db_user="tnms"
-        db_pass="tnmssql11b"
+        db_name="tnmsauth"
+        db_user="tnmsauth"
+        db_pass="tnmsauth11b"
 
         soap_timeout="120"
         max_connections="500"

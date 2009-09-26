@@ -40,7 +40,6 @@ TnmsAuthManager::TnmsAuthManager ( const std::string & config )
       _logCheck(3600),
       _today(0),
       _configfile(config),
-      _alarm(false),
       _hup(false),
       _usr(false),
       _debug(false)
@@ -86,6 +85,9 @@ TnmsAuthManager::run()
 
     //  Enter Main Loop
     _evmgr->eventLoop();
+
+    if ( _authDb && _authDb->isRunning() )
+        _authDb->stop();
 
     if ( _debug )
         LogFacility::RemoveLogStream("stdout");
@@ -150,7 +152,7 @@ TnmsAuthManager::timeout ( const EventTimer * timer )
 void
 TnmsAuthManager::setAlarm()
 {
-    this->_alarm = true;
+    this->_evmgr->setAlarm();
 }
 
 

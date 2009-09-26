@@ -35,6 +35,7 @@ distclean: clean
 
 install:
 ifdef TCANMS_PREFIX
+	$(CP) $(BIN) $(TCANMS_PREFIX)/bin
 	@echo
 endif
 

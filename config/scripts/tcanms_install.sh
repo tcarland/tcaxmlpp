@@ -42,6 +42,31 @@ if [ -z "$RC_TCANMS_BASHRC" ]; then
     fi
 fi
 
+init_db()
+{
+    local SQL="${TCANMS_PREFIX}/tmp/init_tcanms_db.sql"
+
+    if [ -z "$TCANMS_DBNAME" ] || [ -z "$TCANMS_DBUSER" ]; then
+        echo "DB Name macros are not set, aborting init_db()"
+        return 0
+    fi
+    if [ -z "$TCANMS_DBHOST" ]; then
+        TCANMS_DBHOST="localhost"
+    fi
+
+    echo "CREATE DATABASE $TCANMS_DBNAME;" > $SQL
+    echo "GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON tnmsauth.* \
+        TO $TCANMS_DBUSER@$TCANMS_DBHOST IDENTIFIED BY '$TCANMS_DBPASS';" >> $SQL
+    echo "" >> $SQL
+
+    if [ ${TCANMS_USEDB} == "mysql" ]; then
+        echo " executing mysql init script '$SQL' "
+        mysql -u root -p < $SQL
+    fi
+
+    return 1
+}
+
 
 usage()
 {
@@ -63,8 +88,13 @@ version()
 # --------------------------
 #  MAIN
 
+INITDB=
+
 while [ $# -gt 0 ]; do
     case "$1" in
+        -D|--database)
+            INITDB="true"
+            ;;
         -h|--help)
             usage
             exit 0
@@ -115,6 +145,11 @@ else
     echo "$MYNAME: finished successfully."
 fi
 echo ""
+
+if [ -n "$INITDB" ] && [ -n "$TCANMS_USEDB" ]; then
+    init_db
+fi
+    
 
 exit $RETVAL
 

@@ -10,10 +10,13 @@ VALUES ("dbstatic", "dbstatic");
 
 INSERT INTO tnmsauth.groups (name, description, internal)
     VALUES ("tnms", "Core services group", 1);
+
 INSERT INTO tnmsauth.groups (name, description, internal)
     VALUES ("tnmsagents", "Core services agent group", 1);
+
 INSERT INTO tnmsauth.groups (name, description)
     VALUES ("users", "Default user group");
+
 
 INSERT INTO tnmsauth.users ( gid, authtype_id, username, password, internal )
     VALUES (1, 1, "tnms", "tnms11b", 1);
