@@ -29,7 +29,7 @@ export TCANMS_CRON_INTERVAL=5
 export EMAIL_ON_ERROR=0
 
 
-export PATH=${PATH}:${TCANMS_HOME}/bin
+export PATH=${PATH}:${TCANMS_HOME}/bin:${TCANMS_HOME}/sbin
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${TCANMS_HOME}/lib
 export CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}:${TCANMS_HOME}/include
 
@@ -59,10 +59,11 @@ export LIBRARY_PATH=${LD_LIBRARY_PATH}
 
 export PS1="\h{\u}$ "
 
-alias status="${TCANMS_HOME}/bin/init.tcanms.sh status"
+alias status="${TCANMS_HOME}/bin/init.tcanms.sh info"
 alias dir="ls -l"
 
 
 export RC_TCANMS_BASHRC="true"
-ulimit -c unlimited
+
+#ulimit -c unlimited
 
