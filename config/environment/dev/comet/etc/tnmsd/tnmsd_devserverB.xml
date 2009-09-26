@@ -3,7 +3,7 @@
 <tnms version="0.1">
     <tnmsd
         agent_name="tcanms/tnmsd/devserver_b"
-        logfile="devserver_b.log"
+        logfile="/opt/tcanms/tcanms/logs/devserver_b.log"
         syslog="false"
         debug="true"
         auth_bypass="true" >
