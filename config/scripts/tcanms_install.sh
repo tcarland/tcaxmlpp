@@ -42,9 +42,18 @@ if [ -z "$RC_TCANMS_BASHRC" ]; then
     fi
 fi
 
+# remap our destination
+export TCANMS_HOME="${TCANMS_PREFIX}"
+
+export TCANMS_BIN=${TCANMS_HOME}/bin
+export TCANMS_SBIN=${TCANMS_HOME}/sbin
+export TCANMS_TMP=${TCANMS_HOME}/tmp
+export TCANMS_LOGS=${TCANMS_HOME}/logs
+
+
 init_db()
 {
-    local SQL="${TCANMS_PREFIX}/tmp/init_tcanms_db.sql"
+    local SQL="${TCANMS_TMP}/init_tcanms_db.sql"
 
     if [ -z "$TCANMS_DBNAME" ] || [ -z "$TCANMS_DBUSER" ]; then
         echo "DB Name macros are not set, aborting init_db()"
@@ -67,14 +76,44 @@ init_db()
     return 1
 }
 
+init_env_configs()
+{
+    local cfgenv=$1
+    local cfghost=$2
+
+    if [ -z "$cfgenv"] || [ -z "$cfghost" ]; then
+        echo "Invalid environment settings"
+        return -1
+    fi
+
+    local cfgpath="$CONFIGDIR/../environment/$cfgenv/$cfghost/"
+    local target="$TCANMS_PREFIX/"
+
+    echo "rsync -av $cfgpath $target"
+
+    if [ -d $cfgpath ]; then
+        rsync -av $cfgpath $target
+    fi
+
+    return 1
+}
+
 
 usage()
 {
     echo ""
-    echo "Usage: $MYNAME [target_path]"
-    echo "    The target path is optional and the script will by default "
-    echo "  check for the environment variable TCANMS_PREFIX to be used"
-    echo "  as the target path"
+    echo "Usage: $MYNAME [-DhvW] [-e environment] [-t targethost]"
+    echo ""
+    echo "   -D | --database    : generate and run database init script "
+    echo "   -h | --help        : display this help and exit"
+    echo "   -v | --version     : display verion info and exit"
+    echo "   -e | --environment : argument matching environment name $(TOPDIR)/config/environment"
+    echo "   -t | --target      : target host configs to sync (requires -e)"
+    echo "   -f | --force       : force overwrite of install target '$(TCANMS_PREFIX)'"
+    echo ""
+    echo "   The 'environment' flag will sync the configs for the provided environment and host."
+    echo "   The script will by default use the environment variable TCANMS_PREFIX as the "
+    echo "   target path to install"
     echo ""
 }
 
@@ -88,12 +127,26 @@ version()
 # --------------------------
 #  MAIN
 
+PREFIX=$TCANMS_PREFIX
+PATHLIST="${PREFIX}/bin ${PREFIX}/sbin ${PREFIX}/etc ${PREFIX}/tmp \
+${PREFIX}/logs ${PREFIX}/run"
+
 INITDB=
+ENVIR=
+HOST=localhost
 
 while [ $# -gt 0 ]; do
     case "$1" in
         -D|--database)
             INITDB="true"
+            ;;
+        -e|--environment)
+            ENVIR="$2"
+            shift
+            ;;
+        -t|--target)
+            HOST="$2"
+            shift
             ;;
         -h|--help)
             usage
@@ -103,31 +156,23 @@ while [ $# -gt 0 ]; do
             version
             exit 0
             ;;
+
     esac
     shift
 done
 
-
-PREFIX=$TCANMS_PREFIX
-if [ -n "$1" ]; then
-    PREFIX=$1
-fi
 
 if [ -z "$PREFIX" ]; then
     usage
     exit 1
 fi
 
-
 if [ -d $PREFIX ]; then
     echo "Install directory '$PREFIX' already exists. Continuing.."
 fi
 
 
-PATHLIST="${PREFIX}/bin ${PREFIX}/sbin ${PREFIX}/etc ${PREFIX}/tmp \
-${PREFIX}/logs ${PREFIX}/run"
-
-echo "Creating directory structure in '$TCANMS_PREFIX'"
+echo "Creating directory structure in '$PREFIX'"
 
 for SUBDIR in $PATHLIST; do
     if [ ! -d $SUBDIR ]; then
@@ -149,7 +194,10 @@ echo ""
 if [ -n "$INITDB" ] && [ -n "$TCANMS_USEDB" ]; then
     init_db
 fi
-    
+
+if [ -n "$ENVIR" ]; then
+    init_env_configs $ENVIR $HOST
+fi
 
 exit $RETVAL
 

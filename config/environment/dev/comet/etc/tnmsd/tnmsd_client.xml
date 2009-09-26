@@ -2,7 +2,7 @@
 
 <tnms version="0.1">
     <tnmsd
-        agent_name="server_c"
+        agent_name="tcanms/tnmsd/devserver_c"
         logfile="server_c.log"
         syslog="false"
         debug="true"
@@ -20,6 +20,14 @@
 
             <subscribe name="*"/>
         </client>
+        <client
+            name="server_b"
+            host="localhost"
+            port="15601">
+
+            <subscribe name="*"/>
+        </client>
+
     </tnmsd>
 
 </tnms>

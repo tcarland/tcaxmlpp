@@ -26,7 +26,7 @@ fi
 echo ""
 echo "init.tcanms:"
 echo ""
-echo "  current dir: $CURDIR"
+#echo "  current dir: $CURDIR"
 echo "  tcanms home: $SYSHOME"
 echo ""
 
@@ -53,13 +53,13 @@ fi
 
 
 if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ${SYSHOME}/sbin/init.tcanms_functions.sh ]; then
-    source ${SYSHOME}/sbin/init.tcanms_functions.sh
+    source ${SYSHOME}/bin/init.tcanms_functions.sh
 fi
-if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ./sbin/init.tcanms_functions.sh ]; then
-    source ./sbin/init.tcanms_functions.sh
+if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ./bin/init.tcanms_functions.sh ]; then
+    source ./bin/init.tcanms_functions.sh
 fi
-if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ./sinit.tcanms_functions.sh ]; then
-    source ./init.tcanms_functions.sh
+if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ./etc/init.tcanms_functions.sh ]; then
+    source ./etc/init.tcanms_functions.sh
 fi
 
 if [ -z "$RC_TCANMS_FUNCTIONS" ]; then
@@ -69,7 +69,7 @@ fi
 
 
 
-BINDIR="$SYSHOME/bin"
+BINDIR="$SYSHOME/sbin"
 RUNDIR="$SYSHOME/run"
 LOGDIR="$SYSHOME/logs"
 
