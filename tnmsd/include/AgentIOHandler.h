@@ -10,11 +10,14 @@ using namespace tcanetpp;
 #include "TnmsClient.h"
 using namespace tnmsCore;
 
+#include "ClientStats.hpp"
+
 
 namespace tnmsd {
 
 
-typedef std::set<TnmsClient*>  ClientSet;
+typedef std::set<TnmsClient*>              ClientSet;
+typedef std::map<TnmsClient*, ClientStat>  ClientMap;
 
 
 class AgentIOHandler : public EventIOHandler {
@@ -43,8 +46,16 @@ class AgentIOHandler : public EventIOHandler {
 
     void         timeout        ( const EventTimer * timer );
 
+    /* Statistics */
+    
     void         setPrefix      ( const std::string & prefix );
 
+    void         initStat       ( TnmsClient  * client );
+    void         updateStat     ( TnmsClient  * client,
+                                  ClientStat  & stat );
+    void         endStat        ( TnmsClient  * client );
+
+    void         sendStats();
 
   protected:
 
@@ -52,6 +63,7 @@ class AgentIOHandler : public EventIOHandler {
     AuthClient *                _auth;
 
     ClientSet                   _clients;
+    ClientMap                   _clMap;
 
     std::string                 _prefix;
 };

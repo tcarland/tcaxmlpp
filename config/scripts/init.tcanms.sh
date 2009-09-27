@@ -6,6 +6,10 @@
 #
 #
 
+VERSION="1.01"
+AUTHOR="tcarland@gmail.com"
+
+MYNAME=${0/#.\//}
 SYSHOME=""
 CURDIR=`dirname $0`
 
@@ -24,10 +28,8 @@ if [ -z "$SYSHOME" ]; then
 fi
 
 echo ""
-echo "init.tcanms:"
-echo ""
-#echo "  current dir: $CURDIR"
-echo "  tcanms home: $SYSHOME"
+echo "init.tcanms.sh (v${VERSION}):"
+echo "  home: $SYSHOME"
 echo ""
 
 
@@ -369,7 +371,7 @@ case "$1" in
     'restart')
         restart_services $2 $3
         ;;
-    'info')
+    'info'|'status')
         info_services $2 $3
         ;;
     *)

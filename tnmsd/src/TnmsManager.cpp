@@ -109,7 +109,9 @@ TnmsManager::timeout ( const EventTimer * timer )
 
     // internal metrics
     if ( timer->evid == _reportId ) {
-        LogFacility::LogMessage("TnmsManager::run()"); // <<add some stats
+        LogFacility::LogMessage("TnmsManager::run()");
+        _clientHandler->sendStats();
+        _agentHandler->sendStats();
         return;
     }
 
@@ -138,7 +140,7 @@ TnmsManager::timeout ( const EventTimer * timer )
     }
 
     // give time to our handlers
-    //_auth->timeout(timer);
+    _auth->timeout(timer);
     _agentHandler->timeout(timer);
     _clientHandler->timeout(timer);
 
@@ -314,8 +316,6 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
         if ( _startDelay == 0 )
             _clientId = _evmgr->addIOEvent(_clientHandler, _client->getFD(), _client, true);
     }
-
-    // init auth client 
 
     // assign the new config
     _tconfig = config;

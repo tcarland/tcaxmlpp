@@ -51,7 +51,7 @@ AuthClient::timeout ( const EventTimer * timer )
     const time_t  & now = timer->abstime.tv_sec;
     const EventIO * io  = _evmgr->findIOEvent(_evid);
 
-    if ( _authMap.size() == 0 && ! _authhandler->writeable(io) ) {
+    if ( _authMap.size() == 0 && io && ! _authhandler->writeable(io) ) {
         if ( _idleTimeout > 0 && _idlet <= now ) {
             if ( this->isConnected() )
                 this->close();
@@ -154,7 +154,6 @@ AuthClient::unauthClient ( TnmsClient * client )
     if ( client == NULL ) 
         return;
 
-
     AuthRequestMap::iterator  rIter;
 
     rIter = _authMap.find(client->getClientLoginName());
@@ -189,7 +188,9 @@ AuthClient::close()
         _evmgr->removeEvent(_evid);
 
     _evid = 0;
+
     TnmsClient::close();
+
     return;
 }
 
@@ -228,18 +229,17 @@ AuthClient::AuthReplyHandler ( TnmsAuthReply & reply )
 void
 AuthClient::setAuthServer ( const std::string & authsvr, uint16_t port )
 {
-    if ( _authsvr.compare(authsvr) !=0 ) {
+    if ( _authsvr.compare(authsvr) !=0 || _authport != port ) 
+    {
         this->close();
-        _authsvr = authsvr;
-    }
-
-    if ( _authport != port ) {
-        this->close();
+        _authsvr  = authsvr;
         _authport = port;
     }
 
     return;
 }
 
+
 } // namespace
+
 

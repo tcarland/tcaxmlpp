@@ -24,6 +24,7 @@ AgentIOHandler::~AgentIOHandler()
     //for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
         //delete *cIter;
     _clients.clear();
+    _clMap.clear();
 }
 
 
@@ -36,7 +37,9 @@ AgentIOHandler::timeout ( const EventTimer * timer )
     const time_t & now = timer->abstime.tv_sec;
 
     ClientSet::iterator  cIter;
-    for ( cIter = _clients.begin(); cIter != _clients.end(); cIter++ ) {
+
+    for ( cIter = _clients.begin(); cIter != _clients.end(); cIter++ ) 
+    {
         TnmsClient * client = (TnmsClient*) *cIter;
 
         if ( (rd = client->receive(now)) < 0 ) {
@@ -44,21 +47,14 @@ AgentIOHandler::timeout ( const EventTimer * timer )
                 + client->getErrorStr());
             client->close();
             continue;
-        } else {
-            // rd stats
-            ;
-        }
+        } 
 
         if ( (wt = client->send(now)) < 0 ) {
             LogFacility::LogMessage("AgentIOHandler error in send() " 
                 + client->getErrorStr());
             client->close();
             continue;
-        } else {
-            // wt is our count
-            ;
         }
-
     }
 
     return;
@@ -87,7 +83,9 @@ AgentIOHandler::handle_accept ( const EventIO * io )
     //    client->enableCompression();
     
     LogFacility::LogMessage("AgentIOHandler::handle_accept() " + client->getHostStr());
+
     _clients.insert(client);
+    this->initStat(client);
 
     return;
 }
@@ -156,6 +154,8 @@ AgentIOHandler::handle_close ( const EventIO * io )
 
     client->close();
     _clients.erase(client);
+    this->endStat(client);
+
     io->evmgr->removeEvent(io->evid);
 
     return;
@@ -212,6 +212,99 @@ void
 AgentIOHandler::setPrefix ( const std::string & prefix )
 {
     this->_prefix = prefix;
+}
+
+
+void
+AgentIOHandler::initStat ( TnmsClient * client )
+{
+    ClientStat    stat;
+    int c = 0;
+   
+    std::string & name = stat.name;
+
+    name = _prefix;
+    name.append("/");
+
+    if ( client->isAgent() )
+        name.append(AGENT_SUBNAME).append("/");
+    else
+        name.append(CLIENT_SUBNAME).append("/");
+
+    name.append(client->getHostStr());
+
+    stat.connState  = TnmsMetric(name);
+    stat.lastConn   = TnmsMetric(name + "/" + LASTCONN_NAME);
+    stat.rxCtr      = TnmsMetric(name + "/" + RECEIVE_NAME);
+    stat.txCtr      = TnmsMetric(name + "/" + TRANSMIT_NAME);
+
+    stat.connState.setValue(TNMS_INT32, c);
+
+    _tree->add(stat.connState.getElementName());
+    _tree->add(stat.lastConn.getElementName());
+    _tree->add(stat.rxCtr.getElementName());
+    _tree->add(stat.txCtr.getElementName());
+
+    _clMap[client] = stat;
+
+    return;
+}
+
+void
+AgentIOHandler::updateStat ( TnmsClient * client, ClientStat & stat )
+{
+    uint64_t  rx  = client->getBytesReceived();
+    uint64_t  tx  = client->getBytesSent();
+
+    stat.rxCtr.setValue(TNMS_UINT64, rx);
+    stat.txCtr.setValue(TNMS_UINT64, tx);
+
+    _tree->update(stat.connState);
+    _tree->update(stat.lastConn);
+    _tree->update(stat.rxCtr);
+    _tree->update(stat.rxCtr);
+
+    return;
+}
+
+void
+AgentIOHandler::endStat ( TnmsClient * client )
+{
+    ClientMap::iterator cIter = _clMap.find(client);
+    int c = -1;
+    
+    if ( cIter != _clMap.end() )
+    {
+        ClientStat & stat = cIter->second;
+
+        if ( client->isMirror() ) {
+            stat.connState.setValue(TNMS_INT32, c);
+            stat.rxCtr.reset();
+            stat.txCtr.reset();
+            _tree->update(stat.connState);
+        } else {
+            _tree->remove(stat.name);
+            _clMap.erase(cIter);
+        } 
+    }
+
+    return;
+}
+
+void
+AgentIOHandler::sendStats()
+{
+    ClientMap::iterator  cIter;
+
+    for ( cIter = _clMap.begin(); cIter != _clMap.end(); ++cIter )
+    {
+        TnmsClient * client = cIter->first;
+        ClientStat & stat   = cIter->second;
+
+        this->updateStat(client, stat);
+    }
+
+    return;
 }
 
 } // namespace 

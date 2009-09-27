@@ -60,27 +60,26 @@ ClientIOHandler::timeout ( const EventTimer * timer )
 
                 if ( (c = client->connect()) < 0 ) {
                     LogFacility::LogMessage("ClientIOHandler mirror disconnected.");
-                    continue;
                 } else if ( c >= 0 ) {
+                    LogFacility::LogMessage("ClientIOHandler mirror connected " 
+                        + client->getHostStr());
                     timer->evmgr->addIOEvent(this, client->getSockFD(), client);
                 }
+
                 stat.connState.setValue(TNMS_INT32, c);
                 stat.lastConn.setValue(TNMS_UINT32, now);
                 stat.rxCtr.reset();
                 stat.txCtr.reset();
+                //this->updateStat(client, stat);
 
-                if ( c > 0 )
-                    LogFacility::LogMessage("ClientIOHandler mirror connected " 
-                        + client->getHostStr());
+                if ( c < 0 )
+                    continue;
             }
             else 
             {
-                if ( client->isAuthorized() && ! client->isSubscribed() ) 
-                {
+                if ( client->isAuthorized() && ! client->isSubscribed() ) {
                     client->subscribeAll();
-                } 
-                else if ( ! client->isAuthorized() ) 
-                {
+                } else if ( ! client->isAuthorized() ) {
                     if ( (stat.lastConn.getValue<time_t>() + client->getReconnectTime()) <= now ) {
                         client->login();
                         stat.lastConn.setValue(TNMS_UINT32, now);
@@ -103,7 +102,6 @@ ClientIOHandler::timeout ( const EventTimer * timer )
             continue;
         }
 
-        this->updateStat(client, stat);
     }
 
     if ( _tree )
@@ -214,8 +212,8 @@ ClientIOHandler::handle_close ( const EventIO * io )
     LogFacility::LogMessage("ClientIOHandler::handle_close() " + client->getHostStr());
 
     client->close();
-    this->endStat(client);
     _clients.erase(client);
+    this->endStat(client);
 
     io->evmgr->removeEvent(io->evid);
 
@@ -348,6 +346,22 @@ ClientIOHandler::endStat ( TnmsClient * client )
             _tree->remove(stat.name);
             _clMap.erase(cIter);
         } 
+    }
+
+    return;
+}
+
+void
+ClientIOHandler::sendStats()
+{
+    ClientMap::iterator  cIter;
+
+    for ( cIter = _clMap.begin(); cIter != _clMap.end(); ++cIter )
+    {
+        TnmsClient * client = cIter->first;
+        ClientStat & stat   = cIter->second;
+
+        this->updateStat(client, stat);
     }
 
     return;

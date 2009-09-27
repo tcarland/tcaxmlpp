@@ -47,7 +47,7 @@ class ClientIOHandler : public EventIOHandler {
     void         addMirror      ( TnmsClient  * client );
     void         eraseMirror    ( TnmsClient  * client );
 
-    /* Client statistics */
+    /* Statistics */
     
     void         setPrefix      ( const std::string & prefix );
 
@@ -55,6 +55,8 @@ class ClientIOHandler : public EventIOHandler {
     void         updateStat     ( TnmsClient  * client,
                                   ClientStat  & stat );
     void         endStat        ( TnmsClient  * client );
+
+    void         sendStats();
 
   protected:
 
