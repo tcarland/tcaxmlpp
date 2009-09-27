@@ -11,7 +11,7 @@
 
 //  global version info
 #define TNMS_VERSION_MAJOR         0x0001
-#define TNMS_VERSION_MINOR         0x0002
+#define TNMS_VERSION_MINOR         0x0003
 #define TNMS_VERSION               ( (((uint32_t)TNMS_VERSION_MAJOR << 16) & 0xffff0000) | \
                                       ((uint32_t)TNMS_VERSION_MINOR) )
 #define TNMSCORE_VERSION           ( TNMS_VERSION )

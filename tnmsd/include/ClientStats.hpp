@@ -7,7 +7,7 @@ using namespace tnmsCore;
 
 namespace tnmsd {
 
-
+#define AGENT_SUBNAME   "Agents"
 #define CLIENT_SUBNAME  "Clients"
 #define MIRROR_SUBNAME  "Mirrors"
 #define RECEIVE_NAME    "Received"

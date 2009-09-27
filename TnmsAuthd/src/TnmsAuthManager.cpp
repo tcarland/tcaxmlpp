@@ -22,6 +22,7 @@ using namespace tcasqlpp;
 
 namespace tnmsauth {
 
+
 std::string TnmsAuthManager::_Version = "TnmsAuthManager: v0.15";
 
 
@@ -42,7 +43,8 @@ TnmsAuthManager::TnmsAuthManager ( const std::string & config )
       _configfile(config),
       _hup(false),
       _usr(false),
-      _debug(false)
+      _debug(false),
+      _verbose(false)
 {}
 
 
@@ -66,7 +68,7 @@ TnmsAuthManager::run()
 
     LogFacility::SetLogTime(now);
 
-    if ( _debug ) {
+    if ( _verbose ) {
         LogFacility::OpenLogStream("stdout", "", &std::cout);
         LogFacility::LogMessage("TnmsAuthManager::run()");
         LogFacility::SetBroadcast(true);
@@ -169,10 +171,18 @@ TnmsAuthManager::setUSR()
     this->_usr = true;
 }
 
+
 void
 TnmsAuthManager::setDebug ( bool d )
 {
     _debug = d;
+}
+
+
+void
+TnmsAuthManager::setVerbose ( bool v )
+{
+    _verbose = v;
 }
 
 

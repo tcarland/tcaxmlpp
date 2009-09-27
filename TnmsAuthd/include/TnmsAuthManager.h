@@ -55,6 +55,8 @@ class TnmsAuthManager : public EventTimerHandler {
 
     void         setDebug ( bool debug = true );
     bool         getDebug() const { return _debug; }
+    void         setVerbose ( bool v = true );
+    bool         getVerbose() const { return _verbose; }
     
     const
     std::string& getErrorStr() const;
@@ -103,6 +105,7 @@ class TnmsAuthManager : public EventTimerHandler {
     bool                                _hup;
     bool                                _usr;
     bool                                _debug;
+    bool                                _verbose;
 
     static std::string                  _Version;
 };

@@ -331,11 +331,8 @@ ClientIOHandler::updateStat ( TnmsClient * client, ClientStat & stat )
 void
 ClientIOHandler::endStat ( TnmsClient * client )
 {
-    ClientMap::iterator   cIter;
-
+    ClientMap::iterator cIter = _clMap.find(client);
     int c = -1;
-
-    cIter = _clMap.find(client);
     
     if ( cIter != _clMap.end() )
     {

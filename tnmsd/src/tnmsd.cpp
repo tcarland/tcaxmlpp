@@ -18,8 +18,7 @@ using namespace tnmsd;
 
 
 static const
-char process[] = "tnmsd";
-
+char process[]    = "tnmsd";
 
 TnmsManager * mgr = NULL;
 
@@ -27,7 +26,7 @@ TnmsManager * mgr = NULL;
 
 void version()
 {
-    printf("%s Version: %s\n", process, TnmsManager::Version().c_str());
+    printf("%s version: %s\n", process, TnmsManager::Version().c_str());
     exit(0);
 }
 

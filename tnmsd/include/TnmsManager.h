@@ -126,6 +126,7 @@ class TnmsManager : public EventTimerHandler {
     bool                        _debug;
     bool                        _verbose;
 
+    static std::string          _Version;
 };
 
 
