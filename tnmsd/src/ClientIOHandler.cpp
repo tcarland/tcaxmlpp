@@ -281,6 +281,7 @@ void
 ClientIOHandler::initStat ( TnmsClient * client )
 {
     ClientStat    stat;
+    int c = 0;
    
     std::string & name = stat.name;
 
@@ -299,7 +300,7 @@ ClientIOHandler::initStat ( TnmsClient * client )
     stat.rxCtr      = TnmsMetric(name + "/" + RECEIVE_NAME);
     stat.txCtr      = TnmsMetric(name + "/" + TRANSMIT_NAME);
 
-    stat.connState.setValue(TNMS_INT32, (int)0);
+    stat.connState.setValue(TNMS_INT32, c);
 
     _tree->add(stat.connState.getElementName());
     _tree->add(stat.lastConn.getElementName());

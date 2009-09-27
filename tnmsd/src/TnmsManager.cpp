@@ -17,7 +17,7 @@ namespace tnmsd {
 
 
 std::string
-TnmsManager::_Version = "v0.15";
+TnmsManager::_Version = "v0.16";
 
 
 TnmsManager::TnmsManager ( const std::string & configfile )
@@ -411,7 +411,7 @@ std::string
 TnmsManager::Version()
 {
     std::ostringstream  ostr;
-    ostr << _Version << "; tnmsCore: " << TNMS_VERSION_MAJOR
+    ostr << _Version << "; tnmsCore: v" << TNMS_VERSION_MAJOR
          << "." << TNMS_VERSION_MINOR;
     return ostr.str();
 }
