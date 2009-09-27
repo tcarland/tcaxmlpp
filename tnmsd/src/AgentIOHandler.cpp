@@ -208,6 +208,11 @@ AgentIOHandler::writeable ( const EventIO * io )
     return false;
 }
 
+void
+AgentIOHandler::setPrefix ( const std::string & prefix )
+{
+    this->_prefix = prefix;
+}
 
 } // namespace 
 

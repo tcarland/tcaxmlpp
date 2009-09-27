@@ -227,6 +227,8 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
         prefix = config.agent_name;
 
     LogFacility::SetDefaultLogPrefix(prefix);
+    _clientHandler->setPrefix(prefix);
+    _agentHandler->setPrefix(prefix);
 
     if ( config.syslog ) {
         if ( _tconfig.syslog )

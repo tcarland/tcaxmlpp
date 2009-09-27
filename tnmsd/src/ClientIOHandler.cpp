@@ -43,10 +43,11 @@ ClientIOHandler::timeout ( const EventTimer * timer )
 
     const time_t & now = timer->abstime.tv_sec;
 
-    ClientSet::iterator  cIter;
-    for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
+    ClientMap::iterator  cIter;
+    for ( cIter = _clMap.begin(); cIter != _clMap.end(); ++cIter )
     {
-        TnmsClient * client = (TnmsClient*) *cIter;
+        TnmsClient * client = (TnmsClient*) cIter->first;
+        ClientStat & stat   = cIter->second;
 
         if ( client->isMirror() ) 
         {
@@ -54,26 +55,36 @@ ClientIOHandler::timeout ( const EventTimer * timer )
             {
                 int c = 0;
 
+                if ( (stat.lastConn.getValue<time_t>() + client->getReconnectTime()) > now )
+                    continue;
+
                 if ( (c = client->connect()) < 0 ) {
                     LogFacility::LogMessage("ClientIOHandler mirror disconnected.");
                     continue;
                 } else if ( c >= 0 ) {
                     timer->evmgr->addIOEvent(this, client->getSockFD(), client);
-                    continue;
                 }
+                stat.connState.setValue(TNMS_INT32, c);
+                stat.lastConn.setValue(TNMS_UINT32, now);
+                stat.rxCtr.reset();
+                stat.txCtr.reset();
 
-                if ( c > 0 ) {
+                if ( c > 0 )
                     LogFacility::LogMessage("ClientIOHandler mirror connected " 
                         + client->getHostStr());
-                    continue;
-                }
             }
             else 
             {
-                if ( client->isAuthorized() && ! client->isSubscribed() ) {
+                if ( client->isAuthorized() && ! client->isSubscribed() ) 
+                {
                     client->subscribeAll();
-                } else if ( ! client->isAuthorized() ) {
-                    client->login();
+                } 
+                else if ( ! client->isAuthorized() ) 
+                {
+                    if ( (stat.lastConn.getValue<time_t>() + client->getReconnectTime()) <= now ) {
+                        client->login();
+                        stat.lastConn.setValue(TNMS_UINT32, now);
+                    }
                 }
             }
         }
@@ -83,15 +94,16 @@ ClientIOHandler::timeout ( const EventTimer * timer )
                 + client->getHostStr());
             client->close();
             continue;
-        }  // else report rd;
+        } 
 
         if ( (wt = client->send(now)) < 0 ) {
             LogFacility::LogMessage("ClientIOHandler error in send() from client " 
                 + client->getHostStr());
             client->close();
             continue;
-        } // else report wt;
+        }
 
+        this->updateStat(client, stat);
     }
 
     if ( _tree )
@@ -101,9 +113,10 @@ ClientIOHandler::timeout ( const EventTimer * timer )
 }
 
 void
-ClientIOHandler::addMirror (TnmsClient * client )
+ClientIOHandler::addMirror ( TnmsClient * client )
 {
     _clients.insert(client);
+    this->initStat(client);
 }
 
 
@@ -111,6 +124,7 @@ void
 ClientIOHandler::eraseMirror ( TnmsClient * client )
 {
     _clients.erase(client);
+    this->endStat(client);
 }
 
 
@@ -128,10 +142,12 @@ ClientIOHandler::handle_accept ( const EventIO * io )
     TnmsClient  * client = new TnmsClient(_tree, _auth, sock);
     io->evmgr->addIOEvent(this, client->getSockFD(), (void*) client);
 
+    LogFacility::LogMessage("ClientIOHandler::handle_accept() " + client->getHostStr());
+    
     // if compression; enable it
     // client->enableCompression();
-    LogFacility::LogMessage("ClientIOHandler::handle_accept() " + client->getHostStr());
     _clients.insert(client);
+    this->initStat(client);
 
     return;
 }
@@ -198,7 +214,9 @@ ClientIOHandler::handle_close ( const EventIO * io )
     LogFacility::LogMessage("ClientIOHandler::handle_close() " + client->getHostStr());
 
     client->close();
+    this->endStat(client);
     _clients.erase(client);
+
     io->evmgr->removeEvent(io->evid);
 
     return;
@@ -251,7 +269,91 @@ ClientIOHandler::writeable ( const EventIO * io )
     return false;
 }
 
+void
+ClientIOHandler::setPrefix ( const std::string & prefix )
+{
+    this->_prefix = prefix;
+    // if ( clMap.size() > 0 )
+    //   reset all of our metric names
+}
 
+void
+ClientIOHandler::initStat ( TnmsClient * client )
+{
+    ClientStat    stat;
+   
+    std::string & name = stat.name;
+
+    name = _prefix;
+    name.append("/");
+
+    if ( client->isMirror() )
+        name.append(MIRROR_SUBNAME).append("/");
+    else
+        name.append(CLIENT_SUBNAME).append("/");
+
+    name.append(client->getHostStr());
+
+    stat.connState  = TnmsMetric(name);
+    stat.lastConn   = TnmsMetric(name + "/" + LASTCONN_NAME);
+    stat.rxCtr      = TnmsMetric(name + "/" + RECEIVE_NAME);
+    stat.txCtr      = TnmsMetric(name + "/" + TRANSMIT_NAME);
+
+    stat.connState.setValue(TNMS_INT32, (int)0);
+
+    _tree->add(stat.connState.getElementName());
+    _tree->add(stat.lastConn.getElementName());
+    _tree->add(stat.rxCtr.getElementName());
+    _tree->add(stat.txCtr.getElementName());
+
+    _clMap[client] = stat;
+
+    return;
+}
+
+void
+ClientIOHandler::updateStat ( TnmsClient * client, ClientStat & stat )
+{
+    uint64_t  rx  = client->getBytesReceived();
+    uint64_t  tx  = client->getBytesSent();
+
+    stat.rxCtr.setValue(TNMS_UINT64, rx);
+    stat.txCtr.setValue(TNMS_UINT64, tx);
+
+    _tree->update(stat.connState);
+    _tree->update(stat.lastConn);
+    _tree->update(stat.rxCtr);
+    _tree->update(stat.rxCtr);
+
+    return;
+}
+
+void
+ClientIOHandler::endStat ( TnmsClient * client )
+{
+    ClientMap::iterator   cIter;
+
+    int c = -1;
+
+    cIter = _clMap.find(client);
+    
+    if ( cIter != _clMap.end() )
+    {
+        ClientStat & stat = cIter->second;
+
+        if ( client->isMirror() ) {
+            stat.connState.setValue(TNMS_INT32, c);
+            stat.rxCtr.reset();
+            stat.txCtr.reset();
+            _tree->update(stat.connState);
+        } else {
+            _tree->remove(stat.name);
+            _clMap.erase(cIter);
+        } 
+    }
+
+    return;
+}
 
 } // namespace 
 

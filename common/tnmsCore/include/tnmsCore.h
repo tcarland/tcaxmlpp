@@ -20,7 +20,6 @@
 #define TNMS_GET_MINOR(x)          (  (uint32_t)x & 0x0000ffff )
 
 
-
 #define TNMS_DELIMITER             "/"
 #define TNMS_DELIMITER_CHAR        '/'
 #define TNMS_AGENT_ID              "tnmsagent"
@@ -46,6 +45,7 @@
 #define DEFAULT_TNMS_RECONFIG_INTERVAL     120
 #define DEFAULT_TNMS_HOLDDOWN_INTERVAL     30
 #define DEFAULT_TNMS_RECONNECT_INTERVAL    30
+
 
 
 #include "tnmsProtocol.h"

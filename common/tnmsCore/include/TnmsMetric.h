@@ -36,8 +36,7 @@ class TnmsMetric : public TnmsMessage {
 
 
     const std::string&  getValue() const;
-    bool                setValue    ( eValueType          valtype,
-                                      const std::string & value );
+
 
     template<typename T>
     T                   getValue() const
@@ -47,6 +46,10 @@ class TnmsMetric : public TnmsMessage {
         T  val = static_cast<T>(_value);
         return val;
     }
+
+
+    bool                setValue    ( eValueType          valtype,
+                                      const std::string & value );
 
 
     template< typename T >

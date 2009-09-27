@@ -25,8 +25,6 @@ class AgentIOHandler : public EventIOHandler {
 
     virtual ~AgentIOHandler();
 
-    void timeout ( const EventTimer * timer );
-
     /* EventIOHandler */
 
     virtual void handle_accept  ( const EventIO * io );
@@ -40,12 +38,21 @@ class AgentIOHandler : public EventIOHandler {
     virtual bool readable       ( const EventIO * io );
     virtual bool writeable      ( const EventIO * io );
 
+    /* AgentIOHandler */
+
+    void         timeout        ( const EventTimer * timer );
+
+    void         setPrefix      ( const std::string & prefix );
+
+
   protected:
 
     TnmsTree *                  _tree;
     AuthClient *                _auth;
 
     ClientSet                   _clients;
+
+    std::string                 _prefix;
 };
 
 }  // namespace 

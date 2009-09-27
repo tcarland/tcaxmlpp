@@ -92,7 +92,7 @@ class TnmsManager : public EventTimerHandler {
     typedef std::map<std::string, MirrorConnection>  ClientMap;
 
 
-
+  private:
 
     EventManager*               _evmgr;
     TnmsTree*                   _tree;
