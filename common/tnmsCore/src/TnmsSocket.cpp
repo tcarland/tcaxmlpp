@@ -980,15 +980,19 @@ TnmsSocket::receiveMessages ( tnmsHeader & hdr )
             break;
         case SUBSCRIBE_STRUCTURE:
             _msgHandler->StructureHandler(true);
+            ctr++;
             break;
         case UNSUBSCRIBE_STRUCTURE:
             _msgHandler->StructureHandler(false);
+            ctr++;
             break;
         case PING_REQUEST:
             _msgHandler->PingHandler();
+            ctr++;
             break;
         case PING_REPLY:
             _msgHandler->PingReplyHandler();
+            ctr++;
             break;
         default:
             //unknown type

@@ -84,7 +84,7 @@ TnmsClient::send ( const time_t & now )
             break;
         }
     }
-    if ( qsz && adds.size() == 0 )
+    if ( qsz > 0 && adds.size() == 0 )
         this->setLastRecord();
 
     // REMOVEs
@@ -104,7 +104,7 @@ TnmsClient::send ( const time_t & now )
                 break;
             }
         }
-        if ( qsz && removes.size() == 0 )
+        if ( qsz > 0 && removes.size() == 0 )
             this->setLastRecord();
     }
 
@@ -132,7 +132,7 @@ TnmsClient::send ( const time_t & now )
                 break;
             }
         }
-        if ( qsz && updates.size() == 0 )
+        if ( qsz > 0 && updates.size() == 0 )
             this->setLastRecord();
     }
 

@@ -40,6 +40,7 @@ ClientIOHandler::timeout ( const EventTimer * timer )
 {
     int  rd  = 0;
     int  wt  = 0;
+    int  c   = 0;
 
     const time_t & now = timer->abstime.tv_sec;
 
@@ -53,8 +54,6 @@ ClientIOHandler::timeout ( const EventTimer * timer )
         {
             if ( ! client->isConnected() || client->isConnecting() )
             {
-                int c = 0;
-
                 if ( (stat.lastConn.getValue<time_t>() + client->getReconnectTime()) > now )
                     continue;
 
@@ -70,7 +69,7 @@ ClientIOHandler::timeout ( const EventTimer * timer )
                 stat.lastConn.setValue(TNMS_UINT32, now);
                 stat.rxCtr.reset();
                 stat.txCtr.reset();
-                //this->updateStat(client, stat);
+                this->updateStat(client, stat);
 
                 if ( c < 0 )
                     continue;
@@ -79,6 +78,9 @@ ClientIOHandler::timeout ( const EventTimer * timer )
             {
                 if ( client->isAuthorized() && ! client->isSubscribed() ) {
                     client->subscribeAll();
+                    c = 3;
+                    stat.connState.setValue(TNMS_INT32, c);
+                    this->updateStat(client, stat);
                 } else if ( ! client->isAuthorized() ) {
                     if ( (stat.lastConn.getValue<time_t>() + client->getReconnectTime()) <= now ) {
                         client->login();
@@ -313,16 +315,11 @@ ClientIOHandler::initStat ( TnmsClient * client )
 void
 ClientIOHandler::updateStat ( TnmsClient * client, ClientStat & stat )
 {
-    uint64_t  rx  = client->getBytesReceived();
-    uint64_t  tx  = client->getBytesSent();
-
-    stat.rxCtr.setValue(TNMS_UINT64, rx);
-    stat.txCtr.setValue(TNMS_UINT64, tx);
+    if ( client->isMirror() )
+        return;  // avoid 
 
     _tree->update(stat.connState);
     _tree->update(stat.lastConn);
-    _tree->update(stat.rxCtr);
-    _tree->update(stat.rxCtr);
 
     return;
 }
@@ -339,8 +336,6 @@ ClientIOHandler::endStat ( TnmsClient * client )
 
         if ( client->isMirror() ) {
             stat.connState.setValue(TNMS_INT32, c);
-            stat.rxCtr.reset();
-            stat.txCtr.reset();
             _tree->update(stat.connState);
         } else {
             _tree->remove(stat.name);
@@ -354,16 +349,6 @@ ClientIOHandler::endStat ( TnmsClient * client )
 void
 ClientIOHandler::sendStats()
 {
-    ClientMap::iterator  cIter;
-
-    for ( cIter = _clMap.begin(); cIter != _clMap.end(); ++cIter )
-    {
-        TnmsClient * client = cIter->first;
-        ClientStat & stat   = cIter->second;
-
-        this->updateStat(client, stat);
-    }
-
     return;
 }
 
