@@ -342,8 +342,8 @@ AuthDbThread::queryUser ( SqlSessionInterface * session,
 
     query << "SELECT u.uid, u.gid, u.authtype_id, u.username, u.is_agent, u.internal "
           << "g.name, m.method_name, m.authbin_name "
-          << "FROM tnms.users u JOIN tnms.groups g ON g.gid = u.gid "
-          << "JOIN tnms.auth_types m ON m.authtype_id = u.authtype_id "
+          << "FROM tnmsauth.users u JOIN tnmsauth.groups g ON g.gid = u.gid "
+          << "JOIN tnmsauth.auth_types m ON m.authtype_id = u.authtype_id "
           << "WHERE username=\"" << username << "\"";
 
     if ( ! sql->submitQuery(query, res) ) {
@@ -389,7 +389,7 @@ AuthDbThread::queryAuthFilter ( SqlSessionInterface * session, uint32_t gid )
     Row            row;
     uint32_t       sid;
 
-    query << "SELECT subtree_id FROM tnms.group_authorizations WHERE gid=" << gid;
+    query << "SELECT subtree_id FROM tnmsauth.group_authorizations WHERE gid=" << gid;
 
     if ( ! sql->submitQuery(query, res) ) {
         LogFacility::LogMessage("AuthDbThread::queryAuthFilter() SQL error: "
@@ -426,7 +426,7 @@ AuthDbThread::querySubtree ( SqlSessionInterface * session, uint32_t sid, TnmsDb
     std::string  name;
     bool         inc;
 
-    query << "SELECT subtree_name, isInclude FROM tnms.authorizations WHERE subtree_id=" << sid;
+    query << "SELECT subtree_name, isInclude FROM tnmsauth.authorizations WHERE subtree_id=" << sid;
 
     if ( ! sql->submitQuery(query, res) ) {
         LogFacility::LogMessage("AuthDbThread::querySubtree() SQL error: " + sql->sqlErrorStr());
@@ -463,7 +463,7 @@ AuthDbThread::queryUserConfig ( SqlSessionInterface * session, TnmsDbUser * user
     Result         res;
     Row            row;
 
-    query << "SELECT config FROM tnms.user_configs WHERE uid=" 
+    query << "SELECT config FROM tnmsauth.user_configs WHERE uid=" 
           << user->uid;
 
     if ( ! sql->submitQuery(query, res) ) {
@@ -501,7 +501,7 @@ AuthDbThread::dbAuthUser ( const std::string & username, const std::string & pas
 
     Result::iterator rIter;
 
-    query << "SELECT password FROM tnms.users WHERE username=\"" << username << "\"";
+    query << "SELECT password FROM tnmsauth.users WHERE username=\"" << username << "\"";
 
     if ( ! sql->submitQuery(query, res) ) {
         LogFacility::LogMessage("AuthDbThread::dbAuthUser() SQL error: "
@@ -531,7 +531,7 @@ AuthDbThread::dbGetRefresh ( SqlSessionInterface * session )
     Result       res;
     Row          row;
 
-    query << "SELECT value FROM tnms.properties WHERE name=\"" 
+    query << "SELECT value FROM tnmsauth.properties WHERE name=\"" 
           << AUTHDB_REFRESH_TRIGGER << "\"";
 
     if ( ! sql->submitQuery(query, res) ) {
@@ -558,10 +558,10 @@ AuthDbThread::dbSetRefresh ( SqlSessionInterface * session, const time_t & now, 
     Query        query = sql->newQuery();
 
     if ( insert ) {
-        query << "INSERT INTO tnms.properties (name, value) "
+        query << "INSERT INTO tnmsauth.properties (name, value) "
               << "VALUES (\"" << AUTHDB_REFRESH_TRIGGER << "\", " << now << ")";
     } else {
-        query << "UPDATE tnms.properties SET value=" << now 
+        query << "UPDATE tnmsauth.properties SET value=" << now 
               << " WHERE name=\"" << AUTHDB_REFRESH_TRIGGER << "\"";
     }
 
@@ -579,7 +579,7 @@ AuthDbThread::dbStoreTicket ( SqlSessionInterface * session, TnmsDbUser * user )
     SqlSession*    sql   = (SqlSession*) session;
     Query          query = sql->newQuery();
 
-    query << "INSERT INTO tnms.tickets (username, ticket, ipaddress) "
+    query << "INSERT INTO tnmsauth.tickets (username, ticket, ipaddress) "
           << "VALUES (\"" << user->username << "\", \"" << sql->escapeString(user->ticket)
           << "\", \"" << user->ipaddr << "\")";
 
@@ -601,7 +601,7 @@ AuthDbThread::dbRestoreTickets ( SqlSessionInterface * session, const time_t & n
     Row            row;
     std::string    user, ticket, ipaddr;
 
-    query << "SELECT username, ticket, ipaddress FROM tnms.tickets";
+    query << "SELECT username, ticket, ipaddress FROM tnmsauth.tickets";
 
     if ( ! sql->submitQuery(query, res) ) {
         LogFacility::LogMessage("AuthDbThread::restoreTickets() SQL error: "
@@ -636,7 +636,7 @@ AuthDbThread::dbClearTickets ( SqlSessionInterface * session, StringList & stale
         // This is highly inefficient. DROP/CREATE TABLE is preferred, but this
         // function should be very rarely called, and authdb perf at the time 
         // this would be used shouldn't matter, so we live with it.
-        query << "DELETE FROM tnms.tickets"; 
+        query << "DELETE FROM tnmsauth.tickets"; 
         sql->submitQuery(query);
         return true;
     }
@@ -645,7 +645,7 @@ AuthDbThread::dbClearTickets ( SqlSessionInterface * session, StringList & stale
     for ( sIter = stales.begin(); sIter != stales.end(); ++sIter )
     {
         Query query = sql->newQuery();
-        query << "DELETE FROM tnms.tickets WHERE ticket=\""
+        query << "DELETE FROM tnmsauth.tickets WHERE ticket=\""
               << sql->escapeString(*sIter) << "\"";
         sql->submitQuery(query);
     }

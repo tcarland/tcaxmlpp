@@ -156,10 +156,11 @@ PREFIX=$TCANMS_PREFIX
 PATHLIST="${PREFIX}/bin ${PREFIX}/sbin ${PREFIX}/etc ${PREFIX}/tmp \
 ${PREFIX}/logs ${PREFIX}/run"
 
+
+ENVIR=$TCANMS_ENV
+HOST=$TCANMS_HOST
 INITDB=
-ENVIR=
 FORCE=
-HOST=localhost
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -191,11 +192,6 @@ while [ $# -gt 0 ]; do
 done
 
 
-if [ -z "$PREFIX" ]; then
-    usage
-    exit 1
-fi
-
 if [ -d $PREFIX ]; then
     if [ -n "$FORCE" ]; then
         echo "  Install directory '$PREFIX' already exists. Continuing.."
@@ -216,10 +212,9 @@ if [ -n "$INITDB" ] && [ -n "$TCANMS_USEDB" ]; then
 fi
 
 
-if [ -n "$ENVIR" ]; then
+if [ -n "$ENVIR" ] && [ -n "$HOST" ]; then
     init_env_configs $ENVIR $HOST
 fi
-
 
 if [ $RETVAL -eq 1 ]; then
     echo "$MYNAME: finished with errors."

@@ -3,7 +3,7 @@
 <tnms version="0.1">
 
     <TnmsAuthd
-        agent_name="tnmsauth-master"
+        agent_name="tcanms/tnmsauth-master"
         tnms_port="15901"
         soap_port="15902"
 

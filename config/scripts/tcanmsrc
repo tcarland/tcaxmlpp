@@ -16,9 +16,7 @@ export TCANMS_LOGS=${TCANMS_HOME}/logs
 
 export TCANMS_USER="tcanms"
 export TCANMS_EMAIL="tcanms@charltontechnology.net"
-
 export TCANMS_USEDB="mysql"
-
 #export TCANMS_DBNAME=
 #export TCANMS_DBUSER=
 #export TCANMS_DBPASS=
@@ -33,6 +31,7 @@ export PATH=${PATH}:${TCANMS_HOME}/bin:${TCANMS_HOME}/sbin
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${TCANMS_HOME}/lib
 export CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}:${TCANMS_HOME}/include
 
+
 if [ "$TCANMS_DB" == "mysql" ]; then
     export USE_MYSQL="true"
     export USE_POSTGRESQL=""
@@ -41,6 +40,7 @@ elif [ "$TCANMS_DB" == "postgres" ]; then
     export USE_POSTGRESQL="true"
 fi
 
+# kernel version
 KV=$(uname -r)
 KVMAJOR=${KV%%.*}
 KVMINOR=${KV#*.}
@@ -50,20 +50,21 @@ KVMICRO=${KVMICRO%%[^[:digit:]]*}
 
 #export JAVA_HOME=""
 #export PATH=${PATH}:${JAVA_HOME}/bin
-export CLASSPATH=${JAVA_HOME}/jre/lib/rt.jar
-export CATALINA_OPTS=-Xmx512M
+#export CLASSPATH=${JAVA_HOME}/jre/lib/rt.jar
+#export CATALINA_OPTS=-Xmx512M
 
 
 export LIBRARY_PATH=${LD_LIBRARY_PATH}
 
-
 export PS1="\h{\u}$ "
 
+# aliases
 alias status="${TCANMS_HOME}/bin/init.tcanms.sh info"
 alias dir="ls -l"
 
+if [ -n "$DEBUG" ]; then
+    ulimit -c unlimited
+fi
 
 export RC_TCANMS_BASHRC="true"
-
-#ulimit -c unlimited
 
