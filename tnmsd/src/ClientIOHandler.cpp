@@ -21,17 +21,8 @@ ClientIOHandler::ClientIOHandler ( TnmsTree * tree, AuthClient * auth )
 
 ClientIOHandler::~ClientIOHandler()
 {
-    /*
-    ClientSet::iterator  cIter;
-    for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
-    {
-        TnmsClient * client = (TnmsClient*) *cIter;
-
-        if ( client && ! client->isMirror() )
-            delete *cIter;
-    }
-    */
     _clients.clear();
+    _clMap.clear();
 }
 
 
