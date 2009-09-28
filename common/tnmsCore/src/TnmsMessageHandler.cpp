@@ -200,13 +200,12 @@ TnmsMessageHandler::LastMessageHandler ( int record_type )
     if ( _client == NULL ) 
         return;
 
-    if ( LogFacility::GetDebug() )
-        LogFacility::LogMessage("TnmsMessageHandler::LastMessageHandler()");
-
     if ( _client->inTreeSend() && 
          (record_type == ADD_MESSAGE || record_type == METRIC_MESSAGE) )
     {
         _client->inTreeSend(false);
+        if ( LogFacility::GetDebug() )
+            LogFacility::LogMessage("TnmsMessageHandler::LastMessageHandler() tree received");
     }
 
     return;

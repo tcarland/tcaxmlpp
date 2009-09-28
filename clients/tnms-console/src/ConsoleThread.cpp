@@ -81,13 +81,14 @@ ConsoleThread::run()
                 continue;
         }
         cmd = line;
-        StringUtils::toLowerCase(cmd);
         StringUtils::split(cmd, ' ', std::back_inserter(cmdlist));
 
         if ( cmdlist.size() > 0 )
             cmd  = cmdlist[0];
         else
             cmd  = "";
+        
+        StringUtils::toLowerCase(cmd);
         
         now = LogFacility::GetLogTime();
 

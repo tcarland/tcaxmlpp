@@ -8,7 +8,7 @@
         soap_port="15902"
 
         pemfile=""
-        logfile="tnms-authd.log"
+        logfile="/opt/tcanms/tcanms/logs/tnms-authd.log"
         syslog="false"
         debug="true"
 
