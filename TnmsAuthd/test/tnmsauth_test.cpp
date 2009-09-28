@@ -6,12 +6,12 @@
 #include "soapH.h"
 #include "TnmsAuth.nsmap"
 
-#define TESTUSER  "user"
-#define TESTPASS  "myuserpass"
+#define TESTUSER  "tnms"
+#define TESTPASS  "tnms11b"
 
 
 //#define DEFAULT_URL      "https://localhost:15990"
-#define DEFAULT_URL      "http://localhost:15999"
+#define DEFAULT_URL      "http://localhost:15902"
 #define DEFAULT_TIMEOUT  30
 
 

@@ -64,7 +64,7 @@ AuthDbThread::run()
             stales.clear();
         }
 
-        sleep(3);
+        sleep(5);
     }
     _dbpool->release(sql);
 
@@ -340,7 +340,7 @@ AuthDbThread::queryUser ( SqlSessionInterface * session,
     Result           res;
     Row              row;
 
-    query << "SELECT u.uid, u.gid, u.authtype_id, u.username, u.internal "
+    query << "SELECT u.uid, u.gid, u.authtype_id, u.username, u.is_agent, u.internal "
           << "g.name, m.method_name, m.authbin_name "
           << "FROM tnms.users u JOIN tnms.groups g ON g.gid = u.gid "
           << "JOIN tnms.auth_types m ON m.authtype_id = u.authtype_id "
@@ -363,9 +363,10 @@ AuthDbThread::queryUser ( SqlSessionInterface * session,
     user->username    = username;
     user->uid         = SqlSession::fromString<uint32_t>(std::string(row[0]));
     user->gid         = SqlSession::fromString<uint32_t>(std::string(row[1]));
-    user->internal    = SqlSession::fromString<bool>(std::string(row[4]));
-    user->auth_method = std::string(row[6]);
-    user->auth_bin    = std::string(row[7]);
+    user->isAgent     = SqlSession::fromString<bool>(std::string(row[4]));
+    user->internal    = SqlSession::fromString<bool>(std::string(row[5]));
+    user->auth_method = std::string(row[7]);
+    user->auth_bin    = std::string(row[8]);
 
     this->_userMap[username] = user;
 
