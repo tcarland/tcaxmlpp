@@ -232,14 +232,13 @@ start_process()
         fi
     
         $BINDIR/$dbin -c $CONFIGDIR/$cfg 1> /dev/null 2> /dev/null &
-        echo ""
         sleep 1
 
         pid=`ps awwwx | grep "$bin" | grep "$cfg" | grep -v "grep" | grep -v "init" | awk '{ print $1 }'`
-        echo ""
     
         echo $pid > $PIDFILE
         echo "Process $bin started: $pid"
+        echo ""
     fi
 
     if [ $TCANMS_USE_CRON -eq 1 ]; then
