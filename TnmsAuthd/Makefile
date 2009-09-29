@@ -51,7 +51,8 @@ tnmsauthd: $(ALL_OBJS)
 	$(make-cxxbin-rule)
 	@echo
 
-clean:	
+clean:
+	( cd test; make clean )
 	$(RM) $(ALL_OBJS) \
 	*.d *.D *.o src/*.d src/*.D src/*.bd src/*.o
 
