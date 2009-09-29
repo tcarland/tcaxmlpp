@@ -18,11 +18,10 @@ TnmsAgent::~TnmsAgent() {}
 void
 TnmsAgent::login ( const std::string & user ) 
 {
-    std::string  login = TNMS_AGENT_ID;
+    std::string  login = user;
 
     login.append(":").append(user);
-    this->setClientLogin(login, "");
-    TnmsClient::login();
+    TnmsClient::login(user, "tnmsagent");
     
     return;
 }

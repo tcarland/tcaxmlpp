@@ -340,7 +340,7 @@ AuthDbThread::queryUser ( SqlSessionInterface * session,
     Result           res;
     Row              row;
 
-    query << "SELECT u.uid, u.gid, u.authtype_id, u.username, u.is_agent, u.internal "
+    query << "SELECT u.uid, u.gid, u.authtype_id, u.username, u.is_agent, u.internal, "
           << "g.name, m.method_name, m.authbin_name "
           << "FROM tnmsauth.users u JOIN tnmsauth.groups g ON g.gid = u.gid "
           << "JOIN tnmsauth.auth_types m ON m.authtype_id = u.authtype_id "

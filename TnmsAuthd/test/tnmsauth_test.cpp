@@ -6,8 +6,8 @@
 #include "soapH.h"
 #include "TnmsAuth.nsmap"
 
-#define TESTUSER  "tnms"
-#define TESTPASS  "tnms11b"
+#define TESTUSER  "tcanms"
+#define TESTPASS  "tcanms11b"
 
 
 //#define DEFAULT_URL      "https://localhost:15990"
@@ -24,7 +24,7 @@ class TestAuthThread : public tcanetpp::Thread {
         : Thread(true),
           _soap(soap_new()),
           _url(url),
-          _result(0)
+          _result(5)
     {}
 
     virtual ~TestAuthThread()
@@ -54,8 +54,9 @@ class TestAuthThread : public tcanetpp::Thread {
         char  * userc = strdup(user.c_str());
         char  * passc = strdup(pw.c_str());
         char  * addrc = strdup(ip.c_str());
+        char  * urlc  = strdup(_url.c_str());
 
-        ret = soap_call_ns1__authenticate(_soap, _url.c_str(), action,
+        ret = soap_call_ns1__authenticate(_soap, urlc, action,
             userc, passc, addrc, r);
 
         if ( ret != SOAP_OK )
@@ -113,7 +114,14 @@ void
 usage()
 {
     printf("\nUsage: %s <timeout> [url]\n", process);
-    printf("    default url  =  '%s'\n", DEFAULT_URL);
+    printf("    default url  =  '%s'\n\n", DEFAULT_URL);
+    printf(" Result codes:\n");
+    printf("      6  -  OK\n");
+    printf("      5  -  Invalid Test - test did not run\n");
+    printf("      4  -  Invalid Test - thread error\n");
+    printf("      3  -  Failure - no data or auth failure\n");
+    printf("      2  -  Failure - soap error\n");
+
 }
 
 

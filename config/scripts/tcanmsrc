@@ -59,6 +59,7 @@ export LIBRARY_PATH=${LD_LIBRARY_PATH}
 export PS1="\h{\u}$ "
 
 # aliases
+alias tnmsinit="${TCANMS_HOME}/bin/init.tcanms.sh"
 alias status="${TCANMS_HOME}/bin/init.tcanms.sh info"
 alias dir="ls -l"
 

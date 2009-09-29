@@ -89,7 +89,11 @@ TnmsAuthManager::run()
     _evmgr->eventLoop();
 
     if ( _authDb && _authDb->isRunning() )
+    {
+        _authDb->setAlarm();
+        ::sleep(1);
         _authDb->stop();
+    }
 
     if ( _debug )
         LogFacility::RemoveLogStream("stdout");

@@ -20,7 +20,12 @@ AuthdClient::~AuthdClient() {}
 
 void
 AuthdClient::AuthRequestHandler ( const TnmsAuthRequest & request ) 
-{}
+{
+    TnmsAuthReply  reply(request.getElementName());
+
+    std::string::size_type  at;
+
+}
 
 
 

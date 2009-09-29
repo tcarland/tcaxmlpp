@@ -55,6 +55,10 @@ clean:
 	$(RM) $(ALL_OBJS) \
 	*.d *.D *.o src/*.d src/*.D src/*.bd src/*.o
 
+.PHONY: test
+test:
+	( cd test; make soap; make )
+
 test-clean:
 	( cd test; make distclean )
 

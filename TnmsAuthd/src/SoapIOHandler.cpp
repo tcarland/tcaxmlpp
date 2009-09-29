@@ -43,6 +43,7 @@ SoapIOHandler::timeout ( const time_t & now )
         if ( soapth == NULL ) {
             _sthreads.erase(sIter++);
         } else if ( ! soapth->isRunning() ) {
+            LogFacility::LogMessage("SoapIOHandler::timeout() soap client finished: " + soapth->threadName());
             delete soapth;
             _sthreads.erase(sIter++);
         } else {
@@ -105,6 +106,7 @@ SoapIOHandler::handle_accept ( const EventIO * io )
     try {
         sthread->start();
         _sthreads.push_back(sthread);
+        LogFacility::LogMessage("SoapIOHandler::handle_accept() " + sthread->threadName());
     } catch ( ThreadException & err ) {
         // log err
         delete sthread;
