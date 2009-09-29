@@ -56,6 +56,8 @@ class TestAuthThread : public tcanetpp::Thread {
         char  * addrc = strdup(ip.c_str());
         char  * urlc  = strdup(_url.c_str());
 
+        _result = 1;
+
         ret = soap_call_ns1__authenticate(_soap, urlc, action,
             userc, passc, addrc, r);
 

@@ -117,10 +117,10 @@ SqlDbPool::acquire()
         _sqlerr = "SqlDbPool::acquire() no more connections";
     }
 
-    this->unlock();
-
     if ( conn )
         _dbout.push_front(conn);
+
+    this->unlock();
 
     return conn;
 }
@@ -141,12 +141,12 @@ SqlDbPool::release ( SqlSessionInterface * conn )
             delete conn;
         }
         
-        _conncnt = _dbin.size() + _dbout.size();
     } else {
         _dbout.erase(dIter);
         _dbin.push_front(conn);
     }
 
+    _conncnt = _dbin.size() + _dbout.size();
     this->unlock();
 
     return;

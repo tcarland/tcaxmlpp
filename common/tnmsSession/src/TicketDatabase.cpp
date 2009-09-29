@@ -32,14 +32,13 @@ TicketDatabase::insert ( const std::string & username,
                          const time_t      & now,
                          time_t              refresh_interval )
 {
-    ThreadAutoMutex mutex(_lock);
-    
     if ( this->haveTicket(ticket) ) {
         _errStr = "TicketDatabase::insertTicket: ticket already exists for user:";
         _errStr.append(username + " ticket: " + ticket);
         return false;
     }
     
+    ThreadAutoMutex  mutex(_lock);
     struct Ticket *  mTicket = new Ticket();
     
     mTicket->username = username;
