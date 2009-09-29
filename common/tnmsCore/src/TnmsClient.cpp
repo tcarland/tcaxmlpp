@@ -10,6 +10,7 @@
 
 #include "LogFacility.h"
 #include "StringUtils.h"
+#include "CidrUtils.h"
 using namespace tcanetpp;
 
 
@@ -218,28 +219,26 @@ TnmsClient::AuthReplyHandler ( const TnmsAuthReply & reply )
 void
 TnmsClient::AuthRequestHandler ( const TnmsAuthRequest & request )
 {
-    std::string              login, authname;
+    std::string              login, authname, ipaddr;
     std::string::size_type   delim;
+    ipv4addr_t               ip;
 
-    login = request.getElementName();
-    delim = login.find_first_of(':', 0);
+    login  = request.getElementName();
+    ipaddr = this->getAddrStr();
+    delim  = login.find_first_of(':', 0);
 
     if ( delim == std::string::npos )
-    {
-        TnmsAuthReply reply(login);
-        reply.authResult(AUTH_AGENT_INVALID);
-        reply.authReason("Invalid login");
-        this->sendMessage(&reply);
-        return;
-    } 
-        
-    _login    = login.substr(delim + 1);
-    _authname = login.substr(0, delim);
-    _authname.append("@").append(this->getAddrStr());
-    _authname.append(":").append(_login);
+        _login    = login;
+    else
+        _login    = login.substr(0, delim);
+
+    _authname = _login;
+    _authname.append("@").append(ipaddr);
 
     TnmsAuthRequest req(_authname, request.agent_key());
-    req.ipaddr(this->getAddrStr());
+
+    if ( CidrUtils::pton(ipaddr, ip) )
+        req.ipaddr(ip);
 
     if ( _auth )
     {

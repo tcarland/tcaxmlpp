@@ -585,6 +585,12 @@ TnmsSocket::getClientLoginName() const
     return this->_login;
 }
 
+const std::string&
+TnmsSocket::getClientAuthStr() const
+{
+    return this->_authname;
+}
+
 // ------------------------------------------------------------------- //
 
 void

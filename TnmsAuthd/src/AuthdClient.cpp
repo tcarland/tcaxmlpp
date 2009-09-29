@@ -3,6 +3,8 @@
 #include "AuthdClient.h"
 #include "AuthDbThread.h"
 
+#include "CidrUtils.h"
+using namespace tcanetpp;
 
 
 namespace tnmsauth {
@@ -18,13 +20,36 @@ AuthdClient::AuthdClient ( BufferedSocket * sock, AuthDbThread * auth_db )
 AuthdClient::~AuthdClient() {}
 
 
+/** AuthRequestHandler
+  *   
+ **/
 void
 AuthdClient::AuthRequestHandler ( const TnmsAuthRequest & request ) 
 {
+    std::string    user, pass, ipaddr;
     TnmsAuthReply  reply(request.getElementName());
 
     std::string::size_type  at;
 
+    user = request.getElementName();
+    at   = user.find_first_of(':', 0);
+    
+    if ( at != std::string::npos )
+        user = user.substr(0, at);
+    
+    at   = user.find_first_of('@', 0);
+    if ( at != std::string::npos ) {
+        ipaddr = user.substr(at+1);
+        user   = user.substr(0, at);
+    }
+
+    if ( ipaddr.empty() )
+        ipaddr = CidrUtils::ntop(request.ipaddr());
+
+    _authdb->isAuthentic(user, request.agent_key(), ipaddr, reply);
+    this->sendMessage(&reply);
+
+    return;
 }
 
 

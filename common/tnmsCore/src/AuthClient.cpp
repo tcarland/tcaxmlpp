@@ -156,7 +156,7 @@ AuthClient::unauthClient ( TnmsClient * client )
 
     AuthRequestMap::iterator  rIter;
 
-    rIter = _authMap.find(client->getClientLoginName());
+    rIter = _authMap.find(client->getClientAuthStr());
 
     if ( rIter != _authMap.end() )
         _authMap.erase(rIter);
@@ -203,7 +203,8 @@ AuthClient::AuthReplyHandler ( TnmsAuthReply & reply )
     rIter = _authMap.find(reply.getElementName());
 
     if ( rIter == _authMap.end() ) {
-        LogFacility::LogMessage("AuthClient::AuthReplyHandler() client not found: " + reply.getElementName());
+        LogFacility::LogMessage("AuthClient::AuthReplyHandler() client not found: " 
+            + reply.getElementName());
         return;
     }
 
@@ -215,7 +216,8 @@ AuthClient::AuthReplyHandler ( TnmsAuthReply & reply )
         if ( client->sendMessage(&reply) ) {  // forward reply
             client->AuthReplyHandler(reply);
         } else {
-            LogFacility::LogMessage("AuthClient::AuthReplyHandler() error forwarding reply to " + client->getHostStr());
+            LogFacility::LogMessage("AuthClient::AuthReplyHandler() error forwarding reply to " 
+                + client->getHostStr());
             client->close();
         }
     }

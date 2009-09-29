@@ -95,6 +95,7 @@ class TnmsSocket {
     void                   setClientLogin     ( const std::string & login,
                                                 const std::string & key );
     const std::string&     getClientLoginName() const;
+    const std::string&     getClientAuthStr()   const;
 
     const std::string&     getHostStr()  const;
     const std::string&     getAddrStr()  const;
