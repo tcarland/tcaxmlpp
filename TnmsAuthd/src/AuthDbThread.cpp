@@ -68,7 +68,7 @@ AuthDbThread::run()
     }
     _dbpool->release(sql);
 
-    LogFacility::LogMessage("AuthDbThread finished");
+    LogFacility::LogMessage("AuthDbThread finished.");
 
     return;
 }
@@ -118,8 +118,12 @@ AuthDbThread::authenticate ( const std::string & username,
             break;
     }
 
-    if ( gotit )
+    if ( gotit ) {
         this->dbStoreTicket(sql, userdb);
+        LogFacility::LogMessage("AuthDb::authenticate() succeeded for " + username);
+    } else {
+        LogFacility::LogMessage("AuthDb::authenticate() failed for " + username);
+    }
 
     _dbpool->release(sql);
 

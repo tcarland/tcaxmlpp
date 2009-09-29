@@ -95,7 +95,7 @@ TnmsAuthManager::run()
         _authDb->stop();
     }
 
-    if ( _debug )
+    if ( _verbose )
         LogFacility::RemoveLogStream("stdout");
 
     LogFacility::CloseLogFacility();
