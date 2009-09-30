@@ -119,6 +119,7 @@ AuthDbThread::authenticate ( const std::string & username,
     }
 
     if ( gotit ) {
+        userdb->ticket = ticket;
         this->dbStoreTicket(sql, userdb);
         LogFacility::LogMessage("AuthDb::authenticate() succeeded for " + username);
     } else {

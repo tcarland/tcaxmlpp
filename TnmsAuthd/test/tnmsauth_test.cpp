@@ -23,8 +23,7 @@ class TestAuthThread : public tcanetpp::Thread {
     TestAuthThread ( const std::string & url )
         : Thread(true),
           _soap(soap_new()),
-          _url(url),
-          _result(5)
+          _url(url)
     {}
 
     virtual ~TestAuthThread()
@@ -39,11 +38,10 @@ class TestAuthThread : public tcanetpp::Thread {
         std::string  user, pw, tk, ip;
         int          ret = 0;
 
-        struct ns1__AuthResponse  r;
-        r.result.ticket  = 0;
-        r.result.message = 0;
-        r.result.success = false;
-        r.result.timeout = 0;
+        _r.result.ticket  = 0;
+        _r.result.message = 0;
+        _r.result.success = false;
+        _r.result.timeout = 0;
 
         user = TESTUSER;
         pw   = TESTPASS;
@@ -56,30 +54,24 @@ class TestAuthThread : public tcanetpp::Thread {
         char  * addrc = strdup(ip.c_str());
         char  * urlc  = strdup(_url.c_str());
 
-        _result = 1;
 
         ret = soap_call_ns1__authenticate(_soap, urlc, action,
-            userc, passc, addrc, r);
+            userc, passc, addrc, _r);
 
         if ( ret != SOAP_OK )
         {
-            _result = 2;
             _errStr = "Fatal error in soap call: ";
             _errStr.append(tcanetpp::StringUtils::toString(_soap->error));
             return;
         }
 
-        if  ( r.result.success )
-            _result = 6;
-        else
-            _result = 3;
-
         return;
     }
 
-    int  auth_result()
+    struct ns1__AuthResult&
+    auth_result()
     {
-        return _result;
+        return _r.result;
     }
 
     std::string  errorStr()
@@ -90,6 +82,7 @@ class TestAuthThread : public tcanetpp::Thread {
   private:
     
     struct soap *   _soap;
+    struct ns1__AuthResponse  _r;
     std::string     _url;
     std::string     _errStr;
     int             _result;
@@ -182,9 +175,10 @@ int main ( int argc, char **argv )
     do {
         sleep(1);
         now  = time(NULL);
-        val  = auth_th->auth_result();
+        ns1__AuthResult & result  = auth_th->auth_result();
 
-        if ( val == 6 ) {
+        if ( result.success ) {
+            val = 6;
             printf("Success! Authentication succeeded to %s\n", url.c_str());
             break;
         }
@@ -193,9 +187,9 @@ int main ( int argc, char **argv )
     printf("\n");
 
     auth_th->stop();
-    val = auth_th->auth_result();
+    ns1__AuthResult & result = auth_th->auth_result();
 
-    if ( val != 6 )
+    if ( ! result.success )
         printf("Auth request failed: %d\n", val);
 
     delete auth_th;
