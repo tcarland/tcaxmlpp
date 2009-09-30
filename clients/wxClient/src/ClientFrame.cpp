@@ -207,7 +207,7 @@ ClientFrame::OnTimer ( wxTimerEvent & event )
             clin.req = true;
         }
     }
-    _tree->SyncTree();
+    _tree->Sync();
 }
 
 

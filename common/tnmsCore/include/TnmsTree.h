@@ -70,12 +70,13 @@ class TnmsTree {
     bool       subStructure     ( TreeSubscriber     * sub );
     bool       unsubStructure   ( TreeSubscriber     * sub );
 
-    void       updateSubscribers();
     void       removeSubscriber ( TreeSubscriber     * sub );
+    
+    void       updateSubscribers();
 
-    void       sweep();
     void       sweep            ( TnmsTree::Node     * node );
     void       sweep            ( const std::string  & name );
+    void       sweep();
 
     size_t     size()  const;
     bool       empty() const;
@@ -84,7 +85,7 @@ class TnmsTree {
     void       debugDump() const;
     void       debugDump        ( const std::string  & name ) const;
 
-    void       getRootNames     ( StringSet & rootnames ) const;
+    void       getRootNames     ( StringSet     & rootnames ) const;
 
 
   protected:
@@ -92,7 +93,7 @@ class TnmsTree {
     bool       markForRemove    ( const std::string  & name );
     void       clearNodeErase   ( TnmsTree::Node     * node );
 
-    void       resetMetric      ( TnmsMetric         & metric );
+    void       resetMetric      ( TnmsMetric       & metric );
 
 
   private:

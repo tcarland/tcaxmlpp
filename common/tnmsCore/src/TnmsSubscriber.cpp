@@ -6,37 +6,31 @@
 namespace tnmsCore {
 
 
-TnmsSubscriber::TnmsSubscriber()
-    : TreeSubscriber()
-{
-}
 
-TnmsSubscriber::~TnmsSubscriber()
-{
-}
-
-
-void
+bool
 TnmsSubscriber::queueAdd ( TnmsTree::Node * node )
 {
     if ( removes.erase(node->getValue().metric.getElementName()) )
-        return;
+        return true;
     adds.insert(node);
+    return true;
 }
 
-void
+bool
 TnmsSubscriber::queueRemove ( TnmsTree::Node * node )
 {
     adds.erase(node);
     updates.erase(node);
     removes.insert(node->getValue().metric.getElementName());
+    return true;
 }
 
 
-void
+bool
 TnmsSubscriber::queueUpdate ( TnmsTree::Node * node )
 {
     updates.insert(node);
+    return true;
 }
 
 bool

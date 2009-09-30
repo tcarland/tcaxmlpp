@@ -13,12 +13,12 @@ class ClientSubscriber : public TnmsSubscriber {
 
   public:
 
-    ClientSubscriber();
-    virtual ~ClientSubscriber();
+    ClientSubscriber() {}
+    virtual ~ClientSubscriber() {}
 
-    virtual void  queueAdd    ( TnmsTree::Node * node );
-    virtual void  queueUpdate ( TnmsTree::Node * node );
-    virtual void  queueRemove ( TnmsTree::Node * node );
+    virtual bool  queueAdd    ( TnmsTree::Node * node );
+    virtual bool  queueUpdate ( TnmsTree::Node * node );
+    virtual bool  queueRemove ( TnmsTree::Node * node );
 
     int           lock();
     int           trylock();

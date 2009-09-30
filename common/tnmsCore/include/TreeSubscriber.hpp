@@ -9,6 +9,7 @@
 #ifndef _TNMSCORE_TREESUBSCRIBER_HPP_
 #define _TNMSCORE_TREESUBSCRIBER_HPP_
 
+
 #include "TnmsTree.h"
 
 
@@ -22,12 +23,11 @@ class TreeSubscriber {
   public:
 
     TreeSubscriber() {}
-
     virtual ~TreeSubscriber() {}
 
-    virtual void   queueAdd    ( TnmsTree::Node * node ) = 0;
-    virtual void   queueUpdate ( TnmsTree::Node * node ) = 0;
-    virtual void   queueRemove ( TnmsTree::Node * node ) = 0;
+    virtual bool   queueAdd    ( TnmsTree::Node * node ) = 0;
+    virtual bool   queueUpdate ( TnmsTree::Node * node ) = 0;
+    virtual bool   queueRemove ( TnmsTree::Node * node ) = 0;
 
 };
 

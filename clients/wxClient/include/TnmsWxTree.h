@@ -20,35 +20,6 @@ using namespace tnmsCore;
 
 
 
-/*
-class TnmsWxTreeItem : public wxTreeItemData {
-
-  public:
-
-    TnmsWxTreeItem ( wxTreeItemId   & id_,
-                     const wxString & absoluteName, 
-                     const wxString & name_, 
-                     bool             isParent_ );
-
-    virtual ~TnmsWxTreeItem() {}
-
-    bool        isParent() const;
-    bool        hasChildren() const;
-    bool        isExpanded() const;
-
-  public:
-
-    TnmsMetric           metric;
-    wxTreeItemId         id;
-    std::list<wxString>  children;
-    wxString             absoluteName;
-    wxString             name;
-    bool                 isParent;
-    bool                 isExpanded;
-
-};
-*/
-
 class TnmsWxTreeItem : public wxTreeItemData {
 
   public:
@@ -59,6 +30,7 @@ class TnmsWxTreeItem : public wxTreeItemData {
         : absoluteName(name) {}
  
 };
+
 
 class TnmsWxTree : public wxControl {
  
@@ -102,16 +74,14 @@ class TnmsWxTree : public wxControl {
     void          Init();
 
 
-    void          OnSize          ( wxSizeEvent     & event );
+    void          OnSize          ( wxSizeEvent    & event );
 
-    void          OnSelect        ( wxTreeEvent & event );
-    void          OnDelete        ( wxTreeEvent & event );
-    void          OnExpandItem    ( wxTreeEvent & event );
-    void          OnCollapseItem  ( wxTreeEvent & event );
-    void          OnContext       ( wxTreeEvent & event );
+    void          OnSelect        ( wxTreeEvent    & event );
+    void          OnDelete        ( wxTreeEvent    & event );
+    void          OnExpandItem    ( wxTreeEvent    & event );
+    void          OnCollapseItem  ( wxTreeEvent    & event );
+    void          OnContext       ( wxTreeEvent    & event );
 
-
-    wxTreeCtrl*   GetTreeCtrl()   { return _treeCtrl; }
 
     TnmsWxTreeItem* GetItemData   ( wxTreeItemId     id );
     
@@ -126,9 +96,7 @@ class TnmsWxTree : public wxControl {
 
     void          DoResize();
 
-
-
-    void          SyncTree();
+    void          Sync();
 
 
   public:
@@ -136,12 +104,14 @@ class TnmsWxTree : public wxControl {
     void          SetTnmsTree     ( TnmsTree_R * stree );
     TnmsTree_R*   GetTnmsTree();
 
+    wxTreeCtrl*   GetTreeCtrl()   { return _treeCtrl; }
+
+
   protected:
 
     void          Add             ( const std::string & name );
     wxTreeItemId  RecursiveAdd    ( Node * node );
-    //wxTreeItemId  RecursiveAdd    ( TnmsTree::Node * node, bool parent );
-    //bool          RecursiveDelete ( wxTreeItemId & id );
+
  
   private:
 

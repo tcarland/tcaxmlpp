@@ -18,13 +18,13 @@ class TnmsSubscriber : public TreeSubscriber {
 
   public:
 
-    TnmsSubscriber();
+    TnmsSubscriber() {}
 
-    virtual ~TnmsSubscriber();
+    virtual ~TnmsSubscriber() {}
 
-    virtual void  queueAdd    ( TnmsTree::Node * node );
-    virtual void  queueUpdate ( TnmsTree::Node * node );
-    virtual void  queueRemove ( TnmsTree::Node * node );
+    virtual bool  queueAdd    ( TnmsTree::Node * node );
+    virtual bool  queueUpdate ( TnmsTree::Node * node );
+    virtual bool  queueRemove ( TnmsTree::Node * node );
 
     virtual bool  haveUpdates() const;
 

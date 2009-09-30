@@ -10,42 +10,12 @@ using namespace tcanetpp;
 
 
 // ----------------------------------------------------------------------
-/*
-TnmsWxTreeItem::TnmsWxTreeItem ( const wxString & absoluteName, 
-                                 const wxString & name, 
-                                 bool             isParent )
-    : absName(absoluteName), 
-      name(name), 
-      isparent(isParent),
-      isexpanded(false)
-{}
-
-
-bool
-TnmsWxTreeItem::isParent() const
-{
-    return isparent;
-}
-
-bool
-TnmsWxTreeItem::isExpanded() const
-{
-    return isexpanded;
-}
-
-
-bool
-TnmsWxTreeItem::hasChildren() const
-{
-    return(children.size() > 0);
-}
-
-*/
 // ----------------------------------------------------------------------
 
 
-// ----------------------------------------------------------------------
 
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 
 TnmsWxTree::TnmsWxTree()
 {
@@ -70,6 +40,7 @@ TnmsWxTree::~TnmsWxTree()
     delete _visible;
 }
 
+// ----------------------------------------------------------------------
 
 void
 TnmsWxTree::Init()
@@ -111,6 +82,7 @@ TnmsWxTree::Create  ( wxWindow        * parent,
     return true;
 }
 
+// ----------------------------------------------------------------------
 
 TnmsWxTreeItem*
 TnmsWxTree::GetItemData ( wxTreeItemId  id )
@@ -118,6 +90,8 @@ TnmsWxTree::GetItemData ( wxTreeItemId  id )
     return( (TnmsWxTreeItem*) _treeCtrl->GetItemData(id) );
 }
 
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 
 void
 TnmsWxTree::OnExpandItem ( wxTreeEvent & event )
@@ -133,6 +107,7 @@ TnmsWxTree::OnExpandItem ( wxTreeEvent & event )
     //return this->Expand(parentId);
 }
 
+// ----------------------------------------------------------------------
 
 void
 TnmsWxTree::OnCollapseItem ( wxTreeEvent & event )
@@ -141,6 +116,7 @@ TnmsWxTree::OnCollapseItem ( wxTreeEvent & event )
     return this->Collapse(event.GetItem());
 }
 
+// ----------------------------------------------------------------------
 
 void
 TnmsWxTree::OnSize ( wxSizeEvent & WXUNUSED(event) )
@@ -148,6 +124,7 @@ TnmsWxTree::OnSize ( wxSizeEvent & WXUNUSED(event) )
     this->DoResize();
 }
 
+// ----------------------------------------------------------------------
 
 void
 TnmsWxTree::OnSelect ( wxTreeEvent & event )
@@ -160,6 +137,7 @@ TnmsWxTree::OnSelect ( wxTreeEvent & event )
     return;
 }
 
+// ----------------------------------------------------------------------
 
 void
 TnmsWxTree::OnDelete ( wxTreeEvent & event )
@@ -167,6 +145,7 @@ TnmsWxTree::OnDelete ( wxTreeEvent & event )
     LogFacility::LogMessage("TnmsWxTree::OnDelete ");
 }
 
+// ----------------------------------------------------------------------
 
 void
 TnmsWxTree::OnContext ( wxTreeEvent & event )
@@ -177,6 +156,8 @@ TnmsWxTree::OnContext ( wxTreeEvent & event )
     LogFacility::LogMessage("OnContext " + data->absoluteName);
 }
 
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 
 void
 TnmsWxTree::Expand ( wxTreeItemId  parentId )
@@ -184,6 +165,7 @@ TnmsWxTree::Expand ( wxTreeItemId  parentId )
 
 }
 
+// ----------------------------------------------------------------------
 
 void
 TnmsWxTree::Collapse ( wxTreeItemId  parentId )
@@ -191,6 +173,7 @@ TnmsWxTree::Collapse ( wxTreeItemId  parentId )
 
 }
 
+// ----------------------------------------------------------------------
 
 void
 TnmsWxTree::DoResize()
@@ -199,76 +182,7 @@ TnmsWxTree::DoResize()
     _treeCtrl->SetSize(0, 0, sz.x, sz.y);
 }
 
-/*
-wxTreeItemId
-TnmsWxTree::RecursiveAdd ( TnmsTree::Node * node, bool parent )
-{
-    wxString               name, aname, pname;
-    TreeItemMap::iterator  vIter;
-    TnmsWxTreeItem *       data = NULL;
-    wxTreeItemId           pid  = _rootId;
-    wxTreeItemId           id;
-
-    name  = wxString::FromAscii(node->getName().c_str());
-    LogFacility::LogMessage("TnmsWxTree::Add " + node->getAbsoluteName());
-
-    if ( node->getParent() ) 
-    {
-        pname = wxString::FromAscii(node->getParent()->getAbsoluteName().c_str());
-        vIter = _visible.find(pname);
-
-        if ( vIter == _visible.end() )
-            pid = this->RecursiveAdd(node->getParent(), true);
-        else
-            pid = vIter->second;
-    }
-
-    aname = wxString::FromAscii(node->getAbsoluteName().c_str());
-    data  = new TnmsWxTreeItem(aname, name, true);
-    data->metric = node->getValue().metric;
-    id    = _treeCtrl->AppendItem(pid, name, -1, -1, data);
-
-    if ( parent )
-        _treeCtrl->SetItemHasChildren(id);
-
-    _visible[aname] = id;
-
-    return id;
-}
-
-bool
-TnmsWxTree::RecursiveDelete ( wxTreeItemId  &  id )
-{
-    wxTreeItemId     cid;
-    TnmsWxTreeItem * data = NULL;
-
-    if ( _treeCtrl->ItemHasChildren(id) ) 
-    {
-        wxTreeItemIdValue  cookie;
-
-        cid   = _treeCtrl->GetFirstChild(id, cookie);
-        while ( cid.IsOk() )
-        {
-            if ( _treeCtrl->ItemHasChildren(cid) )
-            {
-                this->RecursiveDelete(cid);
-                con
-
-            data = (TnmsWxTreeItem*) _treeCtrl->GetItemData(cid);
-            _visible.erase(data->absName);
-
-            LogFacility::LogMessage("RecursiveDelete");
-
-            cid = _treeCtrl->GetNextChild(cid, cookie);
-        }
-    }
-
-    data = (TnmsWxTreeItem*) _treeCtrl->GetItemData(id);
-    _visible.erase(data->absName);
-
-    return true;
-}
-*/
+// ----------------------------------------------------------------------
 
 TnmsMetric&
 TnmsWxTree::GetItemMetric ( wxTreeItemId & id )
@@ -280,6 +194,7 @@ TnmsWxTree::GetItemMetric ( wxTreeItemId & id )
     return node->getValue().metric;
 }
 
+// ----------------------------------------------------------------------
 
 wxTreeItemId 
 TnmsWxTree::RecursiveAdd ( Node * node )
@@ -307,6 +222,7 @@ TnmsWxTree::RecursiveAdd ( Node * node )
     return id;
 }
 
+// ----------------------------------------------------------------------
 
 
 void
@@ -323,8 +239,12 @@ TnmsWxTree::Add ( const std::string & name )
     this->RecursiveAdd(node);
 }
 
+
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+
 void
-TnmsWxTree::SyncTree()
+TnmsWxTree::Sync()
 {
     ClientSubscriber * notifier = _stree->notifier;
 
@@ -346,8 +266,8 @@ TnmsWxTree::SyncTree()
     wxString         name;
     wxTreeItemId     pid, id;
 
+    // Adds
     TreeUpdateSet & adds = notifier->adds;
-
     for ( nIter = adds.begin(); nIter != adds.end(); )
     {
         TnmsTree::Node * node = *nIter;
@@ -409,12 +329,13 @@ TnmsWxTree::SyncTree()
     }
 
     _stree->tree->debugDump();
-
     _stree->notifier->unlock();
 
     return;
 }
 
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 
 void
 TnmsWxTree::SetTnmsTree ( TnmsTree_R * tree )
@@ -440,5 +361,6 @@ TnmsWxTree::GetTnmsTree()
     return _stree;
 }
 
+// ----------------------------------------------------------------------
 // _TNMSWXTREE_CPP_
 

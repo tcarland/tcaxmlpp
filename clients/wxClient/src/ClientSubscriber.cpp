@@ -3,50 +3,51 @@
 #include "ClientSubscriber.h"
 
 
-ClientSubscriber::ClientSubscriber() {}
-
-ClientSubscriber::~ClientSubscriber() {}
 
 
-void
+bool
 ClientSubscriber::queueAdd ( TnmsTree::Node * node )
 {
-    if ( this->trylock() <= 0 )
-        return;
+    if ( this->lock() <= 0 )
+        return false;
 
     TnmsSubscriber::queueAdd(node);
 
     this->unlock();
 
-    return;
+    return true;
 }
 
-void
+bool
 ClientSubscriber::queueUpdate ( TnmsTree::Node * node )
 {
-    if ( ! this->trylock() )
-        return;
+    if ( ! this->lock() )
+        return false;
 
     TnmsSubscriber::queueUpdate(node);
 
     this->unlock();
 
-    return;
+    return true;
 }
 
-void
+bool
 ClientSubscriber::queueRemove ( TnmsTree::Node * node )
 {
-    if ( ! this->trylock() )
-        return;
+    if ( ! this->lock() )
+        return false;
 
     TnmsSubscriber::queueRemove(node);
 
     this->unlock();
 
-    return;
+    return true;
 }
 
+//-------------------------
+//  The subscriber's add/update/remove queues are public
+//  so the reader (only) must lock the mutex prior to 
+//  iterating on any of the queues.
 int
 ClientSubscriber::lock()
 {
