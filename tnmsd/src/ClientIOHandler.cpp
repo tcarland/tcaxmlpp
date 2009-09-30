@@ -288,15 +288,11 @@ ClientIOHandler::initStat ( TnmsClient * client )
 
     stat.connState  = TnmsMetric(name);
     stat.lastConn   = TnmsMetric(name + "/" + LASTCONN_NAME);
-    stat.rxCtr      = TnmsMetric(name + "/" + RECEIVE_NAME);
-    stat.txCtr      = TnmsMetric(name + "/" + TRANSMIT_NAME);
 
     stat.connState.setValue(TNMS_INT32, c);
 
     _tree->add(stat.connState.getElementName());
     _tree->add(stat.lastConn.getElementName());
-    _tree->add(stat.rxCtr.getElementName());
-    _tree->add(stat.txCtr.getElementName());
 
     _clMap[client] = stat;
 
@@ -337,11 +333,6 @@ ClientIOHandler::endStat ( TnmsClient * client )
     return;
 }
 
-void
-ClientIOHandler::sendStats()
-{
-    return;
-}
 
 } // namespace 
 

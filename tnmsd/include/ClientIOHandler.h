@@ -56,7 +56,6 @@ class ClientIOHandler : public EventIOHandler {
                                   ClientStat  & stat );
     void         endStat        ( TnmsClient  * client );
 
-    void         sendStats();
 
   protected:
 
