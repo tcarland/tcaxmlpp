@@ -33,11 +33,17 @@ AgentIOHandler::timeout ( const EventTimer * timer )
     
     const time_t & now = timer->abstime.tv_sec;
 
-    ClientSet::iterator  cIter;
+    ClientMap::iterator  cIter;
 
-    for ( cIter = _clients.begin(); cIter != _clients.end(); cIter++ ) 
+    for ( cIter = _clMap.begin(); cIter != _clMap.end(); ++cIter ) 
     {
-        TnmsClient * client = (TnmsClient*) *cIter;
+        TnmsClient * client = (TnmsClient*) cIter->first;
+        ClientStat & stat   = cIter->second;
+
+        if ( timer->evid == _report ) {
+            this->updateStat(client, stat);
+            continue;
+        }
 
         if ( (rd = client->receive(now)) < 0 ) {
             LogFacility::LogMessage("AgentIOHandler error in receive() " 
@@ -289,20 +295,12 @@ AgentIOHandler::endStat ( TnmsClient * client )
 }
 
 void
-AgentIOHandler::sendStats()
+AgentIOHandler::setReportEvent ( evid_t & report_id )
 {
-    ClientMap::iterator  cIter;
-
-    for ( cIter = _clMap.begin(); cIter != _clMap.end(); ++cIter )
-    {
-        TnmsClient * client = cIter->first;
-        ClientStat & stat   = cIter->second;
-
-        this->updateStat(client, stat);
-    }
-
-    return;
+    _report = report_id;
 }
+
+
 
 } // namespace 
 

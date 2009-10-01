@@ -46,8 +46,7 @@ namespace tcanetpp {
 
 #define DEFAULT_EVU 10000  // default select timeout
 #define MAX_FDVAL   1024   // max file descriptors
-
-
+#define NO_EVID     0 
  
 typedef uint64_t  evid_t;  // event registration id 
 
@@ -56,10 +55,11 @@ class EventManager;
 
 
 struct EventTimer {
-       
     evid_t              evid;      // event id
+
     EventManager*       evmgr;     // evmgr owning this event 
     EventTimerHandler*  handler;   // event handler for this event.
+
     uint32_t            count;     // number of times to fire event (0 == forever)
     uint32_t            fired;     // number of times event has fired
     long                evsec;     // event interval in seconds (if applicable).
@@ -89,10 +89,11 @@ typedef std::map<evid_t, EventTimer>  EventTimerMap;
   *  ( see EventHandlers.h )
  **/
 struct EventIO {
-
     evid_t             evid;      // event id
+
     EventManager*      evmgr;     // evmgr owning this event (ie. this)
     EventIOHandler*    handler;   // event handler for this event.
+
     sockfd_t           sfd;       // event socket id
     void*              rock;      // event object
     struct timeval     abstime;   // time of event firing.

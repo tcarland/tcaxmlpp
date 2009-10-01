@@ -4,6 +4,15 @@
 
 
 
+
+const char* vt_names[] = 
+{ "TNMS_NONE", "TNMS_INT32", 
+  "TNMS_UINT32", "TNMS_INT64", 
+  "TNMS_UINT64", "TNMS_FLOAT", 
+  "TNMS_STRING"
+};
+
+
 MetricListView::MetricListView ( wxWindow * parent, const wxWindowID   id,
                                                     const wxPoint    & pos,
                                                     const wxSize     & size,
@@ -38,7 +47,6 @@ MetricListView::Init()
     this->InsertColumn(3, itemCol);
 
     this->AddDefaultItem();
-
 }
 
 void
@@ -69,10 +77,41 @@ MetricListView::AddDefaultItem()
 }
 
 
-void
-MetricListView::AddMetricItem ( TnmsMetric * metric )
+long
+MetricListView::getNewId()
 {
+    long id = _lastid;
+    _lastid++;
+    return id;
+}
 
+bool
+MetricListView::AddMetricItem ( TnmsMetric & metric )
+{
+    wxListItem  mitem;
+    long        id;
+
+    if ( _lastid == 0 )
+        return false;   // ie. we're full, should throw manage id's
+
+    wxString name = wxString::FromAscii(metric.getElementName().c_str());
+
+    id = this->InsertItem(this->getNewId(), name, 0);
+
+    wxString  valT, val;
+
+    std::string  vt = vt_names[metric.getValueType()];
+    valT = wxString::FromAscii(vt.c_str());
+    if ( metric.getValueType() == TNMS_STRING )
+        val = wxString::FromAscii(metric.getValue().c_str());
+    else
+        val = wxString::FromAscii(StringUtils::toString(metric.getValue<uint64_t>()).c_str());
+   
+    this->SetItem(id, 1, valT);
+    this->SetItem(id, 2, val);
+    this->SetItem(id, 3, _T(" "));
+
+    return true;
 }
 
 

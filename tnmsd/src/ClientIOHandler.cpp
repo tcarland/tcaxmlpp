@@ -12,7 +12,8 @@ namespace tnmsd {
 ClientIOHandler::ClientIOHandler ( TnmsTree * tree, AuthClient * auth ) 
     throw ( Exception )
     : _tree(tree),
-      _auth(auth)
+      _auth(auth),
+      _report(0)
 {
     if ( NULL == _tree )
         throw Exception("ClientIOHandler() TnmsTree is NULL");
@@ -41,6 +42,11 @@ ClientIOHandler::timeout ( const EventTimer * timer )
         TnmsClient * client = (TnmsClient*) cIter->first;
         ClientStat & stat   = cIter->second;
 
+        if ( timer->evid == _report ) {
+            this->updateStat(client, stat);
+            continue;
+        }
+
         if ( client->isMirror() ) 
         {
             if ( ! client->isConnected() || client->isConnecting() )
@@ -60,7 +66,6 @@ ClientIOHandler::timeout ( const EventTimer * timer )
                 stat.lastConn.setValue(TNMS_UINT32, now);
                 stat.rxCtr.reset();
                 stat.txCtr.reset();
-                this->updateStat(client, stat);
 
                 if ( c < 0 )
                     continue;
@@ -71,7 +76,6 @@ ClientIOHandler::timeout ( const EventTimer * timer )
                     client->subscribeAll();
                     c = 3;
                     stat.connState.setValue(TNMS_INT32, c);
-                    this->updateStat(client, stat);
                 } else if ( ! client->isAuthorized() ) {
                     if ( (stat.lastConn.getValue<time_t>() + client->getReconnectTime()) <= now ) {
                         client->login();
@@ -302,9 +306,6 @@ ClientIOHandler::initStat ( TnmsClient * client )
 void
 ClientIOHandler::updateStat ( TnmsClient * client, ClientStat & stat )
 {
-    if ( client->isMirror() )
-        return;  // avoid 
-
     _tree->update(stat.connState);
     _tree->update(stat.lastConn);
 
@@ -331,6 +332,12 @@ ClientIOHandler::endStat ( TnmsClient * client )
     }
 
     return;
+}
+
+void
+ClientIOHandler::setReportEvent ( evid_t & report_id )
+{
+    _report = report_id;
 }
 
 

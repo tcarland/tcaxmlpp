@@ -21,11 +21,14 @@ class MetricListView : public wxListCtrl {
     virtual ~MetricListView();
 
 
+    bool        AddMetricItem   ( TnmsMetric & metric );
+
+
+  private:
+
     void        Init();
-
     void        AddDefaultItem();
-    void        AddMetricItem   ( TnmsMetric * metric );
-
+    long        getNewId();
 
   private:
 

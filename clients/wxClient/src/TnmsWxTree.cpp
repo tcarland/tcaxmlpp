@@ -46,7 +46,7 @@ void
 TnmsWxTree::Init()
 {
     _rootId  = 0;
-    _visible = new TreeItemMap();
+    _visible = new TnmsTree();
 }
 
 
@@ -65,7 +65,7 @@ TnmsWxTree::Create  ( wxWindow        * parent,
     treeStyle      |= wxTR_HIDE_ROOT;
     treeStyle      |= style;
 
-    _treeCtrl = new wxTreeCtrl(parent, TNMS_ID_WXTREE, pos, size, treeStyle);
+    _treeCtrl       = new wxTreeCtrl(parent, TNMS_ID_WXTREE, pos, size, treeStyle);
 
     wxString         rootName = wxT("/");
     TnmsWxTreeItem * rootData = new TnmsWxTreeItem("/");
@@ -184,37 +184,44 @@ TnmsWxTree::DoResize()
 
 // ----------------------------------------------------------------------
 
-TnmsMetric&
+TnmsMetric
 TnmsWxTree::GetItemMetric ( wxTreeItemId & id )
 {
+    TnmsMetric    metric;
     TnmsWxTreeItem * data = this->GetItemData(id);
+    
+    _visible->request(data->absoluteName, metric);
 
-    Node * node = _visible->find(data->absoluteName);
-
-    return node->getValue().metric;
+    return metric;
 }
 
 // ----------------------------------------------------------------------
 
 wxTreeItemId 
-TnmsWxTree::RecursiveAdd ( Node * node )
+TnmsWxTree::RecursiveAdd ( TnmsTree::Node * node )
 {
     wxString         name;
     wxTreeItemId     id;
     TnmsWxTreeItem * data = NULL;
 
-    if ( ! node->getParent() )
+    if ( NULL == node->getParent() )
         id = _rootId;
-    else if ( node->getParent()->getValue().id.IsOk() )
-        id = node->getParent()->getValue().id;
     else
-        id = this->RecursiveAdd(node->getParent());
+    {
+        TreeIdMap::iterator  tIter;
+        tIter = _idMap.find(node->getParent()->getAbsoluteName());
+
+        if ( tIter == _idMap.end() )
+            id = this->RecursiveAdd(node->getParent());
+        else
+            id = tIter->second;
+    }
 
     name  = wxString::FromAscii(node->getName().c_str());
     data  = new TnmsWxTreeItem(node->getAbsoluteName());
     id    = _treeCtrl->AppendItem(id, name, -1, -1, data);
 
-    node->getValue().id = id;
+    _idMap[node->getAbsoluteName()] = id;
 
     if ( id.IsOk())
         _treeCtrl->SetItemHasChildren(id);
@@ -226,17 +233,15 @@ TnmsWxTree::RecursiveAdd ( Node * node )
 
 
 void
-TnmsWxTree::Add ( const std::string & name )
+TnmsWxTree::Add ( TnmsTree::Node * node )
 {
-    NodeSet       adds;
-    Node        * node  = NULL;
-
-    node = _visible->insert(name, std::inserter(adds, adds.begin()));
- 
     if ( node == NULL )
         return;
 
+    _visible->add(node->getAbsoluteName());
     this->RecursiveAdd(node);
+
+    return;
 }
 
 
@@ -257,12 +262,12 @@ TnmsWxTree::Sync()
     if ( _visible->empty() )
         _stree->tree->subscribe("/", _stree->notifier);
 
-    LogFacility::LogMessage("TnmsWxTree::SyncTree() ");
+    LogFacility::LogMessage("TnmsWxTree::Sync() ");
 
+    TreeIdMap::iterator      pIter;
     TreeUpdateSet::iterator  nIter;
     TreeRemoveSet::iterator  rIter;
 
-    Node *           tnode;
     wxString         name;
     wxTreeItemId     pid, id;
 
@@ -277,16 +282,11 @@ TnmsWxTree::Sync()
             continue;
         }
 
-        tnode  = _visible->find(node->getAbsoluteName());
-
-        if ( tnode != NULL ) {
-            pid   = tnode->getValue().id;
-            
-            tnode->getValue().metric = node->getValue().metric;
-
+        if ( _visible->exists(node->getAbsoluteName()) ) {
+            _visible->update(node->getValue().metric);
             LogFacility::LogMessage("Add " + node->getAbsoluteName());
         } else {
-            this->Add(node->getAbsoluteName());
+            this->Add(node);
         }
 
         adds.erase(nIter++);
@@ -295,16 +295,15 @@ TnmsWxTree::Sync()
     TreeRemoveSet & removes = notifier->removes;
     for ( rIter = removes.begin(); rIter != removes.end(); ) 
     {
-        tnode = _visible->find(*rIter);
-
-        if ( tnode != NULL ) 
+        if ( _visible->exists(*rIter) ) 
         {
-            StringSet  rems;
-
-            pid = tnode->getValue().id;
+            pIter = _idMap.find(*rIter);
+            pid   = pIter->second;
             _treeCtrl->Delete(pid);
             
-            _visible->erase(*rIter, std::inserter(rems, rems.begin()));
+            //erase now..should change to sweep() on interval so we see our deletes better
+            _visible->remove(*rIter);
+            _idMap.erase(pIter);
         }
 
         removes.erase(rIter++);
@@ -317,13 +316,10 @@ TnmsWxTree::Sync()
 
         LogFacility::LogMessage("Update " + node->getAbsoluteName());
 
-        tnode  = _visible->find(node->getAbsoluteName());
-
-        if ( tnode == NULL ) {
-            this->Add(node->getAbsoluteName());
-        } else {
-            tnode->getValue().metric = node->getValue().metric;
-        }
+        if ( ! _visible->exists(node->getAbsoluteName()) )
+            this->Add(node);
+        else
+            _visible->update(node->getValue().metric);
 
         updates.erase(nIter++);
     }

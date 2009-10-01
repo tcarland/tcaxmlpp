@@ -97,9 +97,9 @@ ClientFrame::OnSelect ( wxTreeEvent & event )
 {
     wxTreeItemId     id   = event.GetItem();
 
-    TnmsMetric & metric = _tree->GetItemMetric(id);
+    TnmsMetric metric = _tree->GetItemMetric(id);
 
-    _mlist->AddMetricItem(&metric);
+    _mlist->AddMetricItem(metric);
 
     LogFacility::LogMessage("ClientFrame::OnSelect");
 }
@@ -110,6 +110,7 @@ ClientFrame::OnContext ( wxTreeEvent & event )
 {
     LogFacility::LogMessage("ClientFrame::OnContext ");
 }
+
 
 void
 ClientFrame::OnConnect ( wxCommandEvent & event )

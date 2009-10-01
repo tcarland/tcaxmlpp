@@ -1,6 +1,9 @@
 /**
   *   A circular buffer implementation which allows for direct access and 
-  *  interaction to the underlying buffer to avoid excessive copying.
+  *  interaction to the underlying buffer. This was originally designed 
+  *  to read inbound udp fast and avoid memcpy's that occur in std read/write
+  *  functions. The get/set ptr functions should be used with caution.
+  *   Normal read/write() functions 
   *
   * Copyright (c) 2008, 2009 Timothy Charlton Arland 
   *  @Author  tca@charltontechnology.net
@@ -34,8 +37,6 @@ extern "C" {
 }
 #endif
 
-#include <string>
-
 #include "Exception.hpp"
 
 
@@ -46,6 +47,7 @@ namespace tcanetpp {
 #define MIN_CIRBUFFER_SIZE       1
 #define MAX_CIRBUFFER_SIZE       (4294967295U)
 #define DEFAULT_CIRBUFFER_SIZE   (1024000)
+#define CIRBUFFER_VERSION        "v0.97"
 
 
 // ----------------------------------------------------------------------
@@ -53,6 +55,7 @@ namespace tcanetpp {
   *   Thrown in 'set' methods if buffer overwrite or overread
   *   is attempted.
  **/
+
 class BufferException : public Exception {
   public:
     BufferException ( const std::string & s_err ) 
@@ -79,18 +82,14 @@ class CircularBuffer {
     size_t         read    ( void       * buff, size_t n );
     size_t         write   ( const void * buff, size_t n );
  
+    size_t         readAvailable() const;
+    size_t         writeAvailable() const;
+
     size_t         reverse ( size_t offset );
     size_t         skip    ( size_t offset );
+
     bool           resize  ( size_t buffsize ) throw ( BufferException );
 
-    
-    size_t         readAvailable() const;
-    size_t         readPtrAvailable() const;
-    size_t         writeAvailable() const;
-    size_t         writePtrAvailable() const;
-
-    bool           isWrapped() const;
-   
 
     void           clear();
     inline  void   reset()       { return this->clear(); }
@@ -104,17 +103,17 @@ class CircularBuffer {
 
     char*          getReadPtr  ( size_t * size );
     void           setReadPtr  ( size_t   offset ) throw ( BufferException );
+    
+    size_t         readPtrAvailable() const;
+    size_t         writePtrAvailable() const;
 
-    const 
-    std::string&   getErrorStr() const;
-
-    static const
-    std::string&   Version();
+    const char*    Version();
 
 
   protected:
 
     void           init() throw ( BufferException );
+    bool           isWrapped() const;
 
 
   private:
@@ -126,11 +125,8 @@ class CircularBuffer {
     char*                   _wrapPtr;   
 
     size_t                  _buffsize;
-    std::string             _errstr;
 
-    static std::string      _Version;
 };
-
 
 }  // namespace
 

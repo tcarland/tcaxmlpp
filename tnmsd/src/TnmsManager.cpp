@@ -81,6 +81,8 @@ TnmsManager::run()
             LogFacility::LogMessage("Error parsing config");
         return;
     }
+    _agentHandler->setReportEvent(_reportId);
+    _clientHandler->setReportEvent(_reportId);
 
     _evmgr->eventLoop(); // main loop
 
@@ -110,8 +112,8 @@ TnmsManager::timeout ( const EventTimer * timer )
     // internal metrics
     if ( timer->evid == _reportId ) {
         LogFacility::LogMessage("TnmsManager::run()");
-        _clientHandler->sendStats();
-        _agentHandler->sendStats();
+        _clientHandler->timeout(timer);
+        _agentHandler->timeout(timer);
         return;
     }
 

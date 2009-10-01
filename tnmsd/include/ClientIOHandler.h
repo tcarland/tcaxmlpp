@@ -4,7 +4,7 @@
 #include <set>
 #include <map>
 
-#include "EventHandlers.hpp"
+#include "EventManager.h"
 #include "Exception.hpp"
 using namespace tcanetpp;
 
@@ -56,6 +56,7 @@ class ClientIOHandler : public EventIOHandler {
                                   ClientStat  & stat );
     void         endStat        ( TnmsClient  * client );
 
+    void         setReportEvent ( evid_t      & report );
 
   protected:
 
@@ -66,6 +67,7 @@ class ClientIOHandler : public EventIOHandler {
     ClientMap                _clMap;
 
     std::string              _prefix;
+    evid_t                   _report;
 };
 
 }  // namespace 
