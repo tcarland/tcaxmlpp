@@ -256,9 +256,6 @@ TnmsWxTree::Sync()
     if ( ! notifier->haveUpdates() && ! _visible->empty() )
         return;
 
-    if ( ! notifier->trylock() )
-        return;
-
     if ( _visible->empty() )
         _stree->tree->subscribe("/", _stree->notifier);
 
@@ -270,6 +267,9 @@ TnmsWxTree::Sync()
 
     wxString         name;
     wxTreeItemId     pid, id;
+
+    if ( ! notifier->trylock() )
+        return;
 
     // Adds
     TreeUpdateSet & adds = notifier->adds;
