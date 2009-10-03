@@ -44,7 +44,7 @@ class ClientFrame : public wxFrame {
 
   protected:
 
-    struct ClientInstance
+    struct Connection
     {
         std::string  username;
         std::string  password;
@@ -52,12 +52,18 @@ class ClientFrame : public wxFrame {
         std::string  servername;
         uint16_t     port;
         bool         req;
+        bool         enabled;
+
         TnmsClient*  client;
 
-        ClientInstance() : port(0), client(NULL) {}
+        Connection() : port(0), 
+                       req(false),
+                       enabled(false),
+                       client(NULL)
+        {}
     };
     
-    typedef std::map<wxString, ClientInstance>  ClientMap;
+    typedef std::map<wxString, Connection>  ClientMap;
 
   private:
 

@@ -18,7 +18,8 @@ MetricListView::MetricListView ( wxWindow * parent, const wxWindowID   id,
                                                     const wxSize     & size,
                                                     long               style )
     : wxListCtrl(parent, id, pos, size, style|wxLC_REPORT),
-      _lastid(0)
+      _lastid(1),
+      _default(0)
 {
     this->Init();
 }
@@ -55,8 +56,8 @@ MetricListView::AddDefaultItem()
     wxListItem  mitem;
     long        id;
 
-    id = this->InsertItem(_lastid, _T("/"), 0);
-    _lastid++;
+    id = this->InsertItem(this->getNewId(), _T("/"), 0);
+    _default = id;
 
     this->SetItemData(id, id);
     this->SetItem(id, 1, _T("NOVALUE"));
@@ -67,6 +68,7 @@ MetricListView::AddDefaultItem()
     mitem.SetTextColour(*wxBLUE);
     mitem.SetFont(*wxITALIC_FONT);
     mitem.SetBackgroundColour(*wxLIGHT_GREY);
+    this->SetItem(mitem);
     
     this->SetColumnWidth(0, wxLIST_AUTOSIZE_USEHEADER);
     this->SetColumnWidth(1, wxLIST_AUTOSIZE_USEHEADER);
@@ -86,7 +88,7 @@ MetricListView::getNewId()
 }
 
 bool
-MetricListView::AddMetricItem ( TnmsMetric & metric )
+MetricListView::AddMetric ( TnmsMetric & metric )
 {
     wxListItem  mitem;
     long        id;

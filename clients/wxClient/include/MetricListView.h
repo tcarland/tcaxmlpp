@@ -21,7 +21,7 @@ class MetricListView : public wxListCtrl {
     virtual ~MetricListView();
 
 
-    bool        AddMetricItem   ( TnmsMetric & metric );
+    bool        AddMetric      ( TnmsMetric & metric );
 
 
   private:
@@ -33,6 +33,7 @@ class MetricListView : public wxListCtrl {
   private:
 
     long        _lastid;
+    long        _default;
 };
 
 

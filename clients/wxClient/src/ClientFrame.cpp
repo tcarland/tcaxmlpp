@@ -43,21 +43,25 @@ ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
 
     //Connect(TNMS_ID_TREE, wxEVT_SIZE,
         //wxSizeEventHandler(TnmsWxTree::OnSize));
+
     //Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_EXPANDED, 
         //wxCommandEventHandler(ClientFrame::OnExpandItem));
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_EXPANDED, 
         wxTreeEventHandler(TnmsWxTree::OnExpandItem));
+
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_COLLAPSING,
         wxTreeEventHandler(TnmsWxTree::OnCollapseItem));
+
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_SEL_CHANGED,
         wxTreeEventHandler(ClientFrame::OnSelect));
     //Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_ACTIVATED,
         //wxTreeEventHandler(TnmsWxTree::OnSelect));
+
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_RIGHT_CLICK,
         wxTreeEventHandler(ClientFrame::OnContext));
+
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_DELETE_ITEM,
         wxTreeEventHandler(TnmsWxTree::OnDelete));
-
 
     this->initMenuBar();
 
@@ -95,11 +99,11 @@ ClientFrame::initMenuBar()
 void
 ClientFrame::OnSelect ( wxTreeEvent & event )
 {
-    wxTreeItemId     id   = event.GetItem();
+    wxTreeItemId  id  = event.GetItem();
 
     TnmsMetric metric = _tree->GetItemMetric(id);
 
-    _mlist->AddMetricItem(metric);
+    _mlist->AddMetric(metric);
 
     LogFacility::LogMessage("ClientFrame::OnSelect");
 }
@@ -129,7 +133,7 @@ ClientFrame::OnConnect ( wxCommandEvent & event )
     wxString  username = dlg->tcUser->GetValue();
     wxString  password = dlg->tcPass->GetValue();
 
-    ClientInstance  cl;
+    Connection  cl;
     cl.servername  = StringUtils::wtocstr(servname.c_str());
     cl.username    = StringUtils::wtocstr(username.c_str());
     cl.password    = StringUtils::wtocstr(password.c_str());
@@ -155,7 +159,7 @@ ClientFrame::OnDisconnect ( wxCommandEvent & event )
     ClientMap::iterator  cIter;
     for ( cIter = _clientMap.begin(); cIter != _clientMap.end(); ++cIter )
     {
-        ClientInstance & clin = cIter->second;
+        Connection & clin = cIter->second;
 
         if ( clin.client ) {
             clin.client->close();
@@ -200,7 +204,7 @@ ClientFrame::OnTimer ( wxTimerEvent & event )
     ClientMap::iterator  cIter;
     for ( cIter = _clientMap.begin(); cIter != _clientMap.end(); ++cIter )
     {
-        ClientInstance & clin = cIter->second;
+        Connection & clin = cIter->second;
 
         if ( clin.client->isAuthorized() && ! clin.req ) 
         {
