@@ -138,7 +138,7 @@ ClientFrame::OnTreeContext ( wxTreeEvent & event )
     wxTreeItemId  id  = event.GetItem();
     wxMenu    * menu  = new wxMenu();
     wxPoint     point = wxGetMousePosition();
-    //wxFindWindowAtPoint(point);
+    
     point = ScreenToClient(point);
 
     menu->AppendRadioItem(wxID_ANY, wxT("Nothing"), wxT(""));
