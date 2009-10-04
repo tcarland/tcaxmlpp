@@ -41,16 +41,16 @@ namespace tcanetpp {
 //-------------------------------------------------------------------//
  
 bool
-CidrUtils::isBasePrefix ( ipv4addr_t addr, uint8_t mb )
+CidrUtils::IsBasePrefix ( ipv4addr_t addr, uint8_t mb )
 {
-    return(CidrUtils::toBasePrefix(addr, mb) == addr );
+    return(CidrUtils::ToBasePrefix(addr, mb) == addr );
 }
 
 
 //-------------------------------------------------------------------//
 
 ipv4addr_t
-CidrUtils::toBasePrefix ( ipv4addr_t addr, uint8_t mb )
+CidrUtils::ToBasePrefix ( ipv4addr_t addr, uint8_t mb )
 {
     uint32_t  mask;
 
@@ -68,20 +68,20 @@ CidrUtils::toBasePrefix ( ipv4addr_t addr, uint8_t mb )
 //-------------------------------------------------------------------//
 
 std::string
-CidrUtils::toString ( ipv4addr_t addr )
+CidrUtils::ToString ( ipv4addr_t addr )
 {
     return CidrUtils::ntop(addr);
 }
 
 std::string
-CidrUtils::toString ( const Prefix & pfx )
+CidrUtils::ToString ( const Prefix & pfx )
 {
-    return CidrUtils::toString(pfx.getPrefix(), pfx.getPrefixLen());
+    return CidrUtils::ToString(pfx.getPrefix(), pfx.getPrefixLen());
 }
 
 
 std::string
-CidrUtils::toString ( ipv4addr_t addr, uint8_t mb )
+CidrUtils::ToString ( ipv4addr_t addr, uint8_t mb )
 {
     char  cidr[INET_CIDRSTRLEN];
 
@@ -146,7 +146,7 @@ CidrUtils::StringToCidr ( const std::string & cidrStr, Prefix & pfx )
 //-------------------------------------------------------------------//
 
 ipv4addr_t
-CidrUtils::bitsToMask ( uint8_t mb )
+CidrUtils::BitsToMask ( uint8_t mb )
 {
     ipv4addr_t  mask = 0xffffffff;
     mask = mask >> (32 - mb) << (32 - mb);
@@ -156,7 +156,7 @@ CidrUtils::bitsToMask ( uint8_t mb )
 //-------------------------------------------------------------------//
 
 int
-CidrUtils::getCidrRange ( uint8_t mb, uint8_t * subnet_pos )
+CidrUtils::GetCidrRange ( uint8_t mb, uint8_t * subnet_pos )
 {
     uint8_t  pos = 1;
 
@@ -172,15 +172,15 @@ CidrUtils::getCidrRange ( uint8_t mb, uint8_t * subnet_pos )
 }
 
 int
-CidrUtils::getCidrRange ( uint8_t mb )
+CidrUtils::GetCidrRange ( uint8_t mb )
 {
-    return CidrUtils::getCidrRange(mb, NULL);
+    return CidrUtils::GetCidrRange(mb, NULL);
 }
 
 //-------------------------------------------------------------------//
 
 uint8_t
-CidrUtils::subnetValue ( ipv4addr_t addr, uint8_t subnet_pos )
+CidrUtils::SubnetValue ( ipv4addr_t addr, uint8_t subnet_pos )
 {
     uint8_t   octets[4];
     uint8_t  *ptr;
@@ -199,7 +199,7 @@ CidrUtils::subnetValue ( ipv4addr_t addr, uint8_t subnet_pos )
 //-------------------------------------------------------------------//
 
 bool
-CidrUtils::deAggregate ( Prefix & p, uint8_t mb, std::vector<Prefix> &v )
+CidrUtils::DeAggregate ( Prefix & p, uint8_t mb, std::vector<Prefix> &v )
 {
     uint32_t base;
     uint8_t  octets[4], *ptr;
@@ -207,7 +207,7 @@ CidrUtils::deAggregate ( Prefix & p, uint8_t mb, std::vector<Prefix> &v )
     bool     big = false;
 
     if ( p.getPrefixLen() > mb || 
-	! CidrUtils::isBasePrefix(p.getPrefix(), p.getPrefixLen()) )
+	! CidrUtils::IsBasePrefix(p.getPrefix(), p.getPrefixLen()) )
 	return false;
 
     num = (int) pow(2, (mb - p.getPrefixLen()));
@@ -245,9 +245,9 @@ CidrUtils::deAggregate ( Prefix & p, uint8_t mb, std::vector<Prefix> &v )
 //-------------------------------------------------------------------//
 
 bool
-CidrUtils::matchCidr ( Prefix & p, ipv4addr_t addr )
+CidrUtils::MatchCidr ( Prefix & p, ipv4addr_t addr )
 {
-    return(p.getPrefix() == CidrUtils::toBasePrefix(addr, p.getPrefixLen()));
+    return(p.getPrefix() == CidrUtils::ToBasePrefix(addr, p.getPrefixLen()));
 }
 
 
@@ -289,7 +289,7 @@ CidrUtils::pton ( const std::string & ipstr, ipv4addr_t & addr )
 //-------------------------------------------------------------------//
 
 std::string
-CidrUtils::getHostName()
+CidrUtils::GetHostName()
 {
     char         hstr[MAXSTRLINE];
     std::string  hostname;
@@ -303,7 +303,7 @@ CidrUtils::getHostName()
 }
 
 std::string
-CidrUtils::getHostName ( ipv4addr_t addr )
+CidrUtils::GetHostName ( ipv4addr_t addr )
 {
     std::string       hostname;
     struct  hostent  *hp = NULL;
@@ -318,13 +318,13 @@ CidrUtils::getHostName ( ipv4addr_t addr )
 
 
 ipv4addr_t
-CidrUtils::getHostAddr()
+CidrUtils::GetHostAddr()
 {
     ipv4addr_t       addr = 0;
     struct hostent * hp   = NULL;
     std::string      host;
 
-    host = CidrUtils::getHostName();
+    host = CidrUtils::GetHostName();
 
     if ( host.length() == 0 )
         return addr;
@@ -342,7 +342,7 @@ CidrUtils::getHostAddr()
 
 
 ipv4addr_t
-CidrUtils::getHostAddr ( const std::string & host )
+CidrUtils::GetHostAddr ( const std::string & host )
 {
     struct hostent * hp;
     ipv4addr_t       addr = 0;
@@ -362,7 +362,7 @@ CidrUtils::getHostAddr ( const std::string & host )
 
 
 void
-CidrUtils::getHostAddrList ( const std::string & host, AddrList & addrlist )
+CidrUtils::GetHostAddrList ( const std::string & host, AddrList & addrlist )
 {
     struct hostent  *hp;
     char           **pptr;
@@ -389,7 +389,7 @@ CidrUtils::getHostAddrList ( const std::string & host, AddrList & addrlist )
 //-------------------------------------------------------------------//
 
 bool
-CidrUtils::isLoopback ( ipv4addr_t addr )
+CidrUtils::IsLoopback ( ipv4addr_t addr )
 {
     return(addr == IPV4ADDR_LOOPBACK);
 }

@@ -165,7 +165,7 @@ TnmsSocket::init()
 int
 TnmsSocket::openConnection ( const std::string & host, uint16_t port )
 {
-    ipv4addr_t addr = CidrUtils::getHostAddr(host);
+    ipv4addr_t addr = CidrUtils::GetHostAddr(host);
 
     if ( addr == 0 ) {
         _errstr = "Invalid host ";

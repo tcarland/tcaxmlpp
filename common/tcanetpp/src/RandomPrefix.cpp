@@ -79,7 +79,7 @@ Random::RandomPrefix ( ipv4addr_t agg, uint8_t mb )
 	_seeded = true;
     }
 
-    blksz = CidrUtils::getCidrRange(mb, &pos);
+    blksz = CidrUtils::GetCidrRange(mb, &pos);
 
     if ( pos > 0 ) // adjust for octet array
 	pos--;
