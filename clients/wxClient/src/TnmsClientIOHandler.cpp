@@ -4,6 +4,7 @@
 
 #include "EventManager.h"
 #include "LogFacility.h"
+#include "ThreadAutoMutex.hpp"
 using namespace tcanetpp;
 
 
@@ -68,15 +69,14 @@ TnmsClientIOHandler::timeout ( const EventTimer * timer )
                 + client->getHostStr());
             client->close();
             continue;
-        }  // else report rd;
-
+        }
 
         if ( (wt = client->send(now)) < 0 ) {
             LogFacility::LogMessage("ClientIOHandler error in send() from client " 
                 + client->getHostStr());
             client->close();
             continue;
-        } // else report wt;
+        }
 
     }
 
@@ -95,7 +95,6 @@ TnmsClientIOHandler::removeClient ( TnmsClient * client )
 {
     _clients.erase(client);
 }
-
 
 
 void

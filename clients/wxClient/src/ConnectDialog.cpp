@@ -24,7 +24,7 @@ ConnectDialog::ConnectDialog ( const wxString & title )
     sz.x  += 35;
     tcServer->SetSize(sz);
 
-    tcPort    = new wxTextCtrl(panel, -1, wxT("15600"), wxPoint(-1, -1), sz);
+    tcPort    = new wxTextCtrl(panel, -1, wxT("15605"), wxPoint(-1, -1), sz);
     tcUser    = new wxTextCtrl(panel, -1, wxT(""), wxPoint(-1, -1), sz);
     tcPass    = new wxTextCtrl(panel, -1, wxT(""), wxPoint(-1, -1), wxSize(-1, -1), wxTE_PASSWORD);
 
@@ -51,7 +51,8 @@ ConnectDialog::ConnectDialog ( const wxString & title )
 }
 
 
-ConnectDialog::~ConnectDialog() {}
+ConnectDialog::~ConnectDialog() 
+{}
 
 
 

@@ -21,7 +21,7 @@ using namespace tcanetpp;
 // ----------------------------------------------------------------------
 
 ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
-    : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(750,500)),
+    : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(950,600)),
       _stree(tree),
       _tree(NULL)
 {
@@ -41,6 +41,14 @@ ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
     
     spl2->SplitHorizontally(_mlist, _lCtrl2);
 
+    //this->initEvents();
+    
+
+    //Connect(wxID_ANY, wxEVT_CONTEXT_MENU,
+        //wxContextMenuEventHandler(ClientFrame::OnContextAny));
+    
+    //-------------------------------------------------------
+    //  Tree events
     //Connect(TNMS_ID_TREE, wxEVT_SIZE,
         //wxSizeEventHandler(TnmsWxTree::OnSize));
 
@@ -53,15 +61,22 @@ ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
         wxTreeEventHandler(TnmsWxTree::OnCollapseItem));
 
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_SEL_CHANGED,
-        wxTreeEventHandler(ClientFrame::OnSelect));
+        wxTreeEventHandler(ClientFrame::OnTreeSelect));
     //Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_ACTIVATED,
         //wxTreeEventHandler(TnmsWxTree::OnSelect));
 
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_RIGHT_CLICK,
-        wxTreeEventHandler(ClientFrame::OnContext));
+        wxTreeEventHandler(ClientFrame::OnTreeContext));
 
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_DELETE_ITEM,
         wxTreeEventHandler(TnmsWxTree::OnDelete));
+    
+    //-------------------------------------------------------
+    //  List1 events
+    Connect(TNMS_ID_MLIST, wxEVT_COMMAND_LIST_ITEM_ACTIVATED,
+        wxListEventHandler(ClientFrame::OnListActivate));
+    Connect(TNMS_ID_MLIST, wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK,
+        wxListEventHandler(ClientFrame::OnListContext));
 
     this->initMenuBar();
 
@@ -97,22 +112,71 @@ ClientFrame::initMenuBar()
 
 
 void
-ClientFrame::OnSelect ( wxTreeEvent & event )
+ClientFrame::OnListActivate ( wxListEvent & event )
 {
-    wxTreeItemId  id  = event.GetItem();
-
-    TnmsMetric metric = _tree->GetItemMetric(id);
-
-    _mlist->AddMetric(metric);
-
-    LogFacility::LogMessage("ClientFrame::OnSelect");
+    LogFacility::LogMessage("ClientFrame::OnActivate(list)");
 }
 
 
 void
-ClientFrame::OnContext ( wxTreeEvent & event )
+ClientFrame::OnTreeSelect ( wxTreeEvent & event )
 {
-    LogFacility::LogMessage("ClientFrame::OnContext ");
+    wxTreeItemId  id  = event.GetItem();
+    TnmsMetric metric = _tree->GetItemMetric(id);
+
+    _mlist->AddMetric(metric);
+
+    LogFacility::LogMessage("ClientFrame::OnSelect(tree)");
+}
+
+
+void
+ClientFrame::OnTreeContext ( wxTreeEvent & event )
+{
+    LogFacility::LogMessage("ClientFrame::OnContext(tree) ");
+    
+    wxTreeItemId  id  = event.GetItem();
+    wxMenu    * menu  = new wxMenu();
+    wxPoint     point = wxGetMousePosition();
+    //wxFindWindowAtPoint(point);
+    point = ScreenToClient(point);
+
+    menu->AppendRadioItem(wxID_ANY, wxT("Nothing"), wxT(""));
+    menu->AppendRadioItem(TNMS_ID_SUBSCRIBE_ITEM, wxT("Subscribe to Item"), wxT(""));
+    menu->AppendRadioItem(TNMS_ID_UNSUBSCRIBE_ITEM, wxT("Unsubscribe to Item"), wxT(""));
+    
+    PopupMenu(menu, point);
+
+    if ( menu->IsChecked(TNMS_ID_SUBSCRIBE_ITEM) )
+        LogFacility::LogMessage(" OnContext Subscribe");
+    else if ( menu->IsChecked(TNMS_ID_UNSUBSCRIBE_ITEM) )
+        LogFacility::LogMessage(" OnContext Unsubscribe");
+
+    return;
+}
+
+void
+ClientFrame::OnListContext ( wxListEvent & event )
+{
+    LogFacility::LogMessage("ClientFrame::OnContext(list) ");
+}
+
+
+
+void
+ClientFrame::OnContextAny ( wxContextMenuEvent & event )
+{
+    LogFacility::LogMessage("ClientFrame::OnContextAny ");
+
+    wxMenu  * menu  = new wxMenu();
+    wxPoint   point = wxGetMousePosition();
+
+    menu->AppendRadioItem(TNMS_ID_SUBSCRIBE_ITEM, wxT("Subscribe to Item"), wxT(""));
+    menu->AppendRadioItem(TNMS_ID_SUBSCRIBE_PATH, wxT("Subscribe to Level"), wxT(""));
+
+    PopupMenu(menu, point.x, point.y);
+
+    return;
 }
 
 
@@ -139,6 +203,7 @@ ClientFrame::OnConnect ( wxCommandEvent & event )
     cl.password    = StringUtils::wtocstr(password.c_str());
     cl.port        = StringUtils::fromString<uint16_t>(StringUtils::wtocstr(portname.c_str()));
     cl.client      = new TnmsClient(_stree->tree);
+    cl.enabled     = true;
 
     //uint16_t pn = StringUtils::fromString<uint16_t>(port);
     
@@ -155,6 +220,12 @@ ClientFrame::OnConnect ( wxCommandEvent & event )
 void
 ClientFrame::OnDisconnect ( wxCommandEvent & event )
 {
+    this->DropAllConnections();
+}
+
+void
+ClientFrame::DropAllConnections()
+{
     // for now just drop all our connections
     ClientMap::iterator  cIter;
     for ( cIter = _clientMap.begin(); cIter != _clientMap.end(); ++cIter )
@@ -162,6 +233,7 @@ ClientFrame::OnDisconnect ( wxCommandEvent & event )
         Connection & clin = cIter->second;
 
         if ( clin.client ) {
+            clin.enabled = false;
             clin.client->close();
             _stree->iomgr->removeClient(clin.client);
         }
@@ -180,14 +252,14 @@ ClientFrame::OnQuit ( wxCommandEvent & event )
 void
 ClientFrame::OnExpandItem ( wxCommandEvent & event )
 {
-    LogFacility::LogMessage("ClientFrame::OnExpandItem");
+    //LogFacility::LogMessage("ClientFrame::OnExpandItem");
 }
 
 
 void
 ClientFrame::OnCollapseItem ( wxCommandEvent & event )
 {
-    LogFacility::LogMessage("ClientFrame::OnCollapseItem");
+    //LogFacility::LogMessage("ClientFrame::OnCollapseItem");
 }
 
 

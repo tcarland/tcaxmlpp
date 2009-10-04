@@ -7,6 +7,19 @@
 using namespace tcanetpp;
 
 
+/**  ClientIOTimer */
+void
+TnmsClientIOThread::ClientIOTimer::timeout ( const EventTimer * timer )
+{
+    if ( this->iothread == NULL )
+        return;
+
+    return this->iothread->timeout(timer);
+}
+
+//------------------------------------------------------------------------------
+
+
 TnmsClientIOThread::TnmsClientIOThread ( TnmsTree * tree, ThreadLock * rlock )
     : _evmgr(new tcanetpp::EventManager()),
       _tree(tree),
@@ -91,16 +104,6 @@ TnmsClientIOThread::removeClient ( TnmsClient * client )
     this->_mutex->unlock();
 
     return;
-}
-
-
-void
-TnmsClientIOThread::ClientIOTimer::timeout ( const EventTimer * timer )
-{
-    if ( this->iothread == NULL )
-        return;
-
-    return this->iothread->timeout(timer);
 }
 
 

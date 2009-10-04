@@ -13,6 +13,10 @@
 using namespace tnmsCore;
 
 
+#define TNMS_ID_SUBSCRIBE_ITEM    7050
+#define TNMS_ID_UNSUBSCRIBE_ITEM  7051
+#define TNMS_ID_SUBSCRIBE_PATH    7052
+
 
 class ClientFrame : public wxFrame {
 
@@ -23,8 +27,15 @@ class ClientFrame : public wxFrame {
 
     virtual ~ClientFrame();
 
-    void          OnSelect        ( wxTreeEvent    & event );
-    void          OnContext       ( wxTreeEvent    & event );
+
+    void          OnListActivate  ( wxListEvent    & event );
+
+    void          OnTreeSelect    ( wxTreeEvent    & event );
+
+    void          OnTreeContext   ( wxTreeEvent    & event );
+    void          OnListContext   ( wxListEvent    & event );
+
+    void          OnContextAny    ( wxContextMenuEvent & event );
 
     void          OnConnect       ( wxCommandEvent & event );
     void          OnDisconnect    ( wxCommandEvent & event );
@@ -36,10 +47,12 @@ class ClientFrame : public wxFrame {
 
     void          OnTimer         ( wxTimerEvent & event );
 
+    void          DropAllConnections();
 
   protected:
 
-    void        initMenuBar();
+    void          initMenuBar();
+    //void          initEvents();
 
 
   protected:

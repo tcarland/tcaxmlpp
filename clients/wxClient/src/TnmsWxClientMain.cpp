@@ -19,6 +19,7 @@ BEGIN_EVENT_TABLE(TnmsWxClientMain, wxApp)
     EVT_TIMER(TGUITIMER_ID, TnmsWxClientMain::OnTimer)
 END_EVENT_TABLE()
 
+
 // ----------------------------------------------------------------------
 
 TnmsWxClientMain::TnmsWxClientMain ( int msecs )
@@ -71,6 +72,8 @@ TnmsWxClientMain::OnRun()
 int
 TnmsWxClientMain::OnExit()
 {
+    _mframe->DropAllConnections();
+
     _stree.iomgr->setAlarm();
     _stree.mutex->wait();
 
