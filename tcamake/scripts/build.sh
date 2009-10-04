@@ -22,10 +22,6 @@ findTopDirectory()
     
     retval=0
 
-    #echo ""
-    #echo "Searching for Project root starting from:"
-    #echo "  $srcdir"
-    
     while [ $retval -eq 0 ]
     do
         curdir="${PWD}"
@@ -46,28 +42,28 @@ findTopDirectory()
         fi
     done
   
-    # ensure we return to source directory
     cd $srcdir
 
     if [ -z "$TOPDIR" ]; then
         return 0
     fi
 
-    echo "Project root set to '$TOPDIR'"
+    echo "  Project root set to '$TOPDIR'"
 
     return 1
 }
+
 
 clearLinks()
 {
     for lf in $LINKLIST; do
         if [ -L $lf ]; then
-            #echo "Removing link '$lf'"
             unlink $lf
         fi
     done
     return 1
 }
+
 
 makeLinks()
 {
@@ -75,7 +71,7 @@ makeLinks()
 
     if [ -n "$dryrun" ]; then
         echo "Making links: $LINKLIST "
-        echo "in $PWD"
+        echo " in $PWD"
     fi
     for lf in $LINKLIST; do
         if [ -n "$dryrun" ]; then
@@ -86,6 +82,7 @@ makeLinks()
     done
     return 1
 }
+
 
 doBuild()
 {
@@ -102,6 +99,7 @@ doBuild()
 
     return $retval
 }
+
 
 doDist()
 {
@@ -150,7 +148,7 @@ usage()
     echo "Usage: $0 [command] {option} "
     echo ""
     echo "   [command] :  a standard 'make' target (eg. all, clean, etc) "
-    echo "                or one of the following commands (default 'all')."
+    echo "                or one of the following commands."
     echo ""
     echo "       'dist' [path] <dryrun> 
                             : requires a valid path as {option}"
@@ -169,6 +167,11 @@ usage()
     echo ""
 }
 
+
+if [ -z "$1" ]; then
+    usage
+    exit 0
+fi
 
 
 case "$1" in
@@ -207,7 +210,7 @@ case "$1" in
 esac
 
 echo ""
-echo "Building in $PWD..."
+echo "  Building in $PWD..."
 
 findTopDirectory
 retval=$?
