@@ -106,6 +106,7 @@ class MysqlSession : public SqlSessionInterface {
     long           affected_rows();
     std::string    statement_info();
     std::string    character_set_name();
+    std::string    db_name();
 
     uint32_t       server_version();
     uint32_t       client_version();

@@ -304,6 +304,12 @@ MysqlSession::character_set_name()
     return((std::string) mysql_character_set_name(_dbcon));
 }
 
+std::string
+MysqlSession::db_name()
+{
+    return _dbname;
+}
+
 uint32_t
 MysqlSession::server_version()
 {
