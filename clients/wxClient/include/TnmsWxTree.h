@@ -76,8 +76,8 @@ class TnmsWxTree : public wxControl {
     TreeItem*     GetItemData     ( wxTreeItemId     id );
     TnmsMetric    GetItemMetric   ( wxTreeItemId   & id );
 
-    bool          Subscribe       ( const std::string & name, TreeSubscriber * sub );
-    bool          Unsubscribe     ( const std::string & name, TreeSubscriber * sub );
+    int           Subscribe       ( const std::string & name, TreeSubscriber * sub );
+    int           Unsubscribe     ( const std::string & name, TreeSubscriber * sub );
 
     wxTreeItemId  FindChild       ( wxTreeItemId     parentId, 
                                     const wxString & path,

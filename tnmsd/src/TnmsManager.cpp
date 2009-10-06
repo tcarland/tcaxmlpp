@@ -112,6 +112,7 @@ TnmsManager::timeout ( const EventTimer * timer )
     // internal metrics
     if ( timer->evid == _reportId ) {
         LogFacility::LogMessage("TnmsManager::run()");
+        this->reportStats(now);
         _clientHandler->timeout(timer);
         _agentHandler->timeout(timer);
         return;
@@ -151,10 +152,34 @@ TnmsManager::timeout ( const EventTimer * timer )
 
 
 void
+TnmsManager::reportStats ( const time_t & now )
+{
+    if ( _treeSzm.getElementName().empty() )
+    {
+        std::string  name = _tconfig.agent_name;
+        name.append("/").append(TNSMD_TREESZ_METRIC);
+
+        _treeSzm = TnmsMetric(name);
+    }
+
+    uint64_t val = _tree->size();
+
+    _treeSzm.setValue(TNMS_UINT64, val);
+    _treeSzm.setTimestamp(now);
+    _tree->update(_treeSzm);
+
+    _tree->updateSubscribers();
+
+    return;
+}
+
+
+void
 TnmsManager::createClients()
 {
     TnmsClient * client = NULL;
     evid_t       id     = 0;
+    std::string  login  = _tconfig.agent_name;
 
     ClientConfigList  & clist  = _tconfig.clients;
     ClientConfigList::iterator  cIter;
@@ -170,17 +195,12 @@ TnmsManager::createClients()
         // set client attributes
         client->setCompression(_tconfig.compression);
         client->setReconnectTime(cfg.reconnect_interval);
-        _clientHandler->addMirror(client);
-
-        if ( client->openConnection(cIter->hostname, cIter->port)  < 0 )
-            continue;
+        client->setClientLogin(login, "");  // psk from config?
+        if ( client->openConnection(cIter->hostname, cIter->port) > 0 )
+            client->login();
 
         id = _evmgr->addIOEvent(_clientHandler, client->getDescriptor(), client);
-
-        std::string  login = TNMS_AGENT_ID;
-        login.append(":").append(_tconfig.agent_name);
-        client->setClientLogin(login, "");
-        client->login();
+        _clientHandler->addMirror(client);
 
         MirrorConnection  mirror(id, *cIter, client);
         _clients[cIter->connection_name] = mirror;

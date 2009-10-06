@@ -64,8 +64,6 @@ ClientIOHandler::timeout ( const EventTimer * timer )
 
                 stat.connState.setValue(TNMS_INT32, c);
                 stat.lastConn.setValue(TNMS_UINT32, now);
-                stat.rxCtr.reset();
-                stat.txCtr.reset();
 
                 if ( c < 0 )
                     continue;
@@ -100,9 +98,6 @@ ClientIOHandler::timeout ( const EventTimer * timer )
         }
 
     }
-
-    if ( _tree )
-        _tree->updateSubscribers();
 
     return;
 }
@@ -283,16 +278,19 @@ ClientIOHandler::initStat ( TnmsClient * client )
     name = _prefix;
     name.append("/");
 
-    if ( client->isMirror() )
+    if ( client->isMirror() ) {
         name.append(MIRROR_SUBNAME).append("/");
-    else
+    } else {
         name.append(CLIENT_SUBNAME).append("/");
+    }
 
-    name.append(client->getHostStr());
+    name.append(client->getAddrStr());
+    name.append(":").append(StringUtils::toString(client->getHostPort()));
 
     stat.connState  = TnmsMetric(name);
     stat.lastConn   = TnmsMetric(name + "/" + LASTCONN_NAME);
 
+    client->isMirror() ? c = 0 : c = 1;
     stat.connState.setValue(TNMS_INT32, c);
 
     _tree->add(stat.connState.getElementName());

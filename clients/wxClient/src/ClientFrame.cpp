@@ -54,11 +54,11 @@ ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
 
     //Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_EXPANDED, 
         //wxCommandEventHandler(ClientFrame::OnExpandItem));
-    Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_EXPANDED, 
-        wxTreeEventHandler(TnmsWxTree::OnExpandItem));
+    //Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_EXPANDED, 
+        //wxTreeEventHandler(TnmsWxTree::OnExpandItem));
 
-    Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_COLLAPSING,
-        wxTreeEventHandler(TnmsWxTree::OnCollapseItem));
+    //Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_COLLAPSING,
+        //wxTreeEventHandler(TnmsWxTree::OnCollapseItem));
 
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_SEL_CHANGED,
         wxTreeEventHandler(ClientFrame::OnTreeSelect));
@@ -150,25 +150,24 @@ ClientFrame::OnTreeContext ( wxTreeEvent & event )
     if ( menu->IsChecked(TNMS_ID_SUBSCRIBE_ITEM) )
     {
         LogFacility::LogMessage(" OnContext Subscribe");
-        _tree->Subscribe(name, _mlist->Subscriber());
+        this->Subscribe(name, _mlist->Subscriber());
     }
     else if ( menu->IsChecked(TNMS_ID_UNSUBSCRIBE_ITEM) )
     {
         LogFacility::LogMessage(" OnContext Unsubscribe");
-        _tree->Unsubscribe(name, _mlist->Subscriber());
+        this->Unsubscribe(name, _mlist->Subscriber());
         _mlist->RemoveMetric(name);
     }
 
     return;
 }
 
+
 void
 ClientFrame::OnListContext ( wxListEvent & event )
 {
     LogFacility::LogMessage("ClientFrame::OnContext(list) ");
 }
-
-
 
 void
 ClientFrame::OnContextAny ( wxContextMenuEvent & event )
@@ -179,7 +178,7 @@ ClientFrame::OnContextAny ( wxContextMenuEvent & event )
     wxPoint   point = wxGetMousePosition();
 
     menu->AppendRadioItem(TNMS_ID_SUBSCRIBE_ITEM, wxT("Subscribe to Item"), wxT(""));
-    menu->AppendRadioItem(TNMS_ID_SUBSCRIBE_PATH, wxT("Subscribe to Level"), wxT(""));
+    menu->AppendRadioItem(TNMS_ID_SUBSCRIBE_LEVEL, wxT("Subscribe to Level"), wxT(""));
 
     PopupMenu(menu, point.x, point.y);
 
@@ -230,24 +229,6 @@ ClientFrame::OnDisconnect ( wxCommandEvent & event )
     this->DropAllConnections();
 }
 
-void
-ClientFrame::DropAllConnections()
-{
-    // for now just drop all our connections
-    ClientMap::iterator  cIter;
-    for ( cIter = _clientMap.begin(); cIter != _clientMap.end(); ++cIter )
-    {
-        Connection & clin = cIter->second;
-
-        if ( clin.client ) {
-            clin.enabled = false;
-            _stree->iomgr->removeClient(clin.client);
-            clin.client->close();
-        }
-    }
-    //_clientMap.clear();
-}
-
 
 void
 ClientFrame::OnQuit ( wxCommandEvent & event )
@@ -285,6 +266,9 @@ ClientFrame::OnTimer ( wxTimerEvent & event )
     {
         Connection & clin = cIter->second;
 
+        if ( ! clin.enabled )
+            continue;
+
         if ( clin.client->isAuthorized() && ! clin.req ) 
         {
             _stree->tree->request("*", _stree->notifier);
@@ -298,5 +282,62 @@ ClientFrame::OnTimer ( wxTimerEvent & event )
     return;
 }
 
+void
+ClientFrame::DropAllConnections()
+{
+    // for now just drop all our connections
+    ClientMap::iterator  cIter;
+    for ( cIter = _clientMap.begin(); cIter != _clientMap.end(); ++cIter )
+    {
+        Connection & clin = cIter->second;
+
+        if ( clin.client ) {
+            clin.enabled = false;
+            _stree->iomgr->removeClient(clin.client);
+            clin.client->close();
+        }
+    }
+    //_clientMap.clear();
+}
+
+
+bool
+ClientFrame::Subscribe ( const std::string & name, TreeSubscriber * sub )
+{
+    if ( _tree->Subscribe(name, sub) == 1 )
+        this->sendClientSub(name);
+
+    return true;
+}
+
+bool
+ClientFrame::Unsubscribe ( const std::string & name, TreeSubscriber * sub )
+{
+    if ( _tree->Unsubscribe(name, sub) == 0 )
+        this->sendClientUnsub(name);
+
+    return true;
+}
+
+void
+ClientFrame::sendClientSub ( const std::string & name )
+{
+    _stree->mutex->lock();
+    ClientMap::iterator  cIter;
+    for ( cIter = _clientMap.begin(); cIter != _clientMap.end(); ++cIter )
+        cIter->second.client->subscribe(name);
+    _stree->mutex->unlock();
+}
+
+
+void
+ClientFrame::sendClientUnsub ( const std::string & name )
+{
+    _stree->mutex->lock();
+    ClientMap::iterator  cIter;
+    for ( cIter = _clientMap.begin(); cIter != _clientMap.end(); ++cIter )
+        cIter->second.client->unsubscribe(name);
+    _stree->mutex->unlock();
+}
 
 

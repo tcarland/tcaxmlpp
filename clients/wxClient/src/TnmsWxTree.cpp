@@ -197,47 +197,59 @@ TnmsWxTree::GetItemMetric ( wxTreeItemId & id )
 
 // ----------------------------------------------------------------------
 
-bool
+int
 TnmsWxTree::Subscribe ( const std::string & absoluteName, TreeSubscriber * sub )
 {
     SubscriberMap::iterator  sIter;
 
-    sIter = _subs.find(absoluteName);
+    bool r  = _visible->subscribe(absoluteName, sub);
+    int  sz = 0;
+    sIter   = _subs.find(absoluteName);
 
-    if ( sIter == _subs.end() )
+    if ( sIter == _subs.end() && r )
     {
         TnmsTree::NotifySet  subset;
         subset.insert(sub);
         _subs[absoluteName] = subset;
         _stree->tree->subscribe(absoluteName, _stree->notifier);
+        sz++;
     }
-    else
+    else if ( sIter != _subs.end() )
     {
-        TnmsTree::NotifySet & subset = sIter->second;
-        subset.insert(sub);
+        if ( r ) {
+            TnmsTree::NotifySet & subset = sIter->second;
+            subset.insert(sub);
+            sz = subset.size();
+        } else {
+            _subs.erase(sIter);
+        }
     }
 
-    return _visible->subscribe(absoluteName, sub);
+    return sz;
 }
 
-bool
+int
 TnmsWxTree::Unsubscribe ( const std::string & absoluteName, TreeSubscriber * sub )
 {
     SubscriberMap::iterator  sIter;
 
-    sIter = _subs.find(absoluteName);
+    _visible->unsubscribe(absoluteName, sub);
 
+    int sz = 0;
+    sIter  = _subs.find(absoluteName);
+    
     if ( sIter != _subs.end() )
     {
         TnmsTree::NotifySet & subset = sIter->second;
         subset.erase(sub);
+        sz = subset.size();
         if ( subset.empty() ) {
             _subs.erase(sIter);
             _stree->tree->unsubscribe(absoluteName, _stree->notifier);
         }
     }
 
-    return _visible->unsubscribe(absoluteName, sub);
+    return sz;
 }
 
 // ----------------------------------------------------------------------
@@ -304,7 +316,7 @@ TnmsWxTree::Sync()
     if ( _visible->empty() )
         _stree->tree->subscribe("/", _stree->notifier);
 
-    LogFacility::LogMessage("TnmsWxTree::Sync() ");
+    //LogFacility::LogMessage("TnmsWxTree::Sync() ");
 
     TreeIdMap::iterator      pIter;
     TreeUpdateSet::iterator  nIter;
@@ -370,7 +382,7 @@ TnmsWxTree::Sync()
         updates.erase(nIter++);
     }
 
-    _stree->tree->debugDump();
+    //_stree->tree->debugDump();
     _stree->notifier->unlock();
 
     _visible->updateSubscribers();

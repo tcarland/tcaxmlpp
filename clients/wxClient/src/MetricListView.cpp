@@ -165,7 +165,7 @@ MetricListView::Sync()
 
     this->Hide();
 
-    LogFacility::LogMessage("MetricListView::Sync()");
+    //LogFacility::LogMessage("MetricListView::Sync()");
 
     TreeUpdateSet::iterator  nIter;
     TreeRemoveSet::iterator  rIter;

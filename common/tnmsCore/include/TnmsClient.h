@@ -60,7 +60,6 @@ class TnmsClient : public TnmsSocket {
 
     bool                 _isAgent;
     bool                 _isMirror;
-    bool                 _authorized;
     bool                 _inTreeSend;
 };
 

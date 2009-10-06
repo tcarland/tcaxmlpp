@@ -15,7 +15,8 @@ using namespace tnmsCore;
 
 #define TNMS_ID_SUBSCRIBE_ITEM    7050
 #define TNMS_ID_UNSUBSCRIBE_ITEM  7051
-#define TNMS_ID_SUBSCRIBE_PATH    7052
+#define TNMS_ID_SUBSCRIBE_LEVEL   7052
+#define TNMS_ID_UNSUBSCRIBE_LEVEL 7053
 
 
 class ClientFrame : public wxFrame {
@@ -27,6 +28,11 @@ class ClientFrame : public wxFrame {
 
     virtual ~ClientFrame();
 
+
+    bool          Subscribe       ( const std::string & name,
+                                    TreeSubscriber    * sub );
+    bool          Unsubscribe     ( const std::string & name,
+                                    TreeSubscriber    * sub );
 
     void          OnListActivate  ( wxListEvent    & event );
 
@@ -53,6 +59,8 @@ class ClientFrame : public wxFrame {
 
     void          initMenuBar();
     //void          initEvents();
+    void          sendClientSub   ( const std::string & name );
+    void          sendClientUnsub ( const std::string & name );
 
 
   protected:
