@@ -1,6 +1,7 @@
 /** 
-  *   LogFacility - Logging facility supporting multiple, concurrent logging i/o streams
-  *     in a thread-safe manner. Supports syslog(unix), file logging, or stdc++ iostream*
+  *   LogFacility - Logging facility supporting multiple, concurrent 
+  *  logging i/o streams in a thread-safe manner. Supports syslog(unix), 
+  *  file logging, or stdc++ iostream*
   *
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
   *  @Author  tca@charltontechnology.net

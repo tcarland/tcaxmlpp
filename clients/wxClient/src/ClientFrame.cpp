@@ -121,12 +121,9 @@ ClientFrame::OnListActivate ( wxListEvent & event )
 void
 ClientFrame::OnTreeSelect ( wxTreeEvent & event )
 {
-    wxTreeItemId  id  = event.GetItem();
-    TnmsMetric metric = _tree->GetItemMetric(id);
-
-    _mlist->AddMetric(metric);
-
-    LogFacility::LogMessage("ClientFrame::OnSelect(tree)");
+    //wxTreeItemId  id  = event.GetItem();
+    //TnmsMetric metric = _tree->GetItemMetric(id);
+    //LogFacility::LogMessage("ClientFrame::OnSelect(tree)");
 }
 
 
@@ -136,6 +133,9 @@ ClientFrame::OnTreeContext ( wxTreeEvent & event )
     LogFacility::LogMessage("ClientFrame::OnContext(tree) ");
     
     wxTreeItemId  id  = event.GetItem();
+    TnmsMetric metric = _tree->GetItemMetric(id);
+    std::string name  = metric.getElementName();
+
     wxMenu    * menu  = new wxMenu();
     wxPoint     point = wxGetMousePosition();
     
@@ -148,9 +148,16 @@ ClientFrame::OnTreeContext ( wxTreeEvent & event )
     PopupMenu(menu, point);
 
     if ( menu->IsChecked(TNMS_ID_SUBSCRIBE_ITEM) )
+    {
         LogFacility::LogMessage(" OnContext Subscribe");
+        _tree->Subscribe(name, _mlist->Subscriber());
+    }
     else if ( menu->IsChecked(TNMS_ID_UNSUBSCRIBE_ITEM) )
+    {
         LogFacility::LogMessage(" OnContext Unsubscribe");
+        _tree->Unsubscribe(name, _mlist->Subscriber());
+        _mlist->RemoveMetric(name);
+    }
 
     return;
 }
@@ -234,11 +241,11 @@ ClientFrame::DropAllConnections()
 
         if ( clin.client ) {
             clin.enabled = false;
-            clin.client->close();
             _stree->iomgr->removeClient(clin.client);
+            clin.client->close();
         }
     }
-    _clientMap.clear();
+    //_clientMap.clear();
 }
 
 
@@ -284,7 +291,11 @@ ClientFrame::OnTimer ( wxTimerEvent & event )
             clin.req = true;
         }
     }
+
     _tree->Sync();
+    _mlist->Sync();
+
+    return;
 }
 
 

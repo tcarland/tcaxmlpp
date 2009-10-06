@@ -67,8 +67,8 @@ TnmsWxTree::Create  ( wxWindow        * parent,
 
     _treeCtrl       = new wxTreeCtrl(parent, TNMS_ID_WXTREE, pos, size, treeStyle);
 
-    wxString         rootName = wxT("/");
-    TnmsWxTreeItem * rootData = new TnmsWxTreeItem("/");
+    wxString   rootName = wxT("/");
+    TreeItem * rootData = new TreeItem("/");
 
     _rootId = _treeCtrl->AddRoot(rootName, -1, -1, rootData);
     _treeCtrl->SetItemHasChildren(_rootId);
@@ -84,10 +84,10 @@ TnmsWxTree::Create  ( wxWindow        * parent,
 
 // ----------------------------------------------------------------------
 
-TnmsWxTreeItem*
+TreeItem*
 TnmsWxTree::GetItemData ( wxTreeItemId  id )
 {
-    return( (TnmsWxTreeItem*) _treeCtrl->GetItemData(id) );
+    return( (TreeItem*) _treeCtrl->GetItemData(id) );
 }
 
 // ----------------------------------------------------------------------
@@ -129,8 +129,8 @@ TnmsWxTree::OnSize ( wxSizeEvent & WXUNUSED(event) )
 void
 TnmsWxTree::OnSelect ( wxTreeEvent & event )
 {
-    wxTreeItemId     id   = event.GetItem();
-    TnmsWxTreeItem * data = (TnmsWxTreeItem*) _treeCtrl->GetItemData(id);
+    wxTreeItemId   id   = event.GetItem();
+    TreeItem     * data = (TreeItem*) _treeCtrl->GetItemData(id);
 
     LogFacility::LogMessage("OnSelect " + data->absoluteName);
 
@@ -150,8 +150,8 @@ TnmsWxTree::OnDelete ( wxTreeEvent & event )
 void
 TnmsWxTree::OnContext ( wxTreeEvent & event )
 {
-    wxTreeItemId     id   = event.GetItem();
-    TnmsWxTreeItem * data = (TnmsWxTreeItem*) _treeCtrl->GetItemData(id);
+    wxTreeItemId   id   = event.GetItem();
+    TreeItem     * data = (TreeItem*) _treeCtrl->GetItemData(id);
 
     LogFacility::LogMessage("OnContext " + data->absoluteName);
 }
@@ -187,8 +187,8 @@ TnmsWxTree::DoResize()
 TnmsMetric
 TnmsWxTree::GetItemMetric ( wxTreeItemId & id )
 {
-    TnmsMetric    metric;
-    TnmsWxTreeItem * data = this->GetItemData(id);
+    TnmsMetric   metric;
+    TreeItem   * data = this->GetItemData(id);
     
     _visible->request(data->absoluteName, metric);
 
@@ -197,12 +197,57 @@ TnmsWxTree::GetItemMetric ( wxTreeItemId & id )
 
 // ----------------------------------------------------------------------
 
+bool
+TnmsWxTree::Subscribe ( const std::string & absoluteName, TreeSubscriber * sub )
+{
+    SubscriberMap::iterator  sIter;
+
+    sIter = _subs.find(absoluteName);
+
+    if ( sIter == _subs.end() )
+    {
+        TnmsTree::NotifySet  subset;
+        subset.insert(sub);
+        _subs[absoluteName] = subset;
+        _stree->tree->subscribe(absoluteName, _stree->notifier);
+    }
+    else
+    {
+        TnmsTree::NotifySet & subset = sIter->second;
+        subset.insert(sub);
+    }
+
+    return _visible->subscribe(absoluteName, sub);
+}
+
+bool
+TnmsWxTree::Unsubscribe ( const std::string & absoluteName, TreeSubscriber * sub )
+{
+    SubscriberMap::iterator  sIter;
+
+    sIter = _subs.find(absoluteName);
+
+    if ( sIter != _subs.end() )
+    {
+        TnmsTree::NotifySet & subset = sIter->second;
+        subset.erase(sub);
+        if ( subset.empty() ) {
+            _subs.erase(sIter);
+            _stree->tree->unsubscribe(absoluteName, _stree->notifier);
+        }
+    }
+
+    return _visible->unsubscribe(absoluteName, sub);
+}
+
+// ----------------------------------------------------------------------
+
 wxTreeItemId 
 TnmsWxTree::RecursiveAdd ( TnmsTree::Node * node )
 {
-    wxString         name;
-    wxTreeItemId     id;
-    TnmsWxTreeItem * data = NULL;
+    wxString      name;
+    wxTreeItemId  id;
+    TreeItem    * data = NULL;
 
     if ( NULL == node->getParent() )
         id = _rootId;
@@ -218,7 +263,7 @@ TnmsWxTree::RecursiveAdd ( TnmsTree::Node * node )
     }
 
     name  = wxString::FromAscii(node->getName().c_str());
-    data  = new TnmsWxTreeItem(node->getAbsoluteName());
+    data  = new TreeItem(node->getAbsoluteName());
     id    = _treeCtrl->AppendItem(id, name, -1, -1, data);
 
     _idMap[node->getAbsoluteName()] = id;
@@ -292,6 +337,7 @@ TnmsWxTree::Sync()
         adds.erase(nIter++);
     }
 
+    // Removes
     TreeRemoveSet & removes = notifier->removes;
     for ( rIter = removes.begin(); rIter != removes.end(); ) 
     {
@@ -327,6 +373,8 @@ TnmsWxTree::Sync()
     _stree->tree->debugDump();
     _stree->notifier->unlock();
 
+    _visible->updateSubscribers();
+
     return;
 }
 
@@ -343,7 +391,7 @@ TnmsWxTree::SetTnmsTree ( TnmsTree_R * tree )
 
     if ( _stree->mutex->lock() )
     {
-        _stree->tree->subStructure((TnmsSubscriber*) _stree->notifier);
+        _stree->tree->subStructure((TreeSubscriber*) _stree->notifier);
         _stree->mutex->unlock();
     }
 

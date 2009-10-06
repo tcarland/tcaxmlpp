@@ -79,6 +79,12 @@ TnmsWxClientMain::OnExit()
 
     LogFacility::LogMessage("OnExit()");
 
+    sleep(1);
+
+    _stree.iomgr->stop();
+    
+    LogFacility::CloseLogFacility();
+
     return wxApp::OnExit();
 }
 

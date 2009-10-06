@@ -17,16 +17,18 @@
 
 
 
-class TnmsWxTreeItem : public wxTreeItemData {
+class TreeItem : public wxTreeItemData {
 
   public:
 
     std::string   absoluteName;
 
-    TnmsWxTreeItem ( const std::string & name )
+    TreeItem ( const std::string & name )
         : absoluteName(name) {}
  
 };
+
+typedef std::map<std::string, TnmsTree::NotifySet>  SubscriberMap;
 
 
 class TnmsWxTree : public wxControl {
@@ -71,9 +73,11 @@ class TnmsWxTree : public wxControl {
     void          OnContext       ( wxTreeEvent    & event );
 
 
-    TnmsWxTreeItem* GetItemData   ( wxTreeItemId     id );
-    
+    TreeItem*     GetItemData     ( wxTreeItemId     id );
     TnmsMetric    GetItemMetric   ( wxTreeItemId   & id );
+
+    bool          Subscribe       ( const std::string & name, TreeSubscriber * sub );
+    bool          Unsubscribe     ( const std::string & name, TreeSubscriber * sub );
 
     wxTreeItemId  FindChild       ( wxTreeItemId     parentId, 
                                     const wxString & path,
@@ -110,8 +114,8 @@ class TnmsWxTree : public wxControl {
 
     TreeIdMap           _idMap;
 
-
     TnmsTree *          _visible;
+    SubscriberMap       _subs;
 
 };
 
