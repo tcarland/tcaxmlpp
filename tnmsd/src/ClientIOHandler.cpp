@@ -43,7 +43,7 @@ ClientIOHandler::timeout ( const EventTimer * timer )
         ClientStat & stat   = cIter->second;
 
         if ( timer->evid == _report ) {
-            this->updateStat(client, stat);
+            //this->updateStat(client, stat);
             continue;
         }
 
@@ -64,6 +64,7 @@ ClientIOHandler::timeout ( const EventTimer * timer )
 
                 stat.connState.setValue(TNMS_INT32, c);
                 stat.lastConn.setValue(TNMS_UINT32, now);
+                this->updateStat(client, stat);
 
                 if ( c < 0 )
                     continue;
@@ -80,6 +81,7 @@ ClientIOHandler::timeout ( const EventTimer * timer )
                         stat.lastConn.setValue(TNMS_UINT32, now);
                     }
                 }
+                this->updateStat(client, stat);
             }
         }
 
@@ -294,7 +296,9 @@ ClientIOHandler::initStat ( TnmsClient * client )
     stat.connState.setValue(TNMS_INT32, c);
 
     _tree->add(stat.connState.getElementName());
-    _tree->add(stat.lastConn.getElementName());
+
+    if ( client->isMirror() )
+        _tree->add(stat.lastConn.getElementName());
 
     _clMap[client] = stat;
 
@@ -305,7 +309,8 @@ void
 ClientIOHandler::updateStat ( TnmsClient * client, ClientStat & stat )
 {
     _tree->update(stat.connState);
-    _tree->update(stat.lastConn);
+    if ( client->isMirror() )
+        _tree->update(stat.lastConn);
 
     return;
 }

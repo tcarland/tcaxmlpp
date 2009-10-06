@@ -222,7 +222,7 @@ void
 AgentIOHandler::initStat ( TnmsClient * client )
 {
     ClientStat    stat;
-    int c = 0;
+    int c = 1;
    
     std::string & name = stat.name;
 
@@ -234,19 +234,23 @@ AgentIOHandler::initStat ( TnmsClient * client )
     else
         name.append(CLIENT_SUBNAME).append("/");
 
-    name.append(client->getHostStr());
+    name.append(client->getAddrStr());
+    name.append(":").append(StringUtils::toString(client->getHostPort()));
+
 
     stat.connState  = TnmsMetric(name);
-    stat.lastConn   = TnmsMetric(name + "/" + LASTCONN_NAME);
+    //stat.lastConn   = TnmsMetric(name + "/" + LASTCONN_NAME);
     stat.rxCtr      = TnmsMetric(name + "/" + RECEIVE_NAME);
     stat.txCtr      = TnmsMetric(name + "/" + TRANSMIT_NAME);
 
     stat.connState.setValue(TNMS_INT32, c);
 
     _tree->add(stat.connState.getElementName());
-    _tree->add(stat.lastConn.getElementName());
+    //_tree->add(stat.lastConn.getElementName());
     _tree->add(stat.rxCtr.getElementName());
     _tree->add(stat.txCtr.getElementName());
+
+    _tree->update(stat.connState);
 
     _clMap[client] = stat;
 
@@ -262,8 +266,6 @@ AgentIOHandler::updateStat ( TnmsClient * client, ClientStat & stat )
     stat.rxCtr.setValue(TNMS_UINT64, rx);
     stat.txCtr.setValue(TNMS_UINT64, tx);
 
-    _tree->update(stat.connState);
-    _tree->update(stat.lastConn);
     _tree->update(stat.rxCtr);
     _tree->update(stat.rxCtr);
 
