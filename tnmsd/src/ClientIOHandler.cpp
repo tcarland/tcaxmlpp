@@ -30,9 +30,10 @@ ClientIOHandler::~ClientIOHandler()
 void
 ClientIOHandler::timeout ( const EventTimer * timer )
 {
-    int  rd  = 0;
-    int  wt  = 0;
-    int  c   = 0;
+    int      rd  = 0;
+    int      wt  = 0;
+    int      c   = 0;
+    uint32_t cnt = _clMap.size();
 
     const time_t & now = timer->abstime.tv_sec;
 
@@ -43,7 +44,8 @@ ClientIOHandler::timeout ( const EventTimer * timer )
         ClientStat & stat   = cIter->second;
 
         if ( timer->evid == _report ) {
-            //this->updateStat(client, stat);
+            _numClients.setValue(TNMS_UINT32, cnt);
+            _tree->update(_numClients);
             continue;
         }
 
@@ -63,7 +65,7 @@ ClientIOHandler::timeout ( const EventTimer * timer )
                 }
 
                 stat.connState.setValue(TNMS_INT32, c);
-                stat.lastConn.setValue(TNMS_UINT32, now);
+                stat.lastConn.setValue(TNMS_UINT32, now); // add ctime as metric data
                 this->updateStat(client, stat);
 
                 if ( c < 0 )
@@ -133,14 +135,13 @@ ClientIOHandler::handle_accept ( const EventIO * io )
 
     TnmsClient  * client = new TnmsClient(_tree, _auth, sock);
     io->evmgr->addIOEvent(this, client->getSockFD(), (void*) client);
-
-    LogFacility::LogMessage("ClientIOHandler::handle_accept() " + client->getHostStr());
-    
     // if compression; enable it
     // client->enableCompression();
     _clients.insert(client);
     this->initStat(client);
 
+    LogFacility::LogMessage("ClientIOHandler::handle_accept() " + client->getHostStr());
+    
     return;
 }
 
@@ -265,8 +266,14 @@ void
 ClientIOHandler::setPrefix ( const std::string & prefix )
 {
     this->_prefix = prefix;
-    // if ( clMap.size() > 0 )
-    //   reset all of our metric names
+
+    std::string  name = prefix;
+    uint32_t     cnt  = _clMap.size();
+    
+    name.append("/").append(CLIENT_SUBNAME);
+    
+    _numClients = TnmsMetric(name);
+    _numClients.setValue(TNMS_UINT32, cnt);
 }
 
 void

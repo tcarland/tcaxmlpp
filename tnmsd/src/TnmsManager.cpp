@@ -17,7 +17,7 @@ namespace tnmsd {
 
 
 std::string
-TnmsManager::_Version = "v0.17";
+TnmsManager::_Version = "v0.182";
 
 
 TnmsManager::TnmsManager ( const std::string & configfile )
@@ -83,6 +83,8 @@ TnmsManager::run()
     }
     _agentHandler->setReportEvent(_reportId);
     _clientHandler->setReportEvent(_reportId);
+
+    this->addStaticMetrics();
 
     _evmgr->eventLoop(); // main loop
 
@@ -160,6 +162,7 @@ TnmsManager::reportStats ( const time_t & now )
         name.append("/").append(TNSMD_TREESZ_METRIC);
 
         _treeSzm = TnmsMetric(name);
+        _tree->add(name);
     }
 
     uint64_t val = _tree->size();
@@ -171,6 +174,32 @@ TnmsManager::reportStats ( const time_t & now )
     _tree->updateSubscribers();
 
     return;
+}
+
+void
+TnmsManager::addStaticMetrics()
+{
+    std::string  name = _tconfig.agent_name;
+    std::string  ver  = name;
+    std::string  rep  = name;
+    std::string  hold = name;
+    
+    ver.append("/").append(TNMSD_VERSION_METRIC);
+    rep.append("/").append(TNMSD_REPORTI_METRIC);
+    hold.append("/").append(TNMSD_HOLDDOWN_METRIC);
+    TnmsMetric  version(ver);
+    TnmsMetric  reporti(rep);
+    TnmsMetric  holdi(hold);
+
+    const std::string & vstr = _Version;
+
+    version.setValue(vstr);
+    reporti.setValue(TNMS_UINT64, _reportDelay);
+    holdi.setValue(TNMS_UINT64, _holddown);
+
+    _tree->update(version);
+    _tree->update(reporti);
+    _tree->update(holdi);
 }
 
 
@@ -274,11 +303,15 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
     LogFacility::SetDebug(config.debug);
 
     // set auth server
-    if ( cfgmgr.haveAttribute("auth_bypass") ) {
+    if ( cfgmgr.haveAttribute("auth_bypass") 
+        && cfgmgr.getAttribute("auth_bypass").compare("true") == 0 ) 
+    {
         LogFacility::LogMessage("TnmsManager: WARNING: Enabling Auth Bypass");
         this->_auth->enableAuthBypass(true);
     } else {
         this->_auth->setAuthServer(config.auth_server, config.auth_port);
+        // this fails due to no connection but sets credentials
+        this->_auth->login(config.agent_name, config.agent_key);
     }
 
     // (re)initialize our tree?

@@ -125,8 +125,9 @@ class TnmsSocket {
 
     virtual void           authReply         ( const TnmsAuthReply & reply );
 
-    bool                   isAuthorized() const;
-    bool                   isSubscribed() const;
+    bool                   isAuthorized()  const;
+    bool                   isAuthorizing() const;
+    bool                   isSubscribed()  const;
 
     virtual bool           subscribeStructure();
     virtual bool           unsubscribeStructure();

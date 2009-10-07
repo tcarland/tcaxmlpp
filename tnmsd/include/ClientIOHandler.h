@@ -68,6 +68,7 @@ class ClientIOHandler : public EventIOHandler {
 
     std::string              _prefix;
     evid_t                   _report;
+    TnmsMetric               _numClients;
 };
 
 }  // namespace 

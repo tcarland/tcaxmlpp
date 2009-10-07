@@ -119,7 +119,7 @@ TnmsMetric::getValueType() const
 
 
 bool
-TnmsMetric::setValue ( eValueType valtype, const std::string & value )
+TnmsMetric::setValue ( const std::string & value )
 {
     if ( _valType != TNMS_STRING )
     {

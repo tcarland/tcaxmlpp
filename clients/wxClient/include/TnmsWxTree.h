@@ -64,27 +64,21 @@ class TnmsWxTree : public wxControl {
     void          Init();
 
 
-    void          OnSize          ( wxSizeEvent    & event );
-
-    void          OnSelect        ( wxTreeEvent    & event );
-    void          OnDelete        ( wxTreeEvent    & event );
-    void          OnExpandItem    ( wxTreeEvent    & event );
-    void          OnCollapseItem  ( wxTreeEvent    & event );
-    void          OnContext       ( wxTreeEvent    & event );
-
-
-    TreeItem*     GetItemData     ( wxTreeItemId     id );
-    TnmsMetric    GetItemMetric   ( wxTreeItemId   & id );
-
-    int           Subscribe       ( const std::string & name, TreeSubscriber * sub );
-    int           Unsubscribe     ( const std::string & name, TreeSubscriber * sub );
-
     wxTreeItemId  FindChild       ( wxTreeItemId     parentId, 
                                     const wxString & path,
                                     bool             done );
 
-    void          Collapse        ( wxTreeItemId     parentId );
-    void          Expand          ( wxTreeItemId     parentId );
+    void          OnSize          ( wxSizeEvent    & event );
+    void          OnSelect        ( wxTreeEvent    & event );
+    void          OnDelete        ( wxTreeEvent    & event );
+
+    TreeItem*     GetItemData     ( wxTreeItemId     id );
+    TnmsMetric    GetItemMetric   ( wxTreeItemId   & id );
+
+
+    int           Subscribe       ( const std::string & name, TreeSubscriber * sub );
+    int           Unsubscribe     ( const std::string & name, TreeSubscriber * sub );
+
 
     void          DoResize();
 

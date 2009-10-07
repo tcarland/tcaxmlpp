@@ -48,13 +48,11 @@ class TnmsMetric : public TnmsMessage {
     }
 
 
-    bool                setValue    ( eValueType          valtype,
-                                      const std::string & value );
-
+    bool                setValue    ( const std::string & value );
 
     template< typename T >
     bool                setValue    ( eValueType   valtype, 
-                                      T &          value )
+                                      const T &    value )
     {
         if ( valtype > TNMS_NONE && valtype < TNMS_STRING ) {
             _valType = valtype;

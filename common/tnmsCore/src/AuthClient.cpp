@@ -19,6 +19,7 @@ AuthClient::AuthClient ( EventManager * evmgr )
       _authport(0),
       _idleTimeout(0),
       _authRetryInterval(TNMS_LOGIN_INTERVAL),
+      _lastConn(0),
       _bypass(false)
 {}
 
@@ -30,6 +31,7 @@ AuthClient::AuthClient ( const std::string & authsvr, uint16_t authport, EventMa
       _authport(authport),
       _idleTimeout(0),
       _authRetryInterval(TNMS_LOGIN_INTERVAL),
+      _lastConn(0),
       _bypass(false)
 {}
 
@@ -45,7 +47,7 @@ AuthClient::~AuthClient()
 void 
 AuthClient::timeout ( const EventTimer * timer )
 {
-    if ( _bypass )
+    if ( _bypass || _authsvr.empty() )
         return;
 
     const time_t  & now = timer->abstime.tv_sec;
@@ -56,17 +58,30 @@ AuthClient::timeout ( const EventTimer * timer )
             if ( this->isConnected() )
                 this->close();
             _idlet = now + _idleTimeout;
+            return;
         }
     } else {
         _idlet = now + _idleTimeout;
     }
 
     if ( ! this->isConnected() || this->isConnecting() )
-        if ( this->connect() <= 0 )
+    {
+        if ( (_lastConn + this->getReconnectTime()) > now )
             return;
+        if ( this->authConnect() <= 0 ) {
+            _lastConn = now;
+            return;
+        }
+    }
 
     if ( ! this->isAuthorized() )
+    {
+        if ( this->isAuthorizing() && (_lastConn + (this->getReconnectTime() * 4)) > now )
+            return;
+        LogFacility::LogMessage("AuthClient authentication requested");
+        _lastConn = now;
         this->login();
+    }
 
     if ( this->receive(now) < 0 ) {
         this->close();
@@ -77,6 +92,9 @@ AuthClient::timeout ( const EventTimer * timer )
         this->close();
         return;
     }
+
+    if ( ! this->isAuthorized() )
+        return;
 
     AuthRequestMap::iterator  rIter;
 
@@ -131,16 +149,21 @@ AuthClient::authClient ( TnmsClient * client, TnmsAuthRequest & request )
 
     _authMap[request.getElementName()] = authp;
 
-    if ( ! this->isConnected() || this->isConnecting() )
-        if ( this->connect() < 0 )
-            return false;
-
     rIter = _authMap.find(request.getElementName());
     if ( rIter == _authMap.end() )
         return false;
 
+    if ( ! this->isConnected() || this->isConnecting() )
+        if ( this->authConnect() < 0 )
+            return false;
+        
+    if ( ! this->isAuthorized() )
+        return false;
+
     AuthAttempt & proxy = rIter->second;
 
+    // sent_at need not be accurate, can retrieve log time
+    // instead of call to time?
     if ( this->sendMessage(&proxy.request) )
         proxy.sent_at = ::time(NULL);
     
@@ -166,14 +189,19 @@ AuthClient::unauthClient ( TnmsClient * client )
 
 
 int
-AuthClient::connect()
+AuthClient::authConnect()
 {
     int conn = 0;
 
-    if ( this->isConnected() )
-        this->close();
+    if ( this->isConnecting() ) {
+        conn = this->openConnection();
+    } else {
+        if ( _evid > 0 )
+            this->close();
+        conn = this->openConnection(_authsvr, _authport);
+    }
 
-    if ( (conn = this->openConnection(_authsvr, _authport)) < 0 )
+    if ( conn < 0 )
         _errstr = "Failed to connect to " + this->getHostStr();
     else if ( conn > 0 )
         _evid = _evmgr->addIOEvent((EventIOHandler*) _authhandler, this->getFD(), this);
@@ -231,11 +259,18 @@ AuthClient::AuthReplyHandler ( TnmsAuthReply & reply )
 void
 AuthClient::setAuthServer ( const std::string & authsvr, uint16_t port )
 {
-    if ( _authsvr.compare(authsvr) !=0 || _authport != port ) 
+    if ( _authsvr.compare(authsvr) != 0 || _authport != port ) 
     {
         this->close();
         _authsvr  = authsvr;
         _authport = port;
+
+        LogFacility::Message  logmsg;
+
+        logmsg << "AuthClient (re)setting Auth Server to " 
+               << authsvr << ":" << port;
+
+        LogFacility::LogMessage(logmsg.str());
     }
 
     return;

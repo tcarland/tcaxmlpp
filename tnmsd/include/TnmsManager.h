@@ -24,6 +24,9 @@ namespace tnmsd {
 
 #define TNMSD_CONFIG_ROOT          "tnmsd"
 #define TNSMD_TREESZ_METRIC        "numOfElements"
+#define TNMSD_VERSION_METRIC       "version"
+#define TNMSD_REPORTI_METRIC       "reportInterval"
+#define TNMSD_HOLDDOWN_METRIC      "holddownInterval"
 
 class AgentIOHandler;
 class ClientIOHandler;
@@ -63,7 +66,9 @@ class TnmsManager : public EventTimerHandler {
 
     void                createClients();
     void                destroyClients();
+
     void                reportStats   ( const time_t & now );
+    void                addStaticMetrics();
 
     bool                parseConfig   ( const std::string & cfg,
                                         const time_t & now );

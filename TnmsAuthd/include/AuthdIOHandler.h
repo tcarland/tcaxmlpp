@@ -1,5 +1,5 @@
-#ifndef _TNMSAUTH_AUTHIOHANDLER_H_
-#define _TNMSAUTH_AUTHIOHANDLER_H_
+#ifndef _TNMSAUTH_AUTHDIOHANDLER_H_
+#define _TNMSAUTH_AUTHDIOHANDLER_H_
 
 #include <set>
 
@@ -20,12 +20,12 @@ typedef std::set<AuthdClient*>  ClientSet;
 
 
 
-class AuthIOHandler : public EventIOHandler {
+class AuthdIOHandler : public EventIOHandler {
 
   public:
 
-    AuthIOHandler ( AuthDbThread * authdb = NULL );
-    virtual ~AuthIOHandler();
+    AuthdIOHandler ( AuthDbThread * authdb = NULL );
+    virtual ~AuthdIOHandler();
 
     /*  EventIOHandler */
 
@@ -38,7 +38,7 @@ class AuthIOHandler : public EventIOHandler {
     virtual bool   readable           ( const EventIO * io );
     virtual bool   writeable          ( const EventIO * io );
 
-    /*  AuthIOHandler */
+    /*  AuthdIOHandler */
 
     void           timeout            ( const time_t & now );
 
@@ -53,5 +53,5 @@ class AuthIOHandler : public EventIOHandler {
 
 } // namespace
 
-#endif  // _TNMSAUTH_AUTHIOHANDLER_H_
+#endif  // _TNMSAUTH_AUTHDIOHANDLER_H_
 

@@ -7,7 +7,7 @@
 
 #include "Thread.h"
 #include "ThreadLock.h"
-#include "Queue.hpp"
+#include "SynchronizedQueue.hpp"
 using namespace tcanetpp;
 
 #include "TnmsAPI.h"

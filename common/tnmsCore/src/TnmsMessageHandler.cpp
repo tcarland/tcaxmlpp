@@ -29,9 +29,9 @@ TnmsMessageHandler::AddHandler ( const TnmsAdd & add )
     if ( _client == NULL || ! _client->isAuthorized() )
         return;
 
-    if ( LogFacility::GetDebug() )
-        LogFacility::LogMessage("TnmsMessageHandler::AddHandler() " 
-            + add.getElementName());
+    //if ( LogFacility::GetDebug() )
+        //LogFacility::LogMessage("TnmsMessageHandler::AddHandler() " 
+            //+ add.getElementName());
 
     _tree->add(add.getElementName());
 
@@ -45,9 +45,9 @@ TnmsMessageHandler::RemoveHandler ( const TnmsRemove  & remove )
     if ( _client == NULL || ! _client->isAuthorized() )
         return;
     
-    if ( LogFacility::GetDebug() )
-        LogFacility::LogMessage("TnmsMessageHandler::RemoveHandler() " 
-            + remove.getElementName());
+    //if ( LogFacility::GetDebug() )
+        //LogFacility::LogMessage("TnmsMessageHandler::RemoveHandler() " 
+            //+ remove.getElementName());
 
     _tree->remove(remove.getElementName());
 
@@ -61,9 +61,9 @@ TnmsMessageHandler::MetricHandler ( const TnmsMetric & metric )
     if ( _client == NULL || ! _client->isAuthorized() )
         return;
 
-    if ( LogFacility::GetDebug() )
-        LogFacility::LogMessage("TnmsMessageHandler::MetricHandler() " 
-            + metric.getElementName());
+    //if ( LogFacility::GetDebug() )
+        //LogFacility::LogMessage("TnmsMessageHandler::MetricHandler() " 
+            //+ metric.getElementName());
 
     if ( _client->inTreeSend() )
         this->LastMessageHandler(ADD_MESSAGE);
@@ -117,8 +117,8 @@ TnmsMessageHandler::UnsubscribeHandler ( const std::string & name )
     if ( _client == NULL ) 
         return;
 
-    if ( LogFacility::GetDebug() )
-        LogFacility::LogMessage("TnmsMessageHandler::UnsubscribeHandler() " + name);
+    //if ( LogFacility::GetDebug() )
+        //LogFacility::LogMessage("TnmsMessageHandler::UnsubscribeHandler() " + name);
 
     _tree->unsubscribe(name, (TreeSubscriber*)_client->getSubscriber());
 
@@ -147,9 +147,10 @@ TnmsMessageHandler::StructureHandler ( bool  subscribe )
 void  
 TnmsMessageHandler::AuthRequestHandler ( const TnmsAuthRequest & request )
 {
-    if ( LogFacility::GetDebug() )
+    if ( LogFacility::GetDebug() ) {
         LogFacility::LogMessage("TnmsMessageHandler::AuthRequestHandler() " 
             + request.getElementName());
+    }
 
     if ( _client ) 
         _client->AuthRequestHandler(request);
@@ -161,9 +162,10 @@ TnmsMessageHandler::AuthRequestHandler ( const TnmsAuthRequest & request )
 void  
 TnmsMessageHandler::AuthReplyHandler   ( const TnmsAuthReply & reply )
 {
-    if ( LogFacility::GetDebug() )
+    if ( LogFacility::GetDebug() ) {
         LogFacility::LogMessage("TnmsMessageHandler::AuthReplyHandler() " 
             + reply.getElementName());
+    }
 
     if ( _client )
         _client->AuthReplyHandler(reply);

@@ -3,10 +3,11 @@
 <tnms version="0.1">
     <tnmsd
         agent_name="tcanms/tnmsd/devserver_c"
-        logfile="/opt/tcanms/tcanms/logs/devserver_c.log"
+        logfile="/opt/tcanms/tcanms/logs/tnmsd-devserver_c.log"
         syslog="false"
         debug="true"
-        auth_bypass="true" >
+        auth_server="localhost"
+        auth_port="15901" >
 
         <server
             client_port="15605"

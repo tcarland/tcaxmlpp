@@ -25,9 +25,8 @@ SOAP_OBJS =     src/soap_implementation.o
 
 OBJS=		src/TnmsAuthManager.o  \
 		src/SoapIOHandler.o src/SoapClient.o src/SoapThread.o \
-		src/AuthIOHandler.o src/AuthdClient.o \
-		src/AuthDbThread.o \
-		src/tnmsauthd.o
+		src/AuthdIOHandler.o src/AuthdClient.o \
+		src/AuthDbThread.o src/tnmsauthd.o
 
 ALL_OBJS=	$(GSOAP_OBJS) $(SOAP_OBJS) $(OBJS)
 ALL_BINS=	$(BIN)

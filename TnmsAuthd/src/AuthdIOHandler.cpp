@@ -1,7 +1,7 @@
-#define _TNMSAUTH_AUTHIOHANDLER_CPP_
+#define _TNMSAUTH_AUTHDIOHANDLER_CPP_
 
 
-#include "AuthIOHandler.h"
+#include "AuthdIOHandler.h"
 #include "AuthDbThread.h"
 #include "AuthdClient.h"
 
@@ -13,24 +13,24 @@ using namespace tcanetpp;
 namespace tnmsauth { 
 
 
-AuthIOHandler::AuthIOHandler ( AuthDbThread * authdb )
+AuthdIOHandler::AuthdIOHandler ( AuthDbThread * authdb )
     : _authDb(authdb)
 {}
 
-AuthIOHandler::~AuthIOHandler()
+AuthdIOHandler::~AuthdIOHandler()
 {}
 
 
 
 void
-AuthIOHandler::timeout ( const time_t & now )
+AuthdIOHandler::timeout ( const time_t & now )
 {
 
 }
 
 
 void
-AuthIOHandler::handle_accept ( const EventIO * io )
+AuthdIOHandler::handle_accept ( const EventIO * io )
 {
     Socket         * svr    = (Socket*) io->rock;
     AuthdClient    * client = NULL;
@@ -45,11 +45,13 @@ AuthIOHandler::handle_accept ( const EventIO * io )
     io->evmgr->addIOEvent(this, client->getFD(), client);
     _clients.insert(client);
 
+    LogFacility::LogMessage("AuthdIOHandler::handle_accept() " + client->getHostStr());
+
     return;
 }
 
 void
-AuthIOHandler::handle_read ( const EventIO * io )
+AuthdIOHandler::handle_read ( const EventIO * io )
 {
     int  rd = 0;
 
@@ -62,12 +64,12 @@ AuthIOHandler::handle_read ( const EventIO * io )
         return;
 
     if ( (rd = client->receive(io->abstime.tv_sec)) < 0 ) {
-        LogFacility::LogMessage("AuthIOHandler::handle_read() error "
+        LogFacility::LogMessage("AuthdIOHandler::handle_read() error "
             + client->getErrorStr());
         return this->handle_close(io);
     } else if ( LogFacility::GetDebug() && rd > 0 ) {
         LogFacility::Message  msg;
-        msg << "AuthIOHandler::handle_read (" << client->getHostStr()
+        msg << "AuthdIOHandler::handle_read (" << client->getHostStr()
             << ") " << rd << " records";
         LogFacility::LogMessage(msg.str());
     }
@@ -77,7 +79,7 @@ AuthIOHandler::handle_read ( const EventIO * io )
 
 
 void
-AuthIOHandler::handle_write ( const EventIO * io )
+AuthdIOHandler::handle_write ( const EventIO * io )
 {
     int  wt = 0;
 
@@ -87,12 +89,12 @@ AuthIOHandler::handle_write ( const EventIO * io )
     AuthdClient * client = (AuthdClient*) io->rock;
 
     if ( (wt = client->send(io->abstime.tv_sec)) < 0 ) {
-        LogFacility::LogMessage("AuthIOHandler::handle_read() error "
+        LogFacility::LogMessage("AuthdIOHandler::handle_read() error "
             + client->getErrorStr());
         return this->handle_close(io);
     } else if ( LogFacility::GetDebug() && wt > 0 ) {
         LogFacility::Message  msg;
-        msg << "AuthIOHandler::handle_write (" << client->getHostStr()
+        msg << "AuthdIOHandler::handle_write (" << client->getHostStr()
             << ") " << wt << " records";
         LogFacility::LogMessage(msg.str());
     }
@@ -102,7 +104,7 @@ AuthIOHandler::handle_write ( const EventIO * io )
 
 
 void
-AuthIOHandler::handle_close ( const EventIO * io )
+AuthdIOHandler::handle_close ( const EventIO * io )
 {
     if ( io->isServer )
         return;
@@ -124,7 +126,7 @@ AuthIOHandler::handle_close ( const EventIO * io )
 }
 
 void
-AuthIOHandler::handle_destroy ( const EventIO * io )
+AuthdIOHandler::handle_destroy ( const EventIO * io )
 {
     if ( io->isServer ) {
         Socket * svr = (Socket*) io->rock;
@@ -134,7 +136,7 @@ AuthIOHandler::handle_destroy ( const EventIO * io )
         AuthdClient * client = (AuthdClient*) io->rock;
         if ( client && ! client->isMirror() ) {
             if ( LogFacility::GetDebug() )
-                LogFacility::LogMessage("AuthIOHandler::handle_destroy() "
+                LogFacility::LogMessage("AuthdIOHandler::handle_destroy() "
                     + client->getHostStr());
             delete client;
         }
@@ -144,14 +146,14 @@ AuthIOHandler::handle_destroy ( const EventIO * io )
 }
 
 bool
-AuthIOHandler::readable ( const EventIO * io )
+AuthdIOHandler::readable ( const EventIO * io )
 {
     return true;
 }
 
 
 bool
-AuthIOHandler::writeable ( const EventIO * io )
+AuthdIOHandler::writeable ( const EventIO * io )
 {
     if ( io == NULL || io->isServer )
         return false;
@@ -167,5 +169,5 @@ AuthIOHandler::writeable ( const EventIO * io )
 
 }  // namespace
 
-// _TNMSAUTH_AUTHIOHANDLER_CPP_
+// _TNMSAUTH_AUTHDIOHANDLER_CPP_
 

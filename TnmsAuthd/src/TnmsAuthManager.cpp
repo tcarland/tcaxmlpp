@@ -3,7 +3,7 @@
 #include "TnmsAuthManager.h"
 
 #include "AuthDbThread.h"
-#include "AuthIOHandler.h"
+#include "AuthdIOHandler.h"
 #include "SoapIOHandler.h"
 #include "SoapClient.h"
 #include "AuthdClient.h"
@@ -35,7 +35,7 @@ TnmsAuthManager::TnmsAuthManager ( const std::string & config )
       _soap(NULL),
       _svrId(0), _soapId(0), _reportId(0), _logId(0),
       _soapHandler(new SoapIOHandler()),
-      _authHandler(new AuthIOHandler()),
+      _authHandler(NULL),
       _lastTouched(0),
       _reportDelay(30),
       _logCheck(3600),
@@ -53,7 +53,9 @@ TnmsAuthManager::~TnmsAuthManager()
     delete _tree;
     delete _evmgr;
     delete _soapHandler;
-    delete _authHandler;
+
+    if ( _authHandler )
+        delete _authHandler;
 
     if ( _authDb )
         delete _authDb;
@@ -66,11 +68,12 @@ TnmsAuthManager::run()
 {
     time_t  now = ::time(NULL);
 
+    LogFacility::InitThreaded(true);
     LogFacility::SetLogTime(now);
 
     if ( _verbose ) {
         LogFacility::OpenLogStream("stdout", "", &std::cout);
-        LogFacility::LogMessage("TnmsAuthManager::run()");
+        LogFacility::LogMessage("TnmsAuthManager starting...");
         LogFacility::SetBroadcast(true);
     }
 
@@ -119,7 +122,7 @@ TnmsAuthManager::timeout ( const EventTimer * timer )
 
     // internal metrics
     if ( timer->evid == _reportId ) {
-        LogFacility::LogMessage("TnmsAuthManager::run()"); // <<add some stats
+        LogFacility::LogMessage("TnmsAuthManager::run() "); // <<add some stats
         return;
     }
 /*
@@ -148,7 +151,6 @@ TnmsAuthManager::timeout ( const EventTimer * timer )
     }
 
     // give time to our handlers
-    //_auth->timeout(timer);
     _authHandler->timeout(now);
     _soapHandler->timeout(now);
 
@@ -202,6 +204,7 @@ TnmsAuthManager::parseConfig ( const std::string & cfg, const time_t & now )
 {
     TnmsConfigHandler  cfgmgr(cfg, TNMSAUTHD_CONFIG_ROOT);
     std::string        prefix    = "tcanms";
+    bool               reset     = false;
 
     if ( ! cfgmgr.parse() ) {
         if ( LogFacility::IsOpen() ) {
@@ -260,6 +263,7 @@ TnmsAuthManager::parseConfig ( const std::string & cfg, const time_t & now )
         if ( _sql )
             delete _sql;
 
+
         _sql    = (SqlSessionInterface*) new SqlSession(acfg.db_name,
                                                         acfg.db_host,
                                                         acfg.db_user,
@@ -267,9 +271,10 @@ TnmsAuthManager::parseConfig ( const std::string & cfg, const time_t & now )
                                                         acfg.db_port);
         _authDb = new AuthDbThread(_sql);
         _authDb->start();
+        reset   = true;
     }
 
-    if ( acfg.tnms_port > 0 && acfg.tnms_port != _aconfig.tnms_port ) 
+    if ( reset || ( acfg.tnms_port > 0 && acfg.tnms_port ) != _aconfig.tnms_port ) 
     {
         LogFacility::LogMessage("Config setting auth port to " 
             + StringUtils::toString(acfg.tnms_port));
@@ -277,17 +282,24 @@ TnmsAuthManager::parseConfig ( const std::string & cfg, const time_t & now )
         if ( _svr ) {
             _svr->close();
             _evmgr->removeEvent(_svrId);
-            // delete _svr;
+            delete _svr;
+            if ( _authHandler )
+                delete _authHandler;
         }
 
-        _svr = new Socket(0, acfg.tnms_port, SOCKET_SERVER, IPPROTO_TCP);
+        _authHandler = new AuthdIOHandler(_authDb);
+        _svr         = new Socket(0, acfg.tnms_port, SOCKET_SERVER, IPPROTO_TCP);
 
         if ( _svr->init(false) < 0 ) {
             LogFacility::LogMessage("Config error creating server " 
                 + _svr->getErrorString());
             return false;
         }
-    } else if ( acfg.tnms_port == 0 ) {
+
+        _svrId = _evmgr->addIOEvent(_authHandler, _svr->getFD(), _svr, true);
+    } 
+    else if ( acfg.tnms_port == 0 ) 
+    {
         LogFacility::LogMessage("Config error, auth port set to zero");
         return false;
     }

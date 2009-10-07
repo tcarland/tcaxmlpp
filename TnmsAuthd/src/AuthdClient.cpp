@@ -4,6 +4,7 @@
 #include "AuthDbThread.h"
 
 #include "CidrUtils.h"
+#include "LogFacility.h"
 using namespace tcanetpp;
 
 
@@ -45,6 +46,9 @@ AuthdClient::AuthRequestHandler ( const TnmsAuthRequest & request )
 
     if ( ipaddr.empty() )
         ipaddr = CidrUtils::ntop(request.ipaddr());
+
+    LogFacility::LogMessage("AuthdClient::AuthRequestHandler() for "
+        + request.getElementName());
 
     _authdb->isAuthentic(user, request.agent_key(), ipaddr, reply);
     this->sendMessage(&reply);

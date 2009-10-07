@@ -61,8 +61,6 @@ Socket::Socket ( ipv4addr_t ipaddr, uint16_t port, SocketType type, int protocol
       _connected(false),
       _block(false)
 {
-    char ipstr[INET_ADDRSTRLEN];
-    
     Socket::ResetDescriptor(this->_fd);
     
     if ( _socktype <= SOCKET_NONE || _socktype > SOCKET_SERVER_CLIENT )
@@ -82,18 +80,11 @@ Socket::Socket ( ipv4addr_t ipaddr, uint16_t port, SocketType type, int protocol
             throw SocketException("Socket error: Invalid IP addr");
             
         _sock.sin_addr.s_addr = ipaddr;
-
-#       ifdef WIN32
-        strncpy(ipstr, inet_ntoa(_sock.sin_addr), INET_ADDRSTRLEN);
-#       else
-        inet_ntop(AF_INET, &_sock.sin_addr, ipstr, sizeof(ipstr));
-#       endif
-            
-        _addrstr = ipstr;
+        _addrstr = Socket::ntop(_sock.sin_addr.s_addr);
     }
     
     if ( this->_proto == IPPROTO_UDP )
-        this->init(false);
+        this->init(_block);
 }
 
 
@@ -104,8 +95,6 @@ Socket::Socket ( sockfd_t & fd, struct sockaddr_in & csock )
       _proto(IPPROTO_TCP),
       _block(false)
 {
-    char ipstr[INET_ADDRSTRLEN];
-    
     if ( Socket::IsValidDescriptor(this->_fd) ) {
         _connected = true;
         _bound     = true;
@@ -114,14 +103,8 @@ Socket::Socket ( sockfd_t & fd, struct sockaddr_in & csock )
         _bound     = false;
     }
     
-#   ifdef WIN32
-    strncpy(ipstr, inet_ntoa(_sock.sin_addr), INET_ADDRSTRLEN);
-#   else
-    inet_ntop(AF_INET, &csock.sin_addr, ipstr, sizeof(ipstr));
-#   endif
-    
     _port    = ntohs(csock.sin_port);
-    _addrstr = ipstr;
+    _addrstr = Socket::ntop(csock.sin_addr.s_addr);
 }
 
 Socket::~Socket()

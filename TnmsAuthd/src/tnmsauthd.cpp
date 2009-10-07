@@ -140,7 +140,7 @@ int main ( int argc, char **argv )
 
     mgr = new TnmsAuthManager(cfgfile);
     mgr->setDebug(debug);
-    //mgr->setVerbose(verbose);
+    mgr->setVerbose(verbose);
 
     // main loop 
     mgr->run();

@@ -29,7 +29,7 @@ namespace tnmsauth {
 
 class SoapClient;
 class SoapIOHandler;
-class AuthIOHandler;
+class AuthdIOHandler;
 class AuthDbThread;
 
 
@@ -87,7 +87,7 @@ class TnmsAuthManager : public EventTimerHandler {
 
 
     SoapIOHandler*                      _soapHandler;
-    AuthIOHandler*                      _authHandler;
+    AuthdIOHandler*                     _authHandler;
 
     AuthDbConfig                        _aconfig;
     TnmsConfig                          _tconfig;

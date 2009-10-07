@@ -190,6 +190,8 @@ TnmsClient::login ( const std::string & name, const std::string & pw )
 bool
 TnmsClient::login()
 {
+    if ( this->_login.empty() )
+        return false;
     return TnmsSocket::login(this->_login, this->_authkey);
 }
 

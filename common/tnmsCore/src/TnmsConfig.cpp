@@ -135,6 +135,7 @@ TnmsConfigHandler::parseRoot ( XmlNode * node )
 
     // first collect our known root elements
     config.agent_name  = root->getAttribute("agent_name");
+    config.agent_key   = root->getAttribute("agent_key");
     config.logfile     = root->getAttribute("logfile");
     config.auth_server = root->getAttribute("auth_server");
 

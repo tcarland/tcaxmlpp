@@ -111,6 +111,7 @@ struct TnmsServerConfig
 struct TnmsConfig
 {
     std::string   agent_name;
+    std::string   agent_key;
     std::string   auth_server;
     uint16_t      auth_port;
 

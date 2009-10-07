@@ -18,6 +18,7 @@ using namespace tcanetpp;
 // ----------------------------------------------------------------------
 
 TnmsWxTree::TnmsWxTree()
+    : _treeCtrl(NULL)
 {
     this->Init();
 }
@@ -36,7 +37,8 @@ TnmsWxTree::TnmsWxTree ( wxWindow        * parent,
 
 TnmsWxTree::~TnmsWxTree()
 {
-    delete _treeCtrl;
+    if ( _treeCtrl )
+        delete _treeCtrl;
     delete _visible;
 }
 
@@ -73,7 +75,7 @@ TnmsWxTree::Create  ( wxWindow        * parent,
     _rootId = _treeCtrl->AddRoot(rootName, -1, -1, rootData);
     _treeCtrl->SetItemHasChildren(_rootId);
     
-    this->Expand(_rootId);
+    _treeCtrl->Expand(_rootId);
     SetInitialSize(size);
     DoResize();
 
@@ -94,31 +96,6 @@ TnmsWxTree::GetItemData ( wxTreeItemId  id )
 // ----------------------------------------------------------------------
 
 void
-TnmsWxTree::OnExpandItem ( wxTreeEvent & event )
-{
-    /*
-    wxTreeItemId  parentId = event.GetItem();
-
-    if ( ! _rootId.IsOk() )
-        _rootId = _treeCtrl->GetRootItem();
-    */
-    LogFacility::LogMessage("TnmsWxTree::OnExpandItem");
-
-    //return this->Expand(parentId);
-}
-
-// ----------------------------------------------------------------------
-
-void
-TnmsWxTree::OnCollapseItem ( wxTreeEvent & event )
-{
-    LogFacility::LogMessage("TnmsWxTree::OnCollapseItem");
-    return this->Collapse(event.GetItem());
-}
-
-// ----------------------------------------------------------------------
-
-void
 TnmsWxTree::OnSize ( wxSizeEvent & WXUNUSED(event) )
 {
     this->DoResize();
@@ -129,11 +106,9 @@ TnmsWxTree::OnSize ( wxSizeEvent & WXUNUSED(event) )
 void
 TnmsWxTree::OnSelect ( wxTreeEvent & event )
 {
-    wxTreeItemId   id   = event.GetItem();
-    TreeItem     * data = (TreeItem*) _treeCtrl->GetItemData(id);
-
-    LogFacility::LogMessage("OnSelect " + data->absoluteName);
-
+    //wxTreeItemId   id   = event.GetItem();
+    //TreeItem     * data = (TreeItem*) _treeCtrl->GetItemData(id);
+    //LogFacility::LogMessage("OnSelect " + data->absoluteName);
     return;
 }
 
@@ -142,35 +117,7 @@ TnmsWxTree::OnSelect ( wxTreeEvent & event )
 void
 TnmsWxTree::OnDelete ( wxTreeEvent & event )
 {
-    LogFacility::LogMessage("TnmsWxTree::OnDelete ");
-}
-
-// ----------------------------------------------------------------------
-
-void
-TnmsWxTree::OnContext ( wxTreeEvent & event )
-{
-    wxTreeItemId   id   = event.GetItem();
-    TreeItem     * data = (TreeItem*) _treeCtrl->GetItemData(id);
-
-    LogFacility::LogMessage("OnContext " + data->absoluteName);
-}
-
-// ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
-
-void
-TnmsWxTree::Expand ( wxTreeItemId  parentId )
-{
-
-}
-
-// ----------------------------------------------------------------------
-
-void
-TnmsWxTree::Collapse ( wxTreeItemId  parentId )
-{
-
+    //LogFacility::LogMessage("TnmsWxTree::OnDelete ");
 }
 
 // ----------------------------------------------------------------------
@@ -182,6 +129,7 @@ TnmsWxTree::DoResize()
     _treeCtrl->SetSize(0, 0, sz.x, sz.y);
 }
 
+// ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
 TnmsMetric
@@ -196,6 +144,8 @@ TnmsWxTree::GetItemMetric ( wxTreeItemId & id )
 }
 
 // ----------------------------------------------------------------------
+//  Subscribes to the requested name and returns the number of subscribers
+//  to the element.
 
 int
 TnmsWxTree::Subscribe ( const std::string & absoluteName, TreeSubscriber * sub )
@@ -227,6 +177,10 @@ TnmsWxTree::Subscribe ( const std::string & absoluteName, TreeSubscriber * sub )
 
     return sz;
 }
+
+// ----------------------------------------------------------------------
+//  UnSubscribes to the requested name and returns the number of subscribers
+//  to the element.
 
 int
 TnmsWxTree::Unsubscribe ( const std::string & absoluteName, TreeSubscriber * sub )
@@ -341,7 +295,7 @@ TnmsWxTree::Sync()
 
         if ( _visible->exists(node->getAbsoluteName()) ) {
             _visible->update(node->getValue().metric);
-            LogFacility::LogMessage("Add " + node->getAbsoluteName());
+            LogFacility::LogMessage("TnmsWxTree::Sync() Add " + node->getAbsoluteName());
         } else {
             this->Add(node);
         }
@@ -372,7 +326,7 @@ TnmsWxTree::Sync()
     {
         TnmsTree::Node * node = *nIter;
 
-        LogFacility::LogMessage("Update " + node->getAbsoluteName());
+        LogFacility::LogMessage("TnmsWxTree::Sync() Update " + node->getAbsoluteName());
 
         if ( ! _visible->exists(node->getAbsoluteName()) )
             this->Add(node);
@@ -410,6 +364,7 @@ TnmsWxTree::SetTnmsTree ( TnmsTree_R * tree )
     return;
 }
 
+// ----------------------------------------------------------------------
 
 TnmsTree_R*
 TnmsWxTree::GetTnmsTree()
@@ -417,6 +372,7 @@ TnmsWxTree::GetTnmsTree()
     return _stree;
 }
 
+// ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 // _TNMSWXTREE_CPP_
 

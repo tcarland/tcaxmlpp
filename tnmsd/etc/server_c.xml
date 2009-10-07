@@ -6,7 +6,9 @@
         logfile="server_c.log"
         syslog="false"
         debug="true"
-        auth_bypass="true" >
+        auth_server="localhost"
+        auth_port="15901"
+        auth_bypass="false" >
 
         <server
             client_port="15605"

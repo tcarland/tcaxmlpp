@@ -47,10 +47,8 @@ class AuthClient : public TnmsClient {
     
     virtual ~AuthClient();
 
-
   public:   /* TnmsClient */
 
-    virtual int    connect();
     virtual void   close();
 
     virtual void   AuthReplyHandler ( TnmsAuthReply & reply );
@@ -58,6 +56,8 @@ class AuthClient : public TnmsClient {
   public:  /* AuthClient */
 
     void           timeout          ( const EventTimer * timer );
+
+    int            authConnect();
 
     bool           authClient       ( TnmsClient * client, TnmsAuthRequest & req );
     void           unauthClient     ( TnmsClient * client );
@@ -80,7 +80,7 @@ class AuthClient : public TnmsClient {
     std::string                 _authsvr;
     uint16_t                    _authport;
     time_t                      _idleTimeout, _idlet;
-    time_t                      _authRetryInterval;
+    time_t                      _authRetryInterval, _lastConn;
 
     bool                        _bypass;
 };

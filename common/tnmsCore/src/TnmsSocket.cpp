@@ -528,14 +528,19 @@ TnmsSocket::login ( const std::string & user, const std::string & pw )
 {
     std::string::size_type delim;
 
-    delim = user.find_first_of(':', 0);
-    if ( delim == std::string::npos ) {
-        _login = TNMS_CLIENT_ID;
-        _login.append(":").append(user);
-    } else {
-        _login = user;
+    if ( _login.compare(user) != 0 )
+    {
+        delim = user.find_first_of(':', 0);
+        if ( delim == std::string::npos ) {
+            _login = user;
+            _login.append(":");
+        } else {
+            _login = user;
+        }
     }
-    _authkey = pw;
+
+    if ( _authkey.compare(pw) != 0 )
+        _authkey = pw;
 
     if ( ! this->isConnected() ) {
         _authorizing = false;
@@ -553,7 +558,7 @@ TnmsSocket::login ( const std::string & user, const std::string & pw )
 
     TnmsAuthRequest  req(_login, _authkey);
 
-    return this->sendMessage(&req);
+    return this->sendMessage(&req, true);
 }
 
 // ------------------------------------------------------------------- //
@@ -562,6 +567,12 @@ bool
 TnmsSocket::isAuthorized() const
 {
     return this->_authorized;
+}
+
+bool
+TnmsSocket::isAuthorizing() const
+{
+    return this->_authorizing;
 }
 
 bool
