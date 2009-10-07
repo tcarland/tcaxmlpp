@@ -2,8 +2,9 @@
 
 <tnms version="0.1">
     <tnmsd
-        agent_name="tcanms/tnmsd/server_c"
-        logfile="server_c.log"
+        agent_name="tcanms/tnmsd/devserver_c"
+        agent_key="tnmsd11b"
+        logfile="devserver_c.log"
         syslog="false"
         debug="true"
         auth_server="localhost"
