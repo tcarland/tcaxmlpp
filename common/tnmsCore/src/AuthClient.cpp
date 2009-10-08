@@ -78,9 +78,9 @@ AuthClient::timeout ( const EventTimer * timer )
     {
         if ( this->isAuthorizing() && (_lastConn + (this->getReconnectTime() * 4)) > now )
             return;
-        LogFacility::LogMessage("AuthClient authentication requested");
         _lastConn = now;
-        this->login();
+        if ( this->login() )
+            LogFacility::LogMessage("AuthClient authorizing server connection");
     }
 
     if ( this->receive(now) < 0 ) {
@@ -218,6 +218,7 @@ AuthClient::close()
     _evid = 0;
 
     TnmsClient::close();
+    LogFacility::LogMessage("AuthClient::close() connection to authsvr");
 
     return;
 }

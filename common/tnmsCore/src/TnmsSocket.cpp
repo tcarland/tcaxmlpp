@@ -529,22 +529,14 @@ TnmsSocket::login ( const std::string & user, const std::string & pw )
     std::string::size_type delim;
 
     if ( _login.compare(user) != 0 )
-    {
-        delim = user.find_first_of(':', 0);
-        if ( delim == std::string::npos ) {
-            _login = user;
-            _login.append(":");
-        } else {
-            _login = user;
-        }
-    }
-
+        _login = user;
     if ( _authkey.compare(pw) != 0 )
         _authkey = pw;
 
     if ( ! this->isConnected() ) {
         _authorizing = false;
         _authorized  = false;
+        _loginCtr    = 0;
         return false;
     }
 

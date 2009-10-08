@@ -17,7 +17,8 @@ public:
     TnmsAuthRequest ( const std::string & agent_name,
                       const std::string & agent_key )
         : TnmsMessage(agent_name, AUTH_REQUEST),
-          _agent_key(agent_key)
+          _agent_key(agent_key),
+          _ipaddr(0)
     {}
 
     virtual ~TnmsAuthRequest() {}

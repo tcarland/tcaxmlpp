@@ -23,7 +23,7 @@ using namespace tcasqlpp;
 namespace tnmsauth {
 
 
-std::string TnmsAuthManager::_Version = "v0.17";
+std::string TnmsAuthManager::_Version = "v0.183";
 
 
 TnmsAuthManager::TnmsAuthManager ( const std::string & config ) 
