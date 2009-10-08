@@ -526,8 +526,6 @@ TnmsSocket::getBytesReceived()
 bool
 TnmsSocket::login ( const std::string & user, const std::string & pw )
 {
-    std::string::size_type delim;
-
     if ( _login.compare(user) != 0 )
         _login = user;
     if ( _authkey.compare(pw) != 0 )
@@ -550,7 +548,9 @@ TnmsSocket::login ( const std::string & user, const std::string & pw )
 
     TnmsAuthRequest  req(_login, _authkey);
 
-    return this->sendMessage(&req, true);
+    bool r = this->sendMessage(&req, true);
+
+    return r;
 }
 
 // ------------------------------------------------------------------- //
@@ -622,6 +622,19 @@ const std::string&
 TnmsSocket::getHostStr() const
 {
     return this->_hoststr;
+}
+
+// ------------------------------------------------------------------- //
+
+ipv4addr_t
+TnmsSocket::getAddr() const
+{
+    ipv4addr_t  ip = 0;
+
+    if ( this->_sock )
+        ip = this->_sock->getAddr();
+
+    return ip;
 }
 
 // ------------------------------------------------------------------- //
@@ -813,7 +826,8 @@ bool
 TnmsSocket::subscribe ( const TnmsOid & oid )
 {
     TnmsSubscribe msg(oid);
-    return this->sendMessage(&msg, true);
+    bool r = this->sendMessage(&msg, true);
+    return r;
 }
 
 // ------------------------------------------------------------------- //
@@ -825,14 +839,16 @@ TnmsSocket::unsubscribe ( const std::string & name )
     _subs.erase(msg);
     if ( _subs.size() == 0 )
         _subscribed = false;
-    return this->sendMessage(&msg, true);
+    bool r = this->sendMessage(&msg, true);
+    return r;
 }
 
 bool
 TnmsSocket::unsubscribe ( const TnmsOid & oid )
 {
     TnmsUnsubscribe  msg(oid);
-    return this->sendMessage(&msg, true);
+    bool r = this->sendMessage(&msg, true);
+    return r;
 }
 
 // ------------------------------------------------------------------- //

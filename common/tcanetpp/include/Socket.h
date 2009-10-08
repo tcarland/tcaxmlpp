@@ -123,12 +123,14 @@ class Socket {
     Socket*             accept ( SocketFactory & factory );
     
     bool                isConnected();
-    bool                isServerSocket();
+    bool                isServerSocket() const;
     
-    ipv4addr_t          getAddress();
-    std::string         getAddressString();
-    std::string         getAddrString()  { return this->getAddressString(); }
-    std::string         getAddrStr()     { return this->getAddressString(); }
+    ipv4addr_t          getAddress() const;
+    const std::string&  getAddressString() const;
+
+    ipv4addr_t          getAddr() const       { return this->getAddress(); }
+    const std::string&  getAddrString() const { return this->getAddressString(); }
+    const std::string&  getAddrStr() const    { return this->getAddressString(); }
     
     const sockfd_t&     getDescriptor() const;
     const sockfd_t&     getFD() const    { return this->getDescriptor(); }

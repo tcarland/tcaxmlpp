@@ -216,7 +216,13 @@ TnmsClient::AuthReplyHandler ( const TnmsAuthReply & reply )
 }
 
 /*
- * agent login credentials:  'user@ipaddr:'
+ *  Clients themselves generally would not receive/handle an auth 
+ *  request which would specifically be ignored/dropped via the 
+ *  MessageHandler::AuthRequestHandler() interface. Alternatively,
+ *  server components can proxy client authorization and this 
+ *  method provides a default handler for forwarding the request
+ *  to the AuthClient. 
+ *
  */
 void
 TnmsClient::AuthRequestHandler ( const TnmsAuthRequest & request )
@@ -234,19 +240,22 @@ TnmsClient::AuthRequestHandler ( const TnmsAuthRequest & request )
     else
         _login    = login.substr(0, delim);
 
+    delim  = _login.find_first_of('@', 0);
+
+    if ( delim != std::string::npos )
+        _login  = _login.substr(0, delim);
+
     _authname = _login;
     _authname.append("@").append(ipaddr);
 
-    TnmsAuthRequest req(_authname, request.agent_key());
-
-    if ( CidrUtils::pton(ipaddr, ip) )
-        req.ipaddr(ip);
+    TnmsAuthRequest req(_login, request.agent_key());
+    req.ipaddr(this->getAddr());
 
     if ( _auth )
     {
         _auth->authClient(this, req);
     }
-    else
+    else  // this should just as well be fatal.// throw Exception("Invalid Auth handle");
     {
         LogFacility::LogMessage("TnmsClient::AuthRequestHandler() Invalid Auth handle");
         TnmsAuthReply reply(_authname);

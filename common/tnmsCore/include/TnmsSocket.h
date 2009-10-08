@@ -97,6 +97,7 @@ class TnmsSocket {
     const std::string&     getClientLoginName() const;
     const std::string&     getClientAuthStr()   const;
 
+    ipv4addr_t             getAddr()     const;
     const std::string&     getHostStr()  const;
     const std::string&     getAddrStr()  const;
     const std::string&     getHostname() const;

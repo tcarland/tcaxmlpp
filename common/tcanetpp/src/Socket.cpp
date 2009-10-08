@@ -369,8 +369,8 @@ Socket::getSocketProtocol() const
 
 // ----------------------------------------------------------------------
 
-std::string
-Socket::getAddressString()
+const std::string&
+Socket::getAddressString() const
 {
     return _addrstr;
 }
@@ -378,7 +378,7 @@ Socket::getAddressString()
 // ----------------------------------------------------------------------
 
 ipv4addr_t
-Socket::getAddress()
+Socket::getAddress() const
 {
     return( (ipv4addr_t) _sock.sin_addr.s_addr );
 }
