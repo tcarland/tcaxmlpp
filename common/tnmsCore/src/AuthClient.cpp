@@ -3,6 +3,7 @@
 #include "tnmsCore.h"
 #include "AuthClient.h"
 #include "AuthIOHandler.h"
+#include "AuthMessageHandler.hpp"
 
 #include "LogFacility.h"
 using namespace tcanetpp;
@@ -12,6 +13,10 @@ using namespace tcanetpp;
 namespace tnmsCore {
 
 
+/** Need to reset the undlerlying default MessageHandler to hold 
+  * our AuthClient*, not a TnmsClient*, so it must be reset in the
+  * constructor to get our hook for AuthReplyHandler.
+ **/
 AuthClient::AuthClient ( EventManager * evmgr ) 
     : _evmgr(evmgr),
       _evid(0),
@@ -21,7 +26,9 @@ AuthClient::AuthClient ( EventManager * evmgr )
       _authRetryInterval(TNMS_LOGIN_INTERVAL),
       _lastConn(0),
       _bypass(false)
-{}
+{
+    this->setMessageHandler(new AuthMessageHandler(this));
+}
 
 AuthClient::AuthClient ( const std::string & authsvr, uint16_t authport, EventManager * evmgr )  
     : _evmgr(evmgr),
@@ -33,7 +40,9 @@ AuthClient::AuthClient ( const std::string & authsvr, uint16_t authport, EventMa
       _authRetryInterval(TNMS_LOGIN_INTERVAL),
       _lastConn(0),
       _bypass(false)
-{}
+{
+    this->setMessageHandler(new AuthMessageHandler(this));
+}
 
 AuthClient::~AuthClient() 
 {
@@ -51,16 +60,19 @@ AuthClient::timeout ( const EventTimer * timer )
         return;
 
     const time_t  & now = timer->abstime.tv_sec;
-    const EventIO * io  = _evmgr->findIOEvent(_evid);
 
-    if ( _authMap.size() == 0 && io && ! _authhandler->writeable(io) ) {
-        if ( _idleTimeout > 0 && _idlet <= now ) {
+    if ( _idleTimeout > 0 && _authMap.size() == 0 )
+    {
+        const EventIO * io  = _evmgr->findIOEvent(_evid);
+        if ( io && ! _authhandler->writeable(io) && _idlet <= now ) {
             if ( this->isConnected() )
                 this->close();
             _idlet = now + _idleTimeout;
             return;
         }
-    } else {
+    } 
+    else 
+    {
         _idlet = now + _idleTimeout;
     }
 
@@ -80,7 +92,7 @@ AuthClient::timeout ( const EventTimer * timer )
             return;
         _lastConn = now;
         if ( this->login() )
-            LogFacility::LogMessage("AuthClient authorizing server connection");
+            LogFacility::LogMessage("AuthClient validating auth channel");
     }
 
     if ( this->receive(now) < 0 ) {
@@ -153,10 +165,6 @@ AuthClient::authClient ( TnmsClient * client, TnmsAuthRequest & request )
     if ( rIter == _authMap.end() )
         return false;
 
-    if ( ! this->isConnected() || this->isConnecting() )
-        if ( this->authConnect() < 0 )
-            return false;
-        
     if ( ! this->isAuthorized() )
         return false;
 
@@ -218,13 +226,13 @@ AuthClient::close()
     _evid = 0;
 
     TnmsClient::close();
-    LogFacility::LogMessage("AuthClient::close() connection to authsvr");
+    LogFacility::LogMessage("AuthClient connection closed");
 
     return;
 }
 
 void
-AuthClient::AuthReplyHandler ( TnmsAuthReply & reply ) 
+AuthClient::AuthReplyHandler ( const TnmsAuthReply & reply ) 
 {
     TnmsClient * client = NULL;
     AuthRequestMap::iterator  rIter;
@@ -232,6 +240,12 @@ AuthClient::AuthReplyHandler ( TnmsAuthReply & reply )
     rIter = _authMap.find(reply.getElementName());
 
     if ( rIter == _authMap.end() ) {
+        if ( reply.getElementName().compare(this->getClientLoginName()) == 0 )
+        {
+            LogFacility::LogMessage("AuthClient::AuthReplyHandler() for server auth channel");
+            TnmsClient::AuthReplyHandler(reply);
+            return;
+        }
         LogFacility::LogMessage("AuthClient::AuthReplyHandler() client not found: " 
             + reply.getElementName());
         return;
@@ -242,7 +256,7 @@ AuthClient::AuthReplyHandler ( TnmsAuthReply & reply )
     client = rIter->second.client;
 
     if ( client ) {
-        if ( client->sendMessage(&reply) ) {  // forward reply
+        if ( client->sendMessage(&reply, true) ) {  // forward reply
             client->AuthReplyHandler(reply);
         } else {
             LogFacility::LogMessage("AuthClient::AuthReplyHandler() error forwarding reply to " 

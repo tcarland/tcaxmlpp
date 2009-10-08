@@ -64,7 +64,7 @@ AuthDbThread::run()
             stales.clear();
         }
 
-        sleep(5);
+        sleep(2);
     }
     _dbpool->release(sql);
 

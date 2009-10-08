@@ -29,6 +29,9 @@ TnmsMessageHandler::AddHandler ( const TnmsAdd & add )
     if ( _client == NULL || ! _client->isAuthorized() )
         return;
 
+    if ( _tree == NULL )
+        return;
+
     //if ( LogFacility::GetDebug() )
         //LogFacility::LogMessage("TnmsMessageHandler::AddHandler() " 
             //+ add.getElementName());
@@ -45,6 +48,9 @@ TnmsMessageHandler::RemoveHandler ( const TnmsRemove  & remove )
     if ( _client == NULL || ! _client->isAuthorized() )
         return;
     
+    if ( _tree == NULL )
+        return;
+
     //if ( LogFacility::GetDebug() )
         //LogFacility::LogMessage("TnmsMessageHandler::RemoveHandler() " 
             //+ remove.getElementName());
@@ -65,6 +71,9 @@ TnmsMessageHandler::MetricHandler ( const TnmsMetric & metric )
         //LogFacility::LogMessage("TnmsMessageHandler::MetricHandler() " 
             //+ metric.getElementName());
 
+    if ( _tree == NULL )
+        return;
+
     if ( _client->inTreeSend() )
         this->LastMessageHandler(ADD_MESSAGE);
 
@@ -81,6 +90,9 @@ void
 TnmsMessageHandler::RequestHandler ( const TnmsRequest & request )
 {
     if ( _client == NULL || ! _client->isAuthorized() ) 
+        return;
+
+    if ( _tree == NULL )
         return;
 
     TnmsMetric  metric;
@@ -101,6 +113,9 @@ TnmsMessageHandler::SubscribeHandler   ( const std::string & name )
     if ( _client == NULL ||  ! _client->isAuthorized() )
         return;
 
+    if ( _tree == NULL )
+        return;
+
     if ( LogFacility::GetDebug() )
         LogFacility::LogMessage("TnmsMessageHandler::SubscribeHandler() " + name);
 
@@ -117,6 +132,9 @@ TnmsMessageHandler::UnsubscribeHandler ( const std::string & name )
     if ( _client == NULL ) 
         return;
 
+    if ( _tree == NULL )
+        return;
+
     //if ( LogFacility::GetDebug() )
         //LogFacility::LogMessage("TnmsMessageHandler::UnsubscribeHandler() " + name);
 
@@ -130,6 +148,9 @@ void
 TnmsMessageHandler::StructureHandler ( bool  subscribe )
 {
     if ( _client == NULL ||  ! _client->isAuthorized() )
+        return;
+
+    if ( _tree == NULL )
         return;
 
     if ( LogFacility::GetDebug() )
@@ -180,8 +201,11 @@ TnmsMessageHandler::PingHandler()
     if ( LogFacility::GetDebug() )
         LogFacility::LogMessage("TnmsMessageHandler::PingHandler() ");
 
+    if ( _client == NULL )
+        return;
+    
     TnmsMessage ping(PING_REPLY);
-    _client->sendMessage(&ping);
+    _client->sendMessage(&ping, true);
 
     return;
 }

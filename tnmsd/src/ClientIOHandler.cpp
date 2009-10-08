@@ -87,19 +87,19 @@ ClientIOHandler::timeout ( const EventTimer * timer )
             }
         }
 
-        if ( (rd = client->receive(now)) < 0 ) {
-            LogFacility::LogMessage("ClientIOHandler error in receive() from client " 
-                + client->getHostStr());
-            client->close();
-            continue;
-        } 
-
         if ( (wt = client->send(now)) < 0 ) {
             LogFacility::LogMessage("ClientIOHandler error in send() from client " 
                 + client->getHostStr());
             client->close();
             continue;
         }
+
+        if ( (rd = client->receive(now)) < 0 ) {
+            LogFacility::LogMessage("ClientIOHandler error in receive() from client " 
+                + client->getHostStr());
+            client->close();
+            continue;
+        } 
 
     }
 
@@ -159,7 +159,7 @@ ClientIOHandler::handle_read ( const EventIO * io )
     if ( (rd = client->receive(io->abstime.tv_sec)) < 0 ) {
         LogFacility::LogMessage("ClientIOHandler::handle_read() error: " + client->getErrorStr());
         return this->handle_close(io);
-    } else if ( rd > 0 ) {
+    } else if ( rd > 0 && LogFacility::GetDebug() ) {
         LogFacility::Message  logmsg;
         logmsg << "ClientIOHandler::handle_read (" << client->getHostStr()
             << "): " << client->getBytesReceived() << " bytes";
@@ -183,7 +183,7 @@ ClientIOHandler::handle_write ( const EventIO * io )
     if ( (wt = client->send(io->abstime.tv_sec)) < 0 ) {
         LogFacility::LogMessage("ClientIOHandler::handle_write() error: " + client->getErrorStr());
         return this->handle_close(io);
-    } else if ( wt > 0 ) {
+    } else if ( wt > 0 && LogFacility::GetDebug() ) {
         LogFacility::Message  logmsg;
         logmsg << "ClientIOHandler::handle_write (" << client->getHostStr()
             << "): " << client->getBytesSent() << " bytes";

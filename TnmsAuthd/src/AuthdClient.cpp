@@ -51,7 +51,7 @@ AuthdClient::AuthRequestHandler ( const TnmsAuthRequest & request )
         + request.getElementName());
 
     _authdb->isAuthentic(user, request.agent_key(), ipaddr, reply);
-    this->sendMessage(&reply);
+    this->sendMessage(&reply, true);
 
     return;
 }

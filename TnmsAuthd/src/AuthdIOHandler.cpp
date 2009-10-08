@@ -25,7 +25,24 @@ AuthdIOHandler::~AuthdIOHandler()
 void
 AuthdIOHandler::timeout ( const time_t & now )
 {
+    ClientSet::iterator  cIter;
 
+    for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
+    {
+        AuthdClient * client = (AuthdClient*) *cIter;
+
+        if ( client->receive(now) < 0 ) {
+            client->close();
+            continue;
+        }
+
+        if ( client->send(now) < 0 ) {
+            client->close();
+            continue;
+        }
+    }
+
+    return;
 }
 
 

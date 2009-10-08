@@ -229,7 +229,6 @@ TnmsClient::AuthRequestHandler ( const TnmsAuthRequest & request )
 {
     std::string              login, authname, ipaddr;
     std::string::size_type   delim;
-    ipv4addr_t               ip;
 
     login  = request.getElementName();
     ipaddr = this->getAddrStr();

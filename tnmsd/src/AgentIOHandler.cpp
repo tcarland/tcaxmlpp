@@ -45,19 +45,19 @@ AgentIOHandler::timeout ( const EventTimer * timer )
             continue;
         }
 
-        if ( (rd = client->receive(now)) < 0 ) {
-            LogFacility::LogMessage("AgentIOHandler error in receive() " 
-                + client->getErrorStr());
-            client->close();
-            continue;
-        } 
-
         if ( (wt = client->send(now)) < 0 ) {
             LogFacility::LogMessage("AgentIOHandler error in send() " 
                 + client->getErrorStr());
             client->close();
             continue;
         }
+
+        if ( (rd = client->receive(now)) < 0 ) {
+            LogFacility::LogMessage("AgentIOHandler error in receive() " 
+                + client->getErrorStr());
+            client->close();
+            continue;
+        } 
     }
 
     return;

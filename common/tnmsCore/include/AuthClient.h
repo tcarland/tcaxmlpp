@@ -51,7 +51,7 @@ class AuthClient : public TnmsClient {
 
     virtual void   close();
 
-    virtual void   AuthReplyHandler ( TnmsAuthReply & reply );
+    virtual void   AuthReplyHandler ( const TnmsAuthReply & reply );
 
   public:  /* AuthClient */
 
