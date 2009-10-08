@@ -3,7 +3,6 @@
 #include "tnmsCore.h"
 #include "AuthClient.h"
 #include "AuthIOHandler.h"
-#include "AuthMessageHandler.hpp"
 
 #include "LogFacility.h"
 using namespace tcanetpp;
@@ -11,6 +10,29 @@ using namespace tcanetpp;
 
 
 namespace tnmsCore {
+
+
+AuthMessageHandler::AuthMessageHandler ( AuthClient * client )
+    : _client(client)
+{}
+
+void
+AuthMessageHandler::AuthReplyHandler ( const TnmsAuthReply & reply )
+{
+    if ( _client )
+        _client->AuthReplyHandler(reply);
+}
+
+void
+AuthMessageHandler::PingHandler()
+{
+    if ( _client )
+    {
+        TnmsMessage  ping(PING_REPLY);
+        _client->sendMessage(&ping, true);
+    }
+}
+
 
 
 /** Need to reset the undlerlying default MessageHandler to hold 

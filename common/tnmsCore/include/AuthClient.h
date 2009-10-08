@@ -3,6 +3,7 @@
 
 #include <map>
 
+#include "MessageHandler.hpp"
 #include "TnmsClient.h"
 
 #include "EventManager.h"
@@ -13,6 +14,7 @@ using namespace tcanetpp;
 namespace tnmsCore {
 
 class AuthIOHandler;
+class AuthClient;
 
 
 struct AuthAttempt 
@@ -34,6 +36,24 @@ struct AuthAttempt
 };
 
 typedef std::map<std::string, AuthAttempt>  AuthRequestMap;
+
+
+
+class AuthMessageHandler : public MessageHandler {
+
+  public:
+
+    AuthMessageHandler ( AuthClient * client );
+    virtual ~AuthMessageHandler() {}
+
+    virtual void  AuthReplyHandler   ( const TnmsAuthReply   & reply );
+    virtual void  PingHandler();
+    virtual void  PingReplyHandler() {}
+
+  protected:
+
+    AuthClient *  _client;
+};
 
 
 
