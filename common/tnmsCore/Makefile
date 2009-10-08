@@ -16,7 +16,7 @@ LIBS =
 OBJS =                  src/TnmsOid.o src/TnmsSocket.o \
 			src/TnmsMessage.o src/TnmsMetric.o \
 			src/TnmsAuthRequest.o src/TnmsAuthReply.o \
-			src/AuthClient.o src/AuthIOHandler.o \
+			src/AuthClient.o \
 			src/TnmsConfig.o src/TnmsMessageHandler.o \
 			src/TnmsTree.o src/TnmsClient.o \
 			src/TnmsSubscriber.o

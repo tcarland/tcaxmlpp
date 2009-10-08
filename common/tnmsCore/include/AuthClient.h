@@ -7,15 +7,17 @@
 #include "TnmsClient.h"
 
 #include "EventManager.h"
+#include "EventHandlers.hpp"
 using namespace tcanetpp;
 
 
 
 namespace tnmsCore {
 
-class AuthIOHandler;
 class AuthClient;
 
+
+// ---------------------------------------------------------------------------------------
 
 struct AuthAttempt 
 {
@@ -37,7 +39,7 @@ struct AuthAttempt
 
 typedef std::map<std::string, AuthAttempt>  AuthRequestMap;
 
-
+// ---------------------------------------------------------------------------------------
 
 class AuthMessageHandler : public MessageHandler {
 
@@ -55,6 +57,26 @@ class AuthMessageHandler : public MessageHandler {
     AuthClient *  _client;
 };
 
+// ---------------------------------------------------------------------------------------
+
+class AuthIOHandler : public EventIOHandler {
+
+  public:
+
+    AuthIOHandler() {}
+    virtual ~AuthIOHandler() {}
+
+    virtual void        handle_accept   ( const EventIO * io ) {}
+    virtual void        handle_read     ( const EventIO * io );
+    virtual void        handle_write    ( const EventIO * io );
+    virtual void        handle_close    ( const EventIO * io );
+    virtual void        handle_destroy  ( const EventIO * io ) {}
+
+    virtual bool        readable        ( const EventIO * io );
+    virtual bool        writeable       ( const EventIO * io );
+};
+
+// ---------------------------------------------------------------------------------------
 
 
 class AuthClient : public TnmsClient {
