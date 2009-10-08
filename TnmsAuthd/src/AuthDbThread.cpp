@@ -158,33 +158,43 @@ AuthDbThread::isAuthentic ( const std::string & username,
                             TnmsAuthReply     & reply )
 {
     bool result = false;
+    TnmsDbUser * userdb = this->findUser(username);
+    
+    SqlSessionInterface * sql = _dbpool->acquire();
 
-    result = _ticketDb->isAuthentic(username, ticket, ipaddr);
+    if ( userdb == NULL )
+        userdb = this->queryUser(sql, username);
 
-    if ( result )
-        reply.authResult(AUTH_SUCCESS);
-    else
-        reply.authResult(AUTH_INVALID);
+    if ( userdb == NULL ) {
+        _dbpool->release(sql);
+        return result;
+    }
+
+    if ( userdb->isAgent ) 
+        result = this->authenticateUser(userdb, ticket);
+    else 
+        result = _ticketDb->isAuthentic(username, ticket, ipaddr);
 
     // add user authorization list to result
     if ( result )
     {
-        TnmsDbUser * user = this->findUser(username);
-        if ( user != NULL )
-        {
-            TnmsDbFilter * filter = this->findAuthFilter(user->gid);
-            std::string    fstr   = this->createFilter(filter);
-            reply.authReason(fstr);
-        }
+        reply.authResult(AUTH_SUCCESS);
 
-        if ( ! user->config.empty() )
-            reply.authData(user->config);
-    }
+        TnmsDbFilter * filter = this->findAuthFilter(userdb->gid);
+        std::string    fstr   = this->createFilter(filter);
+        reply.authReason(fstr);
+
+        if ( ! userdb->config.empty() )
+            reply.authData(userdb->config);
+    } else
+        reply.authResult(AUTH_INVALID);
 
     LogFacility::Message  logmsg;
     logmsg << "AuthDbThread::isAuthentic() " << username << "@"
            << ipaddr << " = " << result;
     LogFacility::LogMessage(logmsg.str());
+        
+    _dbpool->release(sql);
 
     return result;
 }
@@ -664,10 +674,13 @@ AuthDbThread::createFilter ( TnmsDbFilter * filter )
 {
     std::ostringstream  fstr;
 
+    if ( filter == NULL )
+        return fstr.str();
+
     if ( filter->isInclude )
-        fstr << "I";
+        fstr << "I:";
     else
-        fstr << "E";
+        fstr << "E:";
 
     StringList & alist  = filter->authorizations;
     StringList::iterator  sIter;

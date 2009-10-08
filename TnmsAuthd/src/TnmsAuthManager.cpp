@@ -77,7 +77,7 @@ TnmsAuthManager::run()
         LogFacility::SetBroadcast(true);
     }
 
-    _evmgr->addTimerEvent(this, 5, 0);
+    _evmgr->addTimerEvent(this, 1, 0);
     _reportId  = _evmgr->addTimerEvent(this, _reportDelay, 0);
     _logId     = _evmgr->addTimerEvent(this, _logCheck, 0);
 

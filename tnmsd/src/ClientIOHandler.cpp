@@ -160,8 +160,10 @@ ClientIOHandler::handle_read ( const EventIO * io )
         LogFacility::LogMessage("ClientIOHandler::handle_read() error: " + client->getErrorStr());
         return this->handle_close(io);
     } else if ( rd > 0 ) {
-        LogFacility::LogMessage("ClientIOHandler::handle_read() " 
-            + StringUtils::toString(client->getBytesReceived()));
+        LogFacility::Message  logmsg;
+        logmsg << "ClientIOHandler::handle_read (" << client->getHostStr()
+            << "): " << client->getBytesReceived() << " bytes";
+        LogFacility::LogMessage(logmsg.str());
     }
     
     return;
@@ -182,8 +184,10 @@ ClientIOHandler::handle_write ( const EventIO * io )
         LogFacility::LogMessage("ClientIOHandler::handle_write() error: " + client->getErrorStr());
         return this->handle_close(io);
     } else if ( wt > 0 ) {
-        LogFacility::LogMessage("ClientIOHandler::handle_write() " 
-            + StringUtils::toString(client->getBytesSent()));
+        LogFacility::Message  logmsg;
+        logmsg << "ClientIOHandler::handle_write (" << client->getHostStr()
+            << "): " << client->getBytesSent() << " bytes";
+        LogFacility::LogMessage(logmsg.str());
     }
 
     return;
