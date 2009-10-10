@@ -12,7 +12,7 @@ NEED_LIBDL = 1
 
 #-------------------#
 
-ifdef DEBUG
+ifdef TCANMS_DEBUG
   OPT_FLAGS = -g 
 # -DEV_DEBUG
 endif

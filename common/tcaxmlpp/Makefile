@@ -7,9 +7,7 @@ endif
 
 NEED_LIBXML2_INCLUDE = 1
 
-
-
-ifdef DEBUG
+ifdef TCANMS_DEBUG
 OPT_FLAGS =     -g
 endif
 

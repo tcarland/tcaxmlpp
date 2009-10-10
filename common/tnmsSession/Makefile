@@ -9,8 +9,7 @@ NEED_PTHREADS = 1
 NEED_LIBDL = 1
 NEED_TCANETPP = 1
 
-
-ifdef DEBUG
+ifdef TCANMS_DEBUG
 OPT_FLAGS =	-g
 endif
 

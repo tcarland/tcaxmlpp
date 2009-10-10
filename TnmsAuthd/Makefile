@@ -13,7 +13,9 @@ ifdef USE_MYSQL
 NEED_MYSQL = 1
 endif
 
+ifdef TCANMS_DEBUG
 OPT_FLAGS= 	-g
+endif
 
 LIBS=
 INCLUDES=       -Iinclude -Isoap 

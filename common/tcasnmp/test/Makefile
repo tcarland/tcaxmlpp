@@ -9,7 +9,9 @@ NEED_TCANETPP = 1
 NEED_TCASNMP = 1   
 NEED_NET_SNMP = 1
 
+ifdef TCANMS_DEBUG
 OPT_FLAGS =	-g
+endif
 
 INCLUDES =	-I.
 LIBS =		

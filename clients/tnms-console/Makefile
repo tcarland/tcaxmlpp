@@ -4,7 +4,9 @@ NEED_ZLIB = 1
 NEED_LIBXML2 = 1
 NEED_TNMSAPI = 1
 
+ifdef TCANMS_DEBUG
 OPT_FLAGS= 	-g
+endif
 
 LIBS=
 INCLUDES=       -Iinclude

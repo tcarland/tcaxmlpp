@@ -14,7 +14,7 @@ NEED_MYSQL = 1
 DB_OBJS =       src/MysqlSession.o
 endif
 
-ifdef DEBUG
+ifdef TCANMS_DEBUG
 OPT_FLAGS =     -g
 endif
 

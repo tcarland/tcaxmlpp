@@ -6,7 +6,7 @@ NEED_TNMSCORE = 1
 NEED_ZLIB = 1
 NEED_LIBXML2 = 1
 
-ifdef DEBUG
+ifdef TCANMS_DEBUG
 OPT_FLAGS =  -g
 endif
 

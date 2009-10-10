@@ -8,8 +8,9 @@ NEED_LIBDL = 1
 NEED_SOCKET = 1
 NEED_TCANETPP = 1
 
-
+ifdef TCANMS_DEBUG
 OPT_FLAGS =	-g -DASWHO_MAIN
+endif
 
 INCLUDES=	-I. -I../include
 LIBS=

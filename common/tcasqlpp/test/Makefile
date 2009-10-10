@@ -23,7 +23,7 @@ NEED_LIBPQXX = 1
 DB_OBS = 	TestPgsqlSession.o
 endif
 
-ifdef DEBUG
+ifdef TCANMS_DEBUG
 OPT_FLAGS =     -g
 endif
 
