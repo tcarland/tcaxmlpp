@@ -1,6 +1,7 @@
 /**  EventHandlers
   * 
-  *    Contains handlers for registering events with the EventManager
+  *    Defines the interfaces for registering events with the 
+  *  EventManager.
   * 
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
   *  @Author  tca@charltontechnology.net
@@ -35,7 +36,6 @@ namespace tcanetpp {
 
 struct EventTimer;
 struct EventIO;
-class Socket;
 
 
 
@@ -46,7 +46,7 @@ class EventTimerHandler {
     virtual ~EventTimerHandler() {}
   
     virtual void timeout  ( const EventTimer * timer ) = 0;
-    virtual void finished ( const EventTimer * timer ) {}
+    virtual void finished ( const EventTimer * timer ) = 0;
 };
 
 
@@ -57,13 +57,13 @@ class EventIOHandler {
 
     virtual ~EventIOHandler() {}
 
-    virtual void handle_accept  ( const EventIO * io ) {}
-    virtual void handle_read    ( const EventIO * io ) {}
-    virtual void handle_write   ( const EventIO * io ) {}
-    virtual void handle_shut    ( const EventIO * io ) {}
-    virtual void handle_close   ( const EventIO * io ) {}
-    virtual void handle_destroy ( const EventIO * io ) {}
-    
+    virtual void handle_accept  ( const EventIO * io ) = 0;
+    virtual void handle_read    ( const EventIO * io ) = 0;
+    virtual void handle_write   ( const EventIO * io ) = 0;
+    virtual void handle_shut    ( const EventIO * io ) = 0;
+    virtual void handle_close   ( const EventIO * io ) = 0;
+    virtual void handle_destroy ( const EventIO * io ) = 0;
+
 
     virtual bool readable       ( const EventIO * io ) = 0;
     virtual bool writeable      ( const EventIO * io ) = 0;

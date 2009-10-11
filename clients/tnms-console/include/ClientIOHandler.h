@@ -35,6 +35,7 @@ class ClientIOHandler : public EventIOHandler {
 
     /*  EventIOHandler */
 
+    virtual void   handle_accept  ( const EventIO * io ) {}
     virtual void   handle_read    ( const EventIO * io );
     virtual void   handle_write   ( const EventIO * io );
     virtual void   handle_shut    ( const EventIO * io );

@@ -26,7 +26,8 @@ public:
     virtual ~TnmsConsoleManager();
 
 
-    virtual void timeout ( const EventTimer * timer );
+    virtual void timeout  ( const EventTimer * timer );
+    virtual void finished ( const EventTimer * timer ) {}
 
 
     void         run();
