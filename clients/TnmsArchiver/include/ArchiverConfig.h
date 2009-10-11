@@ -15,6 +15,15 @@ using namespace tnmsarchive {
 #define  DEFAULT_FLUSH_INTERVAL  12
 
 
+struct  AuthDbConfig
+{
+    std::string  db_host;
+    std::string  db_port;
+    std::string  db_name;
+    std::string  db_user;
+    std::string  db_pass;
+};
+
 
 struct  SchemaConfig
 {

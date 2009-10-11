@@ -64,6 +64,8 @@ TnmsArchiveManager::run()
         return;
     }
 
+    // create DB thread
+
     _evmgr->eventLoop(); // main loop
 
     if ( _debug )
@@ -137,15 +139,13 @@ TnmsArchiveManager::createClients()
         client->setReconnectTime(cfg.reconnect_interval);
         _clientHandler->addMirror(client);
 
-        if ( client->openConnection(cIter->hostname, cIter->port)  < 0 )
+        if ( client->openConnection(cIter->hostname, cIter->port) < 0 )
             continue;
 
         id = _evmgr->addIOEvent(_clientHandler, client->getDescriptor(), client);
 
-        std::string  login = TNMS_AGENT_ID;
-        login.append(":").append(_tconfig.agent_name);
-        client->setClientLogin(login, "");
-        client->login();
+        std::string  login = _tconfig.agent_name;
+        client->login(login, "");
 
         MirrorConnection  mirror(id, *cIter, client);
         _clients[cIter->connection_name] = mirror;
@@ -216,21 +216,10 @@ TnmsArchiveManager::parseConfig ( const std::string & cfg, const time_t & now )
     this->setDebug(config.debug);
     LogFacility::SetDebug(config.debug);
 
-    // set auth server
-    if ( cfgmgr.haveAttribute("auth_bypass") ) {
-        LogFacility::LogMessage("TnmsArchiveManager: WARNING: Enabling Auth Bypass");
-        this->_auth->enableAuthBypass(true);
-    } else {
-        this->_auth->setAuthServer(config.auth_server, config.auth_port);
-    }
-
-    // (re)initialize our tree?
-
-    TnmsServerConfig & nsvrcfg = cfgmgr.config.serverConfig;
     TnmsServerConfig & svrcfg  = _tconfig.serverConfig;
 
     // assign the new config
-    //_tconfig = config;
+    _tconfig = config;
 
     this->destroyClients();
     // init mirror connections

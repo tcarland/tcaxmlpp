@@ -10,7 +10,7 @@ extern "C" {
 #include <ostream>
 
 
-namespace tnmsArchive {
+namespace tnmsdb {
 
 
 struct DbTimePeriod {

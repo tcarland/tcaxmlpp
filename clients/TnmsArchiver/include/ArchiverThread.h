@@ -10,17 +10,22 @@ using namespace tnmsCore;
 
 #include "Thread.h"
 #include "ThreadLock.h"
-#include "Queue.hpp"
+#include "SynchronizedQueue.hpp"
 using namespace tcanetpp;
 
-namespace tnmsArchive {
+
+namespace tnmsdb {
+
+
+class ArchiveSubscriber;
 
 
 class ArchiverThread : public tcanetpp::Thread {
 
   public:
 
-    ArchiverThread();
+    ArchiverThread ( SchemaConfig & config,  );
+
     virtual ~ArchiverThread();
 
 
@@ -33,10 +38,7 @@ class ArchiverThread : public tcanetpp::Thread {
     tnmsCore::TnmsTree*           _tree;
 
     tcanetpp::ThreadLock*         _lock;
-
-    tcanetpp::Queue<TnmsMetric>   _updateQueue;
-    tcanetpp::Queue<std::string>  _removeQueue;
-
+    ArchiveSubscriber *           _notifier;
 };
 
 

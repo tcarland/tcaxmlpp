@@ -1,26 +1,27 @@
-#ifndef _TNMSARCHIVE_ARCHIVEMESSAGEHANDLER_H_
-#define _TNMSARCHIVE_ARCHIVEMESSAGEHANDLER_H_
+#ifndef _TNMSDB_ARCHIVEMESSAGEHANDLER_H_
+#define _TNMSDB_ARCHIVEMESSAGEHANDLER_H_
 
 #include "TnmsMessageHandler.h"
 using namespace tnmsCore;
 
 
-namespace tnmsarchive {
+namespace tnmsdb {
 
 
-class ArchiverThread;
+class Archiver;
 
 
-class ArchiveMessageHandler : public TnmsMessageHandler {
+typedef std::set<Archiver*>  ArchiverSet;
+
+class ArchiveMessageHandler : public MessageHandler {
 
   public:
 
-    ArchiveMessageHandler ( ArchiverThread * writer, 
-                            TnmsTree       * tree, 
-                            TnmsClient     * client );
-
+    ArchiveMessageHandler ( const std::string & root_name, ArchiveClient * client,
+                            ArchiverSet       & archivers );
 
     virtual ~ArchiveMessageHandler();
+
 
     virtual void  AddHandler         ( const TnmsAdd     & add );
     virtual void  RemoveHandler      ( const TnmsRemove  & remove );
@@ -31,24 +32,26 @@ class ArchiveMessageHandler : public TnmsMessageHandler {
     virtual void  UnsubscribeHandler ( const std::string & name );
     virtual void  StructureHandler   ( bool  subscribe );
 
-    virtual void  AuthRequestHandler ( const TnmsAuthRequest & request );
+    virtual void  AuthRequestHandler ( const TnmsAuthRequest & request ) {}
     virtual void  AuthReplyHandler   ( const TnmsAuthReply   & reply );
     
     virtual void  LastMessageHandler ( int   record_type );
 
     virtual void  PingHandler();
-    virtual void  PingReplyHandler();
+    virtual void  PingReplyHandler() {}
 
 
   protected:
 
-    WriterThread *      _writer;
+    ArchiveClient * _client;
+    ArchiverSet &   _writers;
 
+    std::string     _rootname;
 };
 
 
 }  // namespace
 
 
-#endif //  _TNMSARCHIVE_ARCHIVEMESSAGEHANDLER_H_
+#endif //  _TNMSDB_ARCHIVEMESSAGEHANDLER_H_
 

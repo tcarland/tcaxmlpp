@@ -27,10 +27,10 @@ class ArchiverDbMaintainer : public ArchiverDbInterface {
     virtual std::string  getTargetTable       ( const time_t & timestamp );
     virtual TimePeriod   getTargetTimePeriod  ( const time_t & timestamp );
 
-    virtual void         getTimePeriods       ( NameList & nameList );
+    virtual void         getTimePeriods       ( NameList     & nameList );
 
-    virtual void         createTimePeriods    ( IndexList & indices );
-    virtual void         deleteTimePeriods    ( IndexList & indices );
+    virtual void         createTimePeriods    ( IndexList    & indices );
+    virtual void         deleteTimePeriods    ( IndexList    & indices );
 
 
   protected:
