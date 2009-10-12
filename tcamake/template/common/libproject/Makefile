@@ -33,7 +33,7 @@ ALL_BINS = 	    $(BIN)
 all: lib
 
 # REQUIRED
-include ${TOPDIR}/tcamake/builddefs
+include ${TOPDIR}/tcamake/build_defs
 
 
 lib: arlib solib
