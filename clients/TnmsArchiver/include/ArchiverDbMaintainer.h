@@ -1,22 +1,22 @@
-#ifndef _TNMSARCHIVE_ARCHIVERDBMAINTAINER_H_
-#define _TNMSARCHIVE_ARCHIVERDBMAINTAINER_H_
+#ifndef _TNMSDB_ARCHIVEMAINTAINER_H_
+#define _TNMSDB_ARCHIVEMAINTAINER_H_
 
-#include "ArchiverDbInterface.hpp"
-
-
-namespace tnmsarchive {
+#include "ArchiveDbInterface.hpp"
 
 
-class ArchiverDbMaintainer : public ArchiverDbInterface {
+namespace tnmsdb {
+
+
+class ArchiveMaintainer : public ArchiveDbInterface {
 
   public:
 
-    ArchiverDbMaintainer ( const std::string & index_table,
-                           const std::string & data_table,
-                           int   days_per_interval = 1,
-                           int   table_count = 30 );
+    ArchiveMaintainer ( const std::string & index_table,
+                        const std::string & data_table,
+                        int   days_per_interval = 1,
+                        int   table_count       = 30 );
 
-    virtual ~ArchiverDbMaintainer();
+    virtual ~ArchiveMaintainer();
 
 
     void     run();
@@ -44,4 +44,4 @@ class ArchiverDbMaintainer : public ArchiverDbInterface {
 
 }  // namespace 
 
-#endif  //  _TNMSARCHIVE_ARCHIVERDBMAINTAINER_H_
+#endif  //  _TNMSDB_ARCHIVEMAINTAINER_H_

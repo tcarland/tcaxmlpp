@@ -1,5 +1,5 @@
-#ifndef _TNMSARCHIVE_ARCHIVERTHREAD_H_
-#define _TNMSARCHIVE_ARCHIVERTHREAD_H_
+#ifndef _TNMSDB_ARCHIVERTHREAD_H_
+#define _TNMSDB_ARCHIVERTHREAD_H_
 
 #include <set>
 
@@ -12,6 +12,9 @@ using namespace tnmsCore;
 #include "ThreadLock.h"
 #include "SynchronizedQueue.hpp"
 using namespace tcanetpp;
+
+
+#define ARCHIVE_QUEUESIZE  (65535 * 16)
 
 
 namespace tnmsdb {
@@ -28,28 +31,38 @@ class ArchiverThread : public tcanetpp::Thread {
 
   public:
 
-    ArchiverThread ( EventManager * evmgr, SqlSession * sql, SchemaConfigList & config );
+    ArchiverThread ( SqlSession       * sql, 
+                     SchemaConfigList & configlist );
 
     virtual ~ArchiverThread();
 
-    
+    bool        queueUpdate ( const TnmsMetric  & metric );
+    bool        queueRemove ( const std::string & name );
+
     void        run();
     void        notify();
 
   protected:
 
-    void        init ( SqlSession * sql );
+    void        init ( SqlSession * sql, SchemaConfigList & configlist );
+
+    void        updateWriters ( const TnmsMetric  & metric );
+    void        updateWriters ( const std::string & name );
+
 
   private:
 
-    EventManager *                      _evmgr;
+    SqlSession *                        _sql;
     ArchiverSet                         _archivers;
-    SynchronizedQueue<TnmsMetric>       _queue;
+
+    SynchronizedQueue<TnmsMetric>       _upqueue;
+    SynchronizedQueue<std::string>      _remqueue;
+
     ThreadLock *                        _lock;
 };
 
 
 } // namespace
 
-#endif  // _TNMSARCHIVE_ARCHIVERTHREAD_H_
+#endif  // _TNMSDB_ARCHIVERTHREAD_H_
 

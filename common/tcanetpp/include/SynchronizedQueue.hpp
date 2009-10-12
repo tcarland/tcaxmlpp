@@ -81,7 +81,7 @@ template<class ValueType> class SynchronizedQueue {
     int  wait()
     {
         if ( _mutex.lock() == 0 )
-            return ThreadLock::wait();
+            return _mutex::wait();
         return -1;
     }
 
@@ -91,7 +91,7 @@ template<class ValueType> class SynchronizedQueue {
         if ( _mutex.lock() < 0 )
             return -1;
 
-        return ThreadLock::waitFor(seconds);
+        return _mutex::waitFor(seconds);
     }
 
 
@@ -107,7 +107,8 @@ template<class ValueType> class SynchronizedQueue {
 
 	return sz;
     }
- 
+
+    bool empty() { return this->isEmpty(); }
 
     bool isEmpty()
     {

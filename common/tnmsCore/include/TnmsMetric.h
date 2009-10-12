@@ -1,5 +1,5 @@
 /*
- * TnmsMetric.h
+ *  TnmsMetric.h
  *
  *  Copyright(c) 2008,2009  Timothy Charlton Arland
  *  tcarland@gmail.com
@@ -31,12 +31,10 @@ class TnmsMetric : public TnmsMessage {
     virtual void        reset();
 
 
-
     eValueType          getValueType() const;
 
 
     const std::string&  getValue() const;
-
 
     template<typename T>
     T                   getValue() const
@@ -46,7 +44,6 @@ class TnmsMetric : public TnmsMessage {
         T  val = static_cast<T>(_value);
         return val;
     }
-
 
     bool                setValue    ( const std::string & value );
 
