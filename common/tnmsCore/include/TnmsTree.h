@@ -87,6 +87,9 @@ class TnmsTree {
 
     void       getRootNames     ( StringSet     & rootnames ) const;
 
+    template<typename Predicate_>
+    void       walkNodes        ( TnmsTree::Node     * node,
+                                  Predicate_         & predicate );
 
   protected:
 

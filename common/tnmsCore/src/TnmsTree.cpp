@@ -545,6 +545,13 @@ TnmsTree::removeSubscriber ( TreeSubscriber * sub )
     return;
 }
 
+template<typename Predicate_>
+void
+TnmsTree::walkNodes ( TnmsTree::Node * node, Predicate_ & predicate )
+{
+    _tree->depthFirstTraversal(node, predicate);
+}
+
 
 size_t
 TnmsTree::size() const
