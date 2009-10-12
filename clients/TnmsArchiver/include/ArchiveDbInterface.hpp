@@ -1,12 +1,12 @@
-#ifndef _TNMSARCHIVE_DBMAINTAINERINTERFACE_HPP_
-#define _TNMSARCHIVE_DBMAINTAINERINTERFACE_HPP_
+#ifndef _TNMSDB_DBMAINTAINERINTERFACE_HPP_
+#define _TNMSDB_DBMAINTAINERINTERFACE_HPP_
 
 #include <string>
 
 #include "DbTimePeriod.hpp"
 
 
-namespace tnmsarchive {
+namespace tnmsdb {
 
 
 class DbMaintainerInterface {
@@ -28,5 +28,5 @@ class DbMaintainerInterface {
 
 }  // namespace 
 
-#endif // _TNMSARCHIVE_DBMAINTAINERINTERFACE_HPP_
+#endif // _TNMSDB_DBMAINTAINERINTERFACE_HPP_
 
