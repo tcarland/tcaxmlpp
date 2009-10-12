@@ -6,7 +6,7 @@
 
 #include "TnmsConfig.h"
 
-using namespace tnmsarchive {
+using namespace tnmsdb {
 
 
 #define  DEFAULT_COMMIT_INTERVAL 300
@@ -15,7 +15,7 @@ using namespace tnmsarchive {
 #define  DEFAULT_FLUSH_INTERVAL  12
 
 
-struct  AuthDbConfig
+struct  ArchiveDbConfig
 {
     std::string  db_host;
     std::string  db_port;
@@ -44,7 +44,8 @@ struct  SchemaConfig
 };
 
 
-typedef std::list< SchemaConfig >  ArchiveDbConfig;
+typedef std::list< SchemaConfig >                 SchemaConfigList;
+typedef std::map< std::string, SchemaConfigList > ArchiverDbMap;
 
 
 
@@ -67,12 +68,12 @@ class ArchiverConfigHandler : public TnmsConfigHandler {
 
 
     bool                getDbConfig  ( const std::string & name, 
-                                       ArchiveDbConfig   & dbConfig );
+                                       SchemaConfigList  & dbConfig );
 
 
   protected:
 
-    std::map< std::string, ArchiveDbConfig >  dbConfigMap;
+    ArchiverDbMap       dbConfigMap;
 
 };
 

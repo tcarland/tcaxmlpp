@@ -263,7 +263,6 @@ TnmsAuthManager::parseConfig ( const std::string & cfg, const time_t & now )
         if ( _sql )
             delete _sql;
 
-
         _sql    = (SqlSessionInterface*) new SqlSession(acfg.db_name,
                                                         acfg.db_host,
                                                         acfg.db_user,

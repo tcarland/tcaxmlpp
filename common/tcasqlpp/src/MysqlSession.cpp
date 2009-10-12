@@ -2,9 +2,9 @@
   *   sqlplus wrapper to an SQL session
   *
   *  @Author   tcarland.gmail.com
-  *  @Version  0.5
+  *  @Version  1.6
  **/
-#define _SOURCE_MYSQLSESSION_CPP_
+#define _TCASQLPP_MYSQLSESSION_CPP_
 
 extern "C" {
 # include <unistd.h>
@@ -250,14 +250,15 @@ MysqlSession::submitQuery ( Query & q, Result & results )
 
     fldcnt = mysql_num_fields(res);
 
-    while ( (row = mysql_fetch_row(res)) ) {
+    while ( (row = mysql_fetch_row(res)) ) 
+    {
         Row              rowlist;
         unsigned long *  lengths;
 
         lengths = mysql_fetch_lengths(res);
 
-        for ( int i = 0; i < fldcnt; ++i ) {
-
+        for ( int i = 0; i < fldcnt; ++i )
+        {
             if ( row[i] )
                 field = std::string(row[i], lengths[i]);
             else
@@ -369,6 +370,7 @@ MysqlSession::setAutoReconnect ( bool auto_reconnect )
 
     if ( auto_reconnect )
         reconnect = 1;
+
     mysql_options(_dbcon, MYSQL_OPT_RECONNECT, &reconnect);
 
     return;
@@ -384,7 +386,7 @@ MysqlSession::sqlErrorStr()
 void  
 MysqlSession::escapeString ( std::ostringstream & q, const std::string & str )
 {
-    unsigned long len = ( (str.length() * 2) +1 );
+    unsigned long len = ( (str.length() * 2) + 1 );
     char to[len];
 
     mysql_real_escape_string(_dbcon, &to[0], str.data(), str.length());
@@ -396,7 +398,7 @@ MysqlSession::escapeString ( std::ostringstream & q, const std::string & str )
 void  
 MysqlSession::escapeString ( Query & q, const std::string & str )
 {
-    unsigned long len = ( (str.length() * 2) +1 );
+    unsigned long len = ( (str.length() * 2) + 1 );
     char to[len];
 
     mysql_real_escape_string(_dbcon, &to[0], str.data(), str.length());
@@ -408,7 +410,7 @@ MysqlSession::escapeString ( Query & q, const std::string & str )
 std::string 
 MysqlSession::escapeString ( const std::string & str )
 {
-    unsigned long len  = ( (str.length() * 2) +1 );
+    unsigned long len  = ( (str.length() * 2) + 1 );
     std::string   estr;
     char          to[len];
 
@@ -422,5 +424,5 @@ MysqlSession::escapeString ( const std::string & str )
 } // namespace
 
 
-//  _TCASQL_MYSQLSESSION_CPP_
+//  _TCASQLPP_MYSQLSESSION_CPP_
 

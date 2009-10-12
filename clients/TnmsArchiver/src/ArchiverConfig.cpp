@@ -4,7 +4,7 @@
 #include "ArchiverConfig.h"
 
 
-namespace tnmsarchive {
+namespace tnmsdb {
 
 
 
@@ -29,7 +29,7 @@ ArchiverConfig::parseClient  ( XmlNode * node )
     if ( ! result ) 
         return result;
     
-    ArchiveDbConfig  dbConfig;
+    SchemaConfigList  dbConfig;
 
     XmlNode   * anode = NULL;
     XmlNodeList nlist = node->getNodeList();
@@ -64,9 +64,9 @@ ArchiverConfig::parseClient  ( XmlNode * node )
 
 
 bool
-ArchiverConfig::getDbConfig ( const std::string & name, ArchiveDbConfig & dbConfig )
+ArchiverConfig::getDbConfig ( const std::string & name, SchemaConfigList & dbConfig )
 {
-    std::map< std::string, ArchiveDbConfig >::iterator  dIter;
+    ArchiverDbMap::iterator  dIter;
 
     dIter = dbConfigMap.find(name);
 

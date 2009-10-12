@@ -1,4 +1,4 @@
-#define _TNMSARCHIVE_TNMSARCHIVEMANAGER_CPP_
+#define _TNMSDB_TNMSARCHIVEMANAGER_CPP_
 
 #include <time.h>
 
@@ -11,7 +11,7 @@
 
 
 
-namespace tnmsarchive {
+namespace tnmsdb {
 
 
 TnmsArchiveManager::TnmsArchiveManager ( const std::string & configfile )
@@ -120,8 +120,8 @@ TnmsArchiveManager::timeout ( const EventTimer * timer )
 void
 TnmsArchiveManager::createClients()
 {
-    TnmsClient * client = NULL;
-    evid_t       id     = 0;
+    ArchiveClient * client = NULL;
+    evid_t          id     = 0;
 
     ClientConfigList  & clist  = _tconfig.clients;
     ClientConfigList::iterator  cIter;
@@ -130,9 +130,17 @@ TnmsArchiveManager::createClients()
         LogFacility::LogMessage("TnmsArchiveManager::createClients()");
 
     for ( cIter = clist.begin(); cIter != clist.end(); ++cIter ) {
-        TnmsClientConfig & cfg = *cIter;
+        TnmsClientConfig & cfg  = *cIter;
+        std::string      & name = cfg.connection_name;
 
-        client = new TnmsClient(_tree);
+        ArchiverMap::iterator aIter = _archiverMap.find(name);
+        if ( aIter == _archiverMap.end() ) {
+            LogFacility::LogMessage("Error: Archiver not found for " + name);
+            continue;
+        }
+        Archiver * archiver = aIter->second;
+
+        client = new ArchiveClient(cfg, archiver);
 
         // set client attributes
         client->setCompression(_tconfig.compression);
@@ -144,8 +152,7 @@ TnmsArchiveManager::createClients()
 
         id = _evmgr->addIOEvent(_clientHandler, client->getDescriptor(), client);
 
-        std::string  login = _tconfig.agent_name;
-        client->login(login, "");
+        client->login(_tconfig.agent_name, _tconfig.agent_key);
 
         MirrorConnection  mirror(id, *cIter, client);
         _clients[cIter->connection_name] = mirror;
@@ -174,6 +181,44 @@ TnmsArchiveManager::destroyClients ()
     _clients.clear();
 }
 
+void
+TnmsArchiveManager::createArchivers()
+{
+    ArchiverDbMap::iterator   dIter;
+    ArchiverConfig::iterator  cIter;
+
+    for ( dIter = _dbCfgMap.begin(); dIter != _dbCfgMap.end(); ++dIter )
+    {
+        SchemaConfigList & dbConfig = dIter->second;
+        ArchiverThread   * archiver = new ArchiverThread(this, _sql, dbConfig);
+        _archiverMap[dIter->first]  = archiver;
+    }
+            
+    return;
+}
+
+void
+TnmsArchiveManager::destroyArchivers()
+{
+    ArchiveMap::iterator  aIter;
+
+    for ( aIter = _archiverMap.begin(); aIter != _archiverMap.end(); ++aIter )
+    {
+        ArchiverThread * archiver = aIter->second;
+
+        if ( archiver && archiver->isRunning() )
+        {
+            archiver->setAlarm();
+            archiver->notify();
+            archiver->stop();
+            delete archiver;
+        }
+    }
+
+    _archiverMap.clear();
+}
+
+
 
 bool
 TnmsArchiveManager::parseConfig ( const std::string & cfg, const time_t & now )
@@ -181,8 +226,8 @@ TnmsArchiveManager::parseConfig ( const std::string & cfg, const time_t & now )
     if ( _lastTouched > 0 && _lastTouched == FileUtils::LastTouched(cfg) )
         return true;
 
-    TnmsConfigHandler  cfgmgr(cfg, TNMSD_CONFIG_ROOT);
-    std::string        prefix    = TNMSD_CONFIG_ROOT;
+    ArchiverConfigHandler  cfgmgr(cfg, TNMSD_CONFIG_ROOT);
+    std::string            prefix    = TNMSD_CONFIG_ROOT;
 
     if ( ! cfgmgr.parse() ) {
         if ( LogFacility::IsOpen() ) {
@@ -194,6 +239,7 @@ TnmsArchiveManager::parseConfig ( const std::string & cfg, const time_t & now )
         }
         return false;
     }
+
     TnmsConfig & config = cfgmgr.config;
 
     if ( ! config.agent_name.empty() )
@@ -216,12 +262,40 @@ TnmsArchiveManager::parseConfig ( const std::string & cfg, const time_t & now )
     this->setDebug(config.debug);
     LogFacility::SetDebug(config.debug);
 
+    AuthDbConfig dbcfg;
+
+    dbcfg.db_host = cfgmgr.getAttribute("db_host");
+    dbcfg.db_host = cfgmgr.getAttribute("db_port");
+    dbcfg.db_host = cfgmgr.getAttribute("db_name");
+    dbcfg.db_host = cfgmgr.getAttribute("db_user");
+    dbcfg.db_host = cfgmgr.getAttribute("db_pass");
+
+    if ( dbcfg.db_host.compare(_dbCfg.db_host) != 0 ||
+         dbcfg.db_port.compare(_dbCfg.db_port) != 0 || 
+         dbcfg.db_name.compare(_dbCfg.db_name) != 0 ||
+         dbcfg.db_user.compare(_dbCfg.db_user) != 0 ||
+         dbcfg.db_pass.compare(_dbCfg.db_pass) != 0 )
+    {
+        if ( _sql )
+            delete _sql;
+
+        _sql = new SqlSession(dbcfg.db_name, dbcfg.db_host, dbcfg.db_user, dbcfg.db_pass, dbcfg.db_port);
+    }
+
     TnmsServerConfig & svrcfg  = _tconfig.serverConfig;
 
     // assign the new config
-    _tconfig = config;
+    _tconfig     = config;
+    _dbConfigMap = cfgmgr.dbConfigMap;
+    _dbCfg       = dbcfg;
 
+    // reset
     this->destroyClients();
+    this->destroyArchivers();
+
+    // init archivers
+    this->createArchivers();
+
     // init mirror connections
     if ( _tconfig.clients.size() > 0 )
         this->createClients();
@@ -309,5 +383,5 @@ TnmsArchiveManager::Version()
 
 } // namespace
 
-// _TNMSARCHIVE_TNMSARCHIVEMANAGER_CPP_
+// _TNMSDB_TNMSARCHIVEMANAGER_CPP_
 

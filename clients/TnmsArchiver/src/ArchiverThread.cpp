@@ -7,8 +7,9 @@
 namespace tnmsArchive {
 
 
-ArchiverThread::ArchiverThread()
-    : _tree(new TnmsTree()),
+ArchiverThread::ArchiverThread ( EventManager * evmgr, SqlSession * sql, SchemaConfigList & config )
+    : _evmgr(evmgr),
+      _sql(sql),
       _lock(new ThreadLock())
 {}
 
@@ -16,8 +17,12 @@ ArchiverThread::ArchiverThread()
 ArchiverThread::~ArchiverThread()
 {
     delete _lock;
-    delete _tree;
 }
+
+
+void
+ArchiverThread::init()
+{}
 
 
 void

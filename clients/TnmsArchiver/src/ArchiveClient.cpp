@@ -2,42 +2,35 @@
 
 
 #include "ArchiveClient.h"
+#include "ArchiverThread.h"
 
 
 namespace tnmsdb {
 
 
-ArchiveClient::ArchiveClient ( ArchiveDbConfig & config ) 
-    : _config(config)
+ArchiveClient::ArchiveClient ( TnmsClientConfig & config, ArchiverThread * archiver ) 
+    : _config(config),
+      _archiver(archiver)
 {
     this->init();
 }
 
 ArchiveClient::~ArchiveClient()
 {
-    ArchiveSet::iterator  aIter;
-
-    for ( aIter = _archivers.begin(); aIter != _archivers.end(); ++aIter )
-    {
-        Archiver * archiver = (Archiver*) *aIter;
-        if ( archiver )
-            delete archiver;
-    }
-    _archivers.clear();
 }
 
 
 void
 ArchiveClient::init()
 {
-    ArchiveDbConfig::iterator cIter;
+    SubsList &  subs = _config.subs;
 
-    for ( cIter = _config.begin(); cIter != _config.end(); ++cIter )
-    {
-        Archiver * writer = new Archiver(*cIter);
-        _archivers.push_back(writer);
-    }
-    this->setMessageHandler(new ArchiveMessageHandler(_archivers));
+    if ( subs.empty() )
+        return;
+
+    std::string  rname = subs.front();
+
+    this->setMessageHandler(new ArchiveMessageHandler(rname, _archiver));
 }
 
 void

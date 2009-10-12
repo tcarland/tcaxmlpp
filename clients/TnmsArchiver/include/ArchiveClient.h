@@ -8,23 +8,26 @@
 
 namespace tnmsdb {
 
+class ArchiverThread;
+
 
 class ArchiveClient : public tnmsCore::TnmsClient {
 
   public:
 
-    ArchiveClient ( const std::string & name, ArchiverSet & archivers );
+    ArchiveClient ( TnmsClientConfig & cfg, ArchiverThread * archiver );
+
     virtual ~ArchiveClient();
 
-    void     init();
 
+    void     init();
     void     setSubscribed ( bool sub );
 
-  protected:
 
-    ArchiverSet &    _archivers;
+  protected:
     
-    std::string      _name;
+    TnmsClientConfig   _cfg;
+    ArchiverThread *   _archiver;
 
 };
 

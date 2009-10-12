@@ -4,8 +4,8 @@
   *  @Author   tcarland@gmail.com
   *  @Version  1.6
  **/
-#ifndef _TCASQL_MYSQLSESSION_H_
-#define _TCASQL_MYSQLSESSION_H_
+#ifndef _TCASQLPP_MYSQLSESSION_H_
+#define _TCASQLPP_MYSQLSESSION_H_
 
 #include <time.h>
 
@@ -171,4 +171,4 @@ class MysqlSession : public SqlSessionInterface {
 }  // namespace
 
 
-#endif  //  _TCASQL_MYSQLSESSION_H_  
+#endif  //  _TCASQLPP_MYSQLSESSION_H_  

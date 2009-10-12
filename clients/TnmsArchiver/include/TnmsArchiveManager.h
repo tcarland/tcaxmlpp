@@ -1,5 +1,5 @@
-#ifndef _TNMSARCHIVE_TNMSARCHIVEMANAGER_H_
-#define _TNMSARCHIVE_TNMSARCHIVEMANAGER_H_
+#ifndef _TNMSDB_TNMSARCHIVEMANAGER_H_
+#define _TNMSDB_TNMSARCHIVEMANAGER_H_
 
 #include <map>
 #include <string>
@@ -13,8 +13,11 @@ using namespace tcanetpp;
 #include "TnmsClient.h"
 using namespace tnmsCore;
 
+#include "SqlSession.hpp"
+using namespace tcasqlpp;
 
-namespace tnmsarchive {
+
+namespace tnmsdb {
 
 
 #define LOG_CHECK_INTERVAL         3600
@@ -25,7 +28,7 @@ namespace tnmsarchive {
 
 
 class ClientIOHandler;
-
+class ArchiverThread;
 
 
 class TnmsArchiveManager : public EventTimerHandler {
@@ -60,6 +63,8 @@ class TnmsArchiveManager : public EventTimerHandler {
 
     void                createClients();
     void                destroyClients();
+    void                createArchivers();
+    void                destroyArchivers();
 
     bool                parseConfig   ( const std::string & cfg,
                                         const time_t & now );
@@ -87,18 +92,24 @@ class TnmsArchiveManager : public EventTimerHandler {
 
     typedef std::map<std::string, MirrorConnection>  ClientMap;
 
+    typedef std::set<ArchiverThread*>                ArchiverSet;
+    typedef std::map< std::string, ArchiverSet >     ArchiverMap;
+
 
   private:
 
     EventManager*               _evmgr;
-    TnmsTree*                   _tree;
+    SqlSession*                 _sql;
 
     ClientMap                   _clients;
+    ArchiverMap                 _archiverMap;
     evid_t                      _reportId, _logId;
 
     ClientIOHandler*            _clientHandler;
 
-    ArchiverConfig              _tconfig;
+    TnmsConfig                  _tconfig;
+    ArchiverDbMap               _dbConfigMap;
+    ArchiveDbConfig             _dbCfg;
 
     time_t                      _lastTouched;
     time_t                      _reportDelay;
@@ -119,5 +130,5 @@ class TnmsArchiveManager : public EventTimerHandler {
 
 }  // namespace
 
-#endif //  _TNMSARCHIVE_TNMSARCHIVEMANAGER_H_
+#endif //  _TNMSDB_TNMSARCHIVEMANAGER_H_
 

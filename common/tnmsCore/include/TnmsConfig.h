@@ -134,8 +134,8 @@ struct TnmsConfig
     {}
 };
 
-
 typedef std::map<std::string, std::string>  AttributeMap;
+
 
 
 class TnmsConfigHandler {

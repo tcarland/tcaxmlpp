@@ -18,27 +18,34 @@ namespace tnmsdb {
 
 
 class ArchiveSubscriber;
+class Archiver;
+
+typedef std:set< Archiver* > ArchiverSet;
+
 
 
 class ArchiverThread : public tcanetpp::Thread {
 
   public:
 
-    ArchiverThread ( SchemaConfig & config,  );
+    ArchiverThread ( EventManager * evmgr, SqlSession * sql, SchemaConfigList & config );
 
     virtual ~ArchiverThread();
 
-
+    
     void        run();
     void        notify();
 
+  protected:
+
+    void        init ( SqlSession * sql );
 
   private:
 
-    tnmsCore::TnmsTree*           _tree;
-
-    tcanetpp::ThreadLock*         _lock;
-    ArchiveSubscriber *           _notifier;
+    EventManager *                      _evmgr;
+    ArchiverSet                         _archivers;
+    SynchronizedQueue<TnmsMetric>       _queue;
+    ThreadLock *                        _lock;
 };
 
 
