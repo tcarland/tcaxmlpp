@@ -125,6 +125,7 @@ ArchiverThread::updateWriters ( const TnmsMetric & metric )
     }
 }
 
+
 void
 ArchiverThread::updateWriters ( const std::string & name )
 {

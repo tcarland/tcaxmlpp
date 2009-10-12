@@ -11,36 +11,38 @@
 # solo distributions.  In most cases this is not necessary, 
 # simply set TOPDIR to the relative root and compile.
 ifdef TCAMAKE_PROJECT
-    TOPDIR = ..
+    TOPDIR = ../..
 else
     TOPDIR = .
 endif
 
 # set requirements
 NEED_SOCKET = 1
-#NEED_ZLIB = 1
-#NEED_LIBXML2 = 1
+NEED_TNMSAPI = 1
+NEED_ZLIB = 1
+NEED_LIBXML2 = 1
 
 ifdef TCANMS_DEBUG
 OPT_FLAGS= 	-g
 endif
 
-# custom lib/includes
 INCLUDES=       -Iinclude
 LIBS=
 
-BIN=		mybin
-OBJS=		src/mysrc.o
+BIN=		archiver
+OBJS=		src/ArchiverConfig.o src/Archiver.o src/ArchiverThread.o \
+		src/ArchiveMessageHandler.o src/ArchiveClient.o \
+		TnmsArchiveManager.o archiver.cpp
 
 ALL_OBJS=	$(OBJS)
 ALL_BINS=	$(BIN)
 
-all: mybin
+all: archiver
 
-include $(TOPDIR)/tcamake/builddefs
+include $(TOPDIR)/tcamake/build_defs
 
 
-mybin: $(OBJS)
+archiver: $(OBJS)
 	$(make-cxxbin-rule)
 	@echo
 
@@ -58,6 +60,6 @@ distclean: clean
 	@echo
 
 install:
-ifdef PREFIX
+ifdef TCANMS_PREFIX
 	@echo
 endif

@@ -14,6 +14,10 @@
 namespace tnmsdb {
 
 
+std::string
+TnmsArchiveManager::_Version = "v0.11";
+
+
 TnmsArchiveManager::TnmsArchiveManager ( const std::string & configfile )
     : _evmgr(new tcanetpp::EventManager()),
       _tree(new TnmsTree()),
@@ -375,7 +379,7 @@ std::string
 TnmsArchiveManager::Version()
 {
     std::ostringstream  ostr;
-    ostr << "tnmsarchive Version=0.1 ; tnmsCore Version=" << TNMS_VERSION_MAJOR
+    ostr << "tnmsarchive " << _Version << "; tnmsCore Version=" << TNMS_VERSION_MAJOR
          << "." << TNMS_VERSION_MINOR;
     return ostr.str();
 }
