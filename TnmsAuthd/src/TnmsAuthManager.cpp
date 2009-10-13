@@ -23,7 +23,7 @@ using namespace tcasqlpp;
 namespace tnmsauth {
 
 
-std::string TnmsAuthManager::_Version = "v0.184";
+std::string TnmsAuthManager::_Version = "v0.185";
 
 
 TnmsAuthManager::TnmsAuthManager ( const std::string & config ) 
@@ -33,7 +33,7 @@ TnmsAuthManager::TnmsAuthManager ( const std::string & config )
       _sql(NULL),
       _svr(NULL),
       _soap(NULL),
-      _svrId(0), _soapId(0), _reportId(0), _logId(0),
+      _soapId(0), _svrId(0), _reportId(0), _logId(0),
       _soapHandler(new SoapIOHandler()),
       _authHandler(NULL),
       _lastTouched(0),

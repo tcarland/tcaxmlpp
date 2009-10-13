@@ -81,7 +81,7 @@ template<class ValueType> class SynchronizedQueue {
     int  wait()
     {
         if ( _mutex.lock() == 0 )
-            return _mutex::wait();
+            return _mutex.wait();
         return -1;
     }
 
@@ -91,7 +91,7 @@ template<class ValueType> class SynchronizedQueue {
         if ( _mutex.lock() < 0 )
             return -1;
 
-        return _mutex::waitFor(seconds);
+        return _mutex.waitFor(seconds);
     }
 
 
@@ -105,7 +105,7 @@ template<class ValueType> class SynchronizedQueue {
         sz = _queue.size();
         _mutex.unlock();
 
-	return sz;
+	    return sz;
     }
 
     bool empty() { return this->isEmpty(); }
@@ -129,8 +129,8 @@ template<class ValueType> class SynchronizedQueue {
         if ( _mutex.lock() < 0 )
             return;
 
-	while ( !_queue.empty() )
-	    _queue.pop();
+	    while ( !_queue.empty() )
+	        _queue.pop();
 
         _mutex.unlock();
     }
@@ -140,7 +140,7 @@ template<class ValueType> class SynchronizedQueue {
 
     std::queue<ValueType>    _queue;
     size_t                   _maxSize;
-    tcanetpp::ThreadLock     _mutex;
+    ThreadLock               _mutex;
 
 
 };

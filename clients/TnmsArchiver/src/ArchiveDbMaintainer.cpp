@@ -1,17 +1,59 @@
 #define _ARCHIVEMAINTAINER_CPP_
 
-#include "ArchiveMaintainer.h"
+#include "ArchiveDbMaintainer.h"
 
 namespace tnmsdb {
 
 
-ArchiveMaintainer::ArchiveMaintainer()
+ArchiveDbMaintainer::ArchiveDbMaintainer()
 {
 }
 
-ArchiveMaintainer::~ArchiveMaintainer()
+ArchiveDbMaintainer::~ArchiveDbMaintainer()
 {
 }
+
+void
+ArchiveDbMaintainer::run()
+{
+}
+
+
+std::string
+ArchiveDbMaintainer::getTargetTable ( const time_t & timestamp )
+{
+    std::string target;
+
+    return target;
+}
+
+
+DbTimePeriod 
+ArchiveDbMaintainer::getTargetTimePeriod ( const time_t & timestamp )
+{
+    TimePeriod  foo;
+
+    return foo;
+}
+
+
+void       
+ArchiveDbMaintainer::getTimePeriods ( NameList & nameList )
+{
+}
+
+
+void       
+ArchiveDbMaintainer::createTimePeriods ( IndexList & indices )
+{
+}
+
+void       
+ArchiveDbMaintainer::deleteTimePeriods ( IndexList & indices )
+{
+}
+
+
 
 } // namespace
 

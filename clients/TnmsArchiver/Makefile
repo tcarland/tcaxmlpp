@@ -18,6 +18,11 @@ NEED_SOCKET = 1
 NEED_ZLIB = 1
 NEED_LIBXML2 = 1
 NEED_TNMSAPI = 1
+NEED_TCASQLPP = 1
+
+ifdef USE_MYSQL
+NEED_MYSQL = 1
+endif
 
 ifdef TCANMS_DEBUG
 OPT_FLAGS= 	-g
@@ -29,7 +34,8 @@ LIBS=
 BIN=		archiver
 OBJS=		src/ArchiveConfig.o src/Archiver.o src/ArchiverThread.o \
 		src/ArchiveMessageHandler.o src/ArchiveClient.o \
-		TnmsArchiveManager.o archiver.cpp
+		src/ArchiveSubscriber.o src/ArchiveDbMaintainer.o \
+		src/TnmsArchiveManager.o src/archiver.o
 
 ALL_OBJS=	$(OBJS)
 ALL_BINS=	$(BIN)

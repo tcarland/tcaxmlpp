@@ -1,48 +1,34 @@
 #define _TNMSDB_ARCHIVER_CPP_
 
 #include "Archiver.h"
+
 #include "ArchiveClient.h"
+#include "ArchiveSubscriber.h"
 
 
 namespace tnmsdb {
 
 
 Archiver::Archiver ( SqlSession * session, SchemaConfig & config )
-    : ArchiverDbMaintainer(config.index_table, config.data_table, 1, config.tables_to_keep),
-      _sql(new SqlSession(*session)),
-      _tree(new TnmsTree()),
-      _flushId(0),
-      _config(config)
+    : ArchiveDbMaintainer(config.index_table, config.data_table, 1, config.tables_to_keep),
+      sql(new SqlSession(*session)),
+      tree(new TnmsTree()),
+      notifier(new ArchiveSubscriber()),
+      schema(config)
 {
-    _timerId = evmgr->addTimerEvent(&_timer, _config.commit_interval_s, 0);
-    if ( _config.flush_interval > 0 )
-        _flushId = evmgr->addTimerEvent(&_timer, (_config.commit_interval_s * _config.flush_interval), 0);
+    tree->subscribe("*", notifier);
 }
 
 
 Archiver::~Archiver()
 {
-    delete _tree;
+    delete tree;
 }
 
 
 void
-Archiver::init()
+Archiver::runUpdates ( const time_t & now, bool flush )
 {
-
-}
-
-
-void
-Archiver::update ( const TnmsMetric & metric )
-{
-    _tree->update(metric);
-}
-
-void
-Archiver::remove ( const std::string & name )
-{
-    _tree->remove(name);
 }
 
 

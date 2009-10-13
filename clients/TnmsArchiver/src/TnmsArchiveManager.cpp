@@ -1,6 +1,5 @@
 #define _TNMSDB_TNMSARCHIVEMANAGER_CPP_
 
-#include <time.h>
 
 #include "TnmsArchiveManager.h"
 #include "ClientIOHandler.h"
@@ -10,12 +9,11 @@
 #include "FileUtils.h"
 
 
-
 namespace tnmsdb {
 
 
 std::string
-TnmsArchiveManager::_Version = "v0.11";
+TnmsArchiveManager::_Version = "v0.12";
 
 
 TnmsArchiveManager::TnmsArchiveManager ( const std::string & configfile )
@@ -184,6 +182,7 @@ TnmsArchiveManager::destroyClients ()
     _clients.clear();
 }
 
+
 void
 TnmsArchiveManager::createArchivers()
 {
@@ -198,6 +197,7 @@ TnmsArchiveManager::createArchivers()
         {
             SchemaConfig & schema = *sIter;
             ArchiverThread * archiver = new ArchiverThread(_evmgr, _sql, schema);
+            archiver->start();
             archivers.insert(archiver);
         }
         _archiverMap[dIter->first]  = archivers;
@@ -205,6 +205,7 @@ TnmsArchiveManager::createArchivers()
             
     return;
 }
+
 
 void
 TnmsArchiveManager::destroyArchivers()

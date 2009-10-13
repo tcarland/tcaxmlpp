@@ -1,9 +1,10 @@
 #ifndef _TNMSDB_ARCHIVECLIENT_H_
 #define _TNMSDB_ARCHIVECLIENT_H_
 
-#include "TnmsClient.h"
-
 #include "ArchiveConfig.h"
+#include "TnmsArchiveManager.h"
+
+#include "TnmsClient.h"
 
 
 namespace tnmsdb {

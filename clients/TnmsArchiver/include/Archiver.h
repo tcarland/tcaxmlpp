@@ -3,20 +3,24 @@
 
 #include <string>
 
+#include "ArchiveDbMaintainer.h"
+#include "ArchiveConfig.h"
+
 #include "TnmsTree.h"
 #include "TnmsMetric.h"
 using namespace tnmsCore;
 
-
-#include "ArchiveConfig.h"
+#include "SqlSession.hpp"
+using namespace tcasqlpp;
 
 
 
 namespace tnmsdb {
 
+class ArchiveSubscriber;
 
 
-class Archiver {
+class Archiver : public ArchiveDbMaintainer {
 
   public:
 
@@ -24,13 +28,15 @@ class Archiver {
 
     virtual ~Archiver();
 
-
+    void  runUpdates ( const time_t & now, bool flush );
     
+
   public:
 
     SqlSession *        sql;
     TnmsTree *          tree;
-    SchemaConfig        config;
+    ArchiveSubscriber*  notifier;
+    SchemaConfig        schema;
 };
 
 

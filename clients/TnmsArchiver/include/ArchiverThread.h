@@ -3,6 +3,8 @@
 
 #include <set>
 
+#include "ArchiveConfig.h"
+
 #include "TnmsTree.h"
 #include "TnmsMetric.h"
 using namespace tnmsCore;
@@ -13,17 +15,14 @@ using namespace tnmsCore;
 #include "ThreadLock.h"
 using namespace tcanetpp;
 
-
-#define ARCHIVE_QUEUESIZE  (65535 * 16)
+#include "SqlSession.hpp"
+using namespace tcasqlpp;
 
 
 namespace tnmsdb {
 
 
-class ArchiveSubscriber;
 class Archiver;
-
-typedef std:set< Archiver* > ArchiverSet;
 
 
 
@@ -31,21 +30,21 @@ class ArchiverThread : public tcanetpp::Thread {
 
   public:
 
-    ArchiverThread ( EventManager     * evmgr,
-                     SqlSession       * sql, 
-                     SchemaConfigList & configlist );
+    ArchiverThread ( EventManager   * evmgr,
+                     SqlSession     * sql, 
+                     SchemaConfig   & configlist );
 
     virtual ~ArchiverThread();
 
-    bool        queueUpdate ( const TnmsMetric  & metric );
-    bool        queueRemove ( const std::string & name );
 
     void        run();
+
     void        notify();
+
 
   protected:
 
-    void        runUpdates ( bool flush = false );
+    void        runUpdates ( const time_t & now, bool flush = false );
 
    
   public:
@@ -65,15 +64,13 @@ class ArchiverThread : public tcanetpp::Thread {
         evid_t          id;
     };
         
-  public:
-    
     TnmsTree *          tree;
 
   private:
 
-    SqlSession *        _sql;
     Archiver *          _archiver;
     ArchiveTimer        _timer;
+
 
     evid_t              _tid, _fid;
 

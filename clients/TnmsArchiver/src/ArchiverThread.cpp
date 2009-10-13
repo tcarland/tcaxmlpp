@@ -1,6 +1,7 @@
 #define _TNMSDB_ARCHIVERTHREAD_CPP_
 
 #include "ArchiverThread.h"
+#include "Archiver.h"
 
 #include "LogFacility.h"
 using namespace tcanetpp;
@@ -26,11 +27,10 @@ ArchiverThread::ArchiveTimer::timeout ( const EventTimer * timer )
     mutex->notify();
 }
 
+// -------------------------------------------------------------------
 
-ArchiverThread::ArchiverThread ( EventManager * evmgr, SqlSession * sql, SchemaConfigList & config )
-    : tree(new TnmsTree()),
-      _sql(sql),
-      _archiver(new Archiver(sql, config)),
+ArchiverThread::ArchiverThread ( EventManager * evmgr, SqlSession * sql, SchemaConfig & config )
+    : _archiver(new Archiver(sql, config)),
       _tid(0),
       _fid(0)
 {
@@ -38,12 +38,13 @@ ArchiverThread::ArchiverThread ( EventManager * evmgr, SqlSession * sql, SchemaC
     // if ( _tid == 0 ) throw Exception("Failed to add timer event to EventManager");
     if ( config.flush_interval > 0 )
         _fid = evmgr->addTimerEvent(&_timer, (config.commit_interval_s * config.flush_interval), 0);
+    this->tree = _archiver->tree;
 }
 
 
 ArchiverThread::~ArchiverThread()
 {
-    delete tree;
+    delete _archiver;
 }
 
 
@@ -54,16 +55,18 @@ ArchiverThread::run()
 
     while ( ! this->_Alarm )
     {
-        this->timer->mutex->lock();
-        this->timer->mutex->wait();
+        this->_timer.mutex->lock();
+        this->_timer.mutex->wait();
 
         time_t  now = LogFacility::GetLogTime();
 
         // run updates
-        if ( timer.id == _tid )
-            this->runUpdates();
-        else if ( timer.id == _fid )
-            this->runUpdates(true);
+        if ( _timer.id == _tid )
+            this->runUpdates(now);
+        else if ( _timer.id == _fid )
+            this->runUpdates(now, true);
+
+        this->_timer.mutex->unlock();
     }
 
     LogFacility::LogMessage("ArchiverThread finished.");
@@ -74,15 +77,16 @@ ArchiverThread::run()
 void
 ArchiverThread::notify()
 {
-    this->timer.mutex->notify();
+    this->_timer.mutex->notify();
 }
 
 
 void
-ArchiverThread::runUpdates ( bool flush )
+ArchiverThread::runUpdates ( const time_t & now, bool flush )
 {
+    _timer.id = 0;
     tree->updateSubscribers();
-    _archive->runUpdates(flush)
+    _archiver->runUpdates(now, flush);
 }
 
 

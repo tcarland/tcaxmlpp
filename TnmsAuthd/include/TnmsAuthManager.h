@@ -83,7 +83,7 @@ class TnmsAuthManager : public EventTimerHandler {
     Socket*                             _svr;
     SoapClient*                         _soap;
 
-    evid_t                              _svrId, _soapId;
+    evid_t                              _soapId,   _svrId;
     evid_t                              _reportId, _logId;
 
 

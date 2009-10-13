@@ -31,6 +31,10 @@ class ClientIOHandler;
 class ArchiverThread;
 
 
+typedef std::set<ArchiverThread*>                ArchiverSet;
+typedef std::map< std::string, ArchiverSet >     ArchiverMap;
+
+
 class TnmsArchiveManager : public EventTimerHandler {
 
   public:
@@ -69,33 +73,31 @@ class TnmsArchiveManager : public EventTimerHandler {
     void                destroyArchivers();
 
     bool                parseConfig   ( const std::string & cfg,
-                                        const time_t & now );
-    void                logRotate     ( std::string    logfile,
-                                        const time_t & now );
+                                        const time_t      & now );
+    void                logRotate     ( std::string         logfile,
+                                        const time_t      & now );
 
 
-  protected:
+  public:
 
-    struct MirrorConnection {
+    struct MirrorConnection 
+    {
         evid_t              id;
         TnmsClientConfig    config;
         TnmsClient *        client;
 
         MirrorConnection() : id(0), client(NULL) {}
 
-        MirrorConnection ( evid_t & id_, 
+        MirrorConnection ( evid_t           & id_, 
                            TnmsClientConfig & config_,
-                           TnmsClient * client )
+                           TnmsClient       * client_ )
             : id(id_),
               config(config_),
-              client(client)
+              client(client_)
         {}
     };
 
     typedef std::map<std::string, MirrorConnection>  ClientMap;
-
-    typedef std::set<ArchiverThread*>                ArchiverSet;
-    typedef std::map< std::string, ArchiverSet >     ArchiverMap;
 
 
   private:

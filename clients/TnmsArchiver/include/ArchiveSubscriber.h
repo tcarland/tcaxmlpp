@@ -1,22 +1,28 @@
 #ifndef _TNMSDB_ARCHIVESUBSCRIBER_H_
 #define _TNMSDB_ARCHIVESUBSCRIBER_H_
 
-#include "TnmsSubscriber.h"
+#include <string>
+
+#include "TreeSubscriber.hpp"
 #include "TnmsTree.h"
+#include "TnmsMetric.h"
 using namespace tnmsCore;
 
-#include "ThreadLock.h"
+#include "SynchronizedQueue.hpp"
 using namespace tcanetpp;
 
 
 namespace tnmsdb {
 
 
-class ArchiveSubscriber : public TnmsSubscriber {
+#define ARCHIVE_QUEUESIZE  (65535 * 16)
+
+
+class ArchiveSubscriber : public TreeSubscriber {
 
   public:
 
-    ArchiveSubscriber();
+    ArchiveSubscriber ( int queuesz = ARCHIVE_QUEUESIZE );
 
     virtual ~ArchiveSubscriber();
 
@@ -31,7 +37,8 @@ class ArchiveSubscriber : public TnmsSubscriber {
 
   protected:
 
-    ThreadLock    _mutex;
+    SynchronizedQueue<TnmsMetric>       _metricq;
+    SynchronizedQueue<std::string>      _removeq;
 
 };
 

@@ -7,16 +7,16 @@
 namespace tnmsdb {
 
 
-class ArchiveMaintainer : public ArchiveDbInterface {
+class ArchiveDbMaintainer : public DbMaintainerInterface {
 
   public:
 
-    ArchiveMaintainer ( const std::string & index_table,
-                        const std::string & data_table,
-                        int   days_per_interval = 1,
-                        int   table_count       = 30 );
+    ArchiveDbMaintainer ( const std::string & index_table,
+                          const std::string & data_table,
+                          int   days_per_interval = 1,
+                          int   table_count       = 30 );
 
-    virtual ~ArchiveMaintainer();
+    virtual ~ArchiveDbMaintainer();
 
 
     void     run();
@@ -25,7 +25,7 @@ class ArchiveMaintainer : public ArchiveDbInterface {
     /*  ArchiverDbInterface */
 
     virtual std::string  getTargetTable       ( const time_t & timestamp );
-    virtual TimePeriod   getTargetTimePeriod  ( const time_t & timestamp );
+    virtual DbTimePeriod getTargetTimePeriod  ( const time_t & timestamp );
 
     virtual void         getTimePeriods       ( NameList     & nameList );
 
