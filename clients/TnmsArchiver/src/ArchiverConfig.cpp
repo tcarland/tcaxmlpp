@@ -1,26 +1,26 @@
-#define _TNMSARCHIVE_ARCHIVERCONFIG_CPP_
+#define _TNMSARCHIVE_ARCHIVECONFIG_CPP_
 
-
-#include "ArchiverConfig.h"
+#include "ArchiveConfig.h"
 
 
 namespace tnmsdb {
 
 
 
-ArchiverConfig::ArchiverConfig ( const std::string & xmlfilename,
+ArchiveConfigHandler::ArchiveConfigHandler ( const std::string & xmlfilename,
                                  const std::string & rootname )
   : TnmsConfigHandler(xmlfilename, rootname)
 {}
 
-ArchiverConfig::ArchiverConfig ( const char * xmlblob, size_t len,
+
+ArchiveConfigHandler::ArchiveConfigHandler ( const char * xmlblob, size_t len,
                                  const std::string & rootname )
     : TnmsConfigHandler(xmlblob, len, rootname)
 {}
 
 
 bool
-ArchiverConfig::parseClient  ( XmlNode * node )
+ArchiveConfigHandler::parseClient  ( XmlNode * node )
 {
     bool result = false;
 
@@ -64,7 +64,7 @@ ArchiverConfig::parseClient  ( XmlNode * node )
 
 
 bool
-ArchiverConfig::getDbConfig ( const std::string & name, SchemaConfigList & dbConfig )
+ArchiveConfigHandler::getDbConfig ( const std::string & name, SchemaConfigList & dbConfig )
 {
     ArchiverDbMap::iterator  dIter;
 

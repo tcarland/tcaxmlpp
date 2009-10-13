@@ -8,9 +8,9 @@
 namespace tnmsdb {
 
 
-ArchiveClient::ArchiveClient ( TnmsClientConfig & config, ArchiverThread * archiver ) 
-    : _config(config),
-      _archiver(archiver)
+ArchiveClient::ArchiveClient ( ArchiverThread * archiver, TnmsClientConfig & config ) 
+    : _archiver(archiver),
+      _config(config)
 {
     this->init();
 }

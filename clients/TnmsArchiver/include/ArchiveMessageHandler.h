@@ -18,7 +18,7 @@ class ArchiveMessageHandler : public MessageHandler {
   public:
 
     ArchiveMessageHandler ( const std::string & root_name, ArchiveClient * client,
-                            ArchiverSet       & archivers );
+                            ArchiverThread    * archiver );
 
     virtual ~ArchiveMessageHandler();
 
@@ -43,10 +43,10 @@ class ArchiveMessageHandler : public MessageHandler {
 
   protected:
 
-    ArchiveClient * _client;
-    ArchiverSet &   _writers;
+    ArchiveClient  * _client;
+    ArchiverThread * _archiver;
 
-    std::string     _rootname;
+    std::string      _rootname;
 };
 
 

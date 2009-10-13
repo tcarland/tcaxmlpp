@@ -63,6 +63,7 @@ class TnmsArchiveManager : public EventTimerHandler {
 
     void                createClients();
     void                destroyClients();
+
     void                createArchivers();
     void                destroyArchivers();
 

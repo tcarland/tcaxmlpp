@@ -1,12 +1,14 @@
-#ifndef _TNMSARCHIVE_ARCHIVERCONFIG_H_
-#define _TNMSARCHIVE_ARCHIVERCONFIG_H_
+#ifndef _TNMSARCHIVE_ARCHIVECONFIG_H_
+#define _TNMSARCHIVE_ARCHIVECONFIG_H_
 
 #include <map>
 
-
 #include "TnmsConfig.h"
+using namespace tnmsCore;
 
-using namespace tnmsdb {
+
+
+namespace tnmsdb {
 
 
 #define  DEFAULT_COMMIT_INTERVAL 300
@@ -15,6 +17,7 @@ using namespace tnmsdb {
 #define  DEFAULT_FLUSH_INTERVAL  12
 
 
+/** Database Settings */
 struct  ArchiveDbConfig
 {
     std::string  db_host;
@@ -24,7 +27,7 @@ struct  ArchiveDbConfig
     std::string  db_pass;
 };
 
-
+/** Schema specific configuration. */
 struct  SchemaConfig
 {
     std::string    index_table;
@@ -49,18 +52,18 @@ typedef std::map< std::string, SchemaConfigList > ArchiverDbMap;
 
 
 
-class ArchiverConfigHandler : public TnmsConfigHandler {
+class ArchiveConfigHandler : public TnmsConfigHandler {
 
   public:
 
-    ArchiverConfigHandler ( const std::string & xmlfilename,
+    ArchiveConfigHandler ( const std::string & xmlfilename,
                             const std::string & rootname );
 
-    ArchiverConfigHandler ( const char * xmlblob, size_t len,
+    ArchiveConfigHandler ( const char * xmlblob, size_t len,
                             const std::string & rootname );
 
 
-    virtual ~ArchiverConfigHandler();
+    virtual ~ArchiveConfigHandler();
 
 
     virtual bool        parseServer  ( XmlNode * node );
@@ -81,5 +84,5 @@ class ArchiverConfigHandler : public TnmsConfigHandler {
 }  // namespace
 
 
-#endif  //  _TNMSARCHIVE_ARCHIVERCONFIG_H_
+#endif  //  _TNMSARCHIVE_ARCHIVECONFIG_H_
 

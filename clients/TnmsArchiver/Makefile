@@ -1,8 +1,5 @@
 # Makefile
 #
-#   Template Makefile for projects
-#
-
 # TOPDIR is the relative path to our workspace root
 # where /tcamake should exist.
 #
@@ -18,9 +15,9 @@ endif
 
 # set requirements
 NEED_SOCKET = 1
-NEED_TNMSAPI = 1
 NEED_ZLIB = 1
 NEED_LIBXML2 = 1
+NEED_TNMSAPI = 1
 
 ifdef TCANMS_DEBUG
 OPT_FLAGS= 	-g
@@ -30,7 +27,7 @@ INCLUDES=       -Iinclude
 LIBS=
 
 BIN=		archiver
-OBJS=		src/ArchiverConfig.o src/Archiver.o src/ArchiverThread.o \
+OBJS=		src/ArchiveConfig.o src/Archiver.o src/ArchiverThread.o \
 		src/ArchiveMessageHandler.o src/ArchiveClient.o \
 		TnmsArchiveManager.o archiver.cpp
 
@@ -39,7 +36,7 @@ ALL_BINS=	$(BIN)
 
 all: archiver
 
-include $(TOPDIR)/tcamake/build_defs
+include $(TOPDIR)/tcamake/project_defs
 
 
 archiver: $(OBJS)

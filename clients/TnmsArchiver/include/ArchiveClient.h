@@ -15,7 +15,7 @@ class ArchiveClient : public tnmsCore::TnmsClient {
 
   public:
 
-    ArchiveClient ( TnmsClientConfig & cfg, ArchiverThread * archiver );
+    ArchiveClient ( ArchiverThread * archiver, TnmsClientConfig & cfg );
 
     virtual ~ArchiveClient();
 
@@ -26,8 +26,9 @@ class ArchiveClient : public tnmsCore::TnmsClient {
 
   protected:
     
-    TnmsClientConfig   _cfg;
     ArchiverThread *   _archiver;
+    
+    TnmsClientConfig   _cfg;
 
 };
 

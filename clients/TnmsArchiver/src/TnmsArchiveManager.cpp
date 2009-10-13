@@ -142,9 +142,12 @@ TnmsArchiveManager::createClients()
             LogFacility::LogMessage("Error: Archiver not found for " + name);
             continue;
         }
-        Archiver * archiver = aIter->second;
 
-        client = new ArchiveClient(cfg, archiver);
+        ArchiverThread * archiver = aIter->second;
+        if ( ! archiver->isRunning() )
+            archiver->start();
+
+        client = new ArchiveClient(archiver, cfg);
 
         // set client attributes
         client->setCompression(_tconfig.compression);

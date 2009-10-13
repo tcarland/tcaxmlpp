@@ -37,7 +37,7 @@ ALL_BINS=	$(BIN)
 
 all: mybin
 
-include $(TOPDIR)/tcamake/build_defs
+include $(TOPDIR)/tcamake/project_defs
 
 
 mybin: $(OBJS)

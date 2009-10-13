@@ -11,9 +11,9 @@ namespace tnmsarchive {
 
 
 ArchiveMessageHandler::ArchiveMessageHandler ( const std::string & root_name, ArchiveClient * client, 
-                                               ArchiverSet &  archivers )
+                                               ArchiverThread * archiver )
     : _client(client),
-      _writers(archivers),
+      _archiver(archiver),
       _rootname(root_name)
 {}
 
@@ -31,11 +31,8 @@ ArchiveMessageHandler::AddHandler ( const TnmsAdd & add )
     else
         _client->subscribe(add.getElementName());
 
-    for ( aIter = _writers.begin(); aIter != _writers.end(); ++aIter )
-    {
-        Archiver * writer = (Archiver*) *aIter;
-        writer->tree->add(add.getElementName());
-    }
+    TnmsMetric  metric(add.getElementName());
+    _archiver->queueUpdate(metric);
 
     return;
 }
@@ -49,11 +46,7 @@ ArchiveMessageHandler::RemoveHandler ( const TnmsRemove  & remove )
     if ( _rootname.compare(remove.getElementName()) == 0 )
         client->setSubscribed(false);
         
-    for ( aIter = _writers.begin(); aIter != _writers.end(); ++aIter )
-    {
-        Archiver * writer = (Archiver*) *aIter;
-        writer->tree->remove(remove.getElementName());
-    }
+    _archiver->queueRemove(remove.getElementName());
 
     return;
 }
@@ -67,11 +60,7 @@ ArchiveMessageHandler::MetricHandler ( const TnmsMetric  & metric )
     if ( ! StringUtils::startsWith(metric.getElementName(), _rootname) )
         return;
 
-    for ( aIter = _writers.begin(); aIter != _writers.end(); ++aIter )
-    {
-        Archiver * writer = (Archiver*) *aIter;
-        writer->tree->update(metric);
-    }
+    _archiver->queueUpdate(metric);
 
     return;
 }
@@ -97,11 +86,14 @@ ArchiveMessageHandler::StructureHandler ( bool  subscribe )
 
 void
 ArchiveMessageHandler::AuthReplyHandler ( const TnmsAuthReply   & reply )
-{}
+{
+    _client->AuthReplyHandler(reply);    
+}
 
 void
 ArchiveMessageHandler::LastMessageHandler ( int   record_type )
 {}
+
 void
 ArchiveMessageHandler::PingHandler()
 {}
