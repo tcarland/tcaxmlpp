@@ -65,7 +65,7 @@ class ArchiveConfigHandler : public TnmsConfigHandler {
 
     virtual ~ArchiveConfigHandler();
 
-
+    virtual bool        parse();
     virtual bool        parseServer  ( XmlNode * node );
     virtual bool        parseClient  ( XmlNode * node );
 

@@ -20,6 +20,13 @@ ArchiveConfigHandler::ArchiveConfigHandler ( const char * xmlblob, size_t len,
 
 
 bool
+ArchiveConfigHandler::parse()
+{
+    return(TnmsConfigHandler::parse());
+}
+
+
+bool
 ArchiveConfigHandler::parseClient  ( XmlNode * node )
 {
     bool result = false;
@@ -49,7 +56,7 @@ ArchiveConfigHandler::parseClient  ( XmlNode * node )
             if ( anode->haveAttribute("holddown") )
                 scfg.commit_interval_s = StringUtils::fromString<int>(anode->getAttribute("holddown"));
             if ( anode->haveAttribute("table_count") )
-                scfg.table_count = StringUtils::fromString<int>(anode->getAttribute("table_count"));
+                scfg.tables_to_keep = StringUtils::fromString<int>(anode->getAttribute("table_count"));
             if ( anode->haveAttribute("flush_interval") )
                 scfg.flush_interval = StringUtils::fromString<int>(anode->getAttribute("flush_interval"));
 

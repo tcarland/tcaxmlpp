@@ -65,13 +65,16 @@ ArchiveMessageHandler::MetricHandler ( const TnmsMetric  & metric )
     return;
 }
 
+
 void
 ArchiveMessageHandler::RequestHandler ( const TnmsRequest & request )
 {}
 
+
 void
 ArchiveMessageHandler::SubscribeHandler ( const std::string & name )
 {}
+
 
 void
 ArchiveMessageHandler::UnsubscribeHandler ( const std::string & name )
@@ -80,9 +83,11 @@ ArchiveMessageHandler::UnsubscribeHandler ( const std::string & name )
         _client->setSubscribed(false);
 }
 
+
 void
 ArchiveMessageHandler::StructureHandler ( bool  subscribe )
 {}
+
 
 void
 ArchiveMessageHandler::AuthReplyHandler ( const TnmsAuthReply   & reply )
@@ -90,17 +95,19 @@ ArchiveMessageHandler::AuthReplyHandler ( const TnmsAuthReply   & reply )
     _client->AuthReplyHandler(reply);    
 }
 
+
 void
 ArchiveMessageHandler::LastMessageHandler ( int   record_type )
 {}
+
 
 void
 ArchiveMessageHandler::PingHandler()
 {}
 
 
-
 }  // namespace 
 
 
 // _TNMSARCHIVE_ARCHIVEMESSAGEHANDLER_CPP_
+

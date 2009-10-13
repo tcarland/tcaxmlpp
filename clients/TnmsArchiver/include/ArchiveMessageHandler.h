@@ -11,7 +11,6 @@ namespace tnmsdb {
 class Archiver;
 
 
-typedef std::set<Archiver*>  ArchiverSet;
 
 class ArchiveMessageHandler : public MessageHandler {
 
