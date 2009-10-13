@@ -54,6 +54,7 @@ class TnmsArchiveManager : public EventTimerHandler {
 
     void                setDebug  ( bool d = true );
     bool                getDebug() const;
+
     const std::string&  getErrorStr() const;
 
     static std::string  Version();

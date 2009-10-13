@@ -143,11 +143,7 @@ TnmsArchiveManager::createClients()
             continue;
         }
 
-        ArchiverThread * archiver = aIter->second;
-        if ( ! archiver->isRunning() )
-            archiver->start();
-
-        client = new ArchiveClient(archiver, cfg);
+        client = new ArchiveClient(aIter->second, cfg);
 
         // set client attributes
         client->setCompression(_tconfig.compression);
@@ -192,13 +188,19 @@ void
 TnmsArchiveManager::createArchivers()
 {
     ArchiverDbMap::iterator   dIter;
-    ArchiverConfig::iterator  cIter;
+    SchemaConfigList::iterator sIter;
 
     for ( dIter = _dbCfgMap.begin(); dIter != _dbCfgMap.end(); ++dIter )
     {
-        SchemaConfigList & dbConfig = dIter->second;
-        ArchiverThread   * archiver = new ArchiverThread(this, _sql, dbConfig);
-        _archiverMap[dIter->first]  = archiver;
+        SchemaConfigList & dblist = dIter->second;
+        ArchiverSet  archivers;
+        for ( sIter = dblist.begin(); sIter != dblist.end(); ++sIter )
+        {
+            SchemaConfig & schema = *sIter;
+            ArchiverThread * archiver = new ArchiverThread(_evmgr, _sql, schema);
+            archivers.insert(archiver);
+        }
+        _archiverMap[dIter->first]  = archivers;
     }
             
     return;
@@ -207,18 +209,22 @@ TnmsArchiveManager::createArchivers()
 void
 TnmsArchiveManager::destroyArchivers()
 {
-    ArchiveMap::iterator  aIter;
+    ArchiverMap::iterator  aIter;
+    ArchiverSet::iterator  sIter;
 
     for ( aIter = _archiverMap.begin(); aIter != _archiverMap.end(); ++aIter )
     {
-        ArchiverThread * archiver = aIter->second;
-
-        if ( archiver && archiver->isRunning() )
+        for ( sIter = aIter->second.begin(); sIter != aIter->second.end(); ++sIter )
         {
-            archiver->setAlarm();
-            archiver->notify();
-            archiver->stop();
-            delete archiver;
+            ArchiverThread * archiver = (ArchiverThread*) *sIter;
+
+            if ( archiver && archiver->isRunning() )
+            {
+                archiver->setAlarm();
+                archiver->notify();
+                archiver->stop();
+                delete archiver;
+            }
         }
     }
 

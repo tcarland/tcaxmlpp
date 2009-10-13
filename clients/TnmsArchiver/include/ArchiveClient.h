@@ -3,7 +3,7 @@
 
 #include "TnmsClient.h"
 
-#include "ArchiverConfig.h"
+#include "ArchiveConfig.h"
 
 
 namespace tnmsdb {
@@ -15,7 +15,7 @@ class ArchiveClient : public tnmsCore::TnmsClient {
 
   public:
 
-    ArchiveClient ( ArchiverThread * archiver, TnmsClientConfig & cfg );
+    ArchiveClient ( ArchiverSet & archivers, TnmsClientConfig & cfg );
 
     virtual ~ArchiveClient();
 
@@ -26,7 +26,7 @@ class ArchiveClient : public tnmsCore::TnmsClient {
 
   protected:
     
-    ArchiverThread *   _archiver;
+    ArchiverSet *      _archivers;
     
     TnmsClientConfig   _cfg;
 

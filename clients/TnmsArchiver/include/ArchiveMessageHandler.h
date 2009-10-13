@@ -1,13 +1,14 @@
 #ifndef _TNMSDB_ARCHIVEMESSAGEHANDLER_H_
 #define _TNMSDB_ARCHIVEMESSAGEHANDLER_H_
 
-#include "TnmsMessageHandler.h"
+#include "MessageHandler.hpp"
 using namespace tnmsCore;
 
 
 namespace tnmsdb {
 
 
+class ArchiveClient;
 class Archiver;
 
 
@@ -17,7 +18,7 @@ class ArchiveMessageHandler : public MessageHandler {
   public:
 
     ArchiveMessageHandler ( const std::string & root_name, ArchiveClient * client,
-                            ArchiverThread    * archiver );
+                            ArchiverSet & archivers );
 
     virtual ~ArchiveMessageHandler();
 
@@ -43,8 +44,7 @@ class ArchiveMessageHandler : public MessageHandler {
   protected:
 
     ArchiveClient  * _client;
-    ArchiverThread * _archiver;
-
+    ArchiverSet      _archivers;
     std::string      _rootname;
 };
 

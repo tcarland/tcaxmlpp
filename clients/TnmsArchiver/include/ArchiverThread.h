@@ -7,10 +7,10 @@
 #include "TnmsMetric.h"
 using namespace tnmsCore;
 
-
+#include "EventManager.h"
+#include "EventHandlers.hpp"
 #include "Thread.h"
 #include "ThreadLock.h"
-#include "SynchronizedQueue.hpp"
 using namespace tcanetpp;
 
 
@@ -31,7 +31,8 @@ class ArchiverThread : public tcanetpp::Thread {
 
   public:
 
-    ArchiverThread ( SqlSession       * sql, 
+    ArchiverThread ( EventManager     * evmgr,
+                     SqlSession       * sql, 
                      SchemaConfigList & configlist );
 
     virtual ~ArchiverThread();
@@ -44,21 +45,38 @@ class ArchiverThread : public tcanetpp::Thread {
 
   protected:
 
-    void        init ( SqlSession * sql, SchemaConfigList & configlist );
+    void        runUpdates ( bool flush = false );
 
-    void        updateWriters ( const TnmsMetric  & metric );
-    void        updateWriters ( const std::string & name );
+   
+  public:
 
+    class ArchiveTimer : public EventTimerHandler {
+
+      public:
+        ArchiveTimer();
+        virtual ~ArchiveTimer();
+
+        virtual void timeout  ( const EventTimer * timer );
+        virtual void finished ( const EventTimer * timer ) {}
+
+      public:
+
+        ThreadLock *    mutex;
+        evid_t          id;
+    };
+        
+  public:
+    
+    TnmsTree *          tree;
 
   private:
 
-    SqlSession *                        _sql;
-    ArchiverSet                         _archivers;
+    SqlSession *        _sql;
+    Archiver *          _archiver;
+    ArchiveTimer        _timer;
 
-    SynchronizedQueue<TnmsMetric>       _upqueue;
-    SynchronizedQueue<std::string>      _remqueue;
+    evid_t              _tid, _fid;
 
-    ThreadLock *                        _lock;
 };
 
 

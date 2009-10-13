@@ -57,10 +57,10 @@ class ArchiveConfigHandler : public TnmsConfigHandler {
   public:
 
     ArchiveConfigHandler ( const std::string & xmlfilename,
-                            const std::string & rootname );
+                           const std::string & rootname );
 
     ArchiveConfigHandler ( const char * xmlblob, size_t len,
-                            const std::string & rootname );
+                           const std::string & rootname );
 
 
     virtual ~ArchiveConfigHandler();

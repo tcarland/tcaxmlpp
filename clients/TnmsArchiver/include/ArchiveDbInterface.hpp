@@ -13,7 +13,7 @@ class DbMaintainerInterface {
 
   public:
 
-    virtual DbMaintainerInterface() {}
+    virtual ~DbMaintainerInterface() {}
 
 
     virtual std::string  getTargetTable       ( const time_t & timestamp ) = 0;

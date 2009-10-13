@@ -3,17 +3,19 @@
 
 #include "ArchiveMessageHandler.h"
 
-#include "ArchiverThread.h"
+#include "Archiver.h"
+#include "ArchiveClient.h"
 
 
 
-namespace tnmsarchive {
+namespace tnmsdb {
 
 
-ArchiveMessageHandler::ArchiveMessageHandler ( const std::string & root_name, ArchiveClient * client, 
-                                               ArchiverThread * archiver )
+ArchiveMessageHandler::ArchiveMessageHandler ( const std::string & root_name, 
+                                               ArchiveClient     * client, 
+                                               ArchiverSet       & archivers )
     : _client(client),
-      _archiver(archiver),
+      _archivers(archivers),
       _rootname(root_name)
 {}
 
@@ -25,14 +27,15 @@ void
 ArchiveMessageHandler::AddHandler ( const TnmsAdd & add )
 {
     ArchiverSet::iterator  aIter;
+    const std::string    & name = add.getElementName();
      
-    if ( ! StringUtils::startswith(add.getElementName(), _rootname) )
+    if ( ! StringUtils::startswith(name, _rootname) )
         return;
     else
-        _client->subscribe(add.getElementName());
+        _client->subscribe(name);
 
-    TnmsMetric  metric(add.getElementName());
-    _archiver->queueUpdate(metric);
+    for ( aIter = _archivers.begin(); aIter != _archivers.end(); ++aIter )
+        (*aIter)->tree->add(name);
 
     return;
 }
@@ -42,11 +45,13 @@ void
 ArchiveMessageHandler::RemoveHandler ( const TnmsRemove  & remove )
 {
     ArchiverSet::iterator  aIter;
+    const std::string    & name = remove.getElementName();
 
-    if ( _rootname.compare(remove.getElementName()) == 0 )
+    if ( _rootname.compare(name) == 0 )
         client->setSubscribed(false);
         
-    _archiver->queueRemove(remove.getElementName());
+    for ( aIter = _archivers.begin(); aIter != _archivers.end(); ++aIter )
+        (*aIter)->tree->remove(name);
 
     return;
 }
@@ -60,7 +65,8 @@ ArchiveMessageHandler::MetricHandler ( const TnmsMetric  & metric )
     if ( ! StringUtils::startsWith(metric.getElementName(), _rootname) )
         return;
 
-    _archiver->queueUpdate(metric);
+    for ( aIter = _archivers.begin(); aIter != _archivers.end(); ++aIter )
+        (*aIter)->tree->update(metric);
 
     return;
 }

@@ -8,18 +8,15 @@
 using namespace tnmsCore;
 
 
-#include "ArchiveDbMaintainer.h"
-#include "ArchiverConfig.h"
+#include "ArchiveConfig.h"
 
 
 
 namespace tnmsdb {
 
 
-class ArchiveClient;
 
-
-class Archiver : public ArchiveDbMaintainer {
+class Archiver {
 
   public:
 
@@ -28,15 +25,12 @@ class Archiver : public ArchiveDbMaintainer {
     virtual ~Archiver();
 
 
-    void     update  ( const TnmsMetric  & metric );
-    void     remove  ( const std::string & name );
-
     
   public:
 
-    SqlSession *        _sql;
-    TnmsTree *          _tree;
-    SchemaConfig        _config;
+    SqlSession *        sql;
+    TnmsTree *          tree;
+    SchemaConfig        config;
 };
 
 

@@ -42,7 +42,8 @@ class TnmsAuthManager : public EventTimerHandler {
 
 
     // EventTimerHandler
-    virtual void timeout ( const EventTimer * timer );
+    virtual void timeout  ( const EventTimer * timer );
+    virtual void finished ( const EventTimer * timer ) {}
 
 
     void         run();
@@ -77,7 +78,7 @@ class TnmsAuthManager : public EventTimerHandler {
     EventManager*                       _evmgr;
     TnmsTree*                           _tree;
     AuthDbThread*                       _authDb;
-    SqlSessionInterface*                 _sql;
+    SqlSessionInterface*                _sql;
 
     Socket*                             _svr;
     SoapClient*                         _soap;

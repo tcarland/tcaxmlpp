@@ -8,8 +8,8 @@
 namespace tnmsdb {
 
 
-ArchiveClient::ArchiveClient ( ArchiverThread * archiver, TnmsClientConfig & config ) 
-    : _archiver(archiver),
+ArchiveClient::ArchiveClient ( ArchiverSet & archivers, TnmsClientConfig & config ) 
+    : _archivers(archivers),
       _config(config)
 {
     this->init();
@@ -30,7 +30,7 @@ ArchiveClient::init()
 
     std::string  rname = subs.front();
 
-    this->setMessageHandler(new ArchiveMessageHandler(rname, _archiver));
+    this->setMessageHandler(new ArchiveMessageHandler(rname, _archivers));
 }
 
 void
