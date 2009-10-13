@@ -1,11 +1,13 @@
 #define _TNMSARCHIVE_ARCHIVEMESSAGEHANDLER_CPP_
 
-
 #include "ArchiveMessageHandler.h"
 
 #include "Archiver.h"
+#include "ArchiverThread.h"
 #include "ArchiveClient.h"
 
+#include "LogFacility.h"
+using namespace tcanetpp;
 
 
 namespace tnmsdb {
@@ -29,10 +31,13 @@ ArchiveMessageHandler::AddHandler ( const TnmsAdd & add )
     ArchiverSet::iterator  aIter;
     const std::string    & name = add.getElementName();
      
-    if ( ! StringUtils::startswith(name, _rootname) )
+    if ( ! StringUtils::startsWith(name, _rootname) )
         return;
     else
         _client->subscribe(name);
+
+    if ( LogFacility::GetDebug() )
+        LogFacility::LogMessage("ArchiveMessageHandler::AddHandler() " + name);
 
     for ( aIter = _archivers.begin(); aIter != _archivers.end(); ++aIter )
         (*aIter)->tree->add(name);
@@ -48,7 +53,7 @@ ArchiveMessageHandler::RemoveHandler ( const TnmsRemove  & remove )
     const std::string    & name = remove.getElementName();
 
     if ( _rootname.compare(name) == 0 )
-        client->setSubscribed(false);
+        _client->setSubscribed(false);
         
     for ( aIter = _archivers.begin(); aIter != _archivers.end(); ++aIter )
         (*aIter)->tree->remove(name);

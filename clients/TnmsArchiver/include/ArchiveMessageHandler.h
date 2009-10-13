@@ -4,13 +4,15 @@
 #include "MessageHandler.hpp"
 using namespace tnmsCore;
 
+#include "TnmsArchiveManager.h"
+
 
 namespace tnmsdb {
 
 
 class ArchiveClient;
+class ArchiveThread;
 class Archiver;
-
 
 
 class ArchiveMessageHandler : public MessageHandler {
@@ -43,9 +45,9 @@ class ArchiveMessageHandler : public MessageHandler {
 
   protected:
 
-    ArchiveClient  * _client;
-    ArchiverSet      _archivers;
-    std::string      _rootname;
+    ArchiveClient  *    _client;
+    ArchiverSet         _archivers;
+    std::string         _rootname;
 };
 
 

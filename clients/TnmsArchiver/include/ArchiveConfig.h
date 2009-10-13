@@ -47,6 +47,7 @@ struct  SchemaConfig
 };
 
 
+
 typedef std::list< SchemaConfig >                 SchemaConfigList;
 typedef std::map< std::string, SchemaConfigList > ArchiverDbMap;
 

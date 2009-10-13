@@ -1,7 +1,8 @@
 #define _TNMSDB_ARCHIVECLIENT_CPP_
 
-
 #include "ArchiveClient.h"
+
+#include "ArchiveMessageHandler.h"
 #include "ArchiverThread.h"
 
 
@@ -28,9 +29,10 @@ ArchiveClient::init()
     if ( subs.empty() )
         return;
 
-    std::string  rname = subs.front();
+    Subscription sub = subs.front();
+    this->subscribe(sub.name);
 
-    this->setMessageHandler(new ArchiveMessageHandler(rname, _archivers));
+    this->setMessageHandler(new ArchiveMessageHandler(sub.name, this, _archivers));
 }
 
 void

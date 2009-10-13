@@ -16,6 +16,7 @@ using namespace tnmsCore;
 #include "SqlSession.hpp"
 using namespace tcasqlpp;
 
+#include "ArchiveConfig.h"
 
 namespace tnmsdb {
 
@@ -29,6 +30,7 @@ namespace tnmsdb {
 
 class ClientIOHandler;
 class ArchiverThread;
+class ArchiveClient;
 
 
 typedef std::set<ArchiverThread*>                ArchiverSet;
@@ -84,13 +86,13 @@ class TnmsArchiveManager : public EventTimerHandler {
     {
         evid_t              id;
         TnmsClientConfig    config;
-        TnmsClient *        client;
+        ArchiveClient *     client;
 
         MirrorConnection() : id(0), client(NULL) {}
 
         MirrorConnection ( evid_t           & id_, 
                            TnmsClientConfig & config_,
-                           TnmsClient       * client_ )
+                           ArchiveClient    * client_ )
             : id(id_),
               config(config_),
               client(client_)
@@ -107,6 +109,7 @@ class TnmsArchiveManager : public EventTimerHandler {
 
     ClientMap                   _clients;
     ArchiverMap                 _archiverMap;
+
     evid_t                      _reportId, _logId;
 
     ClientIOHandler*            _clientHandler;

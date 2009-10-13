@@ -2,13 +2,14 @@
 #define _TNMSDB_ARCHIVESUBSCRIBER_H_
 
 #include <string>
+#include <queue>
 
 #include "TreeSubscriber.hpp"
 #include "TnmsTree.h"
 #include "TnmsMetric.h"
 using namespace tnmsCore;
 
-#include "SynchronizedQueue.hpp"
+#include "ThreadLock.h"
 using namespace tcanetpp;
 
 
@@ -22,7 +23,7 @@ class ArchiveSubscriber : public TreeSubscriber {
 
   public:
 
-    ArchiveSubscriber ( int queuesz = ARCHIVE_QUEUESIZE );
+    ArchiveSubscriber();
 
     virtual ~ArchiveSubscriber();
 
@@ -35,10 +36,15 @@ class ArchiveSubscriber : public TreeSubscriber {
     int           trylock();
     int           unlock();
 
+
+  public:
+
+    std::queue<TnmsMetric>       _metricq;
+    std::queue<std::string>      _removeq;
+
   protected:
 
-    SynchronizedQueue<TnmsMetric>       _metricq;
-    SynchronizedQueue<std::string>      _removeq;
+    ThreadLock                   _mutex;
 
 };
 

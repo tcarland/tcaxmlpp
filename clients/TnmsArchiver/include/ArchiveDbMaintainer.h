@@ -38,7 +38,7 @@ class ArchiveDbMaintainer : public DbMaintainerInterface {
     std::string         _index;
     std::string         _data;
     int                 _numDays;
-    int                 _tables;
+    int                 _numTables;
 
 };
 

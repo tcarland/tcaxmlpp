@@ -27,9 +27,9 @@ class ArchiveClient : public tnmsCore::TnmsClient {
 
   protected:
     
-    ArchiverSet *      _archivers;
+    ArchiverSet        _archivers;
     
-    TnmsClientConfig   _cfg;
+    TnmsClientConfig   _config;
 
 };
 

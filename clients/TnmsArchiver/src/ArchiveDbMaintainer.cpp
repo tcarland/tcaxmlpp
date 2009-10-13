@@ -5,7 +5,14 @@
 namespace tnmsdb {
 
 
-ArchiveDbMaintainer::ArchiveDbMaintainer()
+ArchiveDbMaintainer::ArchiveDbMaintainer ( const std::string & index_table,
+                                           const std::string & data_table,
+                                           int days_per_interval,
+                                           int table_count )
+    : _index(index_table),
+      _data(data_table),
+      _numDays(days_per_interval),
+      _numTables(table_count)
 {
 }
 
@@ -31,7 +38,7 @@ ArchiveDbMaintainer::getTargetTable ( const time_t & timestamp )
 DbTimePeriod 
 ArchiveDbMaintainer::getTargetTimePeriod ( const time_t & timestamp )
 {
-    TimePeriod  foo;
+    DbTimePeriod  foo;
 
     return foo;
 }
