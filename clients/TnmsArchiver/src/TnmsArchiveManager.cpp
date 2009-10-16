@@ -2,7 +2,10 @@
 
 
 #include "TnmsArchiveManager.h"
+
 #include "ClientIOHandler.h"
+#include "ArchiveClient.h"
+#include "ArchiverThread.h"
 
 //tcanetpp
 #include "LogFacility.h"
@@ -18,10 +21,10 @@ TnmsArchiveManager::_Version = "v0.12";
 
 TnmsArchiveManager::TnmsArchiveManager ( const std::string & configfile )
     : _evmgr(new tcanetpp::EventManager()),
-      _tree(new TnmsTree()),
+      _sql(NULL),
       _reportId(0),
       _logId(0),
-      _clientHandler(new ClientIOHandler(_tree)),
+      _clientHandler(new ClientIOHandler()),
       _lastTouched(0),
       _reportDelay(DEFAULT_REPORT_INTERVAL),
       _logCheck(LOG_CHECK_INTERVAL),
@@ -38,7 +41,8 @@ TnmsArchiveManager::~TnmsArchiveManager()
 {
     this->destroyClients();
     delete _clientHandler;
-    delete _tree;
+    if ( _sql )
+        delete _sql;
     delete _evmgr;
 }
 
@@ -106,9 +110,8 @@ TnmsArchiveManager::timeout ( const EventTimer * timer )
         _hup = false;
     }
 
-    if ( _usr ) {
-        // special function
-        _tree->debugDump();
+    if ( _usr ) { // special function
+        //_tree->debugDump();
         _usr = false;
     }
 
@@ -189,7 +192,7 @@ TnmsArchiveManager::createArchivers()
     ArchiverDbMap::iterator   dIter;
     SchemaConfigList::iterator sIter;
 
-    for ( dIter = _dbCfgMap.begin(); dIter != _dbCfgMap.end(); ++dIter )
+    for ( dIter = _dbConfigMap.begin(); dIter != _dbConfigMap.end(); ++dIter )
     {
         SchemaConfigList & dblist = dIter->second;
         ArchiverSet  archivers;
@@ -240,8 +243,8 @@ TnmsArchiveManager::parseConfig ( const std::string & cfg, const time_t & now )
     if ( _lastTouched > 0 && _lastTouched == FileUtils::LastTouched(cfg) )
         return true;
 
-    ArchiverConfigHandler  cfgmgr(cfg, TNMSD_CONFIG_ROOT);
-    std::string            prefix    = TNMSD_CONFIG_ROOT;
+    ArchiveConfigHandler   cfgmgr(cfg, TNMSARCHIVER_CONFIG_ROOT);
+    std::string            prefix    = TNMSARCHIVER_CONFIG_ROOT;
 
     if ( ! cfgmgr.parse() ) {
         if ( LogFacility::IsOpen() ) {
@@ -276,7 +279,7 @@ TnmsArchiveManager::parseConfig ( const std::string & cfg, const time_t & now )
     this->setDebug(config.debug);
     LogFacility::SetDebug(config.debug);
 
-    AuthDbConfig dbcfg;
+    ArchiveDbConfig  dbcfg;
 
     dbcfg.db_host = cfgmgr.getAttribute("db_host");
     dbcfg.db_host = cfgmgr.getAttribute("db_port");
@@ -295,8 +298,6 @@ TnmsArchiveManager::parseConfig ( const std::string & cfg, const time_t & now )
 
         _sql = new SqlSession(dbcfg.db_name, dbcfg.db_host, dbcfg.db_user, dbcfg.db_pass, dbcfg.db_port);
     }
-
-    TnmsServerConfig & svrcfg  = _tconfig.serverConfig;
 
     // assign the new config
     _tconfig     = config;

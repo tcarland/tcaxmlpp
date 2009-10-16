@@ -75,7 +75,7 @@ class ArchiveConfigHandler : public TnmsConfigHandler {
                                        SchemaConfigList  & dbConfig );
 
 
-  protected:
+  public:
 
     ArchiverDbMap       dbConfigMap;
 

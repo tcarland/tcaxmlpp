@@ -132,6 +132,8 @@ class TnmsArchiveManager : public EventTimerHandler {
     bool                        _usr;
     bool                        _debug;
 
+    static std::string          _Version;
+
 };
 
 

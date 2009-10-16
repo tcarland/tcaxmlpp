@@ -35,7 +35,8 @@ BIN=		archiver
 OBJS=		src/ArchiveConfig.o src/Archiver.o src/ArchiverThread.o \
 		src/ArchiveMessageHandler.o src/ArchiveClient.o \
 		src/ArchiveSubscriber.o src/ArchiveDbMaintainer.o \
-		src/TnmsArchiveManager.o src/archiver.o
+		src/ClientIOHandler.o \
+		src/TnmsArchiveManager.o src/archiver_main.o
 
 ALL_OBJS=	$(OBJS)
 ALL_BINS=	$(BIN)
