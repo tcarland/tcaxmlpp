@@ -1,11 +1,16 @@
 #define _MAIN_ARCHIVER_CPP_
 
-
 extern "C" {
 #include <unistd.h>
 #include <signal.h>
+#include <sys/stat.h>
 }
 
+#include "TnmsArchiveManager.h"
+using namespace tnmsdb;
+
+#include "FileUtils.h"
+using namespace tcanetpp;
 
 
 static const

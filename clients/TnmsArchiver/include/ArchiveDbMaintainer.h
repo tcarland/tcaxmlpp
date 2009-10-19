@@ -32,6 +32,7 @@ class ArchiveDbMaintainer : public DbMaintainerInterface {
     virtual void         createTimePeriods    ( IndexList    & indices );
     virtual void         deleteTimePeriods    ( IndexList    & indices );
 
+    virtual DbTimePeriod getInterval          ( const time_t & timestamp );
 
   protected:
 

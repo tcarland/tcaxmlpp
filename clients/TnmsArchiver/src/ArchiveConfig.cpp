@@ -18,11 +18,21 @@ ArchiveConfigHandler::ArchiveConfigHandler ( const char * xmlblob, size_t len,
     : TnmsConfigHandler(xmlblob, len, rootname)
 {}
 
+ArchiveConfigHandler::~ArchiveConfigHandler()
+{}
+
 
 bool
 ArchiveConfigHandler::parse()
 {
     return(TnmsConfigHandler::parse());
+}
+
+
+bool
+ArchiveConfigHandler::parseServer ( XmlNode * node )
+{
+    return TnmsConfigHandler::parseServer(node);
 }
 
 

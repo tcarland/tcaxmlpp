@@ -27,7 +27,7 @@ class Archiver : public ArchiveDbMaintainer {
 
   public:
 
-    Archiver ( SqlSession * session, SchemaConfig & config );
+    Archiver ( SqlSession * sql_, SchemaConfig & config );
 
     virtual ~Archiver();
 
@@ -37,10 +37,11 @@ class Archiver : public ArchiveDbMaintainer {
 
   protected:
 
-    void      loadElementMap();
+    void      loadIndexMap();
 
-    uint32_t  getElementId   ( const std::string & name );
-    uint32_t  queryElementId ( const std::string & name );
+    uint32_t  getElementId    ( const std::string & name );
+    uint32_t  queryElementId  ( const std::string & name );
+    uint32_t  insertElementId ( const std::string & name );
 
 
   public:

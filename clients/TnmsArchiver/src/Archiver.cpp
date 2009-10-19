@@ -5,6 +5,9 @@
 #include "ArchiveClient.h"
 #include "ArchiveSubscriber.h"
 
+#include "LogFacility.h"
+using namespace tcanetpp;
+
 
 namespace tnmsdb {
 
@@ -29,46 +32,63 @@ Archiver::~Archiver()
 void
 Archiver::runUpdates ( const time_t & now, bool flush )
 {
+    if ( ! sql->isConnected() ) 
+    {
+        LogFacility::LogMessage("Archiver intitiating database connection");
+        if ( ! sql->connect() ) {
+            LogFacility::LogMessage("Archiver: Error in connection: " + sql->sqlErrorStr());
+            return;
+        }
+        LogFacility::LogMessage("Archive connection established for " + schema.index_table);
+    }
+
     if ( ! notifier->lock() )
         return;
+
+    std::string table_name = this->getTargetTable(now);
 
     while ( ! notifier->metricq.empty() )
     {
         TnmsMetric & metric = notifier->metricq.front();
         Query        query  = sql->newQuery();
 
-        uint32_t    id     = this->getElementId(metric.getElementName());
         const std::string & valstr = metric.getValue();
+        uint32_t    id     = this->getElementId(metric.getElementName());
+        uint64_t    val    = metric.getValue<uint64_t>();
+        uint64_t    avg    = metric.getValueAvg<uint64_t>();
 
-        query << "INSERT DELAYED INTO " << tableName 
+        if ( id == 0 )
+            continue;
+
+        query << "INSERT DELAYED INTO " << table_name 
               << " (element_id, value_type, value, value_avg, samples, value_str, data, last ) VALUES ("
-              << id << ", " << metric.getValueType() << ", " << metric.getValue() << ", "
-              << metric.getValueAvg() << ", " << metric.getSamples() << ", \"" << valstr << "\", \"" 
-              << metric.getPvtData() << "\", " << metric.getTimestamp() << ")";
+              << id << ", " << metric.getValueType() << ", " << val << ", " << avg << ", " 
+              << metric.getSamples() << ", \"" << valstr << "\", \"" << metric.getPvtData() << "\", " 
+              << metric.getTimestamp() << ")";
 
-        if ( ! this->submitQuery(query) )
+        if ( ! sql->submitQuery(query) )
         {
             LogFacility::Message  msg;
-            msg << "Archiver::runUpdates() Error in query submit: '" << sql->getErrorStr() << "'";
+            msg << "Archiver::runUpdates() Error in query submit: '" << sql->sqlErrorStr() << "'";
             LogFacility::LogMessage(msg.str());
         }
 
-        _metricq.pop();
+        notifier->metricq.pop();
     }
 
     return;
 }
 
 void
-Archiver::loadElementMap()
+Archiver::loadIndexMap()
 {
     Query  query = sql->newQuery();
     Result res;
     Row    row;
 
-    query << "SELECT id, name FROM " << config.index_table;
+    query << "SELECT id, name FROM " << schema.index_table;
 
-    if ( ! this->submitQuery(query, result) )
+    if ( ! sql->submitQuery(query, res) )
         return;
 
     Result::iterator  rIter;
@@ -82,7 +102,7 @@ Archiver::loadElementMap()
         id   = StringUtils::fromString<uint32_t>(row[0]);
         name = std::string(row[1]);
 
-        _elementMap[name] = id;
+        _indexes[name] = id;
     }
 
     return;
@@ -94,9 +114,9 @@ Archiver::getElementId ( const std::string & name )
 {
     uint32_t  id = 0;
 
-    ElementMap::iterator  eIter = _elementMap.find(name);
+    IndexMap::iterator  eIter = _indexes.find(name);
 
-    if ( eIter == _elementMap.end() )
+    if ( eIter == _indexes.end() )
         return this->queryElementId(name);
 
     id = eIter->second;
@@ -114,10 +134,10 @@ Archiver::queryElementId ( const std::string & name )
     Result res;
     Row    row;
 
-    query << "SELECT id FROM " << config.index_table << " WHERE name=\""
+    query << "SELECT id FROM " << schema.index_table << " WHERE name=\""
           << name << "\"";
 
-    if ( ! this->submitQuery(query, res) )
+    if ( ! sql->submitQuery(query, res) )
         return id;
     if ( res.size() == 0 )
         return this->insertElementId(name);
@@ -128,25 +148,28 @@ Archiver::queryElementId ( const std::string & name )
     row   = (Row) *rIter;
     id    = StringUtils::fromString<uint32_t>(row[0]);
 
-    _elementMap[name] = id;
+    _indexes[name] = id;
 
     return id;
 }
 
 
 uint32_t
-Archiver::insertElement ( const std::string & name )
+Archiver::insertElementId ( const std::string & name )
 {
+    Query    query;
     uint32_t id = 0;
 
-    Query query;
+    query << "INSERT INTO " << schema.index_table << " ( name ) VALUES ( \"" << name << "\" )";
 
-    query << "INSERT INTO " << config.index_table << " ( name ) VALUES ( \"" << name << "\" )";
-
-    if ( ! this->submitQuery(query) )
+    if ( ! sql->submitQuery(query) )
         return id;
+ 
+    // this is mysql specific
+    id = sql->insert_id();
 
-    id = this->insert_id();
+    if ( id > 0 )
+        _indexes[name] = id;
 
     return id;
 }

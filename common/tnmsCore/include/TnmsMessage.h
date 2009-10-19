@@ -51,6 +51,8 @@ public:
     const TnmsOid&      getElementOid()  const { return this->_element_oid; }
     const eMessageType& getMessageType() const { return this->_message_type; }
 
+    void                setElementOid ( const TnmsOid & oid );
+
     virtual uint16_t    message_type()   const;
     virtual void        message_type  ( eMessageType  msgtype );
 

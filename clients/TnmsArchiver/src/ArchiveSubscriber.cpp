@@ -18,7 +18,7 @@ ArchiveSubscriber::queueAdd ( TnmsTree::Node * node )
 {
     TnmsMetric & metric = node->getValue().metric;
 
-    _metricq.push(metric);
+    metricq.push(metric);
 
     return true;
 }
@@ -29,7 +29,7 @@ ArchiveSubscriber::queueUpdate ( TnmsTree::Node * node )
 {
     TnmsMetric & metric = node->getValue().metric;
 
-    _metricq.push(metric);
+    metricq.push(metric);
 
     return true;
 }
@@ -40,7 +40,7 @@ ArchiveSubscriber::queueRemove( TnmsTree::Node * node )
 {
     TnmsMetric & metric = node->getValue().metric;
 
-    _removeq.push(metric.getElementName());
+    removeq.push(metric.getElementName());
 
     return true;
 }

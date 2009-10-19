@@ -2,6 +2,10 @@
 
 #include "ArchiveDbMaintainer.h"
 
+#include "StringUtils.h"
+using namespace tcanetpp;
+
+
 namespace tnmsdb {
 
 

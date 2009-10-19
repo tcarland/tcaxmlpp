@@ -58,6 +58,13 @@ TnmsMessage::operator< ( const TnmsMessage & msg ) const
 }
 
 
+void
+TnmsMessage::setElementOid ( const TnmsOid & oid )
+{
+    _element_oid = oid;
+}
+
+
 ssize_t
 TnmsMessage::serialize ( char * buffer, size_t buffer_len ) const
 {

@@ -70,6 +70,10 @@ ArchiveMessageHandler::MetricHandler ( const TnmsMetric  & metric )
     if ( ! StringUtils::startsWith(metric.getElementName(), _rootname) )
         return;
 
+    if ( LogFacility::GetDebug() )
+        LogFacility::LogMessage("ArchiveMessageHandler::MetricHandler() " 
+            + metric.getElementName());
+
     for ( aIter = _archivers.begin(); aIter != _archivers.end(); ++aIter )
         (*aIter)->tree->update(metric);
 
