@@ -13,8 +13,8 @@ extern "C" {
 namespace tnmsdb {
 
 
-struct DbTimePeriod {
-
+struct DbTimePeriod 
+{
     time_t      start;
     time_t      end;
 
@@ -50,9 +50,9 @@ struct DbTimePeriod {
         end   -= value;
     }
 
-    friend std::ostream& operator<< ( std::ostream & out, const DbTimePeriod & tp );
+    friend std::ostream& operator<< ( std::ostream       & out, 
+                                      const DbTimePeriod & tp );
 };
-
 
 typedef std::list<std::string>   NameList;
 typedef std::list<DbTimePeriod>  IndexList;

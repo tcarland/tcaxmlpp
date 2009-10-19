@@ -10,6 +10,8 @@ using namespace tcanetpp;
 namespace tnmsdb {
 
 
+// -------------------------------------------------------------------
+
 ArchiverThread::ArchiveTimer::ArchiveTimer()
     : mutex(new ThreadLock()),
       id(0)
@@ -29,7 +31,9 @@ ArchiverThread::ArchiveTimer::timeout ( const EventTimer * timer )
 
 // -------------------------------------------------------------------
 
-ArchiverThread::ArchiverThread ( EventManager * evmgr, SqlSession * sql, SchemaConfig & config )
+ArchiverThread::ArchiverThread ( EventManager * evmgr, 
+                                 SqlSession   * sql, 
+                                 SchemaConfig & config )
     : _archiver(new Archiver(sql, config)),
       _tid(0),
       _fid(0)

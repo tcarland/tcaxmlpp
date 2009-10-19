@@ -31,6 +31,9 @@ ArchiveDbMaintainer::getTargetTable ( const time_t & timestamp )
 {
     std::string target;
 
+    DbTimePeriod  tp = this->getTargetTimePeriod(timestamp);
+    target = _data + "_" + StringUtils::toString(tp.start);
+
     return target;
 }
 
@@ -38,9 +41,16 @@ ArchiveDbMaintainer::getTargetTable ( const time_t & timestamp )
 DbTimePeriod 
 ArchiveDbMaintainer::getTargetTimePeriod ( const time_t & timestamp )
 {
-    DbTimePeriod  foo;
+    DbTimePeriod  tp;
 
-    return foo;
+    time_t  t = timestamp;
+
+    if ( timestamp == 0 )
+        t = ::time(NULL);
+
+    tp = this->getInterval(t);
+
+    return tp;
 }
 
 
@@ -61,6 +71,27 @@ ArchiveDbMaintainer::deleteTimePeriods ( IndexList & indices )
 }
 
 
+DbTimePeriod
+ArchiveDbMaintainer::getInterval ( const time_t & timestamp )
+{
+    struct tm     start, end;
+    DbTimePeriod  tp;
+
+    ::localtime_r(&timestamp, &start);
+
+    end.tm_isdst = start.tm_isdst = -1;
+    end.tm_hour  = start.tm_hour = 0;
+    end.tm_min   = start.tm_min  = 0;
+    end.tm_sec   = start.tm_sec  = 0;
+    end.tm_year  = start.tm_year;
+    end.tm_mon   = start.tm_mon;
+    end.tm_mday  = start.tm_mday + 1;
+
+    tp.start     = ::mktime(&start);
+    tp.end       = ::mktime(&end);
+
+    return tp;
+}
 
 } // namespace
 

@@ -19,6 +19,9 @@ namespace tnmsdb {
 
 class ArchiveSubscriber;
 
+typedef std::map<std::string, uint32_t>    IndexMap;
+typedef std::map<std::string, TnmsMetric>  ElementMap;
+
 
 class Archiver : public ArchiveDbMaintainer {
 
@@ -28,15 +31,32 @@ class Archiver : public ArchiveDbMaintainer {
 
     virtual ~Archiver();
 
-    void  runUpdates ( const time_t & now, bool flush );
-    
+
+    void      runUpdates ( const time_t & now, bool flush );
+   
+
+  protected:
+
+    void      loadElementMap();
+
+    uint32_t  getElementId   ( const std::string & name );
+    uint32_t  queryElementId ( const std::string & name );
+
 
   public:
 
     SqlSession *        sql;
     TnmsTree *          tree;
-    ArchiveSubscriber*  notifier;
+    ArchiveSubscriber * notifier;
+
     SchemaConfig        schema;
+
+
+  protected:
+
+    IndexMap    _indexes;
+    ElementMap  _elements;
+
 };
 
 

@@ -18,6 +18,9 @@ namespace tnmsdb {
 
 #define ARCHIVE_QUEUESIZE  (65535 * 16)
 
+typedef std::queue<TnmsMetric>   MetricQueue;
+typedef std::queue<std::string>  StringQueue;
+
 
 class ArchiveSubscriber : public TreeSubscriber {
 
@@ -39,12 +42,12 @@ class ArchiveSubscriber : public TreeSubscriber {
 
   public:
 
-    std::queue<TnmsMetric>       _metricq;
-    std::queue<std::string>      _removeq;
+    MetricQueue       metricq;
+    StringQueue       removeq;
 
   protected:
 
-    ThreadLock                   _mutex;
+    ThreadLock        _mutex;
 
 };
 
