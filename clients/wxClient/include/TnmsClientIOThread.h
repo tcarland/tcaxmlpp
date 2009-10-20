@@ -46,7 +46,6 @@ class TnmsClientIOThread : public Thread {
         explicit ClientIOTimer ( TnmsClientIOThread * iothread_ )
             : iothread(iothread_)
         {}
-
         virtual ~ClientIOTimer() {}
 
         void timeout  ( const EventTimer * timer );
