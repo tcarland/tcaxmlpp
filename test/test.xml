@@ -1,19 +1,38 @@
 <?xml version="1.0"?>
-<abridge>
 
-    <product title="SWG" host="host2.transmit.com" port="22201" protocol_version="9">
+<tnms version="0.1">
+    <tnmsd
+        agent_name="tcanms/tnmsd/devserver_c"
+        agent_key="tnmsd11b"
+        logfile="devserver_c.log"
+        syslog="false"
+        debug="true"
+        auth_server="localhost"
+        auth_port="15901"
+        auth_bypass="false" >
 
-        <mon_config version="1">
-        <monapi_config logfilename="logs/mon_bridge_swg.log" debug="true" syslog="false" debug_filter="etc/bridge_debuglist.txt" api_prepend="games/swg">
-            
-            <outbound holddown_interval="30" reconnect_interval="30">
+        <server
+            client_port="15605"
+            holddown="30"
+            reconnect="30"/>
 
-                <collector hostname="localhost" port="2960" max_elements="500"/>
-            </outbound>
+        <client
+            name="server_a"
+            host="localhost"
+            port="15600">
 
-         </monapi_config>
-         </mon_config>
+            <subscribe name="*"/>
+        </client>
 
-    </product>
+        <client
+            name="server_b"
+            host="localhost"
+            port="15601">
 
-</abridge>
+            <subscribe name="*"/>
+        </client>
+
+    </tnmsd>
+
+</tnms>
+

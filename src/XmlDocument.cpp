@@ -36,7 +36,7 @@ bool
 XmlDocument::_Libinit = false;
 
 const char*
-XmlDocument::_Version = "1.3.2";
+XmlDocument::_Version = "1.3.3";
 
 //-------------------------------------------------------------//
 
@@ -107,14 +107,17 @@ XmlDocument::initDocument ( const std::string & filename, bool create )
     xmlNodePtr  node;
     bool        result = false;
 
-    if ( XmlDocument::IsReadable(filename) ) {
+    if ( XmlDocument::IsReadable(filename) ) 
+    {
 	if ( create ) {
 	    _errStr = "File already exists, remove first to create";
 	    result  = false;
 	} else {
 	    result = this->readFile(filename);
 	}
-    } else if ( create ) {
+    } 
+    else if ( create ) 
+    {
 	_xmlfile = filename;
 
 	if ( _doc != NULL )
@@ -293,7 +296,8 @@ XmlDocument::setRootNode ( XmlNode * node, bool erase )
     if ( node == NULL || node->getNode() == NULL )
 	return NULL;
 
-    if ( _root ) {
+    if ( _root ) 
+    {
 	n = _root->getNode();
 	if ( n->parent )
 	    xmlUnlinkNode(n);
@@ -302,7 +306,8 @@ XmlDocument::setRootNode ( XmlNode * node, bool erase )
 
     n = node->getNode();
 
-    if ( node->getParent() ) {
+    if ( node->getParent() ) 
+    {
 	node->getParent()->removeNode(node);
 	node->setParent(NULL);
 
@@ -410,7 +415,8 @@ XmlDocument::validate()
     if ( _doc == NULL )
         return false;
 
-    if ( _dtdfile.length() > 0 ) {
+    if ( _dtdfile.length() > 0 ) 
+    {
         xmlDtdPtr    dtd;
 	xmlValidCtxt cvp;
 

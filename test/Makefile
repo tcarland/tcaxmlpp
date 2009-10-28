@@ -14,19 +14,23 @@ endif
 INCLUDES =	
 LIBS = 
 
-BIN =		XmlTest xmldump
+BIN =		XmlTest xmldump nodeftest
 OBJS = 		xmltest.o 
 
-ALL_OBJS =	$(OBJS)
+ALL_OBJS =	$(OBJS) xmldump.o nodefactorytest.o
 ALL_BINS = 	$(BIN)
 
 
-all: XmlTest xmldump
+all: XmlTest nodeftest xmldump
 
 include $(TOPDIR)/tcamake/project_defs
 
 
 XmlTest: $(OBJS)
+	$(make-cxxbin-rule)
+	@echo
+
+nodeftest: nodefactorytest.o
 	$(make-cxxbin-rule)
 	@echo
 
