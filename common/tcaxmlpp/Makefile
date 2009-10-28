@@ -15,7 +15,8 @@ INCLUDES =	-Iinclude
 LIBS = 
 
 BIN =		
-OBJS = 		src/XmlDocument.o src/XmlNode.o src/XmlAttribute.o
+OBJS = 		src/XmlDocument.o src/XmlNode.o src/XmlAttribute.o \
+		src/XmlDocNode.o 
 
 ALL_OBJS =	$(OBJS)
 ALL_BINS = 	$(BIN)

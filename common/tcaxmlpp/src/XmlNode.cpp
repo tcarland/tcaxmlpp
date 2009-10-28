@@ -85,17 +85,15 @@ XmlNode::~XmlNode()
     XmlNodeIter  nIter;
     XmlAttrIter  aIter;
 
-    for ( nIter = _kids.begin(); nIter != _kids.end(); nIter++ ) {
-	/*if ( this->_debug ) {
-	    printf("Deleting child node %s : %s \n", 
-		(*nIter)->getNodeName().c_str(), (*nIter)->getAttr("Name").c_str());
-	}*/
+    for ( nIter = _kids.begin(); nIter != _kids.end(); nIter++ ) 
+    {
 	if ( (*nIter) )
 	    delete *nIter;
     }
     _kids.clear();
 
-    for ( aIter = _attrs.begin(); aIter != _attrs.end(); aIter++ ) {
+    for ( aIter = _attrs.begin(); aIter != _attrs.end(); aIter++ ) 
+    {
 	if ( aIter->second )
 	    delete aIter->second;
     }
@@ -121,7 +119,8 @@ XmlNode::readNodeAttributes()
 {
     xmlAttrPtr  attr;
 
-    for ( attr = _node->properties; attr; attr = attr->next ) {
+    for ( attr = _node->properties; attr; attr = attr->next ) 
+    {
 	XmlAttribute* xa = new XmlAttribute(this, attr);
 	_attrs[xa->getKey()] = xa;
     }
@@ -178,20 +177,16 @@ XmlNode::isRootElement() const
     return(_parent != NULL);
 }
 
+
 XmlNode*
 XmlNode::findNode ( const std::string & nodename,
 		    const std::string & attrkey, const std::string & attrval )
 {
-    XmlNode     *node = NULL;
-    XmlNodeIter  nIter;
+    XmlNode     * node = NULL;
+    XmlNodeIter   nIter;
 
     nIter = std::find_if(_kids.begin(), _kids.end(), 
 	                 FindXmlNodeName(nodename, attrkey, attrval));
-
-    if ( _debug ) {
-	printf("XmlNode::findNode(): %s, %s, %s\n", nodename.c_str(),
-	    attrkey.c_str(), attrval.c_str());
-    }
 
     if ( nIter == _kids.end() )
 	return node;
@@ -362,7 +357,8 @@ XmlNode::printNode ( bool recursive )
 
     std::cout << "Node: <" << _name << ">" << std::endl;
 
-    for ( aIter = _attrs.begin(); aIter != _attrs.end(); aIter++ ) {
+    for ( aIter = _attrs.begin(); aIter != _attrs.end(); aIter++ ) 
+    {
 	attr = (XmlAttribute*) aIter->second;
 
 	if ( attr == NULL )
@@ -375,7 +371,8 @@ XmlNode::printNode ( bool recursive )
 
     if ( recursive )
     {
-        for ( nIter = _kids.begin(); nIter != _kids.end(); nIter++ ) {
+        for ( nIter = _kids.begin(); nIter != _kids.end(); nIter++ ) 
+        {
             node = (XmlNode*) *nIter;
                     
             if ( node == NULL )
@@ -403,7 +400,8 @@ XmlNode::RecursiveFindNode ( XmlNode * root,
     XmlNodeList  & kids  = root->getNodeList();
     XmlNode      * node  = NULL;
 
-    for ( nIter = kids.begin(); nIter != kids.end(); ++nIter ) {
+    for ( nIter = kids.begin(); nIter != kids.end(); ++nIter ) 
+    {
         node = (*nIter)->findNode(name, key, val);
 
         if ( node != NULL )

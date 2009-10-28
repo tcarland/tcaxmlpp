@@ -44,76 +44,18 @@ and any complaints to /dev/null.
 -------------------------------------------------------------------------
 Example 1:
 
-    It is worth noting that the XmlNode object does not hold a pointer
-to its owning XmlDocument container. This can complicate node handling 
-in certain cases, but is done intentionally to simplify the implementation. 
-Since this library 'wraps' libxml2, the user must be wary of the underlying 
-document that a node belongs too. This wrapper takes the approach of 
-managing this relationship using the XmlDocument object which is left to 
-the user to determine how the document object is passed around.
-
-    For this example, however, we provide an alternative XmlNode 
-implementation where the root node of the tree could be required to hold 
-the document pointer so that it can be retrieved directly from a node 
-object. The example also serves to demonstrate the XmlNodeFactory interface 
-and its use to create specialized XmlNode objects as well as providing a 
-means to keep the document pointer on hand. This allows for an inheritance 
-model for specialized node handling, though this method should be used only 
-if deemed really necessary.  Simply 'using' the objects is significantly 
-easier to understand and follow.
-
-<code>
-
-    class XmlNodeWithDoc : public XmlNode {
-      public:
-
-        XmlNodeWithDoc ( XmlDocument * doc,  XmlNode * parent,
-                         xmlNodePtr    node, bool      recurse )
-            : XmlNode(parent, node, recurse),
-              _doc(doc)
-        {}
-
-        virtual ~XmlNodeWithDoc(); // omitted from example for brevity
-
-        XmlDocument*  getDocument()
-        {
-            if ( this->_parent == NULL )
-                return this->_doc;
-
-            XmlNode * p = this;
-            while ( p->getParent() != NULL )
-                p = p->getParent();
-            return p->getDocument();
-        }
-
-        bool  setDocument ( XmlDocument * doc )
-        {
-            if ( this->_parent != NULL )  // NOT the doc root!
-                return false;
-            this->_doc = doc;
-            return true;
-        }
-      protected:
-        XmlDocument * _doc;
-    };
-
-    class XmlNodeWithDocFactory : public XmlNodeFactory {
-        XmlDocument * _doc;
-      public:
-        explicit XmlNodeWithDocFactory ( XmlDocument * doc )
-            : _doc(doc)
-        {}
-
-        virtual ~XmlNodeWithDocFactory() {}
-
-        virtual XmlNode* operator() ( XmlNode * p, xmlNodePtr * n, 
-                                      bool     recurse )
-        {
-            return ( (XmlNode*)(new XmlNodeWithDoc(_doc, p, n, recurse)) );
-        }
-     }; 
-
-</code>
+    It is worth noting that the default XmlNode object does not hold a pointer
+to its parent XmlDocument container. This can complicate node handling 
+in certain cases, but is done intentionally to simplify usage.
+    Since this library 'wraps' libxml2, the user must be wary of the underlying 
+document that a node belongs too. Most situations, the XmlDocument and XmlNode
+classes are used as is, however, it is possible to inherit and customize XmlNode
+objects using the XmlNodeFactory. As an example, the XmlDocNode class demonstrates
+the ability of a derived XmlNode object holding a pointer to its parent XmlDocument 
+container.  
+     Note that this would not handle ensuring the document ptr remains intact
+when moving/attaching nodes between document containers. This would require further 
+overriding XmlDocument::attachNode().
 
 
 Example 2:
