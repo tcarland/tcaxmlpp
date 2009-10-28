@@ -174,6 +174,88 @@ Archiver::insertElementId ( const std::string & name )
     return id;
 }
 
+void       
+Archiver::getTimePeriods ( NameList & nameList )
+{
+    Query   query;
+    Result  res;
+    Row     row;
+
+    query << "SHOW TABLES";
+
+    if ( ! sql->submitQuery(query, res) )
+        return;
+
+    Result::iterator  rIter;
+
+    for ( rIter = res.begin(); rIter != res.end(); ++rIter )
+    {
+        std::string  name;
+
+        row  = (Row) *rIter;
+        name = std::string(row[0]);
+
+        if ( StringUtils::indexOf(name, "_") <= 0 || name.compare(schema.index_table) == 0 )
+            continue;
+
+        if ( StringUtils::indexOf(name, _table_space) >= 0 )
+            namelist.push_back(name);
+    }
+
+    return;
+}
+
+
+void       
+Archiver::createTimePeriods ( IndexList & indices )
+{
+    IndexList::const_iterator iIter;
+
+    for ( iIter = indices.begin(); iIter != indices.end(); ++iIter ) {
+        const time_period & period = *iIter;
+
+        std::string  tpstr  = StringUtils::toString(period.start);
+        std::string  target = std::string(_base_table + '_' + tpstr);
+        Query        query;
+
+        query << "CREATE TABLE " << target << " LIKE " << _base_table;
+
+        sql->submitQuery(query);
+    }
+
+    return;
+}
+
+
+void       
+Archiver::deleteTimePeriods ( IndexList & indices )
+{    
+    IndexList::const_iterator  iIter;
+
+    for ( iIter = indices.begin(); iIter != indices.end(); ++iIter ) 
+    {
+        const time_period & period = *iIter;
+        std::string         target = _base_table;
+        Query               query;
+
+        target.append("_");
+        target.append(StringUtils::toString(period.start));
+
+        query << "DROP TABLE " << target;
+
+        if ( LogFacility::GetDebug() )
+            LogFacility::LogMessage(query.preview());
+
+        if ( ! sql->submitQuery(query) )
+            LogFacility::LogMessage("Failed to drop table " + target);
+        else
+            LogFacility::LogMessage("Dropped table " + target);
+    }
+
+    return;
+
+}
+
 
 }  // namespace 
 

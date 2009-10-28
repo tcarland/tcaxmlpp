@@ -27,12 +27,33 @@ class ArchiveDbMaintainer : public DbMaintainerInterface {
     virtual std::string  getTargetTable       ( const time_t & timestamp );
     virtual DbTimePeriod getTargetTimePeriod  ( const time_t & timestamp );
 
-    virtual void         getTimePeriods       ( NameList     & nameList );
-
-    virtual void         createTimePeriods    ( IndexList    & indices );
-    virtual void         deleteTimePeriods    ( IndexList    & indices );
+    //virtual void         getTimePeriods       ( NameList     & nameList );
+    //virtual void         createTimePeriods    ( IndexList    & indices );
+    //virtual void         deleteTimePeriods    ( IndexList    & indices );
 
     virtual DbTimePeriod getInterval          ( const time_t & timestamp );
+
+  protected:
+
+    void                 slideByDays          ( DbTimePeriod & period, int days );
+
+    DbTimePeriod         getCurrentBegin      ( const time_t & timestamp );
+    DbTimePeriod         getCurrentEnd        ( const time_t & timestamp );
+
+    template<typename OutputIterator_>
+    void                 getCurrentPeriods    ( OutputIterator_ out );
+    template<typename OutputIterator_>
+    void                 getDatabasePeriods   ( OutputIterator_ out );
+
+    template<typename OutputIterator_>
+    void                 getIntervalsToCreate ( OutputIterator_ out );
+    template<typename OutputIterator_>
+    void                 getIntervalsToDelete ( OutputIterator_ out );
+
+    template<typename OutputIterator_>
+    void                 getPeriodsInRange    ( const DbTimePeriod & begin,
+                                                const DbTimePeriod & end,
+                                                OutputIterator_     out );
 
   protected:
 
@@ -40,6 +61,9 @@ class ArchiveDbMaintainer : public DbMaintainerInterface {
     std::string         _data;
     int                 _numDays;
     int                 _numTables;
+
+    IndexList           _current;
+    IndexList           _dbperiods;
 
 };
 

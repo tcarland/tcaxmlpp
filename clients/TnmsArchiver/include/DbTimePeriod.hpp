@@ -18,7 +18,6 @@ struct DbTimePeriod
     time_t      start;
     time_t      end;
 
-
     DbTimePeriod() : start(0), end(0) {}
 
     DbTimePeriod ( const DbTimePeriod & tp )

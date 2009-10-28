@@ -35,6 +35,11 @@ class Archiver : public ArchiveDbMaintainer {
     void      runUpdates ( const time_t & now, bool flush );
    
 
+    virtual void   getTimePeriods    ( NameList     & nameList );
+    virtual void   createTimePeriods ( IndexList    & indices );
+    virtual void   deleteTimePeriods ( IndexList    & indices );
+
+
   protected:
 
     void      loadIndexMap();

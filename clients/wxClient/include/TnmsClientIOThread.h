@@ -40,16 +40,18 @@ class TnmsClientIOThread : public Thread {
 
   protected:
 
-    class ClientIOTimer : public EventTimerHandler {
-      public:
-
+    class ClientIOTimer : public EventTimerHandler 
+    {
+        public:
         explicit ClientIOTimer ( TnmsClientIOThread * iothread_ )
             : iothread(iothread_)
         {}
+        virtual ~ClientIOTimer() {}
 
-        void timeout ( const EventTimer * timer );
+        void timeout  ( const EventTimer * timer );
+        void finished ( const EventTimer * timer ) {}
 
-        TnmsClientIOThread * iothread;
+        TnmsClientIOThread *  iothread;
     };
 
 
