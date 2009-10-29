@@ -4,28 +4,26 @@
 #include <string>
 
 #include "Thread.h"
-using namespace tcanetpp;
 
 #include "SqlDbPool.h"
-using namespace tcasqlpp;
 
 
 namespace sqlplustest {
 
 
-class TestSqlThread : public Thread {
+class TestSqlThread : public tcanetpp::Thread {
 
   public:
 
-    TestSqlThread ( SqlDbPool * pool, const std::string & sqlstr );
+    TestSqlThread ( tcasqlpp::SqlDbPool * pool, const std::string & sqlstr );
     virtual ~TestSqlThread();
 
     virtual void  run();
 
   private:
 
-    SqlDbPool*     _pool;
-    std::string    _sqlstr;
+    tcasqlpp::SqlDbPool*    _pool;
+    std::string             _sqlstr;
     
 };
 

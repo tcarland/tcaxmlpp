@@ -19,8 +19,9 @@ class ArchiveMessageHandler : public MessageHandler {
 
   public:
 
-    ArchiveMessageHandler ( const std::string & root_name, ArchiveClient * client,
-                            ArchiverSet & archivers );
+    ArchiveMessageHandler ( const std::string & root_name,
+    		                ArchiveClient     * client,
+                            ArchiverSet       & archivers );
 
     virtual ~ArchiveMessageHandler();
 

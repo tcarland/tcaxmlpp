@@ -1,6 +1,6 @@
 #define _TNMSDB_ARCHIVER_CPP_
 
-#include "Archiver.h"
+#include "DbArchiver.h"
 
 #include "ArchiveClient.h"
 #include "ArchiveSubscriber.h"
@@ -12,7 +12,7 @@ using namespace tcanetpp;
 namespace tnmsdb {
 
 
-Archiver::Archiver ( SqlSession * session, SchemaConfig & config )
+DbArchiver::DbArchiver ( SqlSession * session, SchemaConfig & config )
     : ArchiveDbMaintainer(config.index_table, config.data_table, 1, config.tables_to_keep),
       sql(new SqlSession(*session)),
       tree(new TnmsTree()),
@@ -23,20 +23,20 @@ Archiver::Archiver ( SqlSession * session, SchemaConfig & config )
 }
 
 
-Archiver::~Archiver()
+DbArchiver::~DbArchiver()
 {
     delete tree;
 }
 
 
 void
-Archiver::runUpdates ( const time_t & now, bool flush )
+DbArchiver::runUpdates ( const time_t & now, bool flush )
 {
     if ( ! sql->isConnected() ) 
     {
-        LogFacility::LogMessage("Archiver intitiating database connection");
+        LogFacility::LogMessage("DbArchiver intitiating database connection");
         if ( ! sql->connect() ) {
-            LogFacility::LogMessage("Archiver: Error in connection: " + sql->sqlErrorStr());
+            LogFacility::LogMessage("DbArchiver: Error in connection: " + sql->sqlErrorStr());
             return;
         }
         LogFacility::LogMessage("Archive connection established for " + schema.index_table);
@@ -69,7 +69,7 @@ Archiver::runUpdates ( const time_t & now, bool flush )
         if ( ! sql->submitQuery(query) )
         {
             LogFacility::Message  msg;
-            msg << "Archiver::runUpdates() Error in query submit: '" << sql->sqlErrorStr() << "'";
+            msg << "DbArchiver::runUpdates() Error in query submit: '" << sql->sqlErrorStr() << "'";
             LogFacility::LogMessage(msg.str());
         }
 
@@ -80,7 +80,7 @@ Archiver::runUpdates ( const time_t & now, bool flush )
 }
 
 void
-Archiver::loadIndexMap()
+DbArchiver::loadIndexMap()
 {
     Query  query = sql->newQuery();
     Result res;
@@ -110,7 +110,7 @@ Archiver::loadIndexMap()
 
 
 uint32_t
-Archiver::getElementId ( const std::string & name )
+DbArchiver::getElementId ( const std::string & name )
 {
     uint32_t  id = 0;
 
@@ -126,7 +126,7 @@ Archiver::getElementId ( const std::string & name )
 
 
 uint32_t
-Archiver::queryElementId ( const std::string & name )
+DbArchiver::queryElementId ( const std::string & name )
 {
     uint32_t  id = 0;
 
@@ -155,7 +155,7 @@ Archiver::queryElementId ( const std::string & name )
 
 
 uint32_t
-Archiver::insertElementId ( const std::string & name )
+DbArchiver::insertElementId ( const std::string & name )
 {
     Query    query;
     uint32_t id = 0;
@@ -175,7 +175,7 @@ Archiver::insertElementId ( const std::string & name )
 }
 
 void       
-Archiver::getTimePeriods ( NameList & namelist )
+DbArchiver::getTimePeriods ( NameList & namelist )
 {
     Query   query;
     Result  res;
@@ -207,7 +207,7 @@ Archiver::getTimePeriods ( NameList & namelist )
 
 
 void       
-Archiver::createTimePeriods ( IndexList & indices )
+DbArchiver::createTimePeriods ( IndexList & indices )
 {
     IndexList::const_iterator iIter;
 
@@ -228,7 +228,7 @@ Archiver::createTimePeriods ( IndexList & indices )
 
 
 void       
-Archiver::deleteTimePeriods ( IndexList & indices )
+DbArchiver::deleteTimePeriods ( IndexList & indices )
 {    
     IndexList::const_iterator  iIter;
 
@@ -260,5 +260,5 @@ Archiver::deleteTimePeriods ( IndexList & indices )
 }  // namespace 
 
 
-//  _TNMSDB_ARCHIVER_CPP_
+//  _TNMSDB_DBARCHIVER_CPP_
 

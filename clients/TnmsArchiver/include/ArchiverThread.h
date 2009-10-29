@@ -22,7 +22,7 @@ using namespace tcasqlpp;
 namespace tnmsdb {
 
 
-class Archiver;
+class DbArchiver;
 
 
 
@@ -69,7 +69,7 @@ class ArchiverThread : public tcanetpp::Thread {
 
   private:
 
-    Archiver *          _archiver;
+    DbArchiver *        _archiver;
     ArchiveTimer        _timer;
 
 

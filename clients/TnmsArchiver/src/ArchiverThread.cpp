@@ -1,7 +1,7 @@
 #define _TNMSDB_ARCHIVERTHREAD_CPP_
 
 #include "ArchiverThread.h"
-#include "Archiver.h"
+#include "DbArchiver.h"
 
 #include "LogFacility.h"
 using namespace tcanetpp;
@@ -13,7 +13,7 @@ namespace tnmsdb {
 // -------------------------------------------------------------------
 
 ArchiverThread::ArchiveTimer::ArchiveTimer()
-    : mutex(new ThreadLock()),
+    : mutex(new tcanetpp::ThreadLock()),
       id(0)
 {
 }
@@ -30,6 +30,7 @@ ArchiverThread::ArchiveTimer::timeout ( const EventTimer & timer )
 }
 
 // -------------------------------------------------------------------
+
 
 ArchiverThread::ArchiverThread ( EventManager * evmgr, 
                                  SqlSession   * sql, 

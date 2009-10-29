@@ -1,9 +1,9 @@
-#ifndef _TNMSDB_ARCHIVER_H_
-#define _TNMSDB_ARCHIVER_H_
+#ifndef _TNMSDB_DBARCHIVER_H_
+#define _TNMSDB_DBARCHIVER_H_
 
 #include <string>
 
-#include "ArchiveDbMaintainer.h"
+#include "DbMaintainer.h"
 #include "ArchiveConfig.h"
 
 #include "TnmsTree.h"
@@ -23,13 +23,13 @@ typedef std::map<std::string, uint32_t>    IndexMap;
 typedef std::map<std::string, TnmsMetric>  ElementMap;
 
 
-class Archiver : public ArchiveDbMaintainer {
+class DbArchiver : public DbMaintainer {
 
   public:
 
-    Archiver ( SqlSession * sql_, SchemaConfig & config );
+    DbArchiver ( SqlSession * sql_, SchemaConfig & config );
 
-    virtual ~Archiver();
+    virtual ~DbArchiver();
 
 
     void           runUpdates  ( const time_t & now, bool flush );
@@ -68,5 +68,5 @@ class Archiver : public ArchiveDbMaintainer {
 
 }  // namespace
 
-#endif  // _TNMSDB_ARCHIVER_H_
+#endif  // _TNMSDB_DBARCHIVER_H_
 

@@ -12,14 +12,10 @@ class SqlSessionInterface;
   *  by the SqlDbPool class.
  **/
 class SqlFactoryInterface {
-
   public:
-
     virtual ~SqlFactoryInterface() {}
 
-    virtual
-    SqlSessionInterface* operator() ( SqlSessionInterface * master ) = 0;
-
+    virtual SqlSessionInterface* operator() ( SqlSessionInterface * master ) = 0;
 };
 
 
