@@ -13,7 +13,7 @@ namespace tnmsdb {
 
 
 DbArchiver::DbArchiver ( SqlSession * session, SchemaConfig & config )
-    : ArchiveDbMaintainer(config.index_table, config.data_table, 1, config.tables_to_keep),
+    : DbMaintainer(config.index_table, config.data_table, 1, config.tables_to_keep),
       sql(new SqlSession(*session)),
       tree(new TnmsTree()),
       notifier(new ArchiveSubscriber()),
