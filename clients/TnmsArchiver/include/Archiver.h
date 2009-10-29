@@ -32,12 +32,12 @@ class Archiver : public ArchiveDbMaintainer {
     virtual ~Archiver();
 
 
-    void      runUpdates ( const time_t & now, bool flush );
+    void           runUpdates  ( const time_t & now, bool flush );
    
 
-    virtual void   getTimePeriods    ( NameList     & nameList );
-    virtual void   createTimePeriods ( IndexList    & indices );
-    virtual void   deleteTimePeriods ( IndexList    & indices );
+    virtual void   getTimePeriods    ( NameList   & nameList );
+    virtual void   createTimePeriods ( IndexList  & indices );
+    virtual void   deleteTimePeriods ( IndexList  & indices );
 
 
   protected:

@@ -175,7 +175,7 @@ Archiver::insertElementId ( const std::string & name )
 }
 
 void       
-Archiver::getTimePeriods ( NameList & nameList )
+Archiver::getTimePeriods ( NameList & namelist )
 {
     Query   query;
     Result  res;
@@ -195,10 +195,10 @@ Archiver::getTimePeriods ( NameList & nameList )
         row  = (Row) *rIter;
         name = std::string(row[0]);
 
-        if ( StringUtils::indexOf(name, "_") <= 0 || name.compare(schema.index_table) == 0 )
+        if ( StringUtils::indexOf(name, "_") <= 0 || name.compare(schema.data_table) == 0 )
             continue;
 
-        if ( StringUtils::indexOf(name, _table_space) >= 0 )
+        if ( StringUtils::indexOf(name, schema.data_table) >= 0 )
             namelist.push_back(name);
     }
 
@@ -212,13 +212,13 @@ Archiver::createTimePeriods ( IndexList & indices )
     IndexList::const_iterator iIter;
 
     for ( iIter = indices.begin(); iIter != indices.end(); ++iIter ) {
-        const time_period & period = *iIter;
+        const DbTimePeriod & period = *iIter;
 
         std::string  tpstr  = StringUtils::toString(period.start);
-        std::string  target = std::string(_base_table + '_' + tpstr);
+        std::string  target = std::string(schema.data_table + '_' + tpstr);
         Query        query;
 
-        query << "CREATE TABLE " << target << " LIKE " << _base_table;
+        query << "CREATE TABLE " << target << " LIKE " << schema.data_table;
 
         sql->submitQuery(query);
     }
@@ -234,9 +234,9 @@ Archiver::deleteTimePeriods ( IndexList & indices )
 
     for ( iIter = indices.begin(); iIter != indices.end(); ++iIter ) 
     {
-        const time_period & period = *iIter;
-        std::string         target = _base_table;
-        Query               query;
+        const DbTimePeriod & period = *iIter;
+        std::string          target = schema.data_table;
+        Query                query;
 
         target.append("_");
         target.append(StringUtils::toString(period.start));

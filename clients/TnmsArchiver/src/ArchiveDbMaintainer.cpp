@@ -3,6 +3,7 @@
 #include "ArchiveDbMaintainer.h"
 
 #include "StringUtils.h"
+#include "LogFacility.h"
 using namespace tcanetpp;
 
 
@@ -13,8 +14,8 @@ ArchiveDbMaintainer::ArchiveDbMaintainer ( const std::string & index_table,
                                            const std::string & data_table,
                                            int days_per_interval,
                                            int table_count )
-    : _index(index_table),
-      _data(data_table),
+    : _indexName(index_table),
+      _dataName(data_table),
       _numDays(days_per_interval),
       _numTables(table_count)
 {
@@ -25,14 +26,14 @@ ArchiveDbMaintainer::~ArchiveDbMaintainer()
 }
 
 void
-ArchiveDbMaintainer::run()
+ArchiveDbMaintainer::runMaintainer()
 {
     IndexList  to_create, to_delete;
 
     LogFacility::LogMessage("ArchiveDbMaintainer::run()");
 
     this->getCurrentPeriods(std::inserter(_current, _current.begin()));
-    this->getDbPeriods(std::inserter(_dbperiods, _dbperiods.begin()));
+    this->getDatabasePeriods(std::inserter(_dbperiods, _dbperiods.begin()));
 
     this->createTimePeriods(to_create);
     this->deleteTimePeriods(to_delete);
@@ -50,7 +51,7 @@ ArchiveDbMaintainer::getTargetTable ( const time_t & timestamp )
     std::string target;
 
     DbTimePeriod  tp = this->getTargetTimePeriod(timestamp);
-    target = _data + "_" + StringUtils::toString(tp.start);
+    target = _dataName + "_" + StringUtils::toString(tp.start);
 
     return target;
 }
@@ -59,35 +60,14 @@ ArchiveDbMaintainer::getTargetTable ( const time_t & timestamp )
 DbTimePeriod 
 ArchiveDbMaintainer::getTargetTimePeriod ( const time_t & timestamp )
 {
-    DbTimePeriod  tp;
-
     time_t  t = timestamp;
 
     if ( timestamp == 0 )
         t = ::time(NULL);
 
-    tp = this->getInterval(t);
-
-    return tp;
+    return(this->getInterval(t));
 }
 
-/*
-void       
-ArchiveDbMaintainer::getTimePeriods ( NameList & nameList )
-{
-}
-
-
-void       
-ArchiveDbMaintainer::createTimePeriods ( IndexList & indices )
-{
-}
-
-void       
-ArchiveDbMaintainer::deleteTimePeriods ( IndexList & indices )
-{
-}
-*/
 
 DbTimePeriod
 ArchiveDbMaintainer::getInterval ( const time_t & timestamp )
@@ -117,10 +97,12 @@ void
 ArchiveDbMaintainer::getCurrentPeriods ( OutputIterator_ out )
 {
     time_t       now = ::time(NULL);
-    time_period  current_end(this->getCurrentEnd(now));
+    DbTimePeriod current_end(this->getCurrentEnd(now));
 
     this->slideByDays(current_end, 1);
     this->getPeriodsInRange(this->getCurrentBegin(now), current_end, out);
+
+    return;
 }
 
 
@@ -134,20 +116,22 @@ ArchiveDbMaintainer::getDatabasePeriods ( OutputIterator_ out )
 
     for ( NameList::iterator i = index_names.begin(); i != index_names.end(); ++i ) {
         std::string   time;
-        time_period   index;
+        DbTimePeriod  index;
 
         std::string & name  = (*i);
 
         time  = name.substr(name.rfind('_') + 1);
-        index = this->getContainingInterval(StringConversion::fromString<time_t>(time));
+        index = this->getInterval(StringUtils::fromString<time_t>(time));
   
         *out++ = index;
     }
+
+    return;
 }   
 
 
 void
-ArchiveDbMaintainer::slideByDays ( time_period & period, int days )
+ArchiveDbMaintainer::slideByDays ( DbTimePeriod & period, int days )
 {
     struct tm  start_tm, end_tm;
 
@@ -169,42 +153,44 @@ ArchiveDbMaintainer::slideByDays ( time_period & period, int days )
 
 template <typename OutputIterator_>
 void
-ArchiveDbMaintainer::getPeriodsInRange ( const time_period & begin, 
-                                         const time_period & end, 
-                                         OutputIterator_     out )
+ArchiveDbMaintainer::getPeriodsInRange ( const DbTimePeriod & begin, 
+                                         const DbTimePeriod & end, 
+                                         OutputIterator_      out )
 {
-    time_period  current(begin);
+    DbTimePeriod  current(begin);
 
     while ( current.start <= end.start ) 
     {
         *out++ = current;
         this->slideByDays( current, 1 );
     }
+
+    return;
 }
 
 
-time_period
+DbTimePeriod
 ArchiveDbMaintainer::getCurrentBegin ( const time_t & timestamp )
 {
     time_t     then_t;
     struct tm  now_tm;
     int        size;
 
-    size = ( _table_count > 0 ) ? _table_count : 1;
+    size = ( _numTables > 0 ) ? _numTables : 1;
 
     ::localtime_r(&timestamp, &now_tm);
     now_tm.tm_mday -= size;
     now_tm.tm_isdst = -1;
     then_t = ::mktime(&now_tm);
   
-    return getContainingInterval(then_t);
+    return this->getInterval(then_t);
 }
 
  
-time_period 
+DbTimePeriod 
 ArchiveDbMaintainer::getCurrentEnd ( const time_t & timestamp )
 {
-    return this->getContainingInterval(timestamp);
+    return this->getInterval(timestamp);
 }
 
 
@@ -213,9 +199,10 @@ void
 ArchiveDbMaintainer::getIntervalsToCreate ( OutputIterator_ out )
 {
     std::set_difference(
-        _current_periods.begin(), _current_periods.end(),
-        _database_periods.begin(), _database_periods.end(), out
+        _current.begin(), _current.end(),
+        _dbperiods.begin(), _dbperiods.end(), out
     );
+    return;
 }
 
 
@@ -223,18 +210,19 @@ template <typename OutputIterator_>
 void
 ArchiveDbMaintainer::getIntervalsToDelete ( OutputIterator_ out )
 {
-    if ( _table_count > 0 ) 
+    if ( _numTables > 0 ) 
     {
         std::set_difference( 
-            _database_periods.begin(), _database_periods.end(),
-            _current_periods.begin(), _current_periods.end(), out
+            _dbperiods.begin(), _dbperiods.end(),
+            _current.begin(), _current.end(), out
         );
     }
+    return;
 }
 
 
 std::ostream &
-operator<< ( std::ostream & out, const time_period & t )
+operator<< ( std::ostream & out, const DbTimePeriod & t )
 {
     std::string start_str(ctime(&t.start));
     std::string end_str(ctime(&t.end));

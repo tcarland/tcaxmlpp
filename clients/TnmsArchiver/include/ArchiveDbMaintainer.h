@@ -19,17 +19,17 @@ class ArchiveDbMaintainer : public DbMaintainerInterface {
     virtual ~ArchiveDbMaintainer();
 
 
-    void     run();
+    void     runMaintainer();
 
 
-    /*  ArchiverDbInterface */
+    /*  DbMaintainerInterface */
 
     virtual std::string  getTargetTable       ( const time_t & timestamp );
     virtual DbTimePeriod getTargetTimePeriod  ( const time_t & timestamp );
 
-    //virtual void         getTimePeriods       ( NameList     & nameList );
-    //virtual void         createTimePeriods    ( IndexList    & indices );
-    //virtual void         deleteTimePeriods    ( IndexList    & indices );
+    virtual void         getTimePeriods       ( NameList     & nameList ) = 0;
+    virtual void         createTimePeriods    ( IndexList    & indices ) = 0;
+    virtual void         deleteTimePeriods    ( IndexList    & indices ) = 0;
 
     virtual DbTimePeriod getInterval          ( const time_t & timestamp );
 
@@ -57,8 +57,8 @@ class ArchiveDbMaintainer : public DbMaintainerInterface {
 
   protected:
 
-    std::string         _index;
-    std::string         _data;
+    std::string         _indexName;
+    std::string         _dataName;
     int                 _numDays;
     int                 _numTables;
 
