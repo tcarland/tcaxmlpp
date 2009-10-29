@@ -12,11 +12,9 @@ namespace tnmsdb {
 
 DbMaintainer::DbMaintainer ( const std::string & index_table,
                              const std::string & data_table,
-                             int days_per_interval,
                              int table_count )
     : _indexName(index_table),
       _dataName(data_table),
-      _numDays(days_per_interval),
       _numTables(table_count)
 {
 }
@@ -141,11 +139,10 @@ DbMaintainer::slideByDays ( DbTimePeriod & period, int days )
     start_tm.tm_mday += days;
     end_tm.tm_mday   += days;
 
-    // force mktime to behave properly.
     start_tm.tm_isdst = end_tm.tm_isdst = -1;
-    
-    period.start  = ::mktime( &start_tm );
-    period.end    = ::mktime( &end_tm );
+
+    period.start      = ::mktime( &start_tm );
+    period.end        = ::mktime( &end_tm );
 
     return;
 }

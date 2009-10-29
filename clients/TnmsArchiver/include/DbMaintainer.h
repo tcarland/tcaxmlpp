@@ -13,7 +13,6 @@ class DbMaintainer : public DbMaintainerInterface {
 
     DbMaintainer ( const std::string & index_table,
                    const std::string & data_table,
-                   int   days_per_interval = 1,
                    int   table_count       = 30 );
 
     virtual ~DbMaintainer();
@@ -59,7 +58,6 @@ class DbMaintainer : public DbMaintainerInterface {
 
     std::string         _indexName;
     std::string         _dataName;
-    int                 _numDays;
     int                 _numTables;
 
     IndexList           _current;
