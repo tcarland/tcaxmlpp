@@ -33,10 +33,10 @@ INCLUDES=       -Iinclude
 LIBS=
 
 BIN=		archiver
-OBJS=		src/ArchiveConfig.o src/Archiver.o src/ArchiverThread.o \
-		src/ArchiveMessageHandler.o src/ArchiveClient.o \
-		src/ArchiveSubscriber.o src/ArchiveDbMaintainer.o \
-		src/ClientIOHandler.o \
+OBJS=		src/ArchiveConfig.o src/ArchiverThread.o \
+		src/ArchiveMessageHandler.o src/ArchiveSubscriber.o \
+		src/ArchiveClient.o src/ClientIOHandler.o \
+		src/DbMaintainer.o src/DbArchiver.o \
 		src/TnmsArchiveManager.o src/archiver_main.o
 
 ALL_OBJS=	$(OBJS)

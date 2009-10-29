@@ -35,7 +35,7 @@ ArchiverThread::ArchiveTimer::timeout ( const EventTimer & timer )
 ArchiverThread::ArchiverThread ( EventManager * evmgr, 
                                  SqlSession   * sql, 
                                  SchemaConfig & config )
-    : _archiver(new Archiver(sql, config)),
+    : _archiver(new DbArchiver(sql, config)),
       _tid(0),
       _fid(0)
 {

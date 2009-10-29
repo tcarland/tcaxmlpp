@@ -2,7 +2,6 @@
 
 #include "ArchiveMessageHandler.h"
 
-#include "Archiver.h"
 #include "ArchiverThread.h"
 #include "ArchiveClient.h"
 
