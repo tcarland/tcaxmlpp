@@ -32,21 +32,21 @@ class DbArchiver : public DbMaintainer {
     virtual ~DbArchiver();
 
 
-    void           runUpdates    ( const time_t & now, bool flush );
+    void           runUpdates        ( const time_t & now, bool flush );
    
 
-    virtual void   getTimePeriods    ( NameList   & nameList );
-    virtual void   createTimePeriods ( IndexList  & indices );
-    virtual void   deleteTimePeriods ( IndexList  & indices );
+    virtual void   getTimePeriods    ( DbNameList   & nameList );
+    virtual void   createTimePeriods ( DbIndexList  & indices );
+    virtual void   deleteTimePeriods ( DbIndexList  & indices );
 
 
   protected:
 
     void      loadIndexMap();
 
-    uint32_t  getElementId    ( const std::string & name );
-    uint32_t  queryElementId  ( const std::string & name );
-    uint32_t  insertElementId ( const std::string & name );
+    uint32_t  getElementId      ( const std::string & name );
+    uint32_t  queryElementId    ( const std::string & name );
+    uint32_t  insertElementId   ( const std::string & name );
 
 
   public:

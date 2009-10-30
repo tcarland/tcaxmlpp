@@ -121,8 +121,8 @@ EventManager::addTimerEvent ( EventTimerHandler * handler, time_t abstime )
 {
     EventTimer  timer;
 
-    if ( handler == NULL || abstime < time(NULL) )
-	return 0;
+    if ( handler == NULL )
+        return 0;
 
 #   ifdef EV_DEBUG
     printf("EventManager::addTimerEvent()\n");

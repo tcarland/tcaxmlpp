@@ -53,9 +53,9 @@ struct DbTimePeriod
                                       const DbTimePeriod & tp );
 };
 
-typedef std::list<std::string>   NameList;
-typedef std::list<DbTimePeriod>  IndexList;
-typedef std::set<DbTimePeriod>   PeriodSet;
+typedef std::list<std::string>   DbNameList;
+typedef std::list<DbTimePeriod>  DbIndexList;
+typedef std::set<DbTimePeriod>   DbPeriodSet;
 
 
 } // namespace

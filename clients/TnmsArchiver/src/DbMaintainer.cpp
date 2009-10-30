@@ -19,14 +19,16 @@ DbMaintainer::DbMaintainer ( const std::string & index_table,
 {
 }
 
+
 DbMaintainer::~DbMaintainer()
 {
 }
 
+
 void
 DbMaintainer::runMaintainer ( const time_t & now )
 {
-    IndexList  to_create, to_delete;
+    DbIndexList  to_create, to_delete;
 
     LogFacility::LogMessage("DbMaintainer::run()");
 
@@ -46,7 +48,7 @@ DbMaintainer::runMaintainer ( const time_t & now )
 std::string
 DbMaintainer::getTargetTable ( const time_t & timestamp )
 {
-    std::string target;
+    std::string  target;
 
     DbTimePeriod  tp = this->getTargetTimePeriod(timestamp);
     target = _dataName + "_" + StringUtils::toString(tp.start);
@@ -108,15 +110,17 @@ template<typename OutputIterator_>
 void
 DbMaintainer::getDatabasePeriods ( OutputIterator_ out )
 {
-    NameList  index_names;
+    DbNameList            index_names;
+    DbNameList::iterator  iter;
 
     this->getTimePeriods(index_names);
 
-    for ( NameList::iterator i = index_names.begin(); i != index_names.end(); ++i ) {
+    for ( iter = index_names.begin(); iter != index_names.end(); ++iter )
+    {
         std::string   time;
         DbTimePeriod  index;
 
-        std::string & name  = (*i);
+        std::string & name  = (*iter);
 
         time  = name.substr(name.rfind('_') + 1);
         index = this->getInterval(StringUtils::fromString<time_t>(time));
@@ -151,8 +155,8 @@ DbMaintainer::slideByDays ( DbTimePeriod & period, int days )
 template <typename OutputIterator_>
 void
 DbMaintainer::getPeriodsInRange ( const DbTimePeriod & begin,
-                                         const DbTimePeriod & end, 
-                                         OutputIterator_      out )
+                                  const DbTimePeriod & end,
+                                  OutputIterator_      out )
 {
     DbTimePeriod  current(begin);
 

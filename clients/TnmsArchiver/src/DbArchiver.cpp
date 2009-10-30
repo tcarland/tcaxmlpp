@@ -36,7 +36,7 @@ DbArchiver::runUpdates ( const time_t & now, bool flush )
     {
         LogFacility::LogMessage("DbArchiver intitiating database connection");
         if ( ! sql->connect() ) {
-            LogFacility::LogMessage("DbArchiver: Error in connection: " + sql->sqlErrorStr());
+            LogFacility::LogMessage("DbArchiver: ERROR in connection: " + sql->sqlErrorStr());
             return;
         }
         LogFacility::LogMessage("Archive connection established for " + schema.index_table);
@@ -66,11 +66,9 @@ DbArchiver::runUpdates ( const time_t & now, bool flush )
               << metric.getSamples() << ", \"" << valstr << "\", \"" << metric.getPvtData() << "\", " 
               << metric.getTimestamp() << ")";
 
-        if ( ! sql->submitQuery(query) )
-        {
-            LogFacility::Message  msg;
-            msg << "DbArchiver::runUpdates() Error in query submit: '" << sql->sqlErrorStr() << "'";
-            LogFacility::LogMessage(msg.str());
+        if ( ! sql->submitQuery(query) ) {
+            LogFacility::LogMessage("DbArchiver::runUpdates() ERROR in query submit: " + sql->sqlErrorStr());
+            break;
         }
 
         notifier->metricq.pop();
@@ -175,7 +173,7 @@ DbArchiver::insertElementId ( const std::string & name )
 }
 
 void       
-DbArchiver::getTimePeriods ( NameList & namelist )
+DbArchiver::getTimePeriods ( DbNameList & namelist )
 {
     Query   query;
     Result  res;
@@ -207,9 +205,9 @@ DbArchiver::getTimePeriods ( NameList & namelist )
 
 
 void       
-DbArchiver::createTimePeriods ( IndexList & indices )
+DbArchiver::createTimePeriods ( DbIndexList & indices )
 {
-    IndexList::const_iterator iIter;
+    DbIndexList::const_iterator iIter;
 
     for ( iIter = indices.begin(); iIter != indices.end(); ++iIter ) {
         const DbTimePeriod & period = *iIter;
@@ -228,9 +226,9 @@ DbArchiver::createTimePeriods ( IndexList & indices )
 
 
 void       
-DbArchiver::deleteTimePeriods ( IndexList & indices )
+DbArchiver::deleteTimePeriods ( DbIndexList & indices )
 {    
-    IndexList::const_iterator  iIter;
+    DbIndexList::const_iterator  iIter;
 
     for ( iIter = indices.begin(); iIter != indices.end(); ++iIter ) 
     {

@@ -26,9 +26,9 @@ class DbMaintainer : public DbMaintainerInterface {
     virtual std::string  getTargetTable       ( const time_t & timestamp );
     virtual DbTimePeriod getTargetTimePeriod  ( const time_t & timestamp );
 
-    virtual void         getTimePeriods       ( NameList     & nameList ) = 0;
-    virtual void         createTimePeriods    ( IndexList    & indices ) = 0;
-    virtual void         deleteTimePeriods    ( IndexList    & indices ) = 0;
+    virtual void         getTimePeriods       ( DbNameList   & nameList ) = 0;
+    virtual void         createTimePeriods    ( DbIndexList  & indices ) = 0;
+    virtual void         deleteTimePeriods    ( DbIndexList  & indices ) = 0;
 
     virtual DbTimePeriod getInterval          ( const time_t & timestamp );
 
@@ -64,8 +64,8 @@ class DbMaintainer : public DbMaintainerInterface {
     std::string         _dataName;
     int                 _numTables;
 
-    IndexList           _current;
-    IndexList           _dbperiods;
+    DbIndexList         _current;
+    DbIndexList         _dbperiods;
 
 };
 
