@@ -42,8 +42,8 @@ class TnmsAuthManager : public EventTimerHandler {
 
 
     // EventTimerHandler
-    virtual void timeout  ( const EventTimer * timer );
-    virtual void finished ( const EventTimer * timer ) {}
+    virtual void timeout  ( const EventTimer & timer );
+    virtual void finished ( const EventTimer & timer ) {}
 
 
     void         run();

@@ -56,9 +56,9 @@ TnmsConsoleManager::run()
 
 
 void
-TnmsConsoleManager::timeout ( const EventTimer * timer )
+TnmsConsoleManager::timeout ( const EventTimer & timer )
 {
-    const time_t & now = timer->abstime.tv_sec;
+    const time_t & now = timer.abstime.tv_sec;
     LogFacility::SetLogTime(now);
 
     _clientHandler->timeout(timer);

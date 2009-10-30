@@ -38,14 +38,14 @@ ClientIOHandler::~ClientIOHandler()
 
 
 void
-ClientIOHandler::timeout ( const EventTimer * timer )
+ClientIOHandler::timeout ( const EventTimer & timer )
 {
     int  rd  = 0;
     int  sd  = 0;
 
     ClientSet::iterator  cIter;
 
-    const time_t & now = timer->abstime.tv_sec;
+    const time_t & now = timer.abstime.tv_sec;
 
     for ( cIter = _clientSet.begin(); cIter != _clientSet.end(); ++cIter ) {
         TnmsClient * client = *cIter;
@@ -63,7 +63,7 @@ ClientIOHandler::timeout ( const EventTimer * timer )
             } else if ( c >= 0 ) {
                 logmsg << " client (re)connecting..." << std::endl;
                 LogFacility::LogMessage(logmsg);
-                timer->evmgr->addIOEvent(this, client->getDescriptor(), client);
+                timer.evmgr->addIOEvent(this, client->getDescriptor(), client);
                 continue;
             }
 
@@ -102,13 +102,13 @@ ClientIOHandler::timeout ( const EventTimer * timer )
 
 
 void
-ClientIOHandler::handle_read ( const EventIO * io )
+ClientIOHandler::handle_read ( const EventIO & io )
 {
     int  rd  = 0;
 
-    TnmsClient * client = (TnmsClient*) io->rock;
+    TnmsClient * client = (TnmsClient*) io.rock;
 
-    if ( (rd = client->receive(io->abstime.tv_sec)) < 0 )
+    if ( (rd = client->receive(io.abstime.tv_sec)) < 0 )
         return this->handle_close(io);
     else if ( rd > 0 )
         LogFacility::LogMessage("ClientIOHandler::handle_read() bytes = " 
@@ -119,16 +119,16 @@ ClientIOHandler::handle_read ( const EventIO * io )
 
 
 void
-ClientIOHandler::handle_write ( const EventIO * io )
+ClientIOHandler::handle_write ( const EventIO & io )
 {
     int  wt = 0;
 
-    if ( io->isServer )
+    if ( io.isServer )
         return;
 
-    TnmsClient * client = (TnmsClient*) io->rock;
+    TnmsClient * client = (TnmsClient*) io.rock;
 
-    if ( (wt = client->send(io->abstime.tv_sec)) < 0 )
+    if ( (wt = client->send(io.abstime.tv_sec)) < 0 )
         return this->handle_close(io);
     else if ( wt > 0 )
         LogFacility::LogMessage("ClientIOHandler::handle_write() bytes = " 
@@ -139,14 +139,14 @@ ClientIOHandler::handle_write ( const EventIO * io )
 
 
 void
-ClientIOHandler::handle_close ( const EventIO * io )
+ClientIOHandler::handle_close ( const EventIO & io )
 {
-    if ( io->isServer )
+    if ( io.isServer )
         return;
 
-    io->evmgr->removeEvent(io->evid);
+    io.evmgr->removeEvent(io.evid);
 
-    TnmsClient * client = (TnmsClient*) io->rock;
+    TnmsClient * client = (TnmsClient*) io.rock;
 
     if ( client == NULL )
         return;
@@ -165,15 +165,15 @@ ClientIOHandler::handle_close ( const EventIO * io )
 }
 
 void
-ClientIOHandler::handle_shut ( const EventIO * io )
+ClientIOHandler::handle_shut ( const EventIO & io )
 {
 
 }
 
 void
-ClientIOHandler::handle_destroy ( const EventIO * io )
+ClientIOHandler::handle_destroy ( const EventIO & io )
 {
-    TnmsClient * client = (TnmsClient*) io->rock;
+    TnmsClient * client = (TnmsClient*) io.rock;
 
     if ( client == NULL )
         return;
@@ -188,19 +188,19 @@ ClientIOHandler::handle_destroy ( const EventIO * io )
 
 
 bool
-ClientIOHandler::readable ( const EventIO * io )
+ClientIOHandler::readable ( const EventIO & io )
 {
     return true;
 }
 
 
 bool
-ClientIOHandler::writeable ( const EventIO * io )
+ClientIOHandler::writeable ( const EventIO & io )
 {
-    if ( io->isServer )
+    if ( io.isServer )
         return false;
 
-    TnmsClient * client = (TnmsClient*) io->rock;
+    TnmsClient * client = (TnmsClient*) io.rock;
 
     if ( client && client->txBytesBuffered() > 0 )
         return true;

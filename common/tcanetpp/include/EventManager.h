@@ -44,11 +44,11 @@ namespace tcanetpp {
 #define evutomsec(x) (x / 1000)
 
 
-#define DEFAULT_EVU 10000  // default select timeout
-#define MAX_FDVAL   1024   // max file descriptors
+#define DEFAULT_EVU 10000    // default select timeout
+#define MAX_FDVAL   1024000  // max file descriptors
 #define NO_EVID     0 
  
-typedef uint64_t  evid_t;  // event registration id 
+typedef uint64_t  evid_t;    // event registration id
 
 
 class EventManager;
@@ -83,9 +83,8 @@ typedef std::map<evid_t, EventTimer>  EventTimerMap;
 
 
 
-/**  The EventIO struct is created and used internally to represent 
-  *  an IO event. When an event is fired, a const pointer to this 
-  *  struct is provided to the application's event handler.
+/**  The EventIO struct represents an IO event. When an event is fired,
+  *  a const pointer to this struct is provided to the event handler.
   *  ( see EventHandlers.h )
  **/
 struct EventIO {

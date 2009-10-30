@@ -17,12 +17,12 @@ TnmsClientIOHandler::~TnmsClientIOHandler() {}
 
 
 void
-TnmsClientIOHandler::timeout ( const EventTimer * timer )
+TnmsClientIOHandler::timeout ( const EventTimer & timer )
 {
     int  rd  = 0;
     int  wt  = 0;
 
-    const time_t & now = timer->abstime.tv_sec;
+    const time_t & now = timer.abstime.tv_sec;
 
     ClientSet::iterator  cIter;
     for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
@@ -39,7 +39,7 @@ TnmsClientIOHandler::timeout ( const EventTimer * timer )
                     LogFacility::LogMessage("ClientIOHandler mirror disconnected.");
                     continue;
                 } else if ( c >= 0 ) {
-                    timer->evmgr->addIOEvent(this, client->getSockFD(), client);
+                    timer.evmgr->addIOEvent(this, client->getSockFD(), client);
                     continue;
                 }
 
@@ -98,19 +98,19 @@ TnmsClientIOHandler::removeClient ( TnmsClient * client )
 
 
 void
-TnmsClientIOHandler::handle_read ( const EventIO * io )
+TnmsClientIOHandler::handle_read ( const EventIO & io )
 {
     int  rd   = 0;
 
-    if ( io->isServer )
+    if ( io.isServer )
         return;
 
-    TnmsClient * client = (TnmsClient*) io->rock;
+    TnmsClient * client = (TnmsClient*) io.rock;
 
     if ( ! _rlock->lock() )
         return;
 
-    rd = client->receive(io->abstime.tv_sec);
+    rd = client->receive(io.abstime.tv_sec);
 
     _rlock->unlock();
 
@@ -127,19 +127,19 @@ TnmsClientIOHandler::handle_read ( const EventIO * io )
 }
 
 void
-TnmsClientIOHandler::handle_write ( const EventIO * io )
+TnmsClientIOHandler::handle_write ( const EventIO & io )
 {
     int   wt  = 0;
 
-    if ( io->isServer )
+    if ( io.isServer )
         return;
 
-    TnmsClient * client = (TnmsClient*) io->rock;
+    TnmsClient * client = (TnmsClient*) io.rock;
 
     if ( ! _rlock->lock() )
         return;
     
-    wt = client->send(io->abstime.tv_sec);
+    wt = client->send(io.abstime.tv_sec);
 
     _rlock->unlock();
 
@@ -157,12 +157,12 @@ TnmsClientIOHandler::handle_write ( const EventIO * io )
 
 
 void
-TnmsClientIOHandler::handle_close ( const EventIO * io )
+TnmsClientIOHandler::handle_close ( const EventIO & io )
 {
-    if ( io->isServer )
+    if ( io.isServer )
         return;
 
-    TnmsClient * client = (TnmsClient*) io->rock;
+    TnmsClient * client = (TnmsClient*) io.rock;
     
     if ( client == NULL )
         return;
@@ -175,7 +175,7 @@ TnmsClientIOHandler::handle_close ( const EventIO * io )
 
     client->close();
     _clients.erase(client);
-    io->evmgr->removeEvent(io->evid);
+    io.evmgr->removeEvent(io.evid);
 
     _rlock->unlock();
 
@@ -184,16 +184,16 @@ TnmsClientIOHandler::handle_close ( const EventIO * io )
 
 
 void
-TnmsClientIOHandler::handle_destroy ( const EventIO * io )
+TnmsClientIOHandler::handle_destroy ( const EventIO & io )
 {    
     LogFacility::LogMessage("ClientIOHandler::handle_destroy()");
 
-    if ( io->isServer ) {
-        Socket * svr = (Socket*) io->rock;
+    if ( io.isServer ) {
+        Socket * svr = (Socket*) io.rock;
         if ( svr )
             delete svr;
     } else {
-        TnmsClient * client = (TnmsClient*) io->rock;
+        TnmsClient * client = (TnmsClient*) io.rock;
         if ( client && ! client->isMirror() )
             delete client;
     }
@@ -204,19 +204,19 @@ TnmsClientIOHandler::handle_destroy ( const EventIO * io )
 
 
 bool
-TnmsClientIOHandler::readable ( const EventIO * io )
+TnmsClientIOHandler::readable ( const EventIO & io )
 {
     return true;
 }
 
 
 bool
-TnmsClientIOHandler::writeable ( const EventIO * io )
+TnmsClientIOHandler::writeable ( const EventIO & io )
 {
-    if ( io->isServer )
+    if ( io.isServer )
         return false;
 
-    TnmsClient * client = (TnmsClient*) io->rock;
+    TnmsClient * client = (TnmsClient*) io.rock;
 
     if ( client && client->txBytesBuffered() > 0 )
         return true;

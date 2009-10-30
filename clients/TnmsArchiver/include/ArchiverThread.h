@@ -55,8 +55,8 @@ class ArchiverThread : public tcanetpp::Thread {
         ArchiveTimer();
         virtual ~ArchiveTimer();
 
-        virtual void timeout  ( const EventTimer * timer );
-        virtual void finished ( const EventTimer * timer ) {}
+        virtual void timeout  ( const EventTimer & timer );
+        virtual void finished ( const EventTimer & timer ) {}
 
       public:
 

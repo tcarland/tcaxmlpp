@@ -89,11 +89,11 @@ SoapIOHandler::max_connections() const
 
 
 void
-SoapIOHandler::handle_accept ( const EventIO * io ) 
+SoapIOHandler::handle_accept ( const EventIO & io ) 
 {
-    SoapClient * svr = (SoapClient*) io->rock;
+    SoapClient * svr = (SoapClient*) io.rock;
 
-    if ( ! io->isServer )
+    if ( ! io.isServer )
         return;
 
     SoapClient * client = svr->accept();
@@ -101,7 +101,7 @@ SoapIOHandler::handle_accept ( const EventIO * io )
     if ( client == NULL )
         return;
 
-    SoapThread * sthread = new SoapThread(client, io->abstime.tv_sec);
+    SoapThread * sthread = new SoapThread(client, io.abstime.tv_sec);
 
     try {
         sthread->start();
@@ -117,9 +117,9 @@ SoapIOHandler::handle_accept ( const EventIO * io )
 
 
 void
-SoapIOHandler::handle_destroy ( const EventIO * io )
+SoapIOHandler::handle_destroy ( const EventIO & io )
 {
-    SoapClient * svr = (SoapClient*) io->rock;
+    SoapClient * svr = (SoapClient*) io.rock;
 
     if ( svr )
         delete svr;
@@ -127,14 +127,14 @@ SoapIOHandler::handle_destroy ( const EventIO * io )
 
 
 bool
-SoapIOHandler::readable ( const EventIO * io )
+SoapIOHandler::readable ( const EventIO & io )
 {
     return true;
 }
 
 
 bool
-SoapIOHandler::writeable ( const EventIO * io )
+SoapIOHandler::writeable ( const EventIO & io )
 {
     return false;
 }

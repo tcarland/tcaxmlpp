@@ -45,8 +45,8 @@ class EventTimerHandler {
   
     virtual ~EventTimerHandler() {}
   
-    virtual void timeout  ( const EventTimer * timer ) = 0;
-    virtual void finished ( const EventTimer * timer ) = 0;
+    virtual void timeout  ( const EventTimer & timer ) = 0;
+    virtual void finished ( const EventTimer & timer ) = 0;
 };
 
 
@@ -57,16 +57,16 @@ class EventIOHandler {
 
     virtual ~EventIOHandler() {}
 
-    virtual void handle_accept  ( const EventIO * io ) = 0;
-    virtual void handle_read    ( const EventIO * io ) = 0;
-    virtual void handle_write   ( const EventIO * io ) = 0;
-    virtual void handle_shut    ( const EventIO * io ) = 0;
-    virtual void handle_close   ( const EventIO * io ) = 0;
-    virtual void handle_destroy ( const EventIO * io ) = 0;
+    virtual void handle_accept  ( const EventIO & io ) = 0;
+    virtual void handle_read    ( const EventIO & io ) = 0;
+    virtual void handle_write   ( const EventIO & io ) = 0;
+    virtual void handle_shut    ( const EventIO & io ) = 0;
+    virtual void handle_close   ( const EventIO & io ) = 0;
+    virtual void handle_destroy ( const EventIO & io ) = 0;
 
 
-    virtual bool readable       ( const EventIO * io ) = 0;
-    virtual bool writeable      ( const EventIO * io ) = 0;
+    virtual bool readable       ( const EventIO & io ) = 0;
+    virtual bool writeable      ( const EventIO & io ) = 0;
     
 };
 

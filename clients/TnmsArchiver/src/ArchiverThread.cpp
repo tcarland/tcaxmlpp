@@ -24,7 +24,7 @@ ArchiverThread::ArchiveTimer::~ArchiveTimer()
 }
 
 void
-ArchiverThread::ArchiveTimer::timeout ( const EventTimer * timer )
+ArchiverThread::ArchiveTimer::timeout ( const EventTimer & timer )
 {
     mutex->notify();
 }

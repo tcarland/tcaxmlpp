@@ -107,21 +107,21 @@ TnmsAuthManager::run()
 }
 
 void
-TnmsAuthManager::timeout ( const EventTimer * timer ) 
+TnmsAuthManager::timeout ( const EventTimer & timer ) 
 {
-    const time_t & now = timer->abstime.tv_sec;
+    const time_t & now = timer.abstime.tv_sec;
 
     LogFacility::SetLogTime(now);
 
     //check for logrotate
-    if ( timer->evid == _logId ) {
+    if ( timer.evid == _logId ) {
         if ( ! _tconfig.syslog )
             this->logRotate(_tconfig.logfile, now);
         return;
     }
 
     // internal metrics
-    if ( timer->evid == _reportId ) {
+    if ( timer.evid == _reportId ) {
         LogFacility::LogMessage("TnmsAuthManager::run() "); // <<add some stats
         return;
     }

@@ -47,9 +47,9 @@ AuthdIOHandler::timeout ( const time_t & now )
 
 
 void
-AuthdIOHandler::handle_accept ( const EventIO * io )
+AuthdIOHandler::handle_accept ( const EventIO & io )
 {
-    Socket         * svr    = (Socket*) io->rock;
+    Socket         * svr    = (Socket*) io.rock;
     AuthdClient    * client = NULL;
     BufferedSocket * sock   = NULL;
 
@@ -59,7 +59,7 @@ AuthdIOHandler::handle_accept ( const EventIO * io )
         return;
 
     client = new AuthdClient(sock, _authDb);
-    io->evmgr->addIOEvent(this, client->getFD(), client);
+    io.evmgr->addIOEvent(this, client->getFD(), client);
     _clients.insert(client);
 
     LogFacility::LogMessage("AuthdIOHandler::handle_accept() " + client->getHostStr());
@@ -68,19 +68,19 @@ AuthdIOHandler::handle_accept ( const EventIO * io )
 }
 
 void
-AuthdIOHandler::handle_read ( const EventIO * io )
+AuthdIOHandler::handle_read ( const EventIO & io )
 {
     int  rd = 0;
 
-    if ( io->isServer )
+    if ( io.isServer )
         return;
 
-    AuthdClient * client = (AuthdClient*) io->rock;
+    AuthdClient * client = (AuthdClient*) io.rock;
 
     if ( NULL == client )
         return;
 
-    if ( (rd = client->receive(io->abstime.tv_sec)) < 0 ) {
+    if ( (rd = client->receive(io.abstime.tv_sec)) < 0 ) {
         LogFacility::LogMessage("AuthdIOHandler::handle_read() error "
             + client->getErrorStr());
         return this->handle_close(io);
@@ -96,16 +96,16 @@ AuthdIOHandler::handle_read ( const EventIO * io )
 
 
 void
-AuthdIOHandler::handle_write ( const EventIO * io )
+AuthdIOHandler::handle_write ( const EventIO & io )
 {
     int  wt = 0;
 
-    if ( io->isServer )
+    if ( io.isServer )
         return;
 
-    AuthdClient * client = (AuthdClient*) io->rock;
+    AuthdClient * client = (AuthdClient*) io.rock;
 
-    if ( (wt = client->send(io->abstime.tv_sec)) < 0 ) {
+    if ( (wt = client->send(io.abstime.tv_sec)) < 0 ) {
         LogFacility::LogMessage("AuthdIOHandler::handle_read() error "
             + client->getErrorStr());
         return this->handle_close(io);
@@ -121,12 +121,12 @@ AuthdIOHandler::handle_write ( const EventIO * io )
 
 
 void
-AuthdIOHandler::handle_close ( const EventIO * io )
+AuthdIOHandler::handle_close ( const EventIO & io )
 {
-    if ( io->isServer )
+    if ( io.isServer )
         return;
 
-    AuthdClient * client = (AuthdClient*) io->rock;
+    AuthdClient * client = (AuthdClient*) io.rock;
 
     if ( client == NULL )
         return;
@@ -137,20 +137,20 @@ AuthdIOHandler::handle_close ( const EventIO * io )
 
     client->close();
     _clients.erase(client);
-    io->evmgr->removeEvent(io->evid);
+    io.evmgr->removeEvent(io.evid);
 
     return;
 }
 
 void
-AuthdIOHandler::handle_destroy ( const EventIO * io )
+AuthdIOHandler::handle_destroy ( const EventIO & io )
 {
-    if ( io->isServer ) {
-        Socket * svr = (Socket*) io->rock;
+    if ( io.isServer ) {
+        Socket * svr = (Socket*) io.rock;
         if ( svr )
             delete svr;
     } else {
-        AuthdClient * client = (AuthdClient*) io->rock;
+        AuthdClient * client = (AuthdClient*) io.rock;
         if ( client && ! client->isMirror() ) {
             if ( LogFacility::GetDebug() )
                 LogFacility::LogMessage("AuthdIOHandler::handle_destroy() "
@@ -163,19 +163,19 @@ AuthdIOHandler::handle_destroy ( const EventIO * io )
 }
 
 bool
-AuthdIOHandler::readable ( const EventIO * io )
+AuthdIOHandler::readable ( const EventIO & io )
 {
     return true;
 }
 
 
 bool
-AuthdIOHandler::writeable ( const EventIO * io )
+AuthdIOHandler::writeable ( const EventIO & io )
 {
-    if ( io == NULL || io->isServer )
+    if ( io.evid == NO_EVID || io.isServer )
         return false;
 
-    AuthdClient * client = (AuthdClient*) io->rock;
+    AuthdClient * client = (AuthdClient*) io.rock;
 
     if ( client && client->txBytesBuffered() > 0 )
         return true;

@@ -254,10 +254,10 @@ EventManager::eventLoop()
             if ( ! io.enabled )
                 continue;
 
-	    if ( io.handler->readable(&io) )
+	    if ( io.handler->readable(io) )
 		FD_SET(io.sfd, &_rset);
 
-	    if ( io.handler->writeable(&io) )
+	    if ( io.handler->writeable(io) )
 		FD_SET(io.sfd, &_wset);
 	}
 
@@ -300,15 +300,15 @@ EventManager::eventLoop()
                 io.abstime = now;
 
 		if ( io.isServer ) {
-		    io.handler->handle_accept(&io);
+		    io.handler->handle_accept(io);
 		} else {
-		    io.handler->handle_read(&io);
+		    io.handler->handle_read(io);
 		}
 	    }
 
 	    if ( FD_ISSET(io.sfd, &_wset) ) {
                 io.abstime = now;
-		io.handler->handle_write(&io);
+		io.handler->handle_write(io);
 	    }
 	}
 
@@ -354,7 +354,7 @@ EventManager::findTimerEvent ( const evid_t & id ) const
     if ( tIter == _timers.end() )
         return NULL;
 
-    return &tIter->second;
+    return(&tIter->second);
 }
 
 
@@ -368,7 +368,7 @@ EventManager::findIOEvent ( const evid_t & id ) const
     if ( iIter == _clients.end() )
         return NULL;
 
-    return &iIter->second;
+    return(&iIter->second);
 }
 
 
@@ -483,7 +483,7 @@ EventManager::checkTimers ( const timeval & now )
             timer.abstime = now;
             timer.fired++;
 
-            timer.handler->timeout(&timer);
+            timer.handler->timeout(timer);
 
             if ( timer.absolute || (timer.count > 0 && timer.fired == timer.count) ) {
                 timer.enabled = false;
@@ -504,8 +504,8 @@ EventManager::clearTimers()
     EventTimerMap::iterator  tIter;
 
     for ( tIter = _timers.begin(); tIter != _timers.end(); ++tIter ) {
-	EventTimer & timer = tIter->second;
-	this->destroyEvent(timer);
+        EventTimer & timer = tIter->second;
+        this->destroyEvent(timer);
     }
     _timers.clear();
 
@@ -545,7 +545,7 @@ void
 EventManager::destroyEvent ( EventIO & io )
 {
     if ( io.handler )
-	io.handler->handle_destroy(&io);
+	io.handler->handle_destroy(io);
     io.enabled = false;
     return;
 }
@@ -555,7 +555,7 @@ void
 EventManager::destroyEvent ( EventTimer & timer )
 {
     if ( timer.enabled )
-	timer.handler->finished(&timer);
+	timer.handler->finished(timer);
     timer.enabled = false;
 }
     
@@ -615,7 +615,7 @@ bool
 EventTimer::operator== ( const EventTimer & timer )
 {
     if ( this->evsec > 0 )
-	return(evsec == timer.evsec);
+        return(evsec == timer.evsec);
     return(this->evusec == timer.evusec);
 }
 
@@ -624,7 +624,7 @@ bool
 EventTimer::operator< ( const EventTimer & timer )
 {
     if ( this->evsec > 0 )
-	return(this->evsec < timer.evsec);
+        return(this->evsec < timer.evsec);
     return(this->evusec < timer.evusec);
 }
 

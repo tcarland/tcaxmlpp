@@ -35,24 +35,26 @@ class ClientIOHandler : public EventIOHandler {
 
     /*  EventIOHandler */
 
-    virtual void   handle_accept  ( const EventIO * io ) {}
-    virtual void   handle_read    ( const EventIO * io );
-    virtual void   handle_write   ( const EventIO * io );
-    virtual void   handle_shut    ( const EventIO * io );
-    virtual void   handle_close   ( const EventIO * io );
-    virtual void   handle_destroy ( const EventIO * io );
+    virtual void   handle_accept  ( const EventIO & io ) {}
+    virtual void   handle_read    ( const EventIO & io );
+    virtual void   handle_write   ( const EventIO & io );
+    virtual void   handle_shut    ( const EventIO & io );
+    virtual void   handle_close   ( const EventIO & io );
+    virtual void   handle_destroy ( const EventIO & io );
     
 
-    virtual bool   readable       ( const EventIO * io );
-    virtual bool   writeable      ( const EventIO * io );
+    virtual bool   readable       ( const EventIO & io );
+    virtual bool   writeable      ( const EventIO & io );
 
 
     /*  ClientIOHandler */
 
-    void           timeout        ( const EventTimer * timer );
+    void           timeout        ( const EventTimer  & timer );
+
+    TnmsClient*    find           ( const std::string & name );
 
     bool           insert         ( const std::string & name,
-                                    TnmsClient * client );
+                                    TnmsClient        * client );
     void           erase          ( const std::string & name );
 
     iterator       begin();
@@ -61,8 +63,6 @@ class ClientIOHandler : public EventIOHandler {
     const_iterator end()   const;
     size_t         size()  const;
     void           clear();
-
-    TnmsClient*    find ( const std::string & name );
 
     void           listClients();
 

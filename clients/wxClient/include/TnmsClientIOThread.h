@@ -28,7 +28,7 @@ class TnmsClientIOThread : public Thread {
 
     virtual void  run();
     
-    void          timeout      ( const EventTimer * timer );
+    void          timeout      ( const EventTimer & timer );
 
     bool          addClient    ( TnmsClient * client );
     void          removeClient ( TnmsClient * client );
@@ -48,8 +48,8 @@ class TnmsClientIOThread : public Thread {
         {}
         virtual ~ClientIOTimer() {}
 
-        void timeout  ( const EventTimer * timer );
-        void finished ( const EventTimer * timer ) {}
+        void timeout  ( const EventTimer & timer );
+        void finished ( const EventTimer & timer ) {}
 
         TnmsClientIOThread *  iothread;
     };

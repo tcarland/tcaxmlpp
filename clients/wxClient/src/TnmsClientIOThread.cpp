@@ -9,7 +9,7 @@ using namespace tcanetpp;
 
 /**  ClientIOTimer */
 void
-TnmsClientIOThread::ClientIOTimer::timeout ( const EventTimer * timer )
+TnmsClientIOThread::ClientIOTimer::timeout ( const EventTimer & timer )
 {
     if ( this->iothread == NULL )
         return;
@@ -48,7 +48,7 @@ TnmsClientIOThread::run()
 }
 
 void
-TnmsClientIOThread::timeout ( const EventTimer * timer )
+TnmsClientIOThread::timeout ( const EventTimer & timer )
 {
     if ( this->_Alarm ) {
         _evmgr->setAlarm();

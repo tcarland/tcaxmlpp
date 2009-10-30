@@ -38,11 +38,11 @@ AuthMessageHandler::PingHandler()
 //  AuthIOHandler
 
 void
-AuthIOHandler::handle_read ( const EventIO * io )
+AuthIOHandler::handle_read ( const EventIO & io )
 {
-    TnmsClient * client = (TnmsClient*) io->rock;
+    TnmsClient * client = (TnmsClient*) io.rock;
 
-    if  ( client && client->receive(io->abstime.tv_sec) < 0 ) {
+    if  ( client && client->receive(io.abstime.tv_sec) < 0 ) {
         LogFacility::LogMessage("AuthIOHandler::handle_read() error: " + client->getHostStr());
         client->close();
     }
@@ -51,11 +51,11 @@ AuthIOHandler::handle_read ( const EventIO * io )
 }
 
 void
-AuthIOHandler::handle_write ( const EventIO * io )
+AuthIOHandler::handle_write ( const EventIO & io )
 {
-    TnmsClient * client = (TnmsClient*) io->rock;
+    TnmsClient * client = (TnmsClient*) io.rock;
 
-    if  ( client && client->send(io->abstime.tv_sec) < 0 ) {
+    if  ( client && client->send(io.abstime.tv_sec) < 0 ) {
         LogFacility::LogMessage("AuthIOHandler::handle_write() error: " + client->getHostStr());
         client->close();
     }
@@ -64,9 +64,9 @@ AuthIOHandler::handle_write ( const EventIO * io )
 }
 
 void
-AuthIOHandler::handle_close ( const EventIO * io )
+AuthIOHandler::handle_close ( const EventIO & io )
 {
-    TnmsClient * client = (TnmsClient*) io->rock;
+    TnmsClient * client = (TnmsClient*) io.rock;
 
     if ( client ) {
         LogFacility::LogMessage("AuthIOHandler::handle_close() " + client->getHostStr());
@@ -77,15 +77,15 @@ AuthIOHandler::handle_close ( const EventIO * io )
 }
 
 bool
-AuthIOHandler::readable ( const EventIO * io )
+AuthIOHandler::readable ( const EventIO & io )
 {
     return true;
 }
 
 bool
-AuthIOHandler::writeable ( const EventIO * io )
+AuthIOHandler::writeable ( const EventIO & io )
 {
-    TnmsClient * client = (TnmsClient*) io->rock;
+    TnmsClient * client = (TnmsClient*) io.rock;
 
     if ( client && client->txBytesBuffered() > 0 )
         return true;
@@ -137,17 +137,17 @@ AuthClient::~AuthClient()
 
 
 void 
-AuthClient::timeout ( const EventTimer * timer )
+AuthClient::timeout ( const EventTimer & timer )
 {
     if ( _bypass || _authsvr.empty() )
         return;
 
-    const time_t  & now = timer->abstime.tv_sec;
+    const time_t  & now = timer.abstime.tv_sec;
 
     if ( _idleTimeout > 0 && _authMap.size() == 0 )
     {
         const EventIO * io  = _evmgr->findIOEvent(_evid);
-        if ( io && ! _authhandler->writeable(io) && _idlet <= now ) {
+        if ( io && ! _authhandler->writeable(*io) && _idlet <= now ) {
             if ( this->isConnected() )
                 this->close();
             _idlet = now + _idleTimeout;
