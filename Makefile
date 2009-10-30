@@ -6,7 +6,7 @@ include ./tcamake/build_defs
 # ------------------------
 
 all: print-env external common TnmsApi tnmsd tnmsauthd \
-	tnms-console wxClient
+	archiver tnms-console wxClient
 
 
 print-env:
@@ -35,6 +35,10 @@ tnmsauthd:
 	( cd TnmsAuthd; make tnmsauthd )
 	@echo
 
+archiver:
+	( cd clients/TnmsArchiver; make all )
+	@echo 
+
 tnms-console:
 	( cd clients/tnms-console; make all )
 	@echo
@@ -56,6 +60,7 @@ clean:
 	( cd TnmsApi; make clean )
 	( cd tnmsd; make clean )
 	( cd TnmsAuthd; make clean )
+	( cd clients/TnmsArchiver; make clean )
 	( cd clients/tnms-console; make clean )
 	( cd clients/wxClient; make clean )
 
@@ -64,6 +69,7 @@ distclean: external-clean
 	( cd TnmsApi; make distclean )
 	( cd tnmsd; make distclean )
 	( cd TnmsAuthd; make distclean )
+	( cd clients/TnmsArchiver; make distclean )
 	( cd clients/tnms-console; make distclean )
 	( cd clients/wxClient; make distclean )
 
@@ -74,6 +80,7 @@ ifdef TCANMS_PREFIX
 	( cd TnmsApi; make install )
 	( cd tnmsd; make install )
 	( cd TnmsAuthd; make install )
+	( cd clients/TnmsArchiver; make install )
 	( cd clients/tnms-console; make install )
 	( cd clients/wxClient; make install )
 endif
