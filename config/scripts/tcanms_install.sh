@@ -2,16 +2,16 @@
 #
 #  tcanms_install.sh
 #
-VERSION="0.1"
+VERSION="0.2"
 AUTHOR="tcarland@gmail.com"
 
-MYNAME=${0/#.\//}
-SYSHOME=
+PNAME=${0/#.\//}
+RSYNC="rsync"
 CONFIGDIR=
 PREFIX=
+SUBDIRS="bin sbin etc run tmp logs"
 
 CURDIR=`dirname $0`
-
 RETVAL=0
 
 # ------------------------------------------
@@ -23,86 +23,79 @@ if [ "$CURDIR" == "." ]; then
 fi
 
 if [ -z "$TCANMS_PREFIX" ]; then
-    echo "Variable TCANMS_PREFIX not set."
+    echo "Error: TCANMS_PREFIX not set."
     exit 1
 fi
 
 CONFIGDIR=$CURDIR
 
 echo ""
-echo "$MYNAME: "
+echo "$PNAME: "
 if [ -z "$RC_TCANMS_BASHRC" ]; then
     if [ -e $CONFIGDIR/tcanmsrc ]; then
-        echo "  Using rc from: $CONFIGDIR"
+        echo "  Using rc: $CONFIGDIR/tcanmsrc"
         source $CONFIGDIR/tcanmsrc
     elif [ -e $HOME/tcanmsrc ]; then
-        echo "  Using rc from: $HOME"
+        echo "  Using rc from: $HOME/tcanmsrc"
         source $HOME/tcanmsrc
     else
-        echo "Failed to locate rc file"
+        echo "Error: Failed to locate rc file: tcanmsrc"
         exit 1
     fi
 fi
 echo ""
 
-# remap our destination
-export TCANMS_HOME="${TCANMS_PREFIX}"
-
+# we remap to our destination
+PREFIX=$TCANMS_PREFIX
+export TCANMS_HOME="${PREFIX}"
 export TCANMS_BIN=${TCANMS_HOME}/bin
 export TCANMS_SBIN=${TCANMS_HOME}/sbin
 export TCANMS_TMP=${TCANMS_HOME}/tmp
 export TCANMS_LOGS=${TCANMS_HOME}/logs
 
+# paths to create
+for path in $SUBDIRS; do
+    PATHLIST+="${PREFIX}/$path "
+done
 
-init_db()
+ENVIR=$TCANMS_ENV
+HOST=$TCANMS_HOST
+INITDB=
+FORCE=
+
+# ------------------------------------------
+
+usage()
 {
-    local SQL="${TCANMS_TMP}/init_tcanms_db.sql"
-
-    if [ -z "$TCANMS_DBNAME" ] || [ -z "$TCANMS_DBUSER" ]; then
-        echo "DB Name macros are not set, aborting init_db()"
-        return 0
-    fi
-    if [ -z "$TCANMS_DBHOST" ]; then
-        TCANMS_DBHOST="localhost"
-    fi
-
-    echo "CREATE DATABASE $TCANMS_DBNAME;" > $SQL
-    echo "GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON tnmsauth.* \
-        TO $TCANMS_DBUSER@$TCANMS_DBHOST IDENTIFIED BY '$TCANMS_DBPASS';" >> $SQL
-    echo "" >> $SQL
-
-    if [ ${TCANMS_USEDB} == "mysql" ]; then
-        echo "  Executing mysql init script '$SQL' "
-        mysql -u root -p < $SQL
-    fi
-
-    return 1
+    echo ""
+    echo "Usage: $PNAME [-DfhvW] [-e environment] [-t targethost]"
+    echo ""
+    echo "   -D | --database    : generate and run database init script "
+    echo "   -f | --force       : force overwrite of install target '${TCANMS_PREFIX}'"
+    echo "   -h | --help        : display this help and exit"
+    echo "   -v | --version     : display verion info and exit"
+    echo "   -e | --environment : environment name from which to sync configs (optional)"
+    echo "   -t | --target      : name of the target host within the provided environment to sync"
+    echo "                        (requires -e or TCANMS_ENV to be set)"
+    echo ""
+    echo "   The 'environment' and 'target' flags will sync the configs for the provided "
+    echo "   environment and host within 'config/environment/envname/target'"
+    echo "   If not provided, the shell vars TCANMS_ENV and TCANMS_HOST will be used if set." 
+    echo "   The script requires the environment variable TCANMS_PREFIX as the "
+    echo "   target path to install. Current values are as follows: "
+    echo ""
+    echo "   TCANMS_PREFIX = '$TCANMS_PREFIX'"
+    echo "   TCANMS_ENV    = '$TCANMS_ENV'"
+    echo "   TCANMS_HOST   = '$TCANMS_HOST'"
+    echo "   TCANMS_USEDB  = '$TCANMS_USEDB'"
+    echo ""
+    version
 }
 
-
-init_env_configs()
+version()
 {
-    local cfgenv=$1
-    local cfghost=$2
-
-    if [ -z "$cfgenv" ] || [ -z "$cfghost" ]; then
-        echo "Invalid environment settings"
-        return -1
-    fi
-
-    local cfgpath="$CONFIGDIR/../environment/$cfgenv/$cfghost/"
-    local target="$TCANMS_PREFIX/"
-
-    echo "  Syncing configs from '$cfgenv/$cfghost'"
-
-    if [ -d $cfgpath ]; then
-        rsync -r $cfgpath $target
-    else
-        echo " Error, path not valid: $cfgpath"
-        return -1
-    fi
-
-    return 1
+    echo "$PNAME, Version $VERSION, by $AUTHOR"
+    echo ""
 }
 
 createSubdirs()
@@ -123,44 +116,65 @@ createSubdirs()
     done
 }
 
-
-usage()
+init_env_configs()
 {
-    echo ""
-    echo "Usage: $MYNAME [-DhvW] [-e environment] [-t targethost]"
-    echo ""
-    echo "   -D | --database    : generate and run database init script "
-    echo "   -h | --help        : display this help and exit"
-    echo "   -v | --version     : display verion info and exit"
-    echo "   -e | --environment : argument matching environment name ../config/environment/name"
-    echo "   -t | --target      : target host configs to sync (requires -e)"
-    echo "   -f | --force       : force overwrite of install target '${TCANMS_PREFIX}'"
-    echo ""
-    echo "   The 'environment' flag will sync the configs for the provided environment and host."
-    echo "   The script will by default use the environment variable TCANMS_PREFIX as the "
-    echo "   target path to install"
-    echo ""
+    local cfgenv=$1
+    local cfghost=$2
+
+    if [ -z "$cfgenv" ] || [ -z "$cfghost" ]; then
+        echo "  Invalid environment settings"
+        return -1
+    fi
+
+    local cfgpath="$CONFIGDIR/../environment/$cfgenv/$cfghost/"
+    local target="$PREFIX/"
+
+    echo "  Syncing configs from '$cfgenv/$cfghost'"
+
+    if [ -d $cfgpath ]; then
+        $RSYNC -r $cfgpath $target
+    else
+        echo " Error, path not valid: $cfgpath"
+        return -1
+    fi
+
+    return 1
 }
 
-version()
+
+init_db()
 {
-    echo "$MYNAME, Version $VERSION, $AUTHOR"
-    echo ""
+    local SQL="${TCANMS_TMP}/init_tcanms_db.sql"
+
+    if [ -z "$TCANMS_DBNAME" ] || [ -z "$TCANMS_DBUSER" ]; then
+        echo "  DB Name macros are not set, aborting init_db()"
+        return 0
+    fi
+    if [ -z "$TCANMS_DBHOST" ]; then
+        TCANMS_DBHOST="localhost"
+    fi
+    if [ -z "$TCANMS_DBPASS" ]; then
+        echo "  No password set for $TCANMS_DBUSER@$TCANMS_DBHOST"
+        return 0
+    fi
+
+    echo "CREATE DATABASE $TCANMS_DBNAME;" > $SQL
+    echo "GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON tnmsauth.* \
+        TO $TCANMS_DBUSER@$TCANMS_DBHOST IDENTIFIED BY '$TCANMS_DBPASS';" >> $SQL
+    echo "" >> $SQL
+
+    if [ ${TCANMS_USEDB} == "mysql" ]; then
+        echo "  Executing mysql init script '$SQL' "
+        mysql -u root -p < $SQL
+    fi
+
+    return 1
 }
 
 
 # --------------------------
 #  MAIN
 
-PREFIX=$TCANMS_PREFIX
-PATHLIST="${PREFIX}/bin ${PREFIX}/sbin ${PREFIX}/etc ${PREFIX}/tmp \
-${PREFIX}/logs ${PREFIX}/run"
-
-
-ENVIR=$TCANMS_ENV
-HOST=$TCANMS_HOST
-INITDB=
-FORCE=
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -208,18 +222,22 @@ createSubdirs
 
 
 if [ -n "$INITDB" ] && [ -n "$TCANMS_USEDB" ]; then
+    echo "  Initializing database..."
     init_db
 fi
 
 
 if [ -n "$ENVIR" ] && [ -n "$HOST" ]; then
     init_env_configs $ENVIR $HOST
+else
+    echo "Target environment and host not provided, configs not sync'd."
 fi
 
 if [ $RETVAL -eq 1 ]; then
-    echo "$MYNAME: finished with errors."
+    echo "$PNAME: finished with errors."
 else
-    echo "$MYNAME: finished successfully."
+    echo ""
+    echo "$PNAME: finished successfully."
 fi
 echo ""
 

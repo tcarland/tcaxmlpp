@@ -1,15 +1,22 @@
-# tcamake/projectdefs
+# tcamake/build_defs
 #   To be included by the Top-Level Makefile or TOPDIR.
 #
 export TCAMAKE_PROJECT="true"
 
-# these are used by the build system and are here
-# for reference. They can be set in ones .profile 
-# or simply uncommented here.
-#USE_DEBUG = 1
-# for db support, define only one type.
-#USE_MYSQL = 1
-#USE_POSTGRESQL = 1
-#USE_ORACLE = 1
+# there are a few additional variables used by the build system 
+# they are listed completely in the tcanmsrc file which is simply
+# sourced here. A few of the key flags are commented below and 
+# can be set and uncommented to override the rc file
+#
+#
+#TCANMS_DEBUG = 1
+
+# this is used as the install prefix
+#TCANMS_PREFIX="${HOME}/tcanms"
+
+# This defines the supported database types which can be 
+# easily extended.
+#
+#TCANMS_USEDB="mysql"
 
 

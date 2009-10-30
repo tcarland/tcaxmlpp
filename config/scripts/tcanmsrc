@@ -5,7 +5,6 @@
 # language support
 export LANG=en_US.ISO8859-1
 
-
 export TCANMS_HOME="${HOME}/tcanms"
 
 export TCANMS_BIN=${TCANMS_HOME}/bin
@@ -14,31 +13,26 @@ export TCANMS_TMP=${TCANMS_HOME}/tmp
 export TCANMS_LOGS=${TCANMS_HOME}/logs
 
 
-export TCANMS_USER="tcanms"
-export TCANMS_EMAIL="tcanms@charltontechnology.net"
-export TCANMS_USEDB="mysql"
-export TCANMS_DBNAME=
-export TCANMS_DBUSER=
-export TCANMS_DBPASS=
-export TCANMS_DBHOST=
-
-export TCANMS_USE_CRON=0
-export TCANMS_CRON_INTERVAL=5
-export EMAIL_ON_ERROR=0
-
-
 export PATH=${PATH}:${TCANMS_HOME}/bin:${TCANMS_HOME}/sbin
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${TCANMS_HOME}/lib
 export CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}:${TCANMS_HOME}/include
 
 
-if [ "$TCANMS_DB" == "mysql" ]; then
-    export USE_MYSQL="true"
-    export USE_POSTGRESQL=""
-elif [ "$TCANMS_DB" == "postgres" ]; then
-    export USE_MYSQL=""
-    export USE_POSTGRESQL="true"
-fi
+export TCANMS_USER="tcanms"
+export TCANMS_EMAIL="tcanms@localhost"
+
+export TCANMS_USE_CRON=0
+export TCANMS_CRON_INTERVAL=5
+export EMAIL_ON_ERROR=0
+
+#  these should be set in the user environment as needed per host.
+#  and are included here as reference.
+#export TCANMS_USEDB="mysql"
+#export TCANMS_DBNAME=
+#export TCANMS_DBUSER=
+#export TCANMS_DBPASS=
+#export TCANMS_DBHOST=
+
 
 # kernel version
 KV=$(uname -r)
@@ -53,9 +47,7 @@ KVMICRO=${KVMICRO%%[^[:digit:]]*}
 #export CLASSPATH=${JAVA_HOME}/jre/lib/rt.jar
 #export CATALINA_OPTS=-Xmx512M
 
-
 export LIBRARY_PATH=${LD_LIBRARY_PATH}
-
 export PS1="\h{\u}$ "
 
 # aliases
@@ -63,7 +55,7 @@ alias tnmsinit="${TCANMS_HOME}/bin/init.tcanms.sh"
 alias status="${TCANMS_HOME}/bin/init.tcanms.sh info"
 alias dir="ls -l"
 
-if [ -n "$DEBUG" ]; then
+if [ -n "$TCANMS_DEBUG" ]; then
     ulimit -c unlimited
 fi
 
