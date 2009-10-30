@@ -18,7 +18,7 @@ class DbMaintainer : public DbMaintainerInterface {
     virtual ~DbMaintainer();
 
 
-    void     runMaintainer();
+    void     runMaintainer ( const time_t & now );
 
 
     /*  DbMaintainerInterface */
@@ -32,6 +32,7 @@ class DbMaintainer : public DbMaintainerInterface {
 
     virtual DbTimePeriod getInterval          ( const time_t & timestamp );
 
+
   protected:
 
     void                 slideByDays          ( DbTimePeriod & period, int days );
@@ -39,13 +40,16 @@ class DbMaintainer : public DbMaintainerInterface {
     DbTimePeriod         getCurrentBegin      ( const time_t & timestamp );
     DbTimePeriod         getCurrentEnd        ( const time_t & timestamp );
 
+
     template<typename OutputIterator_>
     void                 getCurrentPeriods    ( OutputIterator_ out );
+
     template<typename OutputIterator_>
     void                 getDatabasePeriods   ( OutputIterator_ out );
 
     template<typename OutputIterator_>
     void                 getIntervalsToCreate ( OutputIterator_ out );
+
     template<typename OutputIterator_>
     void                 getIntervalsToDelete ( OutputIterator_ out );
 

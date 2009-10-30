@@ -32,7 +32,7 @@ class DbArchiver : public DbMaintainer {
     virtual ~DbArchiver();
 
 
-    void           runUpdates  ( const time_t & now, bool flush );
+    void           runUpdates    ( const time_t & now, bool flush );
    
 
     virtual void   getTimePeriods    ( NameList   & nameList );

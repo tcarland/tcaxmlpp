@@ -39,6 +39,8 @@ class ArchiverThread : public tcanetpp::Thread {
 
     void        run();
 
+    void        lock();
+    void        unlock();
     void        notify();
 
 
@@ -50,30 +52,32 @@ class ArchiverThread : public tcanetpp::Thread {
   public:
 
     class ArchiveTimer : public EventTimerHandler {
-
       public:
-        ArchiveTimer();
-        virtual ~ArchiveTimer();
+        ArchiveTimer ( TnmsTree * tree_ = NULL ) 
+            : tree(tree_), id(0) 
+        {}
+        virtual ~ArchiveTimer() {}
 
         virtual void timeout  ( const EventTimer & timer );
         virtual void finished ( const EventTimer & timer ) {}
 
       public:
-
-        ThreadLock *    mutex;
+        ThreadLock      mutex;
+        TnmsTree *      tree;
         evid_t          id;
     };
-        
+
+
     TnmsTree *          tree;
 
 
   private:
 
     DbArchiver *        _archiver;
-    ArchiveTimer        _timer;
+    ArchiveTimer        _timer, _mtimer;
 
 
-    evid_t              _tid, _fid;
+    evid_t              _tid, _fid, _mid;
 
 };
 

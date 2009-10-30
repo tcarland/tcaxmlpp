@@ -614,9 +614,7 @@ EventManager::GetTimeOfDay ( timeval & t )
 bool
 EventTimer::operator== ( const EventTimer & timer )
 {
-    if ( this->evsec > 0 )
-        return(evsec == timer.evsec);
-    return(this->evusec == timer.evusec);
+    return(this->evid == timer.evid);
 }
 
 

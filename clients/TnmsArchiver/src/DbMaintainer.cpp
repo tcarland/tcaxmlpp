@@ -24,7 +24,7 @@ DbMaintainer::~DbMaintainer()
 }
 
 void
-DbMaintainer::runMaintainer()
+DbMaintainer::runMaintainer ( const time_t & now )
 {
     IndexList  to_create, to_delete;
 
