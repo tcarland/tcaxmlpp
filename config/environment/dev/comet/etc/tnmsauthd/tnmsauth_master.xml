@@ -3,7 +3,7 @@
 <tnms version="0.1">
 
     <TnmsAuthd
-        agent_name="tnmsauth-master"
+        agent_name="tcanms/tnmsauth-master"
         tnms_port="15901"
         soap_port="15902"
 
@@ -24,9 +24,9 @@
         max_db_threads="75">
 
         <client
-            name="server_a"
+            name="devserver_C"
             host="localhost"
-            port="15300"
+            port="15605"
             holddown="30"
             reconnect="30"/>
 

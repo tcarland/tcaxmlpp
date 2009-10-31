@@ -53,6 +53,7 @@ echo ""
 if [ -n "$TCANMS_PREFIX" ]; then
     TCANMS_HOME="$TCANMS_PREFIX"
     TCANMS_TMP="$TCANMS_HOME/tmp"
+    TCANMS_ETC="$TCANMS_HOME/etc"
 fi
 
 
@@ -128,26 +129,70 @@ init_db()
             echo "GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON $dbname.* TO '$dbuser'@'$dbhost';" >> $SQL
         fi
         echo "" >> $SQL
+        
+        exec_sql $SQL
+    fi
 
-        # setup exec privileges
+    return 1
+}
+
+exec_sql()
+{
+    local sql=$1
+
+    if [ "${TCANMS_USEDB}" == "mysql" ]; then
         local cmd="-u $auser"
+
         if [ -n "$ahost" ]; then
             cmd="$cmd -h $ahost"
         fi
         if [ -n "$aprompt" ]; then
             cmd="$cmd $aprompt"
         fi
-        cmd="$cmd"
-        
-        # exec sql
-        cmd="$cmd"
-        echo "  Executing mysql init script 'mysql $cmd < $SQL' "
-        mysql $cmd < $SQL
+
+        echo "Exec: mysql $cmd < $sql"
+        mysql $cmd < $sql
+    fi
+
+    return 0
+}
+
+
+
+run_scripts()
+{
+    local path=
+
+    if [ -z "$TCANMS_ENV" ] || [ -z "$TCANMS_HOST" ]; then
+        echo "TCANMS_ENV and TCANMS_HOST are not set, not checking for setup scripts"
+        return 0
+    fi
+
+    path="$CONFIGDIR/../environment/$TCANMS_ENV/$TCANMS_HOST/etc/$dbname"
+
+    if [ ! -d $path ]; then
+        echo "Error locating script path $path"
+        return 0
+    fi
+
+    initf="${path}/${dbname}-init.sql"
+    schemaf="${path}/${dbname}-schema.sql"
+    setupf="${path}/${dbname}-setup.sql"
+
+    echo "$initf"
+    if [ -e $initf ]; then
+        exec_sql $initf
+    fi
+    if [ -e $schemaf ]; then
+        exec_sql $initf
+    fi
+    if [ -e $setupf ]; then
+        exec_sql $initf
     fi
 
     return 1
 }
-
+    
 
 # --------------------------
 #  MAIN
@@ -210,6 +255,10 @@ fi
 
 init_db
 retval=$?
+
+if [ $retval -eq 1 ]; then
+    run_scripts
+fi
 
 exit $retval
 
