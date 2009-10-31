@@ -27,7 +27,7 @@ export EMAIL_ON_ERROR=0
 
 #  these should be set in the user environment as needed per host.
 #  and are included here as reference.
-#export TCANMS_USEDB="mysql"
+export TCANMS_USEDB="mysql"
 #export TCANMS_DBNAME=
 #export TCANMS_DBUSER=
 #export TCANMS_DBPASS=

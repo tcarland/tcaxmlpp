@@ -60,7 +60,6 @@ done
 
 ENVIR=$TCANMS_ENV
 HOST=$TCANMS_HOST
-INITDB=
 FORCE=
 
 # ------------------------------------------
@@ -70,7 +69,7 @@ usage()
     echo ""
     echo "Usage: $PNAME [-DfhvW] [-e environment] [-t targethost]"
     echo ""
-    echo "   -D | --database    : generate and run database init script "
+    echo "   -D | --database    : generate dbcreate scripts, exec and exit "
     echo "   -f | --force       : force overwrite of install target '${TCANMS_PREFIX}'"
     echo "   -h | --help        : display this help and exit"
     echo "   -v | --version     : display verion info and exit"
@@ -87,7 +86,6 @@ usage()
     echo "   TCANMS_PREFIX = '$TCANMS_PREFIX'"
     echo "   TCANMS_ENV    = '$TCANMS_ENV'"
     echo "   TCANMS_HOST   = '$TCANMS_HOST'"
-    echo "   TCANMS_USEDB  = '$TCANMS_USEDB'"
     echo ""
     version
 }
@@ -142,45 +140,12 @@ init_env_configs()
 }
 
 
-init_db()
-{
-    local SQL="${TCANMS_TMP}/init_tcanms_db.sql"
-
-    if [ -z "$TCANMS_DBNAME" ] || [ -z "$TCANMS_DBUSER" ]; then
-        echo "  DB Name macros are not set, aborting init_db()"
-        return 0
-    fi
-    if [ -z "$TCANMS_DBHOST" ]; then
-        TCANMS_DBHOST="localhost"
-    fi
-    if [ -z "$TCANMS_DBPASS" ]; then
-        echo "  No password set for $TCANMS_DBUSER@$TCANMS_DBHOST"
-        return 0
-    fi
-
-    echo "CREATE DATABASE $TCANMS_DBNAME;" > $SQL
-    echo "GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON tnmsauth.* \
-        TO $TCANMS_DBUSER@$TCANMS_DBHOST IDENTIFIED BY '$TCANMS_DBPASS';" >> $SQL
-    echo "" >> $SQL
-
-    if [ ${TCANMS_USEDB} == "mysql" ]; then
-        echo "  Executing mysql init script '$SQL' "
-        mysql -u root -p < $SQL
-    fi
-
-    return 1
-}
-
-
 # --------------------------
 #  MAIN
 
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        -D|--database)
-            INITDB="true"
-            ;;
         -e|--environment)
             ENVIR="$2"
             shift
@@ -219,12 +184,6 @@ fi
 
 echo "  Creating directory structure in '$PREFIX'"
 createSubdirs
-
-
-if [ -n "$INITDB" ] && [ -n "$TCANMS_USEDB" ]; then
-    echo "  Initializing database..."
-    init_db
-fi
 
 
 if [ -n "$ENVIR" ] && [ -n "$HOST" ]; then
