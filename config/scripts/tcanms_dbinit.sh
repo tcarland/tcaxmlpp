@@ -37,12 +37,15 @@ if [ -z "$RC_TCANMS_BASHRC" ]; then
     if [ -e $CONFIGDIR/tcanmsrc ]; then
         echo "  Using rc: $CONFIGDIR/tcanmsrc"
         source $CONFIGDIR/tcanmsrc
-    elif [ -e $HOME/tcanmsrc ]; then
-        echo "  Using rc from: $HOME/tcanmsrc"
-        source $HOME/tcanmsrc
-    elif [ -e $TCANMS_PREFIX/tcanmsrc ]; then
-        echo "  Using rc from $TCANMS_PREFIX/tcanmsrc"
-        source $TCANMS_PREFIX/tcanmsrc
+    elif [ -e $HOME/tcanms/etc/tcanmsrc ]; then
+        echo "  Using rc from: $HOME/tcanms/etc/tcanmsrc"
+        source $HOME/tcanms/etc/tcanmsrc
+    elif [ -e $HOME/etc/tcanmsrc ]; then
+        echo "  Using rc from: $HOME/etc/tcanmsrc"
+        source $HOME/etc/tcanmsrc
+    elif [ -e $TCANMS_PREFIX/etc/tcanmsrc ]; then
+        echo "  Using rc from $TCANMS_PREFIX/etc/tcanmsrc"
+        source $TCANMS_PREFIX/etc/tcanmsrc
     else
         echo "Error: Failed to locate rc file: tcanmsrc"
         exit 1
@@ -62,13 +65,15 @@ fi
 usage()
 {
     echo ""
-    echo "Usage: $PNAME [-hLV] [-pxr] -D dbname -U user -H host -P passwd"
+    echo "Usage: $PNAME [-hLV] [-pxr] -D dbname -f sql -U user -H host -P passwd"
     echo ""
     echo "    -h | --help      : display help and exit"
     echo "    -V | --version   : display version info and exit"
     echo "   -------------------------------------------------------"
     echo "   Database create options:"
     echo "    -D | --database  : name of database to create (required)"
+    echo "    -f | --sqlfile   : name of file containing SQL to exec"
+    echo "                       this file is exec'd after creating the DB if needed"
     echo "    -U | --user      : name of user to have access to new db (required)"
     echo "    -H | --host      : host from which user will access db (default: localhost)"
     echo "    -L | --localhost : include localhost access for user (if host is other)"

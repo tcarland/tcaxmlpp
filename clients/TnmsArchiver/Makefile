@@ -66,6 +66,7 @@ distclean: clean
 install:
 ifdef TCANMS_PREFIX
 	$(CP) $(BIN) $(TCANMS_PREFIX)/sbin
+	$(CP) etc/ta_initdb.sh $(TCANMS_PREFIX)/bin
 	@echo
 endif
 
