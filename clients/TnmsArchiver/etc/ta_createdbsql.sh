@@ -1,7 +1,9 @@
 #!/bin/bash
 #
+#  ta_createdbsql.sh
+#    Generates the archiver db create statements for the given 
+#    database name.
 #
-
 VERSION="0.1"
 AUTHOR="tcarland@gmail.com"
 
@@ -11,7 +13,7 @@ CONFIGDIR=
 
 
 SCHEMA=$1;
-SCHEMAFILE=$2
+SQLFILE=$2
 
 # ------------------------------------------
 
@@ -58,60 +60,110 @@ usage()
     echo ""
 }
 
+# ------------------------------------------
 
-if [ -z "$SCHEMA" ] || [ -z "$SCHEMAFILE" ]; then
+if [ -z "$SCHEMA" ] || [ -z "$SQLFILE" ]; then
     usage
     exit 1
 fi
 
-echo "  Creating sql for schema '$SCHEMA' in '$SCHEMAFILE'"
+echo "  Creating sql for schema '$SCHEMA' in '$SQLFILE'"
 echo ""
 
+
 echo "
-CREATE TABLE ${SCHEMA}.element_name (
-    id          INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-    name        TEXT,
-  PRIMARY KEY ( id ),
-  INDEX name_index ( name(255) )
-) ENGINE = MYISAM;
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
+
+-- -----------------------------------------------------
+-- Table `${SCHEMA}`.`element_name`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `${SCHEMA}`.`element_name` ;
+
+CREATE  TABLE IF NOT EXISTS `${SCHEMA}`.`element_name` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `name` TEXT NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `element_name_idx` USING BTREE (`id` ASC, `name` ASC) )
+ENGINE = MyISAM;
 
 
-CREATE TABLE ${SCHEMA}.immediate (
-    idx         INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-    id          INTEGER UNSIGNED NOT NULL,
-    value       INTEGER UNSIGNED NOT NULL,
-    strval      TEXT NULL,
-    valavg      INTEGER UNSIGNED NOT NULL,
-    time        INTEGER UNSIGNED NOT NULL,
-  PRIMARY KEY ( idx ),
-  UNIQUE KEY timekey ( id, time )
-) ENGINE = HEAP;
+-- -----------------------------------------------------
+-- Table `${SCHEMA}`.`immediate`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `${SCHEMA}`.`immediate` ;
+
+CREATE  TABLE IF NOT EXISTS `${SCHEMA}`.`immediate` (
+  `idx` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `element_id` INT UNSIGNED NOT NULL ,
+  `value_type` SMALLINT UNSIGNED NOT NULL ,
+  `value` BIGINT UNSIGNED NOT NULL DEFAULT 0 ,
+  `value_avg` BIGINT UNSIGNED NOT NULL DEFAULT 0 ,
+  `last` INT UNSIGNED NOT NULL ,
+  `value_str` TEXT NULL ,
+  `data` TEXT NULL ,
+  PRIMARY KEY (`idx`, `element_id`) ,
+  INDEX `fk_immediate_idx` (`element_id` ASC) ,
+  INDEX `immediate_time_idx` (`element_id` ASC, `last` ASC, `idx` ASC) ,
+  CONSTRAINT `fk_immediate_idx`
+    FOREIGN KEY (`element_id` )
+    REFERENCES `${SCHEMA}`.`element_name` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = MEMORY;
 
 
-CREATE TABLE ${SCHEMA}.short (
-    idx         INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-    id          INTEGER UNSIGNED NOT NULL,
-    value       INTEGER UNSIGNED NOT NULL,
-    strval      TEXT NULL,
-    valavg      INTEGER UNSIGNED NOT NULL,
-    time        INTEGER UNSIGNED NOT NULL,
-  PRIMARY KEY ( idx ),
-  UNIQUE KEY timekey ( id, time )
-) ENGINE = MYISAM;
+-- -----------------------------------------------------
+-- Table `${SCHEMA}`.`short`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `${SCHEMA}`.`short` ;
 
+CREATE  TABLE IF NOT EXISTS `${SCHEMA}`.`short` (
+  `idx` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `element_id` INT UNSIGNED NOT NULL ,
+  `value_type` SMALLINT UNSIGNED NOT NULL ,
+  `value` BIGINT UNSIGNED NOT NULL DEFAULT 0 ,
+  `value_avg` BIGINT UNSIGNED NOT NULL DEFAULT 0 ,
+  `last` INT UNSIGNED NOT NULL ,
+  `value_str` TEXT NULL ,
+  `data` TEXT NULL ,
+  PRIMARY KEY (`idx`, `element_id`) ,
+  INDEX `fk_short_idx` (`element_id` ASC) ,
+  INDEX `short_time_idx` (`idx` ASC, `element_id` ASC, `last` ASC) ,
+  CONSTRAINT `fk_short_idx`
+    FOREIGN KEY (`element_id` )
+    REFERENCES `${SCHEMA}`.`element_name` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = MyISAM;
 
-CREATE TABLE ${SCHEMA}.long (
-    idx         INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-    id          INTEGER UNSIGNED NOT NULL,
-    value       INTEGER UNSIGNED NOT NULL,
-    strval      TEXT NULL,
-    valavg      INTEGER UNSIGNED NOT NULL,
-    time        INTEGER UNSIGNED NOT NULL,
-  PRIMARY KEY ( idx ),
-  UNIQUE KEY timekey ( id, time )
-) ENGINE = MYISAM;
-" > $SCHEMAFILE
+-- -----------------------------------------------------
+-- Table `$SCHEMA`.`long`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `$SCHEMA`.`long` ;
+
+CREATE  TABLE IF NOT EXISTS `$SCHEMA`.`long` (
+  `idx` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `element_id` INT UNSIGNED NOT NULL ,
+  `value_type` SMALLINT UNSIGNED NOT NULL ,
+  `value` BIGINT UNSIGNED NOT NULL DEFAULT 0 ,
+  `value_avg` BIGINT UNSIGNED NOT NULL DEFAULT 0 ,
+  `last` INT UNSIGNED NOT NULL ,
+  `value_str` TEXT NULL ,
+  `data` TEXT NULL ,
+  PRIMARY KEY (`idx`, `element_id`) ,
+  INDEX `fk_long_idx` (`element_id` ASC) ,
+  INDEX `long_time_idx` (`idx` ASC, `element_id` ASC, `last` ASC) ,
+  CONSTRAINT `fk_long_idx`
+    FOREIGN KEY (`element_id` )
+    REFERENCES `$SCHEMA`.`element_name` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = MyISAM;
+" > $SQLFILE
 
 echo "Finished."
 exit 1
+
 

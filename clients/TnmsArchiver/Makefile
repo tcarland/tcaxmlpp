@@ -67,6 +67,8 @@ install:
 ifdef TCANMS_PREFIX
 	$(CP) $(BIN) $(TCANMS_PREFIX)/sbin
 	$(CP) etc/ta_initdb.sh $(TCANMS_PREFIX)/bin
+	$(CP) etc/ta_createdbsql.sh $(TCANMS_PREFIX)/bin
+	$(CP) etc/ta_credentials.conf.example $(TCANMS_PREFIX)/etc
 	@echo
 endif
 

@@ -2,7 +2,6 @@
 #
 # tcanms_dbinit.sh
 #
-
 VERSION="0.1"
 AUTHOR="tcarland@gmail.com"
 
@@ -72,7 +71,7 @@ usage()
     echo "   Database create options:"
     echo "    -D | --database  : name of database to create (required)"
     echo "    -f | --sqlfile   : name of file containing SQL to exec"
-    echo "                       this file is exec'd after creating the DB if needed"
+    echo "                       this file is exec'd after creating the DB (if requested)"
     echo "    -U | --user      : name of user to have access to new db (required)"
     echo "    -H | --host      : host from which user will access db (default: localhost)"
     echo "    -L | --localhost : include localhost access for user (if host is other)"
@@ -143,6 +142,7 @@ init_db()
 exec_sql()
 {
     local sql=$1
+    local retval=
 
     if [ "${TCANMS_USEDB}" == "mysql" ]; then
         local cmd="-u $auser"
@@ -158,7 +158,9 @@ exec_sql()
         mysql $cmd < $sql
     fi
 
-    return 0
+    retval=$?
+
+    return $retval 
 }
 
 
@@ -167,12 +169,11 @@ run_scripts()
 {
     local path=
 
-    if [ -z "$TCANMS_ENV" ] || [ -z "$TCANMS_HOST" ]; then
-        echo "TCANMS_ENV and TCANMS_HOST are not set, not checking for setup scripts"
-        return 0
+    if [ -n "$TCANMS_ENV" ] || [ -n "$TCANMS_HOST" ]; then
+        path="$CONFIGDIR/../environment/$TCANMS_ENV/$TCANMS_HOST/etc/$dbname"
+    else
+        path="$TCANMS_ETC/$dbname"    
     fi
-
-    path="$CONFIGDIR/../environment/$TCANMS_ENV/$TCANMS_HOST/etc/$dbname"
 
     if [ ! -d $path ]; then
         echo "Error locating script path $path"
@@ -252,16 +253,22 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-if [ -z "$dbname" ] || [ -z "$dbuser" ]; then
+if [ -z "$dbname" ] && [ -z "$dbsql" ]; then
     usage
     exit 1
 fi
 
-init_db
-retval=$?
+if [ -n "$dbname" ]; then
+    init_db
+    retval=$?
+    if [ $retval -eq 1 ]; then
+        run_scripts
+    fi
+fi
 
-if [ $retval -eq 1 ]; then
-    run_scripts
+if [ -n "$dbsql" ]; then
+    exec_sql $dbsql
+    retval=$?
 fi
 
 exit $retval

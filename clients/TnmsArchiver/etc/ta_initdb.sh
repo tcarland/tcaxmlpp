@@ -1,14 +1,16 @@
 #!/bin/bash
 #
+#  ta_initdb.sh  {schema}
+#     Generates the SQL create statements for an archiver database
+#     using the db credentials defined in ta_credentials.conf
+#     located in $TCANMS_HOME/etc and initializes the db.
 #
-
 VERSION="0.1"
 AUTHOR="tcarland@gmail.com"
 
 PNAME=${0/#.\//}
 CURDIR=`dirname $0`
 CONFIGDIR=
-
 
 
 SCHEMA=$1;
@@ -20,7 +22,6 @@ if [ "$CURDIR" == "." ]; then
 fi
 
 CONFIGDIR=$CURDIR
-
 
 echo ""
 echo "$PNAME: "
@@ -53,11 +54,25 @@ fi
 
 # ------------------------------------------
 
+usage()
+{
+    echo ""
+    echo "Usage: $PNAME {schemaname|dbname}"
+    echo ""
+    echo "   This script looks for the file ta_credentials.conf for "
+    echo "   the required database credentials for the archiver db "
+    echo "   being initialized."
+    echo ""
+}
+
+# ------------------------------------------
+
 DBINIT="${TCANMS_BIN}/tcanms_dbinit.sh"
 DBSQLC="${TCANMS_BIN}/ta_dbcreatesql.sh"
 DBCRED="${TCANMS_ETC}/ta_credentials.conf"
 
-SQL="${TCANMS_TMP}/ta_${SCHEMA}_init.sql"
+SQLDIR="${TCANMS_ETC}/tnmsarchived"
+DBSQL="${SQLDIR}/ta_${SCHEMA}_schema.sql"
 
 
 if [ ! -e $DBINIT ]; then
@@ -86,8 +101,16 @@ if [ -z "$TCANMS_DBHOST" ]; then
     TCANMS_DBHOST="localhost"
 fi
 
+if [ ! -d "$SQLDIR" ]; then
+    if [ ! -d "$TCANMS_ETC" ]; then
+        echo "Error: config path does not exist: '$TCANMS_ETC'"
+        exit 1
+    fi
+    mkdir -p $SQLDIR
+fi
+
 # generate sql
-$DBSQLC $SCHEMA $SQL
+$DBSQLC $SCHEMA $DBSQL
 retval=$?
 
 if [ retval -eq 1 ]; then
@@ -101,7 +124,7 @@ if [ ! -e $SQL ]; then
 fi
 
 # exec db init
-$DBINIT -D $SCHEMA -f $SQL -U $TCANMS_DBUSER -P $TCANMS_DBPASS -H $TCANMS_DBHOST
+$DBINIT -D $SCHEMA -U $TCANMS_DBUSER -P $TCANMS_DBPASS -H $TCANMS_DBHOST
 retval=$?
 
 exit $retval
