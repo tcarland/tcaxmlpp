@@ -7,10 +7,9 @@ VERSION="0.1"
 AUTHOR="tcarland@gmail.com"
 
 PNAME=${0/#.\//}
+CURDIR=`dirname $0`
 CONFIGDIR=
 PREFIX=
-
-CURDIR=`dirname $0`
 RETVAL=0
 
 
