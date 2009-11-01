@@ -48,7 +48,7 @@ clean:
 
 distclean:
 	if [ -f .external ]; then \
-		( rm .external ) \
+		( rm .external .init) \
 	fi
 	if [ -f net-snmp-5.2.3/Makefile ]; then \
 		( cd net-snmp-5.2.3; make distclean ) \
