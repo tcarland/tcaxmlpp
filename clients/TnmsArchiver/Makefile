@@ -32,7 +32,7 @@ endif
 INCLUDES=       -Iinclude
 LIBS=
 
-BIN=		archiver
+BIN=		tnmsarchive
 OBJS=		src/ArchiveConfig.o src/ArchiverThread.o \
 		src/ArchiveMessageHandler.o src/ArchiveSubscriber.o \
 		src/ArchiveClient.o src/ClientIOHandler.o \
@@ -42,18 +42,17 @@ OBJS=		src/ArchiveConfig.o src/ArchiverThread.o \
 ALL_OBJS=	$(OBJS)
 ALL_BINS=	$(BIN)
 
-all: archiver
+all: tnmsarchive
 
 include $(TOPDIR)/tcamake/project_defs
 
 
-archiver: $(OBJS)
+tnmsarchive: $(OBJS)
 	$(make-cxxbin-rule)
 	@echo
 
 .PHONY: test
 test:
-
 
 clean:
 	$(RM) $(ALL_OBJS) \
@@ -66,5 +65,7 @@ distclean: clean
 
 install:
 ifdef TCANMS_PREFIX
+	$(CP) $(BIN) $(TCANMS_PREFIX)/sbin
 	@echo
 endif
+
