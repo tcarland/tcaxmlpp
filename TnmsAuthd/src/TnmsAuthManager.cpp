@@ -23,14 +23,13 @@ using namespace tcasqlpp;
 namespace tnmsauth {
 
 
-std::string TnmsAuthManager::_Version = "v0.185";
+std::string TnmsAuthManager::_Version = "v0.186";
 
 
 TnmsAuthManager::TnmsAuthManager ( const std::string & config ) 
     : _evmgr(new tcanetpp::EventManager()),
       _tree(new tnmsCore::TnmsTree()),
       _authDb(NULL),
-      _sql(NULL),
       _svr(NULL),
       _soap(NULL),
       _soapId(0), _svrId(0), _reportId(0), _logId(0),
@@ -56,7 +55,6 @@ TnmsAuthManager::~TnmsAuthManager()
 
     if ( _authHandler )
         delete _authHandler;
-
     if ( _authDb )
         delete _authDb;
 }
@@ -257,19 +255,19 @@ TnmsAuthManager::parseConfig ( const std::string & cfg, const time_t & now )
          acfg.db_user.compare(_aconfig.db_user) != 0 ||
          acfg.db_pass.compare(_aconfig.db_pass) != 0 )
     {
+        SqlSessionInterface * sql = NULL;
+
         if ( _authDb )
-            delete _authDb;
+            delete _authDb; 
 
-        if ( _sql )
-            delete _sql;
-
-        _sql    = (SqlSessionInterface*) new SqlSession(acfg.db_name,
-                                                        acfg.db_host,
-                                                        acfg.db_user,
-                                                        acfg.db_pass,
-                                                        acfg.db_port);
-        _authDb = new AuthDbThread(_sql);
+        sql = (SqlSessionInterface*) new SqlSession(acfg.db_name,
+                                                    acfg.db_host,
+                                                    acfg.db_user,
+                                                    acfg.db_pass,
+                                                    acfg.db_port);
+        _authDb = new AuthDbThread(acfg, sql);
         _authDb->start();
+
         reset   = true;
     }
 

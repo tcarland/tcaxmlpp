@@ -8,9 +8,9 @@
 namespace tnmsauth {
 
 
-#define DEFAULT_TNMSAUTH_TNMSPORT   33701
-#define DEFAULT_TNMSAUTH_SOAPPORT   33801
-#define DEFAULT_TNMSAUTH_DBNAME     "tnms"
+#define DEFAULT_TNMSAUTH_TNMSPORT   15901
+#define DEFAULT_TNMSAUTH_SOAPPORT   15902
+#define DEFAULT_TNMSAUTH_DBNAME     "tnmsauthd"
 #define DEFAULT_TNMSAUTH_DBUSER     "tnmsauth"
 
 #define AUTHDB_METHOD_DBSTATIC      "dbstatic"

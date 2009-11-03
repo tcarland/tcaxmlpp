@@ -28,7 +28,7 @@ class AuthDbThread : public tcanetpp::Thread {
 
   public:
 
-    AuthDbThread ( SqlSessionInterface * sql );
+    AuthDbThread ( AuthDbConfig & dbcfg, SqlSessionInterface * sql );
 
     virtual ~AuthDbThread();
 
@@ -144,6 +144,8 @@ class AuthDbThread : public tcanetpp::Thread {
     tcanetpp::ThreadLock*               _lock;
     tnmsSession::TicketDatabase*        _ticketDb;
     tnmsSession::RandomStringDevice*    _ticketGen;
+
+    AuthDbConfig                        _authCfg;
 
     AuthUserMap                         _userMap;
     AuthFilterMap                       _filterMap;

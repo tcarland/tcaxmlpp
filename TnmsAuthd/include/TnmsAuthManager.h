@@ -9,9 +9,6 @@ using namespace tcanetpp;
 #include "TnmsConfig.h"
 using namespace tnmsCore;
 
-#include "SqlSession.hpp"
-using namespace tcasqlpp;
-
 
 #include "AuthDbConfig.hpp"
 
@@ -78,7 +75,6 @@ class TnmsAuthManager : public EventTimerHandler {
     EventManager*                       _evmgr;
     TnmsTree*                           _tree;
     AuthDbThread*                       _authDb;
-    SqlSessionInterface*                _sql;
 
     Socket*                             _svr;
     SoapClient*                         _soap;
