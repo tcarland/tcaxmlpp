@@ -154,6 +154,7 @@ exec_sql()
             cmd="$cmd $aprompt"
         fi
 
+        echo ""
         echo "Exec: mysql $cmd < $sql"
         mysql $cmd < $sql
     fi
@@ -167,13 +168,7 @@ exec_sql()
 
 run_scripts()
 {
-    local path=
-
-    if [ -n "$TCANMS_ENV" ] || [ -n "$TCANMS_HOST" ]; then
-        path="$CONFIGDIR/../environment/$TCANMS_ENV/$TCANMS_HOST/etc/$dbname"
-    else
-        path="$TCANMS_ETC/$dbname"    
-    fi
+    local path="$TCANMS_ETC/$dbname"    
 
     if [ ! -d $path ]; then
         echo "Error locating script path $path"
@@ -189,10 +184,10 @@ run_scripts()
         exec_sql $initf
     fi
     if [ -e $schemaf ]; then
-        exec_sql $initf
+        exec_sql $schemaf
     fi
     if [ -e $setupf ]; then
-        exec_sql $initf
+        exec_sql $setupf
     fi
 
     return 1

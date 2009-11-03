@@ -68,7 +68,7 @@ usage()
 # ------------------------------------------
 
 DBINIT="${TCANMS_BIN}/tcanms_dbinit.sh"
-DBSQLC="${TCANMS_BIN}/ta_dbcreatesql.sh"
+DBSQLC="${TCANMS_BIN}/ta_createdbsql.sh"
 DBCRED="${TCANMS_ETC}/ta_credentials.conf"
 
 SQLDIR="${TCANMS_ETC}/tnmsarchived"
@@ -113,7 +113,7 @@ fi
 $DBSQLC $SCHEMA $DBSQL
 retval=$?
 
-if [ retval -eq 1 ]; then
+if [ $retval -eq 1 ]; then
     echo "Error in sql create script"
     exit 1
 fi
