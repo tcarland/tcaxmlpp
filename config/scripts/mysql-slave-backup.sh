@@ -3,7 +3,7 @@
 #  mysql-slave-backup.sh
 #
 
-VERSION="1.0.2"
+VERSION="1.0.3"
 AUTHOR="tcarland@gmail.com"
 
 MYSQLBIN="mysql"
@@ -34,8 +34,9 @@ usage()
     echo "           -u|--user   <username>  =  Database username"
     echo "           -p|--pass   <password>  =  Database users password (optional) "
     echo "           -t|--target <target>    =  Backup target path (required)"
-    echo "           -d|--data   <datadir>   =  Path to Mysql data dir "
+    echo "           -d|--data   <datadir>   =  Path to Mysql data directory"
     echo "                                       (default: /var/lib/mysql)"
+    echo "           -b|--binlog <logname>   =  An alternate binlog from: '$BINLOGNAME'"
     echo "           -h|--help               =  Display usage information"
     echo "           -n|--dry-run            =  Performs a dry-run"
     echo "           -v|--version            =  Display version information"
@@ -46,7 +47,7 @@ usage()
     echo "            full                   =  Syncs logs, dumps all databases,"
     echo "                                       and purges stale binary logs"
     echo ""
-    echo "Example: $0 --user root --pass mypass \\"
+    echo "eg: $0 --user root --pass mypass \\"
     echo "     --data /m1/mysql --target /m2/Backup/mysql full"
     echo ""
     return 1
@@ -65,6 +66,7 @@ version()
 startSlave()
 {    
     local options="--user=$MYSQLUSER"
+    local retval=0
 
     if [ -n "$MYSQLPASS" ]; then
         options="${options} --password=$MYSQLPASS"
@@ -76,19 +78,19 @@ startSlave()
         echo "  startSlave()"
         echo "$MYSQLADMIN $options start-slave"
         echo ""
-        RETVAL=0
     else
         $MYSQLADMIN $options start-slave
-        RETVAL=$?
+        retval=$?
     fi
 
-    return $RETVAL
+    return $retval
 }
 
 
 stopSlave()
 {
     local options="--user=$MYSQLUSER"
+    local retval=0
 
     if [ -n "$MYSQLPASS" ]; then
         options="${options} --password=$MYSQLPASS"
@@ -100,13 +102,12 @@ stopSlave()
         echo "  stopSlave()"
         echo "$MYSQLBIN $options -e 'STOP SLAVE SQL_THREAD;'"
         echo ""
-        RETVAL=0
     else
         $MYSQLBIN $options -e 'STOP SLAVE SQL_THREAD;'
-        RETVAL=$?
+        retval=$?
     fi
 
-    return $RETVAL
+    return $retval
 }
 
 
@@ -116,6 +117,7 @@ dumpSlave()
     local savedate=$2
     local targetdbfile="$targetpath/$HOSTNAME-full-$savedate.sql.gz"
     local options="--user=$MYSQLUSER"
+    local retval=0
 
     if [ -n "$MYSQLPASS" ]; then
         options="${options} --password=$MYSQLPASS"
@@ -134,13 +136,12 @@ dumpSlave()
         echo "  dumpSlave()"
         echo "$MYSQLDUMP $options | gzip  > $targetdbfile "
         echo ""
-        RETVAL=0
     else
         $MYSQLDUMP $options | gzip > $targetdbfile
-        RETVAL=$?
+        retval=$?
     fi
 
-    return $RETVAL
+    return $retval
 }
 
 
@@ -148,13 +149,14 @@ syncLogs()
 {
     local targetpath=$1
     local options="-a"
+    local retval=0
 
     if [ ! -d $targetpath ]; then
         mkdir -p $targetpath
-        RETVAL=$?
-        if [ $RETVAL -eq 1 ]; then
+        retval=$?
+        if [ $retval -eq 1 ]; then
             echo "Failed to create path '$targetpath'"
-            return $RETVAL
+            return $retval
         fi
     fi
 
@@ -176,7 +178,7 @@ syncLogs()
     echo ""
 
 
-    return 0
+    return $retval
 }
 
 
@@ -244,6 +246,14 @@ checkTarget()
 # process command arguments
 while [ $# -gt 0 ]; do
     case "$1" in
+        -b|--binlog)
+            BINLOGNAME="$2"
+            shift
+            if [ -z "$BINLOGNAME" ]; then
+                usage
+                exit 1
+            fi
+            ;;
         -d|--debug)
             echo " --debug enabled"
             ;;
@@ -254,10 +264,6 @@ while [ $# -gt 0 ]; do
         -p|--pass)
             MYSQLPASS="$2"
             shift
-            if [ -z "$MYSQLPASS" ]; then
-                echo "error: no password given"
-                exit 1
-            fi
             ;;
         -t|--target)
             TARGET="$2"
@@ -332,7 +338,11 @@ RETVAL=$?
 if [ $RETVAL -eq 1 ]; then
     exit 1
 else
-    echo "Slave stopped"
+    if [ $DRYRUN -eq 1 ]; then
+        echo "Slave stopped successfully (not really!)"
+    else
+        echo "Slave stopped"
+    fi
 fi
 
 #  synchronize the master bin logs
@@ -365,7 +375,11 @@ if [ $FULL -eq 1 ]; then
     if [ $RETVAL -eq 1 ]; then
         exit 1
     else 
-        echo "Logs purged"
+        if [ $DRYRUN -eq 1 ]; then
+            echo "Logs purged (not really!)"
+        else
+            echo "Logs purged"
+        fi
     fi
 fi
 
