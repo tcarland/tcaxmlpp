@@ -87,7 +87,7 @@ AuthDbThread::authenticate ( const std::string & username,
 
     SqlSessionInterface * sql = _dbpool->acquire();
     if ( sql == NULL ) {
-        LogFacility::LogMessage("AuthDbThread::authenticate() ERROR acquiring DB instance" 
+        LogFacility::LogMessage("AuthDbThread::authenticate() Error acquiring DB handle" 
             + _dbpool->getErrorStr());
         return result;
     }
@@ -162,6 +162,10 @@ AuthDbThread::isAuthentic ( const std::string & username,
     
     SqlSessionInterface * sql = _dbpool->acquire();
 
+    if ( sql == NULL ) {
+        LogFacility::LogMessage("AuthDbThread::isAuthentic() invalid db handle");
+        return false;
+    }
     if ( userdb == NULL )
         userdb = this->queryUser(sql, username);
 
@@ -349,8 +353,8 @@ AuthDbThread::queryUser ( SqlSessionInterface * session,
                           const std::string   & username )
 {
     ThreadAutoMutex  mutex(_lock);
-    TnmsDbUser *     user = NULL;
-    SqlSession *     sql = (SqlSession*) session;
+    TnmsDbUser *     user  = NULL;
+    SqlSession *     sql   = (SqlSession*) session;
     Query            query = sql->newQuery();
     Result           res;
     Row              row;

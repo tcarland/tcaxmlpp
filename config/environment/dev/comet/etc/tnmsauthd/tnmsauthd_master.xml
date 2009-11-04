@@ -13,7 +13,7 @@
         debug="true"
 
         db_host="localhost"
-        db_name="tnmsauth"
+        db_name="tnmsauthd"
         db_user="tnmsauth"
         db_pass="tnmsauth11b"
 
