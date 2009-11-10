@@ -68,7 +68,7 @@ usage()
 # ------------------------------------------
 
 DBINIT="${TCANMS_BIN}/tcanms_dbinit.sh"
-DBSQLC="${TCANMS_BIN}/ta_createdbsql.sh"
+DBSQLC="${TCANMS_BIN}/ta_dbcreatesql.sh"
 DBCRED="${TCANMS_ETC}/ta_credentials.conf"
 
 SQLDIR="${TCANMS_ETC}/tnmsarchived"

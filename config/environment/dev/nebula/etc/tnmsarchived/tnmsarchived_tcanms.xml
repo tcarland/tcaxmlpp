@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<tnms version="0.1">
+
+<tnmsarchived
+    agent_name="tcanms/tnmsarchived/tcanms"
+    logfile="/opt/tcanms/tcanms/logs/tnmsarchived_tcanms.log"
+    syslog="false"
+    debug="true"
+    version="1"
+
+    dbhost="localhost"
+    dbname="tcanms"
+    dbuser="tnmsarchive"
+    dbpass="tnmsarchive11b">
+
+    <client
+        name="server_c"
+        host="localhost"
+        port="15600">
+
+        <subscribe name="tcanms"/>
+
+        <archiver
+            index_name="tcanms.element_name"
+            element_data="tcanms.immediate"
+            holddown="60"
+            flush_interval="0"
+            table_count="1"/>
+        <archiver
+            index_name="tcanms.element_name"
+            element_data="tcanms.short"
+            holddown="300"
+            table_count="5"/>
+        <archiver
+            index_name="tcanms.element_name"
+            element_data="tcanms.long"
+            holddown="3600"
+            table_count="15"/>
+    </client>
+</tnmsarchived>
+</tnms>
+
+

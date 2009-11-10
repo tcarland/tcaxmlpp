@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<tnms version="0.1">
+    <tnmsd
+        agent_name="tcanms/tnmsd/devserver_b"
+        agent_key="tnmsd11b"
+        logfile="/opt/tcanms/tcanms/logs/tnmsd-devserver_b.log"
+        syslog="false"
+        debug="true"
+        auth_server="localhost"
+        auth_port="15901" >
+
+        <server
+            agent_port="15301"
+            client_port="15601"
+            holddown="30"
+            reconnect="30"/>
+    </tnmsd>
+
+</tnms>
+

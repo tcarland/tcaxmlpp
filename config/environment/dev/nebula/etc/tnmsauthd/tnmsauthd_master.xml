@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<tnms version="0.1">
+
+    <TnmsAuthd
+        agent_name="tcanms/tnmsauthd-master"
+        tnms_port="15901"
+        soap_port="15902"
+
+        pemfile=""
+        logfile="/opt/tcanms/tcanms/logs/tnmsauthd_master.log"
+        syslog="false"
+        debug="true"
+
+        db_host="localhost"
+        db_name="tnmsauthd"
+        db_user="tnmsauth"
+        db_pass="tnmsauth11b"
+
+        soap_timeout="120"
+        max_connections="500"
+
+        min_db_threads="5"
+        max_db_threads="75">
+
+        <client
+            name="devserver_C"
+            host="localhost"
+            port="15605"
+            holddown="30"
+            reconnect="30"/>
+
+    </TnmsAuthd>
+
+</tnms>
