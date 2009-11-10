@@ -122,8 +122,8 @@ Thread::stop() throw ( ThreadException )
 
 
 /**  Sets a thread identity or name.  The thread will automatically be given 
- *   a name consisting of "Thread_xxx" where xxx is the thread id.  This
- *   method overrides that default name
+ *   a name consisting of "Thread_x" where x is the thread id.  This
+ *   method overrides that default name.
  **/
 void
 Thread::threadName ( const std::string & name )

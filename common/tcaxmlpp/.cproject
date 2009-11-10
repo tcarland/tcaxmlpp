@@ -35,6 +35,12 @@
 </inputType>
 </tool>
 <tool id="cdt.managedbuild.tool.gnu.assembler.base.90744538" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base">
+<option id="gnu.both.asm.option.include.paths.1820623201" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="/usr/include"/>
+<listOptionValue builtIn="false" value="/usr/local/include"/>
+<listOptionValue builtIn="false" value="/home/tca/include"/>
+<listOptionValue builtIn="false" value="../include"/>
+</option>
 <inputType id="cdt.managedbuild.tool.gnu.assembler.input.643678527" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 </tool>
 </toolChain>

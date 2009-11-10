@@ -22,9 +22,21 @@
 <builder id="org.eclipse.cdt.build.core.settings.default.builder.2137066227" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="org.eclipse.cdt.build.core.settings.default.builder"/>
 <tool id="org.eclipse.cdt.build.core.settings.holder.libs.712253218" name="holder for library settings" superClass="org.eclipse.cdt.build.core.settings.holder.libs"/>
 <tool id="org.eclipse.cdt.build.core.settings.holder.1037015402" name="Assembly" superClass="org.eclipse.cdt.build.core.settings.holder">
+<option id="org.eclipse.cdt.build.core.settings.holder.undef.incpaths.834323776" superClass="org.eclipse.cdt.build.core.settings.holder.undef.incpaths" valueType="undefIncludePath">
+<listOptionValue builtIn="false" value="/home/tca/src/hg/devbranch/tcanms/common/tcanetpp/include"/>
+</option>
+<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.487325398" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
+<listOptionValue builtIn="false" value="../include"/>
+</option>
 <inputType id="org.eclipse.cdt.build.core.settings.holder.inType.1562063710" languageId="org.eclipse.cdt.core.assembly" languageName="Assembly" sourceContentType="org.eclipse.cdt.core.asmSource" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 </tool>
 <tool id="org.eclipse.cdt.build.core.settings.holder.1252313778" name="GNU C++" superClass="org.eclipse.cdt.build.core.settings.holder">
+<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.1954894867" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
+<listOptionValue builtIn="false" value="../include"/>
+</option>
+<option id="org.eclipse.cdt.build.core.settings.holder.undef.incpaths.32924077" name="Undefined Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.undef.incpaths" valueType="undefIncludePath">
+<listOptionValue builtIn="false" value="/home/tca/src/hg/devbranch/tcanms/common/tcanetpp/include"/>
+</option>
 <inputType id="org.eclipse.cdt.build.core.settings.holder.inType.489203918" languageId="org.eclipse.cdt.core.g++" languageName="GNU C++" sourceContentType="org.eclipse.cdt.core.cxxSource,org.eclipse.cdt.core.cxxHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 </tool>
 <tool id="org.eclipse.cdt.build.core.settings.holder.2097314064" name="GNU C" superClass="org.eclipse.cdt.build.core.settings.holder">

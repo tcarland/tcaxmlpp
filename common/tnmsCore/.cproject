@@ -35,6 +35,12 @@
 </inputType>
 </tool>
 <tool id="cdt.managedbuild.tool.gnu.assembler.base.557289522" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base">
+<option id="gnu.both.asm.option.include.paths.1561001930" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="/usr/include"/>
+<listOptionValue builtIn="false" value="/usr/local/include"/>
+<listOptionValue builtIn="false" value="/home/tca/include"/>
+<listOptionValue builtIn="false" value="../include"/>
+</option>
 <inputType id="cdt.managedbuild.tool.gnu.assembler.input.901938036" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 </tool>
 </toolChain>
@@ -45,8 +51,8 @@
 </configuration>
 </storageModule>
 <storageModule moduleId="org.eclipse.cdt.core.externalSettings">
-<externalSettings containerId="tcaxmlpp;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier"/>
 <externalSettings containerId="tcanetpp;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier"/>
+<externalSettings containerId="tcaxmlpp;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier"/>
 </storageModule>
 <storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 <storageModule moduleId="scannerConfiguration">
