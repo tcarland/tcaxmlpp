@@ -36,14 +36,15 @@ public:
     SocketOption();
     SocketOption ( int optname, int optval, const std::string & name = "" );
     
-    virtual ~SocketOption();
+    virtual ~SocketOption() {}
     
     
-    int          getOptionName();
-    std::string  getOptionNameString();
-    int          getOptionValue();
-   
-    std::string  toString();
+    int   getOptionId() const;
+    int   getOptionValue() const;
+
+    const std::string&  getOptionName() const;
+    const std::string&  getOptionNameString() const  { return this->getOptionName(); }
+    const std::string&  toString() const { return this->getOptionName(); }
     
 
     /*  static Factory Methods  */
@@ -60,7 +61,7 @@ public:
     
 private:
 	
-    int             _optname;
+    int             _optid;
     int             _optval;
     std::string     _namestr;
 	

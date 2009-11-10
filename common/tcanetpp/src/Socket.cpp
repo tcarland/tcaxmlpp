@@ -526,7 +526,7 @@ Socket::setSocketOption ( int optname, int optval )
 int 
 Socket::setSocketOption ( SocketOption option )
 {
-    return this->setSocketOption(option.getOptionName(), option.getOptionValue());
+    return this->setSocketOption(option.getOptionId(), option.getOptionValue());
 }
 
 // ----------------------------------------------------------------------

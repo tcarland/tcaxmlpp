@@ -32,43 +32,41 @@ namespace tcanetpp {
 
 	
 SocketOption::SocketOption()	
-    : _optname(0), 
+    : _optid(0),
       _optval(0)
 {}
 
-SocketOption::SocketOption ( int optname, int optval, 
+SocketOption::SocketOption ( int optid, int optval,
                              const std::string & name )
-    : _optname(optname), 
+    : _optid(optid),
       _optval(optval),
       _namestr(name)
 {}
 
 
-SocketOption::~SocketOption()
-{}
-
-
 int
-SocketOption::getOptionName()
+SocketOption::getOptionId() const
 {
-    return _optname;
+    return _optid;
 }
 
 
-std::string
-SocketOption::getOptionNameString()
+int
+SocketOption::getOptionValue() const
+{
+    return _optval;
+}
+
+
+const std::string&
+SocketOption::getOptionName() const
 {
     return _namestr;
 }
 
 
-int
-SocketOption::getOptionValue()
-{
-    return _optval;
-}
-
 /* Static factory methods */
+
 
 SocketOption
 SocketOption::SetReuseAddr ( int val )
