@@ -122,13 +122,14 @@ if [ $retval -eq 1 ]; then
     exit 1
 fi
 
-if [ ! -e $SQL ]; then
-    echo "Error: Failed to locate sql script: '$SQL'"
+if [ ! -e $DBSQL ]; then
+    echo "Error: Failed to locate sql script: '$DBSQL'"
     exit 1
 fi
 
 # exec db init
-$DBINIT -D $SCHEMA -U $TCANMS_DBUSER -P $TCANMS_DBPASS -H $TCANMS_DBHOST
+echo "$DBINIT -D $SCHEMA -U $TCANMS_DBUSER -P $TCANMS_DBPASS -H $TCANMS_DBHOST -f $DBSQL -p"
+$DBINIT -D $SCHEMA -U $TCANMS_DBUSER -P $TCANMS_DBPASS -H $TCANMS_DBHOST -f $DBSQL -p
 retval=$?
 
 exit $retval

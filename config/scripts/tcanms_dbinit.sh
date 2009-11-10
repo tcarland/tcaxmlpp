@@ -18,6 +18,10 @@ dbuser=
 dbhost=
 dbpass=
 do_local=
+dbsql=
+auser=root
+aprompt=
+ahost=
 
 
 # ------------------------------------------
@@ -111,14 +115,14 @@ init_db()
 
     if [ -z "$dbname" ] || [ -z "$dbuser" ]; then
         echo "  DB Name macros are not set, aborting init_db()"
-        return 0
+        return 1
     fi
     if [ -z "$dbhost" ]; then
         dbhost="localhost"
     fi
     if [ -z "$dbpass" ]; then
         echo "  No password set for $dbuser@$dbhost"
-        return 0
+        return 1
     fi
 
     echo "init_db() creating sql script '$SQL'"
@@ -140,7 +144,7 @@ init_db()
         exec_sql $SQL
     fi
 
-    return 1
+    return 0
 }
 
 exec_sql()
@@ -176,7 +180,7 @@ run_scripts()
 
     if [ ! -d $path ]; then
         echo "Error locating script path $path"
-        return 0
+        return 1
     fi
 
     initf="${path}/${dbname}-init.sql"
@@ -194,16 +198,12 @@ run_scripts()
         exec_sql $setupf
     fi
 
-    return 1
+    return 0
 }
     
 
 # --------------------------
 #  MAIN
-
-auser=root
-aprompt=
-ahost=
 
 mysql_exec="mysql"
 
@@ -211,6 +211,10 @@ while [ $# -gt 0 ]; do
     case "$1" in
         -D|--database)
             dbname="$2"
+            shift
+            ;;
+        -f|--sqlfile)
+            dbsql="$2"
             shift
             ;;
         -H|--host)
@@ -260,7 +264,7 @@ fi
 if [ -n "$dbname" ]; then
     init_db
     retval=$?
-    if [ $retval -eq 1 ]; then
+    if [ $retval -eq 0 ] && [ -z "$dbsql" ]; then
         run_scripts
     fi
 fi
