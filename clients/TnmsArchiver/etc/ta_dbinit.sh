@@ -74,6 +74,10 @@ DBCRED="${TCANMS_ETC}/ta_credentials.conf"
 SQLDIR="${TCANMS_ETC}/tnmsarchived"
 DBSQL="${SQLDIR}/ta_${SCHEMA}_schema.sql"
 
+if [ -z "$SCHEMA" ]; then
+    usage
+    exit 1
+fi
 
 if [ ! -e $DBINIT ]; then
     echo "Failed to locate dbinit script '$DBINIT'"

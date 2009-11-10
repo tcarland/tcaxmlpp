@@ -6,6 +6,7 @@ VERSION="0.1"
 AUTHOR="tcarland@gmail.com"
 
 PNAME=${0/#.\//}
+NAME="tcanms_dbinit.sh"
 CURDIR=`dirname $0`
 CONFIGDIR=
 PREFIX=
@@ -63,7 +64,7 @@ fi
 usage()
 {
     echo ""
-    echo "Usage: $PNAME [-hLV] [-pxr] -D dbname -f sql -U user -H host -P passwd"
+    echo "Usage: $NAME [-hLV] [-pxr] -D dbname -f sql -U user -H host -P passwd"
     echo ""
     echo "    -h | --help      : display help and exit"
     echo "    -V | --version   : display version info and exit"
@@ -90,6 +91,9 @@ usage()
     echo "    can be overridden with (-x). Additionally, the script is assumed to run "
     echo "    against a local database. Use the -r option to set a remote database host "
     echo "    on which to exec the sql."
+    echo ""
+    echo "    Lastly if no --sqlfile(-f) is specified, the script will check for three "
+    echo "    sql scripts in '$TCANMS_ETC'/dbname/dbname-{init|schema|setup}.sql. "
     echo ""
     version
 }
