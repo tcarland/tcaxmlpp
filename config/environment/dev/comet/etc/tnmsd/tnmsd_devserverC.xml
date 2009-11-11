@@ -7,7 +7,7 @@
         logfile="/opt/tcanms/tcanms/logs/tnmsd-devserver_c.log"
         syslog="false"
         debug="true"
-        auth_server="localhost"
+        auth_server="nebula"
         auth_port="15901" >
 
         <server
