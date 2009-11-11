@@ -22,7 +22,7 @@ INSERT INTO tnmsauthd.users ( gid, authtype_id, username, password, is_agent, in
     VALUES (1, 1, "tcanms", "tcanms11b", 0, 1);
 
 INSERT INTO tnmsauthd.users ( gid, authtype_id, username, password, is_agent, internal )
-    VALUES (1, 1, "tcanms/tnmsauth-master", "tnmsauth11b", 1, 1);
+    VALUES (1, 1, "tcanms/auth/tnmsauthd-master", "tnmsauth11b", 1, 1);
 
 INSERT INTO tnmsauthd.users ( gid, authtype_id, username, password, is_agent, internal )
     VALUES (2, 1, "tcanms/tnms-console", "tnmsconsole11b", 1, 1);
