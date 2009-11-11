@@ -85,7 +85,7 @@ CREATE  TABLE IF NOT EXISTS ${SCHEMA}.element_name (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT ,
   name TEXT NOT NULL ,
   PRIMARY KEY (id) ,
-  INDEX element_name_idx USING BTREE (id ASC, name ASC) )
+  INDEX element_name_idx USING BTREE (id ASC, name(255) ASC) )
 ENGINE = MyISAM;
 
 
@@ -101,8 +101,8 @@ CREATE  TABLE IF NOT EXISTS ${SCHEMA}.immediate (
   value BIGINT UNSIGNED NOT NULL DEFAULT 0 ,
   value_avg BIGINT UNSIGNED NOT NULL DEFAULT 0 ,
   last INT UNSIGNED NOT NULL ,
-  value_str TEXT NULL ,
-  data TEXT NULL ,
+  value_str VARCHAR(255) NULL ,
+  data VARCHAR(255) NULL ,
   PRIMARY KEY (idx, element_id) ,
   INDEX fk_immediate_idx (element_id ASC) ,
   INDEX immediate_time_idx (element_id ASC, last ASC, idx ASC) ,

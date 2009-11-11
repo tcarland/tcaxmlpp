@@ -14,7 +14,7 @@ CREATE  TABLE IF NOT EXISTS `tnmsarchive`.`element_name` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
   `name` TEXT NOT NULL ,
   PRIMARY KEY (`id`) ,
-  INDEX `element_name_idx` USING BTREE (`id` ASC, `name` ASC) )
+  INDEX `element_name_idx` USING BTREE (`id` ASC, `name`(255) ASC) )
 ENGINE = MyISAM;
 
 
