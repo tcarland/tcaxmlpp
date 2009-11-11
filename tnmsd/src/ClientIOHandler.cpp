@@ -5,6 +5,9 @@
 #include "EventManager.h"
 #include "LogFacility.h"
 
+#include "AuthClient.h"
+using namespace tnmsCore;
+
 
 namespace tnmsd {
 
@@ -210,7 +213,8 @@ ClientIOHandler::handle_close ( const EventIO & io )
 
     LogFacility::LogMessage("ClientIOHandler::handle_close() " + client->getHostStr());
 
-    auth->unauthClient(client);
+    if ( _auth )
+        _auth->unauthClient(client);
     client->close();
     _clients.erase(client);
     this->endStat(client);

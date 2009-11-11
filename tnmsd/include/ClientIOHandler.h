@@ -13,7 +13,9 @@ using namespace tnmsCore;
 
 #include "ClientStats.hpp"
 
+
 namespace tnmsd {
+
 
 typedef std::set<TnmsClient*>               ClientSet;
 typedef std::map<TnmsClient*, ClientStat>   ClientMap;
