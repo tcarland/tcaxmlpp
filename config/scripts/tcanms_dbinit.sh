@@ -119,6 +119,7 @@ init_db()
     fi
     if [ -z "$dbhost" ]; then
         dbhost="localhost"
+        do_local=1
     fi
     if [ -z "$dbpass" ]; then
         echo "  No password set for $dbuser@$dbhost"
