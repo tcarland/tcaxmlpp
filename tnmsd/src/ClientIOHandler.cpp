@@ -210,6 +210,7 @@ ClientIOHandler::handle_close ( const EventIO & io )
 
     LogFacility::LogMessage("ClientIOHandler::handle_close() " + client->getHostStr());
 
+    auth->unauthClient(client);
     client->close();
     _clients.erase(client);
     this->endStat(client);

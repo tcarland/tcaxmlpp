@@ -235,9 +235,9 @@ TnmsClient::AuthRequestHandler ( const TnmsAuthRequest & request )
     delim  = login.find_first_of(':', 0);
 
     if ( delim == std::string::npos )
-        _login    = login;
+        _login  = login;
     else
-        _login    = login.substr(0, delim);
+        _login  = login.substr(0, delim);
 
     delim  = _login.find_first_of('@', 0);
 
