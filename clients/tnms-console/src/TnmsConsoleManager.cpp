@@ -84,7 +84,7 @@ TnmsConsoleManager::createClient ( const std::string & name, const std::string &
     if ( client->openConnection(host, port) < 0 )
         return false;
 
-    client->setClientLogin("tnms-console", "");
+    client->setClientLogin("tnms-console", "tnmsconsole11b");
     _clientHandler->insert(name, client);
     _evmgr->addIOEvent(_clientHandler, client->getDescriptor(), client);
 

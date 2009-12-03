@@ -76,7 +76,8 @@ ClientIOHandler::timeout ( const EventTimer & timer )
                 // suball?
                 ;
             } else if ( ! client->isAuthorized() ) {
-                client->login();
+                if ( ! client->isAuthorizing() )
+                    client->login();
             }
         }
 

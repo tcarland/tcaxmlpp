@@ -2,7 +2,7 @@
 #
 #  tcanms_install.sh
 #
-VERSION="0.2"
+VERSION="0.3"
 AUTHOR="tcarland@gmail.com"
 
 PNAME=${0/#.\//}
@@ -173,7 +173,8 @@ done
 
 if [ -d $PREFIX ]; then
     if [ -n "$FORCE" ]; then
-        echo "  Install directory '$PREFIX' already exists. Continuing.."
+        echo "  Install directory '$PREFIX' already exists."
+        echo "     '--force' is enabled, continuing..."
     else
         echo "Error: Install directory '$PREFIX' exists."
         echo "Use the '--force' option to overwrite"
@@ -189,7 +190,7 @@ createSubdirs
 if [ -n "$ENVIR" ] && [ -n "$HOST" ]; then
     init_env_configs $ENVIR $HOST
 else
-    echo "Target environment and host not provided, configs not sync'd."
+    echo "Target environment and host not provided, configs NOT sync'd."
 fi
 
 if [ $RETVAL -eq 1 ]; then

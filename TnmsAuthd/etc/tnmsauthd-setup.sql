@@ -37,6 +37,9 @@ INSERT INTO tnmsauth.users ( gid, authtype_id, username, password, is_agent, int
 INSERT INTO tnmsauth.users ( gid, authtype_id, username, password, is_agent, internal )
     VALUES (1, 1, "tcanms/tnmsarchiver/tcanms", "tnmsarchive11b", 1, 1);
 
+INSERT INTO tnmsauth.users ( gid, authtype_id, username, password, is_agent, internal )
+    VALUES (1, 1, "tnms-console", "tnmsconsole11b", 1, 1);
+
 INSERT INTO tnmsauth.mgr_usergroups ( mgr_uid, mgr_gid, is_superuser, grant_rights )
     VALUES (1, 1, 1, 1);
 INSERT INTO tnmsauth.mgr_usergroups ( mgr_uid, mgr_gid, is_superuser, grant_rights )
