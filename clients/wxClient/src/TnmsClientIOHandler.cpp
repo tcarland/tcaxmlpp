@@ -57,7 +57,10 @@ TnmsClientIOHandler::timeout ( const EventTimer & timer )
                     client->subscribe("/");
                     client->sendMessage(&reqTree, true);
                 } else if ( ! client->isAuthorized() ) {
-                    client->login();
+                    if ( ! client->isAuthorizing() )
+                        client->login();
+                    else 
+                        return;
                 }
             }
         }

@@ -72,15 +72,12 @@ TnmsWxClientMain::OnRun()
 int
 TnmsWxClientMain::OnExit()
 {
+    LogFacility::LogMessage("OnExit()");
+
     _mframe->DropAllConnections();
 
     _stree.iomgr->setAlarm();
     _stree.mutex->wait();
-
-    LogFacility::LogMessage("OnExit()");
-
-    sleep(1);
-
     _stree.iomgr->stop();
     
     LogFacility::CloseLogFacility();

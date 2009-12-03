@@ -214,6 +214,7 @@ ClientFrame::OnConnect ( wxCommandEvent & event )
     //uint16_t pn = StringUtils::fromString<uint16_t>(port);
     
     cl.client->openConnection(cl.servername, cl.port);
+    cl.client->login(cl.username, cl.password);
     _stree->iomgr->addClient(cl.client);
     
     //user.append("@").append(sn).append(":").append(port);
