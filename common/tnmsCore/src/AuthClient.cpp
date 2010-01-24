@@ -104,7 +104,6 @@ AuthClient::AuthClient ( EventManager * evmgr )
     : _evmgr(evmgr),
       _evid(0),
       _authhandler(new AuthIOHandler()),
-      _authport(0),
       _idleTimeout(0),
       _authRetryInterval(TNMS_LOGIN_INTERVAL),
       _lastConn(0),
@@ -113,18 +112,18 @@ AuthClient::AuthClient ( EventManager * evmgr )
     this->setMessageHandler(new AuthMessageHandler(this));
 }
 
-AuthClient::AuthClient ( const std::string & authsvr, uint16_t authport, EventManager * evmgr )  
+AuthClient::AuthClient ( const std::string & authsvr, uint16_t authport, 
+                         EventManager * evmgr )  
     : _evmgr(evmgr),
       _evid(0),
       _authhandler(new AuthIOHandler()),
-      _authsvr(authsvr),
-      _authport(authport),
       _idleTimeout(0),
       _authRetryInterval(TNMS_LOGIN_INTERVAL),
       _lastConn(0),
       _bypass(false)
 {
     this->setMessageHandler(new AuthMessageHandler(this));
+    this->openConnection(authsvr, authport);
 }
 
 AuthClient::~AuthClient() 
@@ -139,7 +138,7 @@ AuthClient::~AuthClient()
 void 
 AuthClient::timeout ( const EventTimer & timer )
 {
-    if ( _bypass || _authsvr.empty() )
+    if ( _bypass || this->getHostname().empty() )
         return;
 
     const time_t  & now = timer.abstime.tv_sec;
@@ -289,13 +288,18 @@ AuthClient::authConnect()
     } else {
         if ( _evid > 0 )
             this->close();
-        conn = this->openConnection(_authsvr, _authport);
+        conn = this->openConnection();
     }
 
-    if ( conn < 0 )
+    if ( conn < 0 ) 
+    {
         _errstr = "Failed to connect to " + this->getHostStr();
-    else if ( conn > 0 )
+        this->close();
+    }
+    else if ( conn >= 0 && _evid == 0 )
+    {
         _evid = _evmgr->addIOEvent((EventIOHandler*) _authhandler, this->getFD(), this);
+    }
 
     return conn;
 }
@@ -357,11 +361,13 @@ AuthClient::AuthReplyHandler ( const TnmsAuthReply & reply )
 void
 AuthClient::setAuthServer ( const std::string & authsvr, uint16_t port )
 {
-    if ( _authsvr.compare(authsvr) != 0 || _authport != port ) 
+    std::string  svrname = this->getHostname();
+    uint16_t     svrport = this->getHostPort();
+    
+    if ( svrname.compare(authsvr) != 0 || svrport != port ) 
     {
         this->close();
-        _authsvr  = authsvr;
-        _authport = port;
+        this->openConnection(authsvr, port);
 
         LogFacility::Message  logmsg;
 

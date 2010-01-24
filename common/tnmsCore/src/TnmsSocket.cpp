@@ -48,8 +48,6 @@ TnmsSocket::TnmsSocket ( const std::string & host, uint16_t port,
     : _authFunctor(new AuthAllFunctor(_authorizations)),
       _msgHandler(msgHandler),
       _compression(TNMS_COMPRESSION_ENABLE),
-      _hostname(host),
-      _port(port),
       _sock(NULL),
       _hdr(NULL),
       _rxbuff(NULL),
@@ -68,6 +66,7 @@ TnmsSocket::TnmsSocket ( const std::string & host, uint16_t port,
       _maxMessages(TNMS_RECORD_LIMIT)
 {
     this->init();
+    this->openConnection(host, port);
 }
 
 
@@ -107,8 +106,6 @@ TnmsSocket::~TnmsSocket()
         delete _authFunctor;
     if ( _msgHandler )
         delete _msgHandler;
-    if ( _sock )
-        delete _sock;
 
     if ( _rxbuff )
         ::free(_rxbuff);
@@ -117,6 +114,9 @@ TnmsSocket::~TnmsSocket()
 
     if ( _wxcbuff )
         delete _wxcbuff;
+    
+    if ( _sock )
+        delete _sock;
 }
 
 
@@ -183,9 +183,9 @@ TnmsSocket::openConnection ( const std::string & host, uint16_t port )
     }
 
     _sock = new BufferedSocket(addr, _port, SOCKET_CLIENT, SOCKET_TCP);
-    _sock->rxBufferSize(TNMS_PACKET_SIZE);
-    _sock->setNonBlocking();
 
+    _sock->setNonBlocking();
+    _sock->rxBufferSize(TNMS_PACKET_SIZE);
     this->setHostStr();
 
     return this->connect();
@@ -234,9 +234,6 @@ TnmsSocket::openConnection()
 void
 TnmsSocket::closeConnection()
 {
-    if ( _sock == NULL )
-        return;
-
     if ( _wxcbuff )
         this->clearState();
 
@@ -249,7 +246,8 @@ TnmsSocket::closeConnection()
     this->_txCtr         = 0;
 
     //this->clearStall()
-    _sock->close();
+    if ( _sock )
+        _sock->close();
 
     return;
 }

@@ -120,8 +120,6 @@ class AuthClient : public TnmsClient {
     evid_t                      _evid;
     AuthIOHandler *             _authhandler;
 
-    std::string                 _authsvr;
-    uint16_t                    _authport;
     time_t                      _idleTimeout, _idlet;
     time_t                      _authRetryInterval, _lastConn;
 
