@@ -10,7 +10,6 @@ namespace tnmsd {
 
 #define AGENT_SUBNAME   "Agents"
 #define CLIENT_SUBNAME  "Clients"
-#define MIRROR_SUBNAME  "Mirrors"
 #define RECEIVE_NAME    "Received"
 #define TRANSMIT_NAME   "Sent"
 #define LASTCONN_NAME   "LastConnected"
@@ -18,7 +17,7 @@ namespace tnmsd {
 
 struct ClientStats {
 
-    std::string       name;   // root client metric name
+    std::string       name;        // root client metric name
 
     TnmsMetric        connState;
     TnmsMetric        lastConn;

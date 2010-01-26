@@ -297,13 +297,7 @@ ClientIOHandler::initStat ( TnmsClient * client )
 
     name = _prefix;
     name.append("/");
-
-    if ( client->isMirror() ) {
-        name.append(MIRROR_SUBNAME).append("/");
-    } else {
-        name.append(CLIENT_SUBNAME).append("/");
-    }
-
+    name.append(CLIENT_SUBNAME).append("/");
     name.append(client->getAddrStr());
     name.append(":").append(StringUtils::toString(client->getHostPort()));
 
