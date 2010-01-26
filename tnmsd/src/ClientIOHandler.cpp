@@ -210,13 +210,13 @@ ClientIOHandler::handle_close ( const EventIO & io )
     if ( client == NULL )
         return;
 
-    if ( _tree ) 
-        _tree->removeSubscriber((TreeSubscriber*) client->getSubscriber());
-
     LogFacility::LogMessage("ClientIOHandler::handle_close() " + client->getHostStr());
 
+    if ( _tree ) 
+        _tree->removeSubscriber((TreeSubscriber*) client->getSubscriber());
     if ( _auth )
         _auth->unauthClient(client);
+
     client->close();
     _clients.erase(client);
     this->endStat(client);
@@ -291,26 +291,32 @@ void
 ClientIOHandler::initStat ( TnmsClient * client )
 {
     ClientStat    stat;
-    int c = 0;
+    //int c = 0;
    
     std::string & name = stat.name;
 
     name = _prefix;
     name.append("/");
-    name.append(CLIENT_SUBNAME).append("/");
+    if ( client->isMirror() )
+        name.append(MIRROR_SUBNAME).append("/");
+    else
+        name.append(CLIENT_SUBNAME).append("/");
     name.append(client->getAddrStr());
     name.append(":").append(StringUtils::toString(client->getHostPort()));
 
-    stat.connState  = TnmsMetric(name);
+    stat.conn       = TnmsMetric(name);
+    stat.connState  = TnmsMetric(name + "/" + LASTSTATE_NAME);
     stat.lastConn   = TnmsMetric(name + "/" + LASTCONN_NAME);
 
-    client->isMirror() ? c = 0 : c = 1;
-    stat.connState.setValue(TNMS_INT32, c);
+    //client->isMirror() ? c = 0 : c = 1;
+    stat.conn.setValue(client->getClientLoginName());
 
-    _tree->add(stat.connState.getElementName());
+    _tree->add(stat.conn.getElementName());
 
-    if ( client->isMirror() )
+    if ( client->isMirror() ) {
+        _tree->add(stat.connState.getElementName());
         _tree->add(stat.lastConn.getElementName());
+    }
 
     _clMap[client] = stat;
 
@@ -320,9 +326,11 @@ ClientIOHandler::initStat ( TnmsClient * client )
 void
 ClientIOHandler::updateStat ( TnmsClient * client, ClientStat & stat )
 {
-    _tree->update(stat.connState);
     if ( client->isMirror() )
+    {
+        _tree->update(stat.connState);
         _tree->update(stat.lastConn);
+    }
 
     return;
 }
@@ -341,7 +349,7 @@ ClientIOHandler::endStat ( TnmsClient * client )
             stat.connState.setValue(TNMS_INT32, c);
             _tree->update(stat.connState);
         } else {
-            _tree->remove(stat.name);
+            _tree->remove(stat.conn.getElementName());
             _clMap.erase(cIter);
         } 
     }
