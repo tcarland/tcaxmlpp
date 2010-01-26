@@ -13,6 +13,8 @@ namespace tnmsCore {
 
 // ---------------------------------------------------------------------------------------
 //  AuthMessageHandler
+
+
 AuthMessageHandler::AuthMessageHandler ( AuthClient * client )
     : _client(client)
 {}
@@ -96,6 +98,7 @@ AuthIOHandler::writeable ( const EventIO & io )
 // ---------------------------------------------------------------------------------------
 //  AuthClient
 
+
 /** Need to reset the undlerlying default MessageHandler to hold 
   * our AuthClient*, not a TnmsClient*, so it must be reset in the
   * constructor to get our hook for AuthReplyHandler.
@@ -112,6 +115,7 @@ AuthClient::AuthClient ( EventManager * evmgr )
     this->setMessageHandler(new AuthMessageHandler(this));
 }
 
+
 AuthClient::AuthClient ( const std::string & authsvr, uint16_t authport, 
                          EventManager * evmgr )  
     : _evmgr(evmgr),
@@ -125,6 +129,7 @@ AuthClient::AuthClient ( const std::string & authsvr, uint16_t authport,
     this->setMessageHandler(new AuthMessageHandler(this));
     this->openConnection(authsvr, authport);
 }
+
 
 AuthClient::~AuthClient() 
 {
@@ -147,8 +152,10 @@ AuthClient::timeout ( const EventTimer & timer )
     {
         const EventIO * io  = _evmgr->findIOEvent(_evid);
         if ( io && ! _authhandler->writeable(*io) && _idlet <= now ) {
-            if ( this->isConnected() )
+            if ( this->isConnected() ) {
+                LogFacility::LogMessage("AuthClient connection idle timeout");
                 this->close();
+            }
             _idlet = now + _idleTimeout;
             return;
         }
@@ -321,6 +328,10 @@ AuthClient::close()
 void
 AuthClient::AuthReplyHandler ( const TnmsAuthReply & reply ) 
 {
+
+    if ( ! this->isAuthorized() && reply.getElementName().compare(_authname) == 0 )
+        TnmsClient::AuthReplyHandler(reply);
+
     TnmsClient * client = NULL;
     AuthRequestMap::iterator  rIter;
 
