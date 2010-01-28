@@ -61,6 +61,7 @@ done
 ENVIR=$TCANMS_ENV
 HOST=$TCANMS_HOST
 FORCE=
+USERINIT=
 
 # ------------------------------------------
 
@@ -73,9 +74,11 @@ usage()
     echo "   -f | --force       : force overwrite of install target '${TCANMS_PREFIX}'"
     echo "   -h | --help        : display this help and exit"
     echo "   -v | --version     : display verion info and exit"
-    echo "   -e | --environment : environment name from which to sync configs (optional)"
-    echo "   -t | --target      : name of the target host within the provided environment to sync"
+    echo "   -e | --environment : environment from which to sync configs (optional)"
+    echo "   -t | --target      : name of the target host (within the environment)"
     echo "                        (requires -e or TCANMS_ENV to be set)"
+    echo "   -U | --user-init   : create a user account using the envflags "
+    echo "                        TCANMS_USER and TCANMS_GROUP variables"
     echo ""
     echo "   The 'environment' and 'target' flags will sync the configs for the provided "
     echo "   environment and host within 'config/environment/envname/target'"
@@ -114,6 +117,55 @@ createSubdirs()
     done
 }
 
+init_user_account()
+{
+    local user=$TCANMS_USER
+    local group=$TCANMS_GROUP
+    local exists=
+    local result=
+
+    if [ -z "$user" ]; then
+        echo " init_user_account() failed: TCANMS_USER is not set"
+	return 1
+    fi
+
+    if [ -z "$group" ]; then
+        group=$user
+    fi
+
+    echo "  Initializing user/group account: '$user' : '$group'"
+
+    exists=`grep ^$group: /etc/group`
+    if [ -z "$exists" ]; then
+	groupadd -f $group
+	result=$?
+	if [ $result -ne 0 ]; then
+	    echo "    group add failed"
+	    return 1
+	else
+	    echo "    added group '$group'"
+	fi
+    else
+        echo "     group '$group' already exists"
+    fi
+
+    exists=`grep ^$user: /etc/passwd`
+    if [ -z "$exists" ]; then
+	useradd -d $TCANMS_HOME -g $group -m -N
+	result=$?
+	if [ $result -ne 0 ]; then
+	    echo "    useradd failed"
+	    return 1
+	else
+	    echo "    added user '$user'"
+	fi
+    else
+        echo "     user '$user' already exists, continuing..."
+    fi
+
+    return 0
+}
+
 init_env_configs()
 {
     local cfgenv=$1
@@ -121,7 +173,7 @@ init_env_configs()
 
     if [ -z "$cfgenv" ] || [ -z "$cfghost" ]; then
         echo "  Invalid environment settings"
-        return -1
+        return 1
     fi
 
     local cfgpath="$CONFIGDIR/../environment/$cfgenv/$cfghost/"
@@ -130,13 +182,14 @@ init_env_configs()
     echo "  Syncing configs from '$cfgenv/$cfghost'"
 
     if [ -d $cfgpath ]; then
+        echo "      $RSYNC -r $cfgpath $target"
         $RSYNC -r $cfgpath $target
     else
         echo " Error, path not valid: $cfgpath"
-        return -1
+        return 1
     fi
 
-    return 1
+    return 0
 }
 
 
@@ -157,6 +210,9 @@ while [ $# -gt 0 ]; do
             HOST="$2"
             shift
             ;;
+	-U|--user-init)
+	    USERINIT="true"
+	    ;;
         -h|--help)
             usage
             exit 0
@@ -182,6 +238,16 @@ if [ -d $PREFIX ]; then
     fi
 fi
 
+if [ -n $USERINIT ]; then
+    if [ -n "$TCANMS_USER" ]; then
+	init_user_account
+	RETVAL=$?
+	if [ $RETVAL -ne 0 ]; then
+	    echo "init_user_account() failed. aborting.."
+	    exit 1
+	fi
+    fi
+fi
 
 echo "  Creating directory structure in '$PREFIX'"
 createSubdirs

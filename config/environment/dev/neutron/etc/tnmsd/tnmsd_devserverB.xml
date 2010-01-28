@@ -4,7 +4,7 @@
     <tnmsd
         agent_name="tcanms/tnmsd/devserver_b"
         agent_key="tnmsd11b"
-        logfile="/opt/tcanms/tcanms/logs/tnmsd-devserver_b.log"
+        logfile="/home/tca/tcanms/logs/tnmsd-devserver_b.log"
         syslog="false"
         debug="true"
         auth_server="nebula"
