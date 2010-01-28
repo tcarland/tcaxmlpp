@@ -34,7 +34,6 @@ export TCANMS_USEDB="mysql"
 #export TCANMS_EMAIL="tcanms@localhost"
 
 
-
 # kernel version
 KV=$(uname -r)
 KVMAJOR=${KV%%.*}

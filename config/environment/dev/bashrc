@@ -4,14 +4,16 @@ if [[ $- != *i* ]] ; then
         return
 fi
 
+if [ -f ~/tcanms/etc/tcanmsrc ]; then
+    source ~/tcanms/etc/tcanmsrc
+fi
+
 export PS1="\h{\u}$ "
 
 # tcanms
 export TCANMS_ENV="dev"
 export TCANMS_HOST=`hostname`
 export TCANMS_DEBUG="true"
-
-source ~/tcanms/etc/tcanmsrc
 
 if [ -z "$TCANMS_PREFIX" ]; then
     export TCANMS_PREFIX="$TCANMS_HOME"
