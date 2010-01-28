@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<tnms version="0.1">
+    <tnmsd
+        agent_name="tcanms/tnmsd/devserver_c"
+        agent_key="tnmsd11b"
+        logfile="/opt/tcanms/tcanms/logs/tnmsd-devserver_c.log"
+        syslog="false"
+        debug="true"
+        auth_server="nebula"
+        auth_port="15901" >
+
+        <server
+            client_port="15605"
+            holddown="30"
+            reconnect="30"/>
+
+        <client
+            name="server_a"
+            host="localhost"
+            port="15600">
+
+            <subscribe name="*"/>
+        </client>
+        <client
+            name="server_b"
+            host="localhost"
+            port="15601">
+
+            <subscribe name="*"/>
+        </client>
+
+    </tnmsd>
+
+</tnms>
+

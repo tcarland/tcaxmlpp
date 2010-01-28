@@ -109,7 +109,7 @@ createSubdirs()
             break
         fi
         chown $TCANMS_USER $subdir
-        chgrp $TCANMS_USER $subdir
+        chgrp $TCANMS_GROUP $subdir
         chmod g+w $subdir
     done
 }

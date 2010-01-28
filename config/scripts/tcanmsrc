@@ -19,6 +19,7 @@ export CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}:${TCANMS_HOME}/include
 
 
 export TCANMS_USER="tcanms"
+export TCANMS_GROUP="tcanms"
 export TCANMS_EMAIL="tcanms@localhost"
 
 export TCANMS_USE_CRON=0
