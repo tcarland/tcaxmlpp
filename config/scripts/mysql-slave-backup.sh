@@ -45,6 +45,8 @@ usage()
     echo "  database while stopping the mysql slave process via the "
     echo "  'STOP SLAVE SQL_THREAD' command. This action requires the "
     echo "  'mysqladmin' binary and sufficient mysql privileges."
+    echo "    The script also uses 'gzip' to compress the backups "
+    echo "   and 'rsync' to sync the binlogs."
     echo ""
     version
     return 1
@@ -236,6 +238,8 @@ checkTarget()
 }
 
 
+# MAIN 
+
 while [ $# -gt 0 ]; do
     case "$1" in
         -d|--debug)
@@ -294,6 +298,7 @@ if [ -z "$MYSQLUSER" ] || [ -z "$TARGET" ]; then
     exit 1
 fi
 
+# ---------------------------
 
 targetpath="$TARGET/$HOSTNAME"
 targetbinlog="$targetpath/binlog"
@@ -306,19 +311,20 @@ if [ $FULL -eq 1 ]; then
 else
     echo "Performing incremental backup..."
 fi
+
 if [ $DRYRUN -eq 1 ]; then
     echo "  DRYRUN enabled "
 fi
 echo ""
 
-
+# validate the target
 checkTarget $targetbinlog
 retval=$?
 if [ $retval -eq 1 ]; then
     exit 1
 fi
 
-
+# stop the slave process
 stopSlave
 retval=$?
 if [ $retval -eq 1 ]; then
@@ -327,14 +333,14 @@ else
     echo "Slave stopped"
 fi
 
-
+# sync the binlogs
 syncLogs $targetbinlog
 retval=$?
 if [ $retval -eq 1 ]; then
     exit 1
 fi
 
-
+# perform db dump if requested
 if [ $FULL -eq 1 ]; then
     dumpSlave $targetpath $savedate
     retval=$?
@@ -343,21 +349,21 @@ if [ $FULL -eq 1 ]; then
     fi
 fi
 
-
+# restart the slave process
 startSlave
 retval=$?
 if [ $retval -eq 1 ]; then
     exit 1
 fi
 
-
+# purge the old binlogs if requested
 if [ $FULL -eq 1 ]; then
     purgeLogs
     retval=$?
     if [ $retval -eq 1 ]; then
         exit 1
     else 
-        echo "Logs purged"
+        echo "Old logs purged"
     fi
 fi
 
