@@ -1,0 +1,20 @@
+#/etc/skel/.bashrc
+if [[ $- != *i* ]] ; then
+        # Shell is non-interactive.  Be done now!
+        return
+fi
+
+export PS1="\h{\u}$ "
+
+# tcanms
+export TCANMS_ENV="dev"
+export TCANMS_HOST=`hostname`
+export TCANMS_DEBUG="true"
+
+source ~/tcanms/etc/tcanmsrc
+
+if [ -z "$TCANMS_PREFIX" ]; then
+    export TCANMS_PREFIX="$TCANMS_HOME"
+fi
+
+

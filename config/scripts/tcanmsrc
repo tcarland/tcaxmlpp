@@ -17,11 +17,6 @@ export PATH=${PATH}:${TCANMS_HOME}/bin:${TCANMS_HOME}/sbin
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${TCANMS_HOME}/lib
 export CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}:${TCANMS_HOME}/include
 
-
-export TCANMS_USER="tcanms"
-export TCANMS_GROUP="tcanms"
-export TCANMS_EMAIL="tcanms@localhost"
-
 export TCANMS_USE_CRON=0
 export TCANMS_CRON_INTERVAL=5
 export EMAIL_ON_ERROR=0
@@ -33,6 +28,11 @@ export TCANMS_USEDB="mysql"
 #export TCANMS_DBUSER=
 #export TCANMS_DBPASS=
 #export TCANMS_DBHOST=
+
+#export TCANMS_USER="tcanms"
+#export TCANMS_GROUP="tcanms"
+#export TCANMS_EMAIL="tcanms@localhost"
+
 
 
 # kernel version
