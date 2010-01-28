@@ -3,19 +3,12 @@
 #  mysql-slave-backup.sh
 #
 
-VERSION="1.0.3"
+VERSION="1.12"
 AUTHOR="tcarland@gmail.com"
-
-MYSQLBIN="mysql"
-MYSQLADMIN="mysqladmin"
-MYSQLDUMP="mysqldump"
-RSYNC="rsync"
-
+PNAME=${0##*\/}
 BINLOGNAME="mysql-bin"
 MYSQLDIR="/var/lib/mysql"
-
-MYSQLDUMP_OPTIONS="--single-transaction --opt --flush-logs --master-data=2 --all-databases"
-
+MYSQLDUMP_OPTIONS="--single-transaction --flush-logs --master-data=2 --all-databases"
 FULL=0
 DRYRUN=0
 
@@ -23,42 +16,46 @@ MYSQLUSER=
 MYSQLPASS=
 TARGET=
 MASTER_LASTLOG=
-RETVAL=
+retval=
 
 
 usage()
 {
     echo ""
-    echo "Usage: $0  [options]  {action} "
-    echo "        options:"
-    echo "           -u|--user   <username>  =  Database username"
-    echo "           -p|--pass   <password>  =  Database users password (optional) "
-    echo "           -t|--target <target>    =  Backup target path (required)"
-    echo "           -d|--data   <datadir>   =  Path to Mysql data directory"
-    echo "                                       (default: /var/lib/mysql)"
-    echo "           -b|--binlog <logname>   =  An alternate binlog from: '$BINLOGNAME'"
-    echo "           -h|--help               =  Display usage information"
-    echo "           -n|--dry-run            =  Performs a dry-run"
-    echo "           -v|--version            =  Display version information"
+    echo "Usage: $PNAME [options]  full|incremental"
+    echo "         --user   |-u <username>  =  Database username"
+    echo "         --pass   |-p <password>  =  Database users password (optional) "
+    echo "         --target |-t <target>    =  Backup target path (required)"
+    echo "         --data   |-d <datadir>   =  Path to Mysql data dir "
+    echo "                                      (default: /var/lib/mysql)"
+    echo "         --help   |-h             =  Display usage information"
+    echo "         --dry-run|-n             =  Perform a dry-run (don't do anything)"
+    echo "         --version|-v             =  Display version information"
+    echo "         [action=full|inc]        =  Default action is 'incremental'"
+    echo "              incremental         =  Sync just the binary logs only"
+    echo "              full                =  Syncs logs, data dump of all databases,"
+    echo "                                      purges old binary logs"
     echo ""
-    echo "        actions:"
-    echo "            incremental            =  Syncs to binary logs only"
-    echo "                                       (default: if no action defined"
-    echo "            full                   =  Syncs logs, dumps all databases,"
-    echo "                                       and purges stale binary logs"
+    echo " eg. $PNAME --user root --pass mypass \\"
+    echo "            --target /m1/Backup/mysql full"
     echo ""
-    echo "eg: $0 --user root --pass mypass \\"
-    echo "     --data /m1/mysql --target /m2/Backup/mysql full"
+    echo " ----------------"
     echo ""
+    echo "    The script will perform a backup of the mysql slave "
+    echo "  database while stopping the mysql slave process via the "
+    echo "  'STOP SLAVE SQL_THREAD' command. This action requires the "
+    echo "  'mysqladmin' binary and sufficient mysql privileges."
+    echo ""
+    version
     return 1
 }
 
 
 version()
 {
-    local myname=${0/#.\//}
-
-    echo "$myname, Version $VERSION, $AUTHOR"
+    echo " $PNAME: "
+    echo "   Version = $VERSION"
+    echo "   Author  = $AUTHOR"
     echo ""
 }
 
@@ -66,7 +63,6 @@ version()
 startSlave()
 {    
     local options="--user=$MYSQLUSER"
-    local retval=0
 
     if [ -n "$MYSQLPASS" ]; then
         options="${options} --password=$MYSQLPASS"
@@ -76,10 +72,11 @@ startSlave()
 
     if [ $DRYRUN -eq 1 ]; then
         echo "  startSlave()"
-        echo "$MYSQLADMIN $options start-slave"
+        echo "mysqladmin $options start-slave"
         echo ""
+        retval=0
     else
-        $MYSQLADMIN $options start-slave
+        mysqladmin $options start-slave
         retval=$?
     fi
 
@@ -90,7 +87,6 @@ startSlave()
 stopSlave()
 {
     local options="--user=$MYSQLUSER"
-    local retval=0
 
     if [ -n "$MYSQLPASS" ]; then
         options="${options} --password=$MYSQLPASS"
@@ -100,10 +96,11 @@ stopSlave()
 
     if [ $DRYRUN -eq 1 ]; then
         echo "  stopSlave()"
-        echo "$MYSQLBIN $options -e 'STOP SLAVE SQL_THREAD;'"
+        echo "mysql $options -e 'STOP SLAVE SQL_THREAD;'"
         echo ""
+        retval=0
     else
-        $MYSQLBIN $options -e 'STOP SLAVE SQL_THREAD;'
+        mysql $options -e 'STOP SLAVE SQL_THREAD;'
         retval=$?
     fi
 
@@ -117,7 +114,6 @@ dumpSlave()
     local savedate=$2
     local targetdbfile="$targetpath/$HOSTNAME-full-$savedate.sql.gz"
     local options="--user=$MYSQLUSER"
-    local retval=0
 
     if [ -n "$MYSQLPASS" ]; then
         options="${options} --password=$MYSQLPASS"
@@ -134,10 +130,11 @@ dumpSlave()
 
     if [ $DRYRUN -eq 1 ]; then
         echo "  dumpSlave()"
-        echo "$MYSQLDUMP $options | gzip  > $targetdbfile "
+        echo "mysqldump $options | gzip  > $targetdbfile "
         echo ""
+        retval=0
     else
-        $MYSQLDUMP $options | gzip > $targetdbfile
+        mysqldump $options | gzip > $targetdbfile
         retval=$?
     fi
 
@@ -149,7 +146,6 @@ syncLogs()
 {
     local targetpath=$1
     local options="-a"
-    local retval=0
 
     if [ ! -d $targetpath ]; then
         mkdir -p $targetpath
@@ -168,17 +164,17 @@ syncLogs()
     for FILE in `cat $MYSQLDIR/$BINLOGNAME.index`
     do
         if [ -n "$DRYRUN" ]; then
-            echo "$RSYNC $options $MYSQLDIR/$FILE $targetpath/$FILE"
-            $RSYNC $options $MYSQLDIR/$FILE $targetpath/$FILE
+            echo "rsync $options $MYSQLDIR/$FILE $targetpath/$FILE"
+            rsync $options $MYSQLDIR/$FILE $targetpath/$FILE
         else
-            $RSYNC $options $MYSQLDIR/$FILE $targetpath/$FILE
+            rsync $options $MYSQLDIR/$FILE $targetpath/$FILE
         fi
         MASTER_LASTLOG=$FILE;
     done
     echo ""
 
 
-    return $retval
+    return 0
 }
 
 
@@ -202,10 +198,10 @@ purgeLogs()
         echo "Current Master log is $lastlog"
         echo "mysql $options -e 'PURGE BINARY LOGS TO '$lastlog';'"
         echo ""
-        RETVAL=0
+        retval=0
     else
         mysql $options -e "PURGE BINARY LOGS TO '$lastlog';"
-        RETVAL=$?
+        retval=$?
     fi
 
     return 0
@@ -218,10 +214,10 @@ checkTarget()
 
     if [ -d $targetpath ]; then
         rm -rf $targetpath
-        RETVAL=$?
-        if [ $RETVAL -eq 1 ]; then
+        retval=$?
+        if [ $retval -eq 1 ]; then
             echo "Failed to clear $targetpath"
-            return $RETVAL
+            return $retval
         fi
     fi
 
@@ -229,31 +225,19 @@ checkTarget()
         echo "  checkTarget()"
         echo "mkdir -p $targetpath"
         echo ""
-        RETVAL=0
+        retval=0
     else
         mkdir -p $targetpath
-        RETVAL=$?
+        retval=$?
     fi
 
 
-    return $RETVAL;
+    return $retval;
 }
 
 
-# ---------------------------------
-#  MAIN
-
-# process command arguments
 while [ $# -gt 0 ]; do
     case "$1" in
-        -b|--binlog)
-            BINLOGNAME="$2"
-            shift
-            if [ -z "$BINLOGNAME" ]; then
-                usage
-                exit 1
-            fi
-            ;;
         -d|--debug)
             echo " --debug enabled"
             ;;
@@ -264,6 +248,10 @@ while [ $# -gt 0 ]; do
         -p|--pass)
             MYSQLPASS="$2"
             shift
+            if [ -z "$MYSQLPASS" ]; then
+                echo "error: no password given"
+                exit 1
+            fi
             ;;
         -t|--target)
             TARGET="$2"
@@ -301,13 +289,12 @@ done
 
 echo ""
 
-# ensure we have required options
 if [ -z "$MYSQLUSER" ] || [ -z "$TARGET" ]; then
     usage
     exit 1
 fi
 
-# setup our targets
+
 targetpath="$TARGET/$HOSTNAME"
 targetbinlog="$targetpath/binlog"
 savedate=`date +%Y%m%d`
@@ -319,67 +306,58 @@ if [ $FULL -eq 1 ]; then
 else
     echo "Performing incremental backup..."
 fi
-
 if [ $DRYRUN -eq 1 ]; then
     echo "  DRYRUN enabled "
 fi
 echo ""
 
-#  ensure target is clear and path is writeable
+
 checkTarget $targetbinlog
-RETVAL=$?
-if [ $RETVAL -eq 1 ]; then
+retval=$?
+if [ $retval -eq 1 ]; then
     exit 1
 fi
 
-#  halt the slave replication thread
+
 stopSlave
-RETVAL=$?
-if [ $RETVAL -eq 1 ]; then
+retval=$?
+if [ $retval -eq 1 ]; then
     exit 1
 else
-    if [ $DRYRUN -eq 1 ]; then
-        echo "Slave stopped successfully (not really!)"
-    else
-        echo "Slave stopped"
-    fi
+    echo "Slave stopped"
 fi
 
-#  synchronize the master bin logs
+
 syncLogs $targetbinlog
-RETVAL=$?
-if [ $RETVAL -eq 1 ]; then
+retval=$?
+if [ $retval -eq 1 ]; then
     exit 1
 fi
 
-#  perform full db dump if desired
+
 if [ $FULL -eq 1 ]; then
     dumpSlave $targetpath $savedate
-    RETVAL=$?
-    if [ $RETVAL -eq 1 ]; then
+    retval=$?
+    if [ $retval -eq 1 ]; then
         exit 1
     fi
 fi
 
-#  restart slave replication
+
 startSlave
-RETVAL=$?
-if [ $RETVAL -eq 1 ]; then
+retval=$?
+if [ $retval -eq 1 ]; then
     exit 1
 fi
 
-#  purge stale/old master bin logs if desired
+
 if [ $FULL -eq 1 ]; then
     purgeLogs
-    RETVAL=$?
-    if [ $RETVAL -eq 1 ]; then
+    retval=$?
+    if [ $retval -eq 1 ]; then
         exit 1
     else 
-        if [ $DRYRUN -eq 1 ]; then
-            echo "Logs purged (not really!)"
-        else
-            echo "Logs purged"
-        fi
+        echo "Logs purged"
     fi
 fi
 
