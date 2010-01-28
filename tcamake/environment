@@ -26,7 +26,7 @@ endif
 
 ifeq ($(TCA_PORT_IDENTIFIER), "Linux_i686")
   # set defaults for linux intel
-  CFLAGS_ADD = -DTCA_PORT_LINUX_INTEL
+  CFLAGS_ADD = -DTCA_PORT_LINUX_INTEL32
   EMANATE_OS = -DLINUX
   EMANATE_os = linux
   LIB_PTHREAD = -lpthread

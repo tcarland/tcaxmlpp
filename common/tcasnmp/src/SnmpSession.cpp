@@ -6,6 +6,7 @@
 #define _TCASNMP_SNMPSESSION_CPP_
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "SnmpSession.h"
 #include "oids.h"

@@ -1,6 +1,9 @@
 #ifndef _TCANETPP_SERIALIZER_H_
 #define _TCANETPP_SERIALIZER_H_
 
+extern "C" {
+# include <string.h>
+}
 #include <string>
 #include <inttypes.h>
 

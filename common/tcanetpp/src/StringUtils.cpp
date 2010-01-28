@@ -22,6 +22,10 @@
 **/
 #define _TCANETPP_STRINGUTILS_CPP_
 
+extern "C" {
+#include <string.h>
+#include <stdlib.h>
+}
 #include <cctype>
 
 #include "StringUtils.h"

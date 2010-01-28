@@ -6,6 +6,7 @@
  */
 #define _TNMSCORE_TNMSOID_CPP_
 #include <list>
+#include <cstdlib>
 
 #include "TnmsOid.h"
 

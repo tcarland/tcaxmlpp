@@ -1,5 +1,7 @@
 #define _DBMAINTAINER_CPP_
 
+#include <algorithm>
+
 #include "DbMaintainer.h"
 
 #include "StringUtils.h"
