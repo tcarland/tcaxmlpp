@@ -4,8 +4,13 @@ if [[ $- != *i* ]] ; then
         return
 fi
 
-if [ -f ~/tcanms/etc/tcanmsrc ]; then
-    source ~/tcanms/etc/tcanmsrc
+CURDIR=.
+if [ -z "$RC_TCANMS_BASHRC" ]; then
+    if [ -e ~/tcanms/etc/tcanmsrc ]; then
+        source ~/tcanms/etc/tcanmsrc
+    elif [ -e $CURDIR/tcanmsrc ]; then 
+        source $CURDIR/tcanmsrc
+    fi
 fi
 
 export PS1="\h{\u}$ "
