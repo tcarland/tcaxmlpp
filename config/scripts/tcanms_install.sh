@@ -7,6 +7,8 @@ AUTHOR="tcarland@gmail.com"
 
 PNAME=${0/#.\//}
 RSYNC="rsync"
+USERADD="useradd"
+GROUPADD="groupadd"
 CONFIGDIR=
 PREFIX=
 SUBDIRS="bin sbin etc run tmp logs"
@@ -89,6 +91,8 @@ usage()
     echo "   TCANMS_PREFIX = '$TCANMS_PREFIX'"
     echo "   TCANMS_ENV    = '$TCANMS_ENV'"
     echo "   TCANMS_HOST   = '$TCANMS_HOST'"
+    echo "   TCANMS_USER   = '$TCANMS_USER'"
+    echo "   TCANMS_GROUP  = '$TCANMS_GROUP'"
     echo ""
     version
 }
@@ -99,7 +103,7 @@ version()
     echo ""
 }
 
-createSubdirs()
+create_subdirs()
 {
     local subdir=
 
@@ -137,7 +141,7 @@ init_user_account()
 
     exists=`grep ^$group: /etc/group`
     if [ -z "$exists" ]; then
-	groupadd -f $group
+	$GROUPADD -f $group
 	result=$?
 	if [ $result -ne 0 ]; then
 	    echo "    group add failed"
@@ -151,7 +155,7 @@ init_user_account()
 
     exists=`grep ^$user: /etc/passwd`
     if [ -z "$exists" ]; then
-	useradd -d $TCANMS_HOME -g $group -m -N
+	$USERADD -d $TCANMS_HOME -g $group -m -N
 	result=$?
 	if [ $result -ne 0 ]; then
 	    echo "    useradd failed"
@@ -250,7 +254,7 @@ if [ -n $USERINIT ]; then
 fi
 
 echo "  Creating directory structure in '$PREFIX'"
-createSubdirs
+create_subdirs
 
 
 if [ -n "$ENVIR" ] && [ -n "$HOST" ]; then
