@@ -80,6 +80,7 @@ TnmsWxClientMain::OnExit()
     _stree.mutex->wait();
     _stree.iomgr->stop();
     
+    LogFacility::RemoveLogStream("stdout");
     LogFacility::CloseLogFacility();
 
     return wxApp::OnExit();
