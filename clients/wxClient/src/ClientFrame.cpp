@@ -211,6 +211,8 @@ ClientFrame::OnConnect ( wxCommandEvent & event )
     cl.client      = new TnmsClient(_stree->tree);
     cl.enabled     = true;
 
+    this->SetStatusText(wxT("Connecting to ") + username + wxT("@") + servname, 1);
+
     //uint16_t pn = StringUtils::fromString<uint16_t>(port);
     
     cl.client->openConnection(cl.servername, cl.port);
@@ -265,15 +267,20 @@ ClientFrame::OnTimer ( wxTimerEvent & event )
     ClientMap::iterator  cIter;
     for ( cIter = _clientMap.begin(); cIter != _clientMap.end(); ++cIter )
     {
-        Connection & clin = cIter->second;
+        Connection & cw = cIter->second;
 
-        if ( ! clin.enabled )
+        if ( ! cw.enabled )
             continue;
 
-        if ( clin.client->isAuthorized() && ! clin.req ) 
+        if ( cw.client->isAuthorized() && ! cw.req ) 
         {
             _stree->tree->request("*", _stree->notifier);
-            clin.req = true;
+            cw.req = true;
+            this->SetStatusText(wxT("Connection active"), 1);
+        }
+        else if ( ! cw.client->isConnected() )
+        {
+            this->SetStatusText(wxT("No connection"), 1);
         }
     }
 
