@@ -6,10 +6,10 @@
 #
 #
 
-VERSION="1.01"
+PNAME=${0##*\/}
+VERSION="1.12"
 AUTHOR="tcarland@gmail.com"
 
-MYNAME=${0/#.\//}
 SYSHOME=""
 CURDIR=`dirname $0`
 
@@ -28,8 +28,8 @@ if [ -z "$SYSHOME" ]; then
 fi
 
 echo ""
-echo "init.tcanms.sh (v${VERSION}):"
-echo "  home: $SYSHOME"
+echo "$PNAME (v${VERSION}):"
+echo "   Home: $SYSHOME"
 echo ""
 
 
@@ -54,18 +54,18 @@ fi
 
 
 
-if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ${SYSHOME}/bin/init.tcanms_functions.sh ]; then
-    source ${SYSHOME}/bin/init.tcanms_functions.sh
+if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ${SYSHOME}/bin/tcanms_functions.sh ]; then
+    source ${SYSHOME}/bin/tcanms_functions.sh
 fi
-if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ./bin/init.tcanms_functions.sh ]; then
-    source ./bin/init.tcanms_functions.sh
+if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ./bin/tcanms_functions.sh ]; then
+    source ./bin/tcanms_functions.sh
 fi
-if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ./etc/init.tcanms_functions.sh ]; then
-    source ./etc/init.tcanms_functions.sh
+if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ./etc/tcanms_functions.sh ]; then
+    source ./etc/tcanms_functions.sh
 fi
 
 if [ -z "$RC_TCANMS_FUNCTIONS" ]; then
-    echo "Failed to locate init.tcanms_functions.sh"
+    echo "Failed to locate tcanms_functions.sh"
     exit 1
 fi
 
@@ -80,6 +80,21 @@ export PROCESS_STATUS_FILE="$SYSHOME/tmp/init_status.log"
 echo -n "PROCESS_STATUS_CODE=" >> $PROCESS_STATUS_FILE
 INITERR=0
 
+
+
+usage()
+{
+    echo ""
+    echo "Usage: $0 {start|stop|restart|info}  [service]  [key]"
+    echo ""
+    echo "  service = service name to start"
+    echo "  key     = process identifier "
+    echo ""
+    echo "  Note: 'restart' will only restart services determined not currently "
+    echo "  running. To force restart of a process stop|start must be used."
+    echo ""
+    return 1
+}
 
 
 start_services()
@@ -340,21 +355,6 @@ info_services()
         echo "All services running"
     fi
 
-    return 1
-}
-
-
-usage()
-{
-    echo ""
-    echo "Usage: $0 {start|stop|restart|info}  [service]  [key]"
-    echo ""
-    echo "  service = service name to start"
-    echo "  key     = process identifier "
-    echo ""
-    echo "  Note: 'restart' will only restart services determined not currently "
-    echo "  running. To force restart of a process stop|start must be used."
-    echo ""
     return 1
 }
 
