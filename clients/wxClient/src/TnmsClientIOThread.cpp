@@ -87,13 +87,13 @@ TnmsClientIOThread::addClient ( TnmsClient * client )
     return true;
 }
 
-void
+bool
 TnmsClientIOThread::removeClient ( TnmsClient * client )
 {
     ClientEventMap::iterator  cIter;
 
     if ( ! this->_mutex->lock() )
-        return;
+        return false;
 
     cIter = _clients.find(client);
     if ( cIter != _clients.end() )
@@ -101,9 +101,10 @@ TnmsClientIOThread::removeClient ( TnmsClient * client )
         _evmgr->removeEvent(cIter->second);
         _clients.erase(cIter);
     }
+
     this->_mutex->unlock();
 
-    return;
+    return true;
 }
 
 

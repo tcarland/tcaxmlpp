@@ -31,7 +31,7 @@ class TnmsClientIOThread : public Thread {
     void          timeout      ( const EventTimer & timer );
 
     bool          addClient    ( TnmsClient * client );
-    void          removeClient ( TnmsClient * client );
+    bool          removeClient ( TnmsClient * client );
 
   public:
 

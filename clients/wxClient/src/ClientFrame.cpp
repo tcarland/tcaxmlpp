@@ -265,6 +265,7 @@ void
 ClientFrame::OnTimer ( wxTimerEvent & event )
 {    
     ClientMap::iterator  cIter;
+
     for ( cIter = _clientMap.begin(); cIter != _clientMap.end(); ++cIter )
     {
         Connection & cw = cIter->second;
@@ -297,15 +298,18 @@ ClientFrame::DropAllConnections()
     ClientMap::iterator  cIter;
     for ( cIter = _clientMap.begin(); cIter != _clientMap.end(); ++cIter )
     {
-        Connection & clin = cIter->second;
+        Connection & cw = cIter->second;
 
-        if ( clin.client ) {
-            clin.enabled = false;
-            _stree->iomgr->removeClient(clin.client);
-            clin.client->close();
+        if ( cw.client ) {
+            cw.enabled = false;
+            if ( !  _stree->iomgr->removeClient(cw.client) )
+                this->SetStatusText(wxT("Error Removing Client"), 1);
+            cw.client->close();
         }
     }
-    //_clientMap.clear();
+    _clientMap.clear();
+
+    return;
 }
 
 

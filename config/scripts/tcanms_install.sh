@@ -8,8 +8,6 @@ AUTHOR="tcarland@gmail.com"
 #PNAME=${0/#.\//}
 PNAME=${0##*\/}
 RSYNC="rsync"
-USERADD="useradd"
-GROUPADD="groupadd"
 CONFIGDIR=
 PREFIX=
 SUBDIRS="bin sbin etc run tmp logs"
@@ -25,16 +23,15 @@ fi
 CONFIGDIR=$CURDIR
 
 echo ""
-echo "$PNAME: "
 if [ -z "$RC_TCANMS_BASHRC" ]; then
     if [ -e $CONFIGDIR/tcanmsrc ]; then
-        echo "  Using rc: $CONFIGDIR/tcanmsrc"
+        echo "$PNAME: using rc: $CONFIGDIR/tcanmsrc"
         source $CONFIGDIR/tcanmsrc
     elif [ -e $HOME/tcanmsrc ]; then
-        echo "  Using rc from: $HOME/tcanmsrc"
+        echo "$PNAME: using rc from: $HOME/tcanmsrc"
         source $HOME/tcanmsrc
     else
-        echo "Error: Failed to locate rc file: tcanmsrc"
+        echo "$PNAME: Error: Failed to locate rc file: tcanmsrc"
         exit 1
     fi
 fi
@@ -58,23 +55,15 @@ ENVIR=$TCANMS_ENV
 HOST=$TCANMS_HOST
 # flags
 FORCE=
-USERINIT=
-
-if [ -z "$TCANMS_USER" ]; then
-    export TCANMS_USER="${USER}"
-    if [ -z "$TCANMS_GROUP" ]; then
-        export TCANMS_GROUP="users"
-    fi
-fi
 
 # ------------------------------------------
 
 usage()
 {
     echo ""
-    echo "Usage: $PNAME [-DfhvU] [-e environment] [-t targethost]"
+    echo "Usage: $PNAME [-fhv] [-e environment] [-t targethost]"
     echo ""
-    echo "   -D | --database    : generate dbcreate scripts, exec and exit "
+    #echo "   -D | --database    : generate dbcreate scripts, exec and exit "
     echo "   -f | --force       : force overwrite of install target '${TCANMS_PREFIX}'"
     echo "   -h | --help        : display this help and exit"
     echo "   -v | --version     : display verion info and exit"
@@ -82,30 +71,23 @@ usage()
     echo "                         ( or the TCANMS_ENV var (optional) )"
     echo "   -t | --target      : name of the target host (or TCANMS_HOST)"
     echo "                         (requires -e or TCANMS_ENV to be set)"
-    echo "   -U | --user-init   : create a user and group account as needed.  "
-    echo "                         (requires vars TCANMS_USER and TCANMS_GROUP) "
     echo ""
     echo "   If the 'environment' and 'target' flags will sync the configs for the provided "
     echo "   environment and host within 'config/environment/envname/target'"
     echo "   If not provided, vars TCANMS_ENV and TCANMS_HOST will be used if set." 
-    echo "   The 'user-init' option uses the vars TCANMS_USER and TCANMS_group to "
-    echo "   initiate a system account. This requires root privileges for useradd "
-    echo "   and groupadd which is only needed once. " 
     echo "   The script requires the environment variable TCANMS_PREFIX as the "
     echo "   target path to install. The current settings are as follows: "
     echo ""
     echo "   TCANMS_PREFIX = '$TCANMS_PREFIX'"
     echo "   TCANMS_ENV    = '$TCANMS_ENV'"
     echo "   TCANMS_HOST   = '$TCANMS_HOST'"
-    echo "   TCANMS_USER   = '$TCANMS_USER'"
-    echo "   TCANMS_GROUP  = '$TCANMS_GROUP'"
     echo ""
     version
 }
 
 version()
 {
-    echo "$PNAME, Version $VERSION, by $AUTHOR"
+    echo "$PNAME : Version $VERSION, by $AUTHOR"
     echo ""
 }
 
@@ -124,59 +106,12 @@ create_subdirs()
         if [ $RETVAL -eq 1 ]; then
             break
         fi
-        chown $TCANMS_USER $subdir
-        chgrp $TCANMS_GROUP $subdir
-        chmod g+w $subdir
+        #chown $TCANMS_USER $subdir
+        #chgrp $TCANMS_GROUP $subdir
+        #chmod g+w $subdir
     done
-}
 
-init_user_account()
-{
-    local user=$TCANMS_USER
-    local group=$TCANMS_GROUP
-    local exists=
-    local result=
-
-    if [ -z "$user" ]; then
-        echo " init_user_account() failed: TCANMS_USER is not set"
-	return 1
-    fi
-
-    if [ -z "$group" ]; then
-        group=$user
-    fi
-
-    echo "  Initializing user account: '$user'@'$group'"
-
-    exists=`grep ^$group: /etc/group`
-    if [ -z "$exists" ]; then
-	$GROUPADD -f $group
-	result=$?
-	if [ $result -ne 0 ]; then
-	    echo "    groupadd failed."
-	    return 1
-	else
-	    echo "     added new group '$group'."
-	fi
-    else
-        echo "     group '$group' already exists."
-    fi
-
-    exists=`grep ^$user: /etc/passwd`
-    if [ -z "$exists" ]; then
-	$USERADD -d $TCANMS_HOME -g $group -m -N $user
-	result=$?
-	if [ $result -ne 0 ]; then
-	    echo "    useradd failed."
-	    return 1
-	else
-	    echo "     added new user '$user'."
-	fi
-    else
-        echo "     user  '$user' already exists."
-    fi
-
-    return 0
+    return $RETVAL
 }
 
 init_env_configs()
@@ -223,9 +158,6 @@ while [ $# -gt 0 ]; do
             HOST="$2"
             shift
             ;;
-	-U|--user-init)
-	    USERINIT="true"
-	    ;;
         -h|--help)
             usage
             exit 0
@@ -255,17 +187,6 @@ if [ -d $PREFIX ]; then
         echo "Error: Install directory '$PREFIX' exists."
         echo "Use the '--force' option to overwrite"
         exit 1
-    fi
-fi
-
-if [ -n "$USERINIT" ]; then
-    if [ -n "$TCANMS_USER" ]; then
-	init_user_account
-	RETVAL=$?
-	if [ $RETVAL -ne 0 ]; then
-	    echo "$PNAME Error: init_user_account() failed."
-	    exit 1
-	fi
     fi
 fi
 
