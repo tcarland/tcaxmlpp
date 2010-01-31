@@ -67,15 +67,41 @@ void initDaemon ( const char* pname )
 int main ( int argc, char **argv )
 {
     std::string logfile;
-    char        optchar;
+    char        optChar;
     char      * logf   = NULL;
+    bool        debug  = false;
     bool        daemon = false;
     bool        tail   = false;
 
     if ( argc < 2 )
         usage();
+
+    while ( (optChar = ::getopt(argc, argv, "c:dDhtV")) != EOF ) {
+        switch ( optChar ) {
+            case 'c':
+                logf = ::strdup(optarg);
+                break;
+            case 'd':
+                debug = true;
+                break;
+            case 'D':
+                daemon = true;
+                break;
+            case 'h':
+                usage();
+                break;
+            case 't':
+                tail = true;
+                break;
+            case 'V':
+                version();
+                break;
+            default:
+                usage();
+                break;
+        }
+    }
     
-    logf = ::strdup(argv[1]);
     if ( logf != NULL && strlen(logf) > 0 ) {
         logfile = logf;
         ::free(logf);
