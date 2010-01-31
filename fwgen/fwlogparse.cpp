@@ -67,16 +67,6 @@ void sigHandler ( int signal )
     return;
 }
 
-/* 
- *
-     fwlog /
-       numOfEntries = 1000
-       ignoreDest = false
-       host / interface / src / dst / proto / dstport / count
-
- *
- */
-
 
 int main ( int argc, char **argv )
 {
