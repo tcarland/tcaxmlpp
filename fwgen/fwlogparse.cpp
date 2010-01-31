@@ -1,7 +1,5 @@
 /* 
- * Jan 30 08:31:26 nebula kernel: FW: 
- * IN=ppp0 OUT= MAC= SRC=146.201.161.125 DST=75.214.27.0 LEN=39 TOS=0x00 PREC=0x00 TTL=113 ID=22852 PROTO=UDP SPT=10885 DPT=4324 LEN=19 
- *
+  *
      fwlog /
        numOfEntries = 1000
        ignoreDest = false
@@ -24,29 +22,18 @@ extern "C" {
 
 #include <vector>
 
+#include "FwLogEntry.h"
+
 #include "FileUtils.h"
 #include "StringUtils.h"
 #include "EventManager.h"
 using namespace tcanetpp;
 
 
-#define DEFAULT_FWLOGKEY " kernel: FW: "
-#define FWLOG_FIELDCOUNT 14
-
 
 static const
 char process[]    = "fwlogp";
 
-struct FwEntry {
-    std::string  date;
-    std::string  inf;
-    std::string  outf;
-    std::string  src;
-    std::string  dst;
-    std::string  proto;
-    std::string  spt;
-    std::string  dpt;
-};
 
 void usage()
 {
@@ -76,83 +63,6 @@ void initDaemon ( const char* pname )
 }
 
 
-void
-parseFields ( std::vector<std::string> & fwv )
-{
-    std::vector<std::string>::iterator  vIter;
-
-    std::string  equal = "=";
-    int          indx  = 0;
-
-    for ( vIter = fwv.begin(); vIter != fwv.end(); ++vIter ) 
-    {
-        std::string & field = *vIter;
-
-        if ( (indx = StringUtils::indexOf(field, equal)) > 0 )
-            if ( field.length() > ((u_int)indx + 1) )
-                field.erase(0, indx+1);
-    }
-
-    return;
-}
-
-
-
-void 
-parseFwLine ( const std::string & line, int indx, FwEntry & fwe )
-{
-    std::vector<std::string>  fwv;
-    std::string               fwln, datehost;
-    int                       fldcnt = FWLOG_FIELDCOUNT;
-    
-    fwln     = line;
-    datehost = fwln.substr(0, indx);
-    fwln.erase(0, indx);
-
-    StringUtils::split(fwln, ' ', std::back_inserter(fwv));
-
-    if ( fwv.size() < (u_int) fldcnt ) {
-        std::cout << "Line: '" << fwln << "'" << std::endl
-            << "  has " << fwv.size() << " fields, need " << fldcnt
-            << std::endl;
-    } else if ( fwv.size() > fldcnt ) { //udp match
-        std::cout << "fwlog line match " << std::endl;
-
-
-        parseFields(fwv);
-
-        int i = 10;
-
-        fwe.inf    = fwv[0];
-        fwe.outf   = fwv[1];
-        //mac  = 2
-        fwe.src    = fwv[3];
-        fwe.dst    = fwv[4];
-        //fwe.len    = fwv[5];
-        //tos  = 6
-        //prec = 7
-        //ttl  = 8
-        //id   = 9
-        if ( fwv.size() == 24 && fwv[i].compare("DF") == 0 )
-            i++;
-        fwe.proto  = fwv[i]; 
-        i++;
-        fwe.spt    = fwv[i];
-        i++;
-        fwe.dpt    = fwv[i];
-
-        std::cout << " FW: IN=" << fwe.inf << " OUT=" << fwe.outf 
-                  << " SRC=" << fwe.src << " DST=" << fwe.dst 
-                  << " PROTO=" << fwe.proto  << " SPT=" << fwe.spt
-                  << " DPT=" << fwe.dpt << std::endl;
-    }
-
-    fwv.clear();
-
-}
-
-
-
 
 int main ( int argc, char **argv )
 {
@@ -166,14 +76,10 @@ int main ( int argc, char **argv )
         usage();
     
     logf = ::strdup(argv[1]);
-
-    if ( logf != NULL && strlen(logf) > 0 ) 
-    {
+    if ( logf != NULL && strlen(logf) > 0 ) {
         logfile = logf;
         ::free(logf);
-    }
-    else
-    {
+    } else {
         usage();
     }
 
@@ -196,17 +102,14 @@ int main ( int argc, char **argv )
         return -1;
     }
 
-    char         line[BIGSTRLINE];
-    std::string  match = DEFAULT_FWLOGKEY;
-    int          indx  = 0;
+    char   line[BIGSTRLINE];
 
     while ( ifs.getline(line, BIGSTRLINE) )
     {
-        if ( (indx = StringUtils::indexOf(line, match)) >= 0 ) 
-        {
-            FwEntry      fwe;
-            parseFwLine(line, indx+match.length(), fwe);
-        }
+        FwLogEntry      fwe;
+
+        if ( FwLogEntry::ParseLogEntry(line, fwe) )
+            std::cout << "SUBMIT" << std::endl;
     }
 
     ifs.close();

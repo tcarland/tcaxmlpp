@@ -11,12 +11,13 @@ LIBS=
 
 INCLUDES=	-Iinclude
 
-BIN=		fwtest
+BIN=		fwtest fwlogp
 
 OBJS=		src/FwVars.o src/FwZones.o src/FwRules.o
 
+LOG_OBJS=	src/FwLogEntry.o 
 
-ALL_OBJS=	$(OBJS)
+ALL_OBJS=	$(OBJS) $(LOG_OBJS)
 ALL_BINS=	$(BIN)
 
 all: fwtest
@@ -27,7 +28,7 @@ include $(TOPDIR)/tcamake/project_defs
 fwtest: $(OBJS) fwtest.o
 	$(make-cxxbin-rule)
 
-fwlogp: fwlogparse.o
+fwlogp: $(LOG_OBJS) fwlogparse.o
 	$(make-cxxbin-rule)
 
 clean:
