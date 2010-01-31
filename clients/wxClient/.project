@@ -3,6 +3,7 @@
 	<name>wxClient</name>
 	<comment></comment>
 	<projects>
+		<project>TnmsApi</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
