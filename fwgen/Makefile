@@ -15,12 +15,12 @@ BIN=		fwtest fwlogp
 
 OBJS=		src/FwVars.o src/FwZones.o src/FwRules.o
 
-LOG_OBJS=	src/FwLogEntry.o 
+LOG_OBJS=	src/FwLogEntry.o src/FwLogReport.o
 
 ALL_OBJS=	$(OBJS) $(LOG_OBJS)
 ALL_BINS=	$(BIN)
 
-all: fwtest
+all: fwlogp
 
 include $(TOPDIR)/tcamake/project_defs
 

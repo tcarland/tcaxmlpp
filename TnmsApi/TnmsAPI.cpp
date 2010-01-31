@@ -24,15 +24,7 @@ TnmsAPI::TnmsAPI ( const std::string & agent_name,
                    const std::string & host_name,
                    uint16_t            host_port )
 {
-    std::string  agentName, hostName;
-
-    if ( ! agent_name.empty() )
-        agentName = agentName;
-
-    if ( ! host_name.empty() ) 
-        hostName = host_name;
-
-    api = (void*) new TnmsBase(agentName, hostName, host_port);
+    api = (void*) new TnmsBase(agent_name, host_name, host_port);
 }
 
 

@@ -1,12 +1,3 @@
-/* 
-  *
-     fwlog /
-       numOfEntries = 1000
-       ignoreDest = false
-       host / interface / src / dst / proto / dstport / count
-
- *
- */
 #define _FWGEN_FWLOGPARSE_CPP_
 
 extern "C" {
@@ -23,6 +14,7 @@ extern "C" {
 #include <vector>
 
 #include "FwLogEntry.h"
+#include "FwLogReport.h"
 
 #include "FileUtils.h"
 #include "StringUtils.h"
@@ -30,14 +22,14 @@ extern "C" {
 using namespace tcanetpp;
 
 
-
 static const
 char process[]    = "fwlogp";
+bool Alarm        = false;
 
 
 void usage()
 {
-    printf("Usage: %s <logfile>", process);
+    printf("Usage: %s -c <logfile>\n", process);
     exit(0);
 }
 
@@ -67,6 +59,23 @@ void initDaemon ( const char* pname )
     return;
 }
 
+
+void sigHandler ( int signal )
+{
+    if ( signal == SIGINT || signal == SIGTERM )
+        Alarm = true;
+    return;
+}
+
+/* 
+ *
+     fwlog /
+       numOfEntries = 1000
+       ignoreDest = false
+       host / interface / src / dst / proto / dstport / count
+
+ *
+ */
 
 
 int main ( int argc, char **argv )
@@ -120,6 +129,9 @@ int main ( int argc, char **argv )
         return -1;
     }
 
+    signal(SIGPIPE, SIG_IGN);
+    signal(SIGINT,  &sigHandler);
+    signal(SIGTERM, &sigHandler);
 
     std::ifstream        ifs;
     std::ios::openmode   mode = std::ios::in;
@@ -134,14 +146,35 @@ int main ( int argc, char **argv )
     }
 
     char   line[BIGSTRLINE];
+    time_t now;
 
-    while ( ifs.getline(line, BIGSTRLINE) )
-    {
-        FwLogEntry      fwe;
+    FwLogReport *  fwrep = NULL;
 
-        if ( FwLogEntry::ParseLogEntry(line, fwe) )
-            std::cout << "SUBMIT" << std::endl;
-    }
+    do {
+        while ( ifs.getline(line, BIGSTRLINE) )
+        {
+            FwLogEntry   fwe;
+
+            if ( FwLogEntry::ParseLogEntry(line, fwe) )
+            {
+                if ( fwrep == NULL ) {
+                    std::string  agent = "fwgen/";
+                    agent.append(fwe.host);
+
+                    fwrep = new FwLogReport(agent);
+                }
+                now = ::time(NULL);
+
+                fwrep->SendEntry(fwe, now);
+                std::cout << "SUBMIT" << std::endl;
+            }
+        }
+        if ( fwrep )
+            fwrep->FlushApi(now);
+        sleep(2);
+    } while ( ifs.eof() && ! Alarm );
+
+    std::cout << "Finished." << std::endl;
 
     ifs.close();
 

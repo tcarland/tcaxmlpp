@@ -32,8 +32,9 @@ class FwLogEntry {
     std::string  spt;
     std::string  dpt;
 
+    uint64_t     count;
 
-    FwLogEntry()  {}
+    FwLogEntry() : count(0)  {}
     ~FwLogEntry() {}
 
 

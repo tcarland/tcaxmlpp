@@ -18,7 +18,8 @@ FwLogEntry::ParseLogEntry ( const std::string & line, FwLogEntry & fwe )
     StringFields  fields;
 
     std::string   fwln, datehost, match;
-    int           indx, nflds;
+    int           indx;
+    uint32_t      nflds;
 
     match = FWLOG_KEYMATCH;
     nflds = FWLOG_FIELD_COUNT;
@@ -33,7 +34,7 @@ FwLogEntry::ParseLogEntry ( const std::string & line, FwLogEntry & fwe )
 
     StringUtils::split(fwln, ' ', std::back_inserter(fields));
 
-    if ( fields.size() < (u_int) nflds ) {
+    if ( fields.size() < nflds ) {
         std::cout << "Line: '" << fwln << "'" << std::endl
             << "  has " << fields.size() << " fields, need " << nflds
             << std::endl;
@@ -54,16 +55,24 @@ FwLogEntry::ParseLogEntry ( const std::string & line, FwLogEntry & fwe )
         fwe.spt    = fields[i++];
         fwe.dpt    = fields[i++];
 
-        std::cout << " FW: IN=" << fwe.inf << " OUT=" << fwe.outf 
-                  << " SRC=" << fwe.src << " DST=" << fwe.dst 
-                  << " PROTO=" << fwe.proto  << " SPT=" << fwe.spt
-                  << " DPT=" << fwe.dpt << std::endl;
+        indx = StringUtils::lastIndexOf(datehost, " ");
+        if ( indx > 0 ) {
+            fwe.date = datehost.substr(0, indx);
+            fwe.host = datehost.substr(indx+1);
+        }
+
+        std::cout << fwe.date << " " << fwe.host << " FW: IN=" 
+                  << fwe.inf << " OUT=" << fwe.outf << " SRC=" 
+                  << fwe.src << " DST=" << fwe.dst << " PROTO=" 
+                  << fwe.proto  << " SPT=" << fwe.spt << " DPT=" 
+                  << fwe.dpt << std::endl;
     } else
         return false;
 
     fields.clear();
     return true;
 }
+
 
 
 void
