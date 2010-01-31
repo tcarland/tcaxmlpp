@@ -1,6 +1,8 @@
 TOPDIR = ..
 NEED_PTHREADS = 1
-NEED_TCANETPP = 1
+NEED_TNMSAPI = 1
+NEED_ZLIB = 1
+NEED_LIBXML2 = 1
 
 
 OPT_FLAGS =	-g
@@ -23,6 +25,9 @@ include $(TOPDIR)/tcamake/project_defs
 
 
 fwtest: $(OBJS) fwtest.o
+	$(make-cxxbin-rule)
+
+fwlogp: fwlogparse.o
 	$(make-cxxbin-rule)
 
 clean:

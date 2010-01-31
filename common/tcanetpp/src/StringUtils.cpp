@@ -115,7 +115,9 @@ StringUtils::equalsIgnoreCase ( const std::string & strA, const std::string & st
 /*@}*/
 
 // ----------------------------------------------------------------------
-/**@{  Returns the first (or last) index of @param match in the given string. */
+/**@{  Returns the first (or last) index of @param match in the given string,
+  *    and a negative value no match
+ **/
 
 int
 StringUtils::indexOf ( const std::string & str, const std::string & match )

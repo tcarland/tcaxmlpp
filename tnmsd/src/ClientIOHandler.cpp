@@ -309,9 +309,9 @@ ClientIOHandler::initStat ( TnmsClient * client )
     stat.lastConn   = TnmsMetric(name + "/" + LASTCONN_NAME);
 
     //client->isMirror() ? c = 0 : c = 1;
-    stat.conn.setValue(client->getClientLoginName());
-
     _tree->add(stat.conn.getElementName());
+    stat.conn.setValue(client->getClientLoginName());
+    _tree->update(stat.conn);
 
     if ( client->isMirror() ) {
         _tree->add(stat.connState.getElementName());
