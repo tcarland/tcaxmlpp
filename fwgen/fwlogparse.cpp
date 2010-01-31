@@ -41,6 +41,11 @@ void usage()
     exit(0);
 }
 
+void version()
+{
+    exit(0);
+}
+
 void initDaemon ( const char* pname )
 {
     pid_t  pid;
