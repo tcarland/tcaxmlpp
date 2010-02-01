@@ -9,6 +9,7 @@ FwLogReport::FwLogReport ( const std::string & agent )
     : _connection(false)
 {
     _api = new TnmsAPI(agent, "localhost", 15300);
+    _api->set_config("etc/fwlr_comet.xml");
 }
 
 
@@ -66,9 +67,10 @@ FwLogReport::SendEntry ( FwLogEntry & fwe, const time_t & now )
     std::string   absname = fwe.inf;
 
     absname.append("/").append(fwe.src);
-    absname.append("/").append(fwe.dst);
+    absname.append(":").append(fwe.spt);
+    absname.append("<=>").append(fwe.dst);
+    absname.append(":").append(fwe.dpt);
     absname.append("/").append(fwe.proto);
-    absname.append("/").append(fwe.dpt);
 
     fIter = _fwMap.find(absname);
 
