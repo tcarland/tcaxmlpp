@@ -205,9 +205,11 @@ TnmsClient::AuthReplyHandler ( const TnmsAuthReply & reply )
 
     msg << "TnmsClient::AuthReplyHandler(): " << reply.getElementName();
 
-    if ( this->isAuthorized() )
+    if ( this->isAuthorized() ) {
         msg << " is authorized";
-    else
+        if ( ! reply.authData().empty() )
+            this->_xmlConfig = reply.authData();
+    } else
         msg << " is not authorized";
 
     LogFacility::LogMessage(msg.str());

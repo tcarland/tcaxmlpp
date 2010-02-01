@@ -156,7 +156,6 @@ int main ( int argc, char **argv )
                 now = ::time(NULL);
 
                 fwrep->SendEntry(fwe, now);
-                std::cout << "SUBMIT" << std::endl;
             }
         }
         if ( fwrep )
