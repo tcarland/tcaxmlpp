@@ -360,9 +360,12 @@ TnmsBase::checkSubscription ( const time_t & now )
             return this->reconfigure(now);
         }
 
-        LogFacility::LogToStream(_logName, "TnmsAPI: authorized, subscribing server to tree");
+        TnmsRemove  remRoot(_agentName);
+        _conn->sendMessage(&remRoot, true);
+
         _subscribed = this->_tree->subscribe("*", (TreeSubscriber*) _conn->getSubscriber());
         _conn->send(now);
+        LogFacility::LogToStream(_logName, "TnmsAPI: authorized, subscribing server to tree");
 
         if ( _subscribed ) 
             LogFacility::LogToStream(_logName, "TnmsAPI: tree sent");
