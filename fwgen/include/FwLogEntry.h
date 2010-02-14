@@ -17,9 +17,7 @@ typedef std::vector<std::string>  StringFields;
 
 
 class FwLogEntry {
-
   public:
-
     std::string  host;
     std::string  date;
 
@@ -34,6 +32,7 @@ class FwLogEntry {
 
     uint64_t     count;
 
+
     FwLogEntry() : count(0)  {}
     ~FwLogEntry() {}
 
@@ -42,12 +41,12 @@ class FwLogEntry {
                                   FwLogEntry        & fwe );
 
 
-
   private:
 
-    static void   SplitFields   ( StringFields & fwv );
+    static void   SplitFields   ( StringFields      & fwv );
 
 };
 
 
 #endif //  _FWGEN_FWLOGENTRY_H_
+

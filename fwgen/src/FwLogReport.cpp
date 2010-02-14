@@ -54,7 +54,7 @@ FwLogReport::FlushApi ( const time_t & now )
     if ( ! _connection )
         std::cout << std::endl << "  Connection failed" << std::endl;
 
-    std::cout << std::endl;
+    //std::cout << std::endl;
 
     return retval;
 }
@@ -66,8 +66,10 @@ FwLogReport::SendEntry ( FwLogEntry & fwe, const time_t & now )
     FwMap::iterator  fIter;
     std::string   absname = fwe.inf;
 
+    if ( fwe.inf.empty() )
+        return;
+
     absname.append("/").append(fwe.src);
-    absname.append(":").append(fwe.spt);
     absname.append("<=>").append(fwe.dst);
     absname.append(":").append(fwe.dpt);
     absname.append("/").append(fwe.proto);

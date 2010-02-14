@@ -311,8 +311,8 @@ TnmsWxTree::Sync()
         {
             pIter = _idMap.find(*rIter);
             pid   = pIter->second;
-            _treeCtrl->Delete(pid);
-            
+            _treeCtrl->Delete(pid);  // CRASHOLA
+
             //erase now..should change to sweep() on interval so we see our deletes better
             _visible->remove(*rIter);
             _idMap.erase(pIter);
