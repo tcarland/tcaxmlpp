@@ -226,6 +226,11 @@ TnmsWxTree::RecursiveAdd ( TnmsTree::Node * node )
             id = this->RecursiveAdd(node->getParent());
         else
             id = tIter->second;
+
+        if ( id.IsOk()) {
+            _treeCtrl->SetItemHasChildren(id);
+            _treeCtrl->SortChildren(id);
+        }
     }
 
     name  = wxString::FromAscii(node->getName().c_str());
@@ -233,9 +238,6 @@ TnmsWxTree::RecursiveAdd ( TnmsTree::Node * node )
     id    = _treeCtrl->AppendItem(id, name, -1, -1, data);
 
     _idMap[node->getAbsoluteName()] = id;
-
-    if ( id.IsOk())
-        _treeCtrl->SetItemHasChildren(id);
 
     return id;
 }
@@ -317,7 +319,8 @@ TnmsWxTree::Sync()
             //erase now..should change to sweep() on interval so we see our deletes better
             _visible->remove(*rIter);
             _idMap.erase(pIter);
-        }
+        } else
+            _idMap.erase(*rIter);
 
         removes.erase(rIter++);
     }

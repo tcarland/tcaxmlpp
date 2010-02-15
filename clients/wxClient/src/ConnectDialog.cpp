@@ -25,8 +25,8 @@ ConnectDialog::ConnectDialog ( const wxString & title )
     tcServer->SetSize(sz);
 
     tcPort    = new wxTextCtrl(panel, -1, wxT("15605"), wxPoint(-1, -1), sz);
-    tcUser    = new wxTextCtrl(panel, -1, wxT(""), wxPoint(-1, -1), sz);
-    tcPass    = new wxTextCtrl(panel, -1, wxT(""), wxPoint(-1, -1), wxSize(-1, -1), wxTE_PASSWORD);
+    tcUser    = new wxTextCtrl(panel, -1, wxT("tnms-console"), wxPoint(-1, -1), sz);
+    tcPass    = new wxTextCtrl(panel, -1, wxT("tnmsconsole11b"), wxPoint(-1, -1), wxSize(-1, -1), wxTE_PASSWORD);
 
     fgs->Add(-1, 20);
     fgs->Add(-1, 20);

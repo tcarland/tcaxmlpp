@@ -193,7 +193,7 @@ TnmsTree::exists ( const std::string & name )
 {
     Node * node = _tree->find(name);
 
-    if ( node == NULL )
+    if ( node == NULL || node->getValue().erase )
         return false;
 
     return true;
