@@ -362,7 +362,7 @@ TnmsBase::checkSubscription ( const time_t & now )
 
         TnmsRemove  remRoot(_agentName);
         _conn->sendMessage(&remRoot, true);
-        this->clear();
+        //this->clear();
 
         _subscribed = this->_tree->subscribe("*", (TreeSubscriber*) _conn->getSubscriber());
         _conn->send(now);

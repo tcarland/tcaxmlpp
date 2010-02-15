@@ -51,7 +51,7 @@ FwLogReport::FlushApi ( const time_t & now )
             errcnt++;
         } else {
             if ( ! _connection )
-                std::cout << std::endl << "Connected.";
+                std::cout << std::endl << "Connected." << std::endl;
             _connection = true;
         }
     } while ( retval > 0 && errcnt < 8 );
@@ -68,34 +68,75 @@ FwLogReport::FlushApi ( const time_t & now )
 void
 FwLogReport::SendEntry ( FwLogEntry & fwe, const time_t & now )
 {
-    FwMap::iterator  fIter;
-    std::string   absname = fwe.inf;
+    FwMap::iterator    fIter;
+    FwSvcMap::iterator sIter;
 
     if ( fwe.inf.empty() )
         return;
 
-    absname.append("/").append(fwe.src);
-    absname.append("<=>").append(fwe.dst);
-    absname.append(":").append(fwe.dpt);
-    absname.append("/").append(fwe.proto);
+    //  src <=> dst  
+    fwe.absname = fwe.inf;
+    fwe.absname.append("/").append(fwe.src);
+    fwe.absname.append("<=>").append(fwe.dst);
+    fwe.protom  = fwe.absname;
 
-    fIter = _fwMap.find(absname);
+    int srcp = StringUtils::fromString<int>(fwe.spt);
+    int dstp = StringUtils::fromString<int>(fwe.dpt);
+
+    bool keyIsSrc = false;
+    if ( dstp < 1024 )
+    {  // srcport is key
+        sIter = _svcMap.find(dstp);
+        fwe.protom.append("/").append(fwe.dpt);
+    } else {
+        sIter = _svcMap.find(srcp);
+        fwe.protom.append("/").append(fwe.spt);
+        keyIsSrc = true;
+    }
+
+    if ( sIter != _svcMap.end() )
+    {
+        FwService & svc = sIter->second;
+        fwe.protom.append("(").append(svc.name).append("\\").append(fwe.proto).append(")");
+    }
+
+    fIter = _fwMap.find(fwe.absname);
 
     if ( fIter == _fwMap.end() ) {
+        FwLogEntry::SetHostname(fwe);
         std::pair<FwMap::iterator, bool> insertR;
-        insertR = _fwMap.insert( make_pair(absname, fwe) );
+        insertR = _fwMap.insert( make_pair(fwe.absname, fwe) );
         if ( insertR.second ) {
             fIter = insertR.first;
-            _api->add(absname, now);
+            _api->add(fwe.absname, now);
+            _api->add(fwe.absname + "/LastSeen", now);
+
+            if ( ! fwe.host.empty() ) {
+                _api->add(fwe.absname + "/Src_hostname", now);
+                _api->update(fwe.absname + "/Src_hostname", now);
+            }
+
+            _api->add(fwe.protom, now);
+            if ( keyIsSrc )
+                _api->update(fwe.protom, "SrcPort");
+            else
+                _api->update(fwe.protom, "DstPort");
+            _api->add(fwe.protom + "/LastSeen", now);
         } else {
             return;
         }
     }
 
+    std::cout << "FwLogReport entry: '" << fwe.protom << "'" << std::endl;
+
     FwLogEntry & entry = fIter->second;
     entry.count++;
 
-    _api->update(absname, now, entry.count, TNMS_UINT64);
+    _api->update(fwe.absname, now, entry.count, TNMS_UINT64);
+    _api->update(fwe.absname + "/LastSeen", now, entry.date, TNMS_STRING);
+    
+    _api->update(fwe.protom, now, entry.count, TNMS_UINT64);
+    _api->update(fwe.protom + "/LastSeen", now, entry.date, TNMS_STRING);
 
     return;
 }

@@ -37,6 +37,11 @@ class FwLogEntry {
 
     uint64_t     count;
 
+    // metric names 
+    std::string  absname;
+    std::string  protom;
+
+
 
     FwLogEntry() : count(0)  {}
     ~FwLogEntry() {}
@@ -45,6 +50,7 @@ class FwLogEntry {
     static bool   ParseLogEntry ( const std::string & line,
                                   FwLogEntry        & fwe );
 
+    static void   SetHostname   ( FwLogEntry & fwe );
 
   private:
 

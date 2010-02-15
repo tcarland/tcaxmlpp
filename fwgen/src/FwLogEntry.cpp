@@ -6,6 +6,7 @@
 #include "FwLogEntry.h"
 
 #include "StringUtils.h"
+#include "CidrUtils.h"
 using namespace tcanetpp;
 
 
@@ -95,6 +96,17 @@ FwLogEntry::SplitFields ( StringFields & fields )
     }
 
     return;
+}
+
+
+void
+FwLogEntry::SetHostname ( FwLogEntry & fwe )
+{
+    ipv4addr_t   srcaddr;
+
+    if ( CidrUtils::pton(fwe.src, srcaddr) == 1 ) {
+        fwe.host = CidrUtils::GetHostName(srcaddr);
+    }
 }
 
 
