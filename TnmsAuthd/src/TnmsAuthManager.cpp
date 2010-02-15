@@ -37,7 +37,7 @@ TnmsAuthManager::TnmsAuthManager ( const std::string & config )
       _authHandler(NULL),
       _lastTouched(0),
       _reportDelay(30),
-      _logCheck(3600),
+      _logCheck(LOG_CHECK_INTERVAL),
       _today(0),
       _configfile(config),
       _hup(false),
