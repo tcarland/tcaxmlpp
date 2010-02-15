@@ -21,7 +21,7 @@ namespace tnmsApi {
 
 
 const
-std::string TnmsBase::ApiVersion = "1.19";
+std::string TnmsBase::ApiVersion = "1.20";
 
 
 template< typename Iterator, typename Value >
@@ -362,6 +362,7 @@ TnmsBase::checkSubscription ( const time_t & now )
 
         TnmsRemove  remRoot(_agentName);
         _conn->sendMessage(&remRoot, true);
+        this->clear();
 
         _subscribed = this->_tree->subscribe("*", (TreeSubscriber*) _conn->getSubscriber());
         _conn->send(now);

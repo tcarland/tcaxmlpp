@@ -51,9 +51,9 @@ TnmsMessageHandler::RemoveHandler ( const TnmsRemove  & remove )
     if ( _tree == NULL )
         return;
 
-    //if ( LogFacility::GetDebug() )
-        //LogFacility::LogMessage("TnmsMessageHandler::RemoveHandler() " 
-            //+ remove.getElementName());
+    if ( LogFacility::GetDebug() )
+        LogFacility::LogMessage("TnmsMessageHandler::RemoveHandler() "
+            + remove.getElementName());
 
     _tree->remove(remove.getElementName());
 
