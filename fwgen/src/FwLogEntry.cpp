@@ -5,10 +5,12 @@
 
 #include "FwLogEntry.h"
 
-
-
 #include "StringUtils.h"
 using namespace tcanetpp;
+
+
+
+namespace fwgen {
 
 
 
@@ -94,6 +96,10 @@ FwLogEntry::SplitFields ( StringFields & fields )
 
     return;
 }
+
+
+} // namespace
+
 
 
 

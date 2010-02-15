@@ -15,7 +15,8 @@ BIN=		fwtest fwlr
 
 OBJS=		src/FwVars.o src/FwZones.o src/FwRules.o
 FWTEST_OBJS=	test/fwtest.o
-FWLR_OBJS=	src/FwLogEntry.o src/FwLogReport.o src/fwlr.o
+FWLR_OBJS=	src/FwLogEntry.o src/FwLogReport.o src/FwService.o \
+		src/fwlr.o
 
 ALL_OBJS=	$(OBJS) $(FWLR_OBJS) $(FWTEST_OBJS)
 ALL_BINS=	$(BIN)

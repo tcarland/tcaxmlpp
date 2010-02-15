@@ -4,12 +4,17 @@
 #include "FwLogReport.h"
 
 
+namespace fwgen {
+
+
 
 FwLogReport::FwLogReport ( const std::string & agent )
     : _connection(false)
 {
     _api = new TnmsAPI(agent, "localhost", 15300);
     _api->set_config("etc/fwlr_comet.xml");
+
+    FwService::ParseServices(ETC_SERVICES, _svcMap);
 }
 
 
@@ -94,5 +99,8 @@ FwLogReport::SendEntry ( FwLogEntry & fwe, const time_t & now )
 
     return;
 }
+
+
+} // namespace
 
 

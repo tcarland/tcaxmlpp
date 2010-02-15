@@ -13,13 +13,16 @@ extern "C" {
 
 #include <vector>
 
-#include "FwLogEntry.h"
-#include "FwLogReport.h"
-
 #include "FileUtils.h"
 #include "StringUtils.h"
 #include "EventManager.h"
 using namespace tcanetpp;
+
+#include "FwLogEntry.h"
+#include "FwLogReport.h"
+using namespace fwgen;
+
+
 
 
 static const

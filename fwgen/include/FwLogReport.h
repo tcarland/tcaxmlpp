@@ -5,12 +5,18 @@
 #include <string>
 
 #include "FwLogEntry.h"
+#include "FwService.h"
+
 
 #include "TnmsAPI.h"
 using namespace tnmsApi;
 
 
+namespace fwgen {
+
+
 typedef std::map<std::string, FwLogEntry>  FwMap;
+
 
 
 class FwLogReport {
@@ -25,12 +31,14 @@ class FwLogReport {
   private:
 
     FwMap     _fwMap;
+    FwSvcMap  _svcMap;
 
     TnmsAPI * _api;
     bool      _connection;
 
 };
 
+} // namespace
 
 
 #endif  // _FWGEN_FWLOGREPORT_H_
