@@ -307,6 +307,7 @@ TnmsWxTree::Sync()
     TreeRemoveSet & removes = notifier->removes;
     for ( rIter = removes.begin(); rIter != removes.end(); ) 
     {
+        LogFacility::LogMessage("TnmsWxTree::Sync() Remove " + *rIter);
         if ( _visible->exists(*rIter) ) 
         {
             pIter = _idMap.find(*rIter);

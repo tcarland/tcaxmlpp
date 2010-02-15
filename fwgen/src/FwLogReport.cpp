@@ -113,7 +113,7 @@ FwLogReport::SendEntry ( FwLogEntry & fwe, const time_t & now )
 
             if ( ! fwe.host.empty() ) {
                 _api->add(fwe.absname + "/Src_hostname", now);
-                _api->update(fwe.absname + "/Src_hostname", now);
+                _api->update(fwe.absname + "/Src_hostname", now, fwe.host);
             }
 
             _api->add(fwe.protom, now);
@@ -133,10 +133,10 @@ FwLogReport::SendEntry ( FwLogEntry & fwe, const time_t & now )
     entry.count++;
 
     _api->update(fwe.absname, now, entry.count, TNMS_UINT64);
-    _api->update(fwe.absname + "/LastSeen", now, entry.date, TNMS_STRING);
+    _api->update(fwe.absname + "/LastSeen", now, entry.date);
     
     _api->update(fwe.protom, now, entry.count, TNMS_UINT64);
-    _api->update(fwe.protom + "/LastSeen", now, entry.date, TNMS_STRING);
+    _api->update(fwe.protom + "/LastSeen", now, entry.date);
 
     return;
 }
