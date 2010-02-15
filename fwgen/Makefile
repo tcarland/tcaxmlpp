@@ -20,7 +20,7 @@ FWLR_OBJS=	src/FwLogEntry.o src/FwLogReport.o src/fwlr.o
 ALL_OBJS=	$(OBJS) $(FWLR_OBJS) $(FWTEST_OBJS)
 ALL_BINS=	$(BIN)
 
-all: fwlogp
+all: fwlr
 
 include $(TOPDIR)/tcamake/project_defs
 
