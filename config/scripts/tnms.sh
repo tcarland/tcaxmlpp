@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-#   TcaNms init script 
+#   TNMS init script 
 #
-#   The script is used for starting, stopping, and verifying TcaNms services.
+#   The script is used for starting, stopping, and verifying TNMS services.
 #
 #
 
@@ -13,15 +13,16 @@ AUTHOR="tcarland@gmail.com"
 SYSHOME=""
 CURDIR=`dirname $0`
 
+
 if [ "$CURDIR" == "." ]; then
     CURDIR=${PWD}
 fi
 
-if [ -n "$TCANMS_HOME" ] && [ -d $TCANMS_HOME ]; then
-    SYSHOME="$TCANMS_HOME"
+if [ -n "$TNMS_HOME" ] && [ -d $TNMS_HOME ]; then
+    SYSHOME="$TNMS_HOME"
 fi
-if [ -z "$SYSHOME" ] && [ -d $TCANMS_PREFIX ]; then
-    SYSHOME="$TCANMS_PREFIX"
+if [ -z "$SYSHOME" ] && [ -d $TNMS_PREFIX ]; then
+    SYSHOME="$TNMS_PREFIX"
 fi
 if [ -z "$SYSHOME" ]; then
     SYSHOME="$CURDIR"
@@ -36,16 +37,16 @@ echo ""
 CONFIGDIR="$SYSHOME/etc"
 
 
-if [ -z "$RC_TCANMS_BASHRC" ]; then
-    if [ -e $CONFIGDIR/tcanmsrc ]; then
+if [ -z "$RC_TNMS_BASHRC" ]; then
+    if [ -e $CONFIGDIR/tnmsrc ]; then
         echo "Using rc file from $CONFIGDIR"
-        source $CONFIGDIR/tcanmsrc
-    elif [ -e $HOME/tcanmsrc ]; then
+        source $CONFIGDIR/tnmsrc
+    elif [ -e $HOME/tnmsrc ]; then
         echo "Using rc file from $HOME"
-        source $HOME/tcanmsrc
-    elif [ -e $CURDIR/tcanmsrc ]; then
+        source $HOME/tnmsrc
+    elif [ -e $CURDIR/tnmsrc ]; then
         echo "Using rc file from $CURDIR"
-        source $CURDIR/tcanmsrc
+        source $CURDIR/tnmsrc
     else
         echo "Failed to locate rc file"
         exit 1
@@ -54,18 +55,18 @@ fi
 
 
 
-if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ${SYSHOME}/bin/tcanms_functions.sh ]; then
-    source ${SYSHOME}/bin/tcanms_functions.sh
+if [ -z "$RC_TNMS_FUNCTIONS" ] && [ -e ${SYSHOME}/bin/tnms_functions.sh ]; then
+    source ${SYSHOME}/bin/tnms_functions.sh
 fi
-if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ./bin/tcanms_functions.sh ]; then
-    source ./bin/tcanms_functions.sh
+if [ -z "$RC_TNMS_FUNCTIONS" ] && [ -e ./bin/tnms_functions.sh ]; then
+    source ./bin/tnms_functions.sh
 fi
-if [ -z "$RC_TCANMS_FUNCTIONS" ] && [ -e ./etc/tcanms_functions.sh ]; then
-    source ./etc/tcanms_functions.sh
+if [ -z "$RC_TNMS_FUNCTIONS" ] && [ -e ./etc/tnms_functions.sh ]; then
+    source ./etc/tnms_functions.sh
 fi
 
-if [ -z "$RC_TCANMS_FUNCTIONS" ]; then
-    echo "Failed to locate tcanms_functions.sh"
+if [ -z "$RC_TNMS_FUNCTIONS" ]; then
+    echo "Failed to locate tnms_functions.sh"
     exit 1
 fi
 

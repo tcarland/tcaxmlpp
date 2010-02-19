@@ -25,7 +25,7 @@ ifdef USE_MYSQL
 NEED_MYSQL = 1
 endif
 
-ifdef TCANMS_DEBUG
+ifdef TNMS_DEBUG
 OPT_FLAGS= 	-g
 endif
 
@@ -64,11 +64,11 @@ distclean: clean
 	@echo
 
 install:
-ifdef TCANMS_PREFIX
-	$(CP) $(BIN) $(TCANMS_PREFIX)/sbin
-	$(CP) etc/ta_dbinit.sh $(TCANMS_PREFIX)/bin
-	$(CP) etc/ta_dbcreatesql.sh $(TCANMS_PREFIX)/bin
-	$(CP) etc/ta_credentials.conf.example $(TCANMS_PREFIX)/etc
+ifdef TNMS_PREFIX
+	$(CP) $(BIN) $(TNMS_PREFIX)/sbin
+	$(CP) etc/ta_dbinit.sh $(TNMS_PREFIX)/bin
+	$(CP) etc/ta_dbcreatesql.sh $(TNMS_PREFIX)/bin
+	$(CP) etc/ta_credentials.conf.example $(TNMS_PREFIX)/etc
 	@echo
 endif
 

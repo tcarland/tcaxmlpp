@@ -9,7 +9,7 @@ NEED_LIBDL = 1
 NEED_TCANETPP = 1
 NEED_NET_SNMP = 1
 
-ifdef TCANMS_DEBUG
+ifdef TNMS_DEBUG
 OPT_FLAGS = -g
 endif
 
@@ -72,6 +72,6 @@ distclean: clean libclean doc-clean
 	$(RM) $(BIN)
 
 install:
-ifdef TCANMS_PREFIX
+ifdef TNMS_PREFIX
 	@echo
 endif

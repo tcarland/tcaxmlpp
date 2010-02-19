@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  tcanms_install.sh
+#  tnms_install.sh
 #
 VERSION="0.32"
 AUTHOR="tcarland@gmail.com"
@@ -23,27 +23,27 @@ fi
 CONFIGDIR=$CURDIR
 
 echo ""
-if [ -z "$RC_TCANMS_BASHRC" ]; then
-    if [ -e $CONFIGDIR/tcanmsrc ]; then
-        echo "$PNAME: using rc: $CONFIGDIR/tcanmsrc"
-        source $CONFIGDIR/tcanmsrc
-    elif [ -e $HOME/tcanmsrc ]; then
-        echo "$PNAME: using rc from: $HOME/tcanmsrc"
-        source $HOME/tcanmsrc
+if [ -z "$RC_TNMS_BASHRC" ]; then
+    if [ -e $CONFIGDIR/tnmsrc ]; then
+        echo "$PNAME: using rc: $CONFIGDIR/tnmsrc"
+        source $CONFIGDIR/tnmsrc
+    elif [ -e $HOME/tnmsrc ]; then
+        echo "$PNAME: using rc from: $HOME/tnmsrc"
+        source $HOME/tnmsrc
     else
-        echo "$PNAME: Error: Failed to locate rc file: tcanmsrc"
+        echo "$PNAME: Error: Failed to locate rc file: tnmsrc"
         exit 1
     fi
 fi
 echo ""
 
 # we remap to our destination
-PREFIX=$TCANMS_PREFIX
-export TCANMS_HOME="${PREFIX}"
-export TCANMS_BIN=${TCANMS_HOME}/bin
-export TCANMS_SBIN=${TCANMS_HOME}/sbin
-export TCANMS_TMP=${TCANMS_HOME}/tmp
-export TCANMS_LOGS=${TCANMS_HOME}/logs
+PREFIX=$TNMS_PREFIX
+export TNMS_HOME="${PREFIX}"
+export TNMS_BIN=${TNMS_HOME}/bin
+export TNMS_SBIN=${TNMS_HOME}/sbin
+export TNMS_TMP=${TNMS_HOME}/tmp
+export TNMS_LOGS=${TNMS_HOME}/logs
 
 # paths to create
 for path in $SUBDIRS; do
@@ -51,8 +51,8 @@ for path in $SUBDIRS; do
 done
 
 # globals
-ENVIR=$TCANMS_ENV
-HOST=$TCANMS_HOST
+ENVIR=$TNMS_ENV
+HOST=$TNMS_HOST
 # flags
 FORCE=
 
@@ -64,23 +64,23 @@ usage()
     echo "Usage: $PNAME [-fhv] [-e environment] [-t targethost]"
     echo ""
     #echo "   -D | --database    : generate dbcreate scripts, exec and exit "
-    echo "   -f | --force       : force overwrite of install target '${TCANMS_PREFIX}'"
+    echo "   -f | --force       : force overwrite of install target '${TNMS_PREFIX}'"
     echo "   -h | --help        : display this help and exit"
     echo "   -v | --version     : display verion info and exit"
     echo "   -e | --environment : environment name from which to sync configs "
-    echo "                         ( or the TCANMS_ENV var (optional) )"
-    echo "   -t | --target      : name of the target host (or TCANMS_HOST)"
-    echo "                         (requires -e or TCANMS_ENV to be set)"
+    echo "                         ( or the TNMS_ENV var (optional) )"
+    echo "   -t | --target      : name of the target host (or TNMS_HOST)"
+    echo "                         (requires -e or TNMS_ENV to be set)"
     echo ""
     echo "   If the 'environment' and 'target' flags will sync the configs for the provided "
     echo "   environment and host within 'config/environment/envname/target'"
-    echo "   If not provided, vars TCANMS_ENV and TCANMS_HOST will be used if set." 
-    echo "   The script requires the environment variable TCANMS_PREFIX as the "
+    echo "   If not provided, vars TNMS_ENV and TNMS_HOST will be used if set." 
+    echo "   The script requires the environment variable TNMS_PREFIX as the "
     echo "   target path to install. The current settings are as follows: "
     echo ""
-    echo "   TCANMS_PREFIX = '$TCANMS_PREFIX'"
-    echo "   TCANMS_ENV    = '$TCANMS_ENV'"
-    echo "   TCANMS_HOST   = '$TCANMS_HOST'"
+    echo "   TNMS_PREFIX = '$TNMS_PREFIX'"
+    echo "   TNMS_ENV    = '$TNMS_ENV'"
+    echo "   TNMS_HOST   = '$TNMS_HOST'"
     echo ""
     version
 }
@@ -106,8 +106,8 @@ create_subdirs()
         if [ $RETVAL -eq 1 ]; then
             break
         fi
-        #chown $TCANMS_USER $subdir
-        #chgrp $TCANMS_GROUP $subdir
+        #chown $TNMS_USER $subdir
+        #chgrp $TNMS_GROUP $subdir
         #chmod g+w $subdir
     done
 
@@ -173,7 +173,7 @@ done
 
 
 if [ -z "$PREFIX" ]; then
-    echo "Error: TCANMS_PREFIX not set."
+    echo "Error: TNMS_PREFIX not set."
     usage
     exit 1
 fi

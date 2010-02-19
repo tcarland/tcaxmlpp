@@ -5,7 +5,7 @@ NEED_ZLIB = 1
 NEED_LIBXML2 = 1
 NEED_TNMSAPI = 1
 
-ifdef TCANMS_DEBUG
+ifdef TNMS_DEBUG
 OPT_FLAGS= 	-g
 endif
 
@@ -37,8 +37,8 @@ distclean: clean
 	$(RM) $(ALL_BINS)
 
 install:
-ifdef TCANMS_PREFIX
-	$(CP) $(BIN) $(TCANMS_PREFIX)/bin
+ifdef TNMS_PREFIX
+	$(CP) $(BIN) $(TNMS_PREFIX)/bin
 	@echo
 endif
 

@@ -6,7 +6,7 @@ NEED_TCANETPP = 1
 NEED_TCAXMLPP = 1
 NEED_ZIPSTREAM = 1
 
-ifdef TCANMS_DEBUG
+ifdef TNMS_DEBUG
 OPT_FLAGS =  -g
 endif
 
@@ -77,6 +77,6 @@ distclean: clean lib-clean doc-clean test-clean
 	$(RM) $(BIN)
 
 install:
-ifdef TCANMS_PREFIX
+ifdef TNMS_PREFIX
 	@echo
 endif

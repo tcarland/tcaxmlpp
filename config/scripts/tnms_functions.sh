@@ -1,7 +1,7 @@
 #
-# init.tcanms_functions.sh
+# tnms_functions.sh
 
-RC_TCANMS_FUNCTIONS="true"
+RC_TNMS_FUNCTIONS="true"
 PROCKEY=
 PIDFILE=
 PID=
@@ -241,7 +241,7 @@ start_process()
         echo ""
     fi
 
-    if [ $TCANMS_USE_CRON -eq 1 ]; then
+    if [ $TNMS_USE_CRON -eq 1 ]; then
         install_cron_task $bin $key
     fi
     return 1
@@ -332,7 +332,7 @@ stop_process()
         check_process $bin $key
 
         fi
-    if [ $TCANMS_USE_CRON -eq 1 ]; then
+    if [ $TNMS_USE_CRON -eq 1 ]; then
         uninstall_cron_task $bin $key
     fi
     return 1
@@ -340,7 +340,7 @@ stop_process()
 
 
 #  Will restart any processes detected as not running and will email alert
-#  any restarts to ${TCANMS_EMAIL_ADDRESS}
+#  any restarts to ${TNMS_EMAIL_ADDRESS}
 #
 restart_all_processes()
 {
@@ -442,7 +442,7 @@ send_errlog()
     local errlog=$1
 
     if [ -e $errlog ]; then
-        mailx -s '[tcanms] init.tcanms report' ${TCANMS_EMAIL_ADDRESS} < $errlog
+        mailx -s '[tnms] Report' ${TNMS_EMAIL_ADDRESS} < $errlog
     fi
 
     return 1
@@ -455,7 +455,7 @@ uninstall_cron_task()
     local bin_name=`basename $0`
 
     echo "Uninstalling cron task for ${cfg}..."
-    local cron_file=${TCANMS_TMP}/crontab.tmp
+    local cron_file=${TNMS_TMP}/crontab.tmp
 
     # Be sure cfg doesn't have slashes in it
     crontab -l | sed /"${bin_name} info ${bin} ${key}"/d > ${cron_file}
@@ -467,18 +467,18 @@ install_cron_task()
     local bin=$1
     local key=$2
     local bin_name=`basename $0`
-    local bin_path=${TCANMS_SBIN}/${bin_name}
+    local bin_path=${TNMS_SBIN}/${bin_name}
 
     # First remove any previously installed cron task for this key/cfg pair
     uninstall_cron_task ${bin} ${key}
 
     # Now add the cron task for this key/cfg
     # Be sure cfg doesn't have slashes in it
-    local cron_file=${TCANMS_TMP}/crontab.tmp
+    local cron_file=${TNMS_TMP}/crontab.tmp
 
     crontab -l > ${cron_file}
 
-    echo "*/${TCANMS_CRON_INTERVAL} * * * * export EMAIL_ON_ERROR=1 && ${bin_path} info ${bin} ${key} >> /dev/null 2>&1" >> ${cron_file}
+    echo "*/${TNMS_CRON_INTERVAL} * * * * export EMAIL_ON_ERROR=1 && ${bin_path} info ${bin} ${key} >> /dev/null 2>&1" >> ${cron_file}
     echo "Installing cron task for ${bin}/${key}..."
 
     crontab ${cron_file}	

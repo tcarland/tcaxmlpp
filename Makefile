@@ -74,7 +74,7 @@ distclean: external-clean
 	( cd clients/wxClient; make distclean )
 
 install:
-ifdef TCANMS_PREFIX
+ifdef TNMS_PREFIX
 	( cd config; make install )
 	( cd common; make install )
 	( cd TnmsApi; make install )
