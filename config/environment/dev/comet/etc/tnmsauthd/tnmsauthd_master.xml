@@ -3,12 +3,12 @@
 <tnms version="0.1">
 
     <TnmsAuthd
-        agent_name="tcanms/tnmsauthd-master"
+        agent_name="tnms/tnmsauthd-master"
         tnms_port="15901"
         soap_port="15902"
 
         pemfile=""
-        logfile="/opt/tcanms/tcanms/logs/tnmsauthd_master.log"
+        logfile="/opt/tcanms/tnms/logs/tnmsauthd_master.log"
         syslog="false"
         debug="true"
 
