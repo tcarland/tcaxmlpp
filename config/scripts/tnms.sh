@@ -92,7 +92,8 @@ usage()
     echo "  key     = process identifier "
     echo ""
     echo "  Note: 'restart' will only restart services determined not currently "
-    echo "  running. To force restart of a process stop|start must be used."
+    echo "  running. To force the restart of an individual process, stop|start "
+    echo "  targets must be provided."
     echo ""
     return 1
 }
