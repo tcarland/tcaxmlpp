@@ -1,4 +1,6 @@
-/** Database setup to initialize some default accounts **/
+/**
+  * Database setup to initialize some default accounts 
+**/
 
 
 INSERT INTO tnmsauthd.auth_types (method_name, authbin_name) 
@@ -19,23 +21,23 @@ INSERT INTO tnmsauthd.users ( gid, authtype_id, username, password, is_agent, in
     VALUES (1, 1, "tnms", "tnms11b", 0, 1);
 
 INSERT INTO tnmsauthd.users ( gid, authtype_id, username, password, is_agent, internal )
-    VALUES (1, 1, "tnms/auth/tnmsauthd-master", "tnmsauth11b", 0, 1);
+    VALUES (1, 1, "tnms/auth/tnmsauthd-master", "tnmsauth11b", 1, 1);
 
 INSERT INTO tnmsauthd.users ( gid, authtype_id, username, password, is_agent, internal )
     VALUES (2, 1, "tnms/tnms-console", "tnmsconsole11b", 1, 1);
 
 INSERT INTO tnmsauthd.users ( gid, authtype_id, username, password, is_agent, internal )
-    VALUES (1, 1, "tnms/tnmsd/devserver_a", "tnmsd11b", 0, 1);
+    VALUES (1, 1, "tnms/tnmsd/devserver_a", "tnmsd11b", 1, 1);
 INSERT INTO tnmsauthd.users ( gid, authtype_id, username, password, is_agent, internal )
-    VALUES (1, 1, "tnms/tnmsd/devserver_b", "tnmsd11b", 0, 1);
+    VALUES (1, 1, "tnms/tnmsd/devserver_b", "tnmsd11b", 1, 1);
 INSERT INTO tnmsauthd.users ( gid, authtype_id, username, password, is_agent, internal )
-    VALUES (1, 1, "tnms/tnmsd/devserver_c", "tnmsd11b", 0, 1);
+    VALUES (1, 1, "tnms/tnmsd/devserver_c", "tnmsd11b", 1, 1);
 
 INSERT INTO tnmsauthd.users ( gid, authtype_id, username, password, is_agent, internal )
-    VALUES (1, 1, "tnms/tnmsarchiver/tnms", "tnmsarchive11b", 0, 1);
+    VALUES (1, 1, "tnms/tnmsarchiver/tnms", "tnmsarchive11b", 1, 1);
 
 INSERT INTO tnmsauthd.users ( gid, authtype_id, username, password, is_agent, internal )
-    VALUES (1, 1, "tnms-console", "tnmsconsole11b", 0, 1);
+    VALUES (1, 1, "tnms-console", "tnmsconsole11b", 1, 1);
 
 
 INSERT INTO tnmsauthd.mgr_usergroups ( mgr_uid, mgr_gid, is_superuser, grant_rights )
