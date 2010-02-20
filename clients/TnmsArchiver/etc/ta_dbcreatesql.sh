@@ -25,30 +25,30 @@ CONFIGDIR=$CURDIR
 
 echo ""
 echo "$PNAME: "
-if [ -z "$RC_TCANMS_BASHRC" ]; then
-    if [ -e $CONFIGDIR/tcanmsrc ]; then
-        echo "  Using rc: $CONFIGDIR/tcanmsrc"
-        source $CONFIGDIR/tcanmsrc
-    elif [ -e $HOME/tcanms/etc/tcanmsrc ]; then
-        echo "  Using rc from: $HOME/tcanms/etc/tcanmsrc"
-        source $HOME/tcanms/etc/tcanmsrc
-    elif [ -e $HOME/etc/tcanmsrc ]; then
-        echo "  Using rc from: $HOME/etc/tcanmsrc"
-        source $HOME/etc/tcanmsrc
-    elif [ -e $TCANMS_PREFIX/etc/tcanmsrc ]; then
-        echo "  Using rc from $TCANMS_PREFIX/etc/tcanmsrc"
-        source $TCANMS_PREFIX/etc/tcanmsrc
+if [ -z "$RC_TNMS_BASHRC" ]; then
+    if [ -e $CONFIGDIR/tnmsrc ]; then
+        echo "  Using rc: $CONFIGDIR/tnmsrc"
+        source $CONFIGDIR/tnmsrc
+    elif [ -e $HOME/tnms/etc/tnmsrc ]; then
+        echo "  Using rc from: $HOME/tnms/etc/tnmsrc"
+        source $HOME/tnms/etc/tnmsrc
+    elif [ -e $HOME/etc/tnmsrc ]; then
+        echo "  Using rc from: $HOME/etc/tnmsrc"
+        source $HOME/etc/tnmsrc
+    elif [ -e $TNMS_PREFIX/etc/tnmsrc ]; then
+        echo "  Using rc from $TNMS_PREFIX/etc/tnmsrc"
+        source $TNMS_PREFIX/etc/tnmsrc
     else
-        echo "Error: Failed to locate rc file: tcanmsrc"
+        echo "Error: Failed to locate rc file: tnmsrc"
         exit 1
     fi
 fi
 echo ""
 
-if [ -n "$TCANMS_PREFIX" ]; then
-    TCANMS_HOME="$TCANMS_PREFIX"
-    TCANMS_TMP="$TCANMS_HOME/tmp"
-    TCANMS_ETC="$TCANMS_HOME/etc"
+if [ -n "$TNMS_PREFIX" ]; then
+    TNMS_HOME="$TNMS_PREFIX"
+    TNMS_TMP="$TNMS_HOME/tmp"
+    TNMS_ETC="$TNMS_HOME/etc"
 fi
 
 # ------------------------------------------

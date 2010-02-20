@@ -3,14 +3,14 @@
 <tnms version="0.1">
 
 <tnmsarchived
-    agent_name="tcanms/tnmsarchived/tcanms"
+    agent_name="tnms/tnmsarchived/tnms"
     logfile="tnmsarchived_tcanms.log"
     syslog="false"
     debug="true"
     version="1"
 
     dbhost="localhost"
-    dbname="tcanms"
+    dbname="tnms"
     dbuser="tnmsarchive"
     dbpass="tnmsarchive11b">
 
@@ -22,19 +22,19 @@
         <subscribe name="tcanms"/>
 
         <archiver
-            index_name="tcanms.element_name"
-            element_data="tcanms.immediate"
+            index_name="tnms.element_name"
+            element_data="tnms.immediate"
             holddown="60"
             flush_interval="0"
             table_count="1"/>
         <archiver
-            index_name="tcanms.element_name"
-            element_data="tcanms.short"
+            index_name="tnms.element_name"
+            element_data="tnms.short"
             holddown="300"
             table_count="5"/>
         <archiver
-            index_name="tcanms.element_name"
-            element_data="tcanms.long"
+            index_name="tnms.element_name"
+            element_data="tnms.long"
             holddown="3600"
             table_count="15"/>
     </client>
