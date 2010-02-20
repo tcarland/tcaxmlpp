@@ -49,7 +49,7 @@ KVMICRO=${KVMICRO%%[^[:digit:]]*}
 export LIBRARY_PATH=${LD_LIBRARY_PATH}
 
 # aliases
-alias tnmsinit="${TNMS_HOME}/bin/tnms.sh"
+alias tnms="${TNMS_HOME}/bin/tnms.sh"
 alias status="${TNMS_HOME}/bin/tnms.sh info"
 
 alias a="alias"

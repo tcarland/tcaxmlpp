@@ -126,8 +126,14 @@ init_env_configs()
 
     local cfgpath="$CONFIGDIR/../environment/$cfgenv/$cfghost/"
     local target="$PREFIX/"
+    local rcfile="$CONFIGDIR/../environment/$cfgenv/bashrc"
 
     echo "  Syncing configs from '$cfgenv/$cfghost'"
+
+    if [ -e $rcfile ]; then
+        echo "cp $rcfile ~/"
+        cp $rcfile ~/
+    fi
 
     if [ -d $cfgpath ]; then
         echo "      $RSYNC -r $cfgpath $target"

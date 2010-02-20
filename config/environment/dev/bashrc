@@ -5,23 +5,23 @@ if [[ $- != *i* ]] ; then
 fi
 
 CURDIR=.
-if [ -z "$RC_TCANMS_BASHRC" ]; then
-    if [ -e ~/tcanms/etc/tcanmsrc ]; then
-        source ~/tcanms/etc/tcanmsrc
-    elif [ -e $CURDIR/tcanmsrc ]; then 
-        source $CURDIR/tcanmsrc
+if [ -z "$RC_TNMS_BASHRC" ]; then
+    if [ -e ~/tnms/etc/tnmsrc ]; then
+        source ~/tnms/etc/tnmsrc
+    elif [ -e $CURDIR/tnmsrc ]; then 
+        source $CURDIR/tnmsrc
     fi
 fi
 
 export PS1="\h{\u}$ "
 
-# tcanms
-export TCANMS_ENV="dev"
-export TCANMS_HOST=`hostname`
-export TCANMS_DEBUG="true"
+# tnms
+export TNMS_ENV="dev"
+export TNMS_HOST=`hostname`
+export TNMS_DEBUG="true"
 
-if [ -z "$TCANMS_PREFIX" ]; then
-    export TCANMS_PREFIX="$TCANMS_HOME"
+if [ -z "$TNMS_PREFIX" ]; then
+    export TNMS_PREFIX="$TNMS_HOME"
 fi
 
 
