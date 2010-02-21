@@ -261,7 +261,7 @@ bool listUsers ( SqlSession * sql, uint32_t gid )
 
     Result::iterator  rIter;
 
-    query << "SELECT u.uid, u.authtype_id, u.gid, u.username, g.name, "
+    query << "SELECT u.uid, u.authtype_id, u.gid, u.username, u.is_agent, g.name, "
           << "m.method_name, m.authbin_name FROM " << _Dbname << ".users u JOIN " 
           << _Dbname << ".groups g on g.gid = u.gid "
           << "JOIN " << _Dbname << ".auth_types m on m.authtype_id = u.authtype_id";
@@ -286,15 +286,17 @@ bool listUsers ( SqlSession * sql, uint32_t gid )
          << std::setw(32) << "  user name  "
          << std::setw(8)  << " uid  "
          << std::setw(8)  << " gid  "
-         << std::setw(20) << " group name  "
-         << std::setw(15) << " auth method " << std::endl;
+         << std::setw(15) << " group name  "
+         << std::setw(15) << " authmethod "
+         << std::setw(5)  << " agent " << std::endl;
 
     std::cout << std::setiosflags(std::ios::left)
          << std::setw(32) << "----------------------"
          << std::setw(8)  << "-----"
          << std::setw(8)  << "-----"
-         << std::setw(20) << "---------------"
-         << std::setw(15) << "---------------"
+         << std::setw(15) << "-------------"
+         << std::setw(15) << "-----------"
+         << std::setw(5)  << "-----"
          << std::resetiosflags(std::ios::left) << std::endl;
 
    for ( rIter = res.begin(); rIter != res.end(); ++rIter ) {
@@ -304,8 +306,9 @@ bool listUsers ( SqlSession * sql, uint32_t gid )
             << std::setw(32) << ((std::string) row[3]) << " "
             << std::setw(8)  << StringUtils::fromString<int>(row[0])
             << std::setw(8)  << StringUtils::fromString<int>(row[2])
-            << std::setw(20) << ((std::string) row[4])
             << std::setw(15) << ((std::string) row[5])
+            << std::setw(15) << ((std::string) row[6])
+            << std::setw(5)  << ((std::string) row[4])
             << std::endl;
     }
     std::cout << std::resetiosflags(std::ios::left) << std::endl;
