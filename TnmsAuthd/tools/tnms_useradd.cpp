@@ -18,10 +18,10 @@ char TNMS_USERADD_VERSION [] = ".11";
 
 const char * process = "tnms_useradd";
 
-const char * _Dbhost  = "nebula";
-const char * _Dbuser  = "tnmsauthd";
-const char * _Dbname  = "tcanms";
-const char * _Dbpass  = "tcanms11b";
+const char * _Dbhost  = "localhost";
+const char * _Dbuser  = "tnmsauth";
+const char * _Dbname  = "tnmsauthd";
+const char * _Dbpass  = "tnmsauth11b";
 
 
 uint32_t addGroup ( SqlSession * sql, const std::string & group );
@@ -158,11 +158,13 @@ addGroup ( SqlSession * sql, const std::string & group )
     return getGID(sql, group);
 }
 
-bool
+uint32_t
 addUser ( SqlSession * sql, const std::string & user, const std::string & pw, 
           uint32_t gid, uint32_t auid )
 {
     Query  query = sql->newQuery();
+    uint64_t id  = 0;
+    uint32_t uid = 0;
 
     query << "INSERT INTO " << _Dbname << ".users (username, gid, authtype_id";
 
@@ -179,11 +181,15 @@ addUser ( SqlSession * sql, const std::string & user, const std::string & pw,
 
     if ( ! sql->submitQuery(query) ) {
         std::cout << "Error adding user: " << sql->sqlErrorStr() << std::endl;
-        return false;
+        return uid;
     }
-    std::cout << "Added user: " << user << std::endl;
 
-    return true;
+    id  = sql->insert_id();
+    uid = (*(uint32_t*) &id);
+
+    std::cout << " Added user '" << user << "' uid=" << id << std::endl;
+
+    return uid;
 }
 
 
@@ -229,6 +235,23 @@ deleteUser ( SqlSession * sql, const std::string & user )
     return true;
 }
 
+bool
+setUserAgent ( SqlSession * sql, uint32_t uid, bool agent )
+{
+    Query  query = sql->newQuery();
+
+    query << "UPDATE " << _Dbname << ".users SET is_agent=" << agent
+          << " WHERE uid=" << uid;
+
+    if ( ! sql->submitQuery(query) ) {
+        std::cout << "Error updating user: " << sql->sqlErrorStr() << std::endl;
+        return false;
+    }
+    std::cout << "Updated user agent status for uid " << uid << std::endl;
+
+    return true;
+}
+
 
 bool listUsers ( SqlSession * sql, uint32_t gid )
 {
@@ -241,7 +264,7 @@ bool listUsers ( SqlSession * sql, uint32_t gid )
     query << "SELECT u.uid, u.authtype_id, u.gid, u.username, g.name, "
           << "m.method_name, m.authbin_name FROM " << _Dbname << ".users u JOIN " 
           << _Dbname << ".groups g on g.gid = u.gid "
-          << "JOIN " << _Dbname << ".authtypes m on m.authtype_id = u.authtype_id";
+          << "JOIN " << _Dbname << ".auth_types m on m.authtype_id = u.authtype_id";
 
     if ( gid > 0 )
         query << " WHERE u.gid=" << gid;
@@ -260,14 +283,14 @@ bool listUsers ( SqlSession * sql, uint32_t gid )
 
     std::cout << std::endl;
     std::cout << std::setiosflags(std::ios::left)
-         << std::setw(18) << "  user name  "
+         << std::setw(32) << "  user name  "
          << std::setw(8)  << " uid  "
          << std::setw(8)  << " gid  "
-         << std::setw(20) << "  group name  "
-         << std::setw(15) << "  auth method " << std::endl;
+         << std::setw(20) << " group name  "
+         << std::setw(15) << " auth method " << std::endl;
 
     std::cout << std::setiosflags(std::ios::left)
-         << std::setw(18) << "---------------"
+         << std::setw(32) << "----------------------"
          << std::setw(8)  << "-----"
          << std::setw(8)  << "-----"
          << std::setw(20) << "---------------"
@@ -278,11 +301,12 @@ bool listUsers ( SqlSession * sql, uint32_t gid )
         row = (Row) *rIter;
 
         std::cout << std::setiosflags(std::ios::left)
-            << std::setw(18) << ((std::string) row[3]) << " "
+            << std::setw(32) << ((std::string) row[3]) << " "
             << std::setw(8)  << StringUtils::fromString<int>(row[0])
             << std::setw(8)  << StringUtils::fromString<int>(row[2])
             << std::setw(20) << ((std::string) row[4])
-            << std::setw(15) << ((std::string) row[5]);
+            << std::setw(15) << ((std::string) row[5])
+            << std::endl;
     }
     std::cout << std::resetiosflags(std::ios::left) << std::endl;
     std::cout << std::endl;
@@ -391,8 +415,11 @@ int main ( int argc, char **argv )
     if ( ! group.empty() )
         gid = getGID(sql, group);
 
-    if ( listusers )
+    if ( listusers ) {
         listUsers(sql, gid);
+        delete sql;
+        exit(0);
+    }
 
     if ( method.empty() )
         method = "dbstatic";
@@ -408,17 +435,22 @@ int main ( int argc, char **argv )
 
     if ( uid > 0 ) 
     {
-        if ( deluser)
+        if ( deluser) {
             deleteUser(sql, user);
-        else 
-            updateUser(sql, uid, gid, auid, pw, method);
+        } else {
+            if ( updateUser(sql, uid, gid, auid, pw, method) )
+            	setUserAgent(sql, uid, agent);
+        }
     }
     else 
     {
-        if ( deluser )
+        if ( deluser ) {
             std::cout << "User '" << user << "' doesn't exist" << std::endl;
-        else
-            addUser(sql, user, pw, gid, auid);
+        } else {
+            uid = addUser(sql, user, pw, gid, auid);
+            if ( uid > 0 )
+            	setUserAgent(sql, uid, agent);
+        }
     }
 
     sql->dbclose();

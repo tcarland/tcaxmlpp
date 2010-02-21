@@ -1,5 +1,5 @@
 
-CREATE SCHEMA IF NOT EXISTS `tnmsauth`;
+CREATE SCHEMA IF NOT EXISTS `tnmsauthd`;
 
 
 CREATE USER 'tnmsauth'@'localhost' IDENTIFIED BY 'tnmsauth11b';

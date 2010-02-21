@@ -163,7 +163,7 @@ AuthDbThread::isAuthentic ( const std::string & username,
     SqlSessionInterface * sql = _dbpool->acquire();
 
     if ( sql == NULL ) {
-        LogFacility::LogMessage("AuthDbThread::isAuthentic() invalid db handle");
+        LogFacility::LogMessage("AuthDbThread::isAuthentic() Invalid database handle");
         return false;
     }
     if ( userdb == NULL )

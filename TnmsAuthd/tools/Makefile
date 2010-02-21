@@ -10,7 +10,7 @@ ifdef USE_MYSQL
 NEED_MYSQL = 1
 endif
 
-ifdef TCANMS_DEBUG
+ifdef TNMS_DEBUG
 OPT_FLAGS= 	-g
 endif
 
@@ -43,7 +43,7 @@ distclean: clean
 	$(RM) $(ALL_BINS)
 
 install:
-ifdef TCANMS_PREFIX
+ifdef TNMS_PREFIX
 	$(CP) $(BIN) $(TCANMS_PREFIX)/bin
 	@echo
 endif
