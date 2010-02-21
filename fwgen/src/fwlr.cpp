@@ -118,7 +118,7 @@ int main ( int argc, char **argv )
 
     if ( ! FileUtils::IsReadable(logfile.c_str()) ) {
         std::cout << "Error: File not found or is not readable: " 
-                  << logfile << std::cout;
+                  << logfile << std::endl;
         return -1;
     }
 
