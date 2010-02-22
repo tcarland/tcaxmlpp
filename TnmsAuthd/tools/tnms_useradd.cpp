@@ -11,6 +11,9 @@ using namespace tcasqlpp;
 #include "StringUtils.h"
 using namespace tcanetpp;
 
+#include "XmlDocument.h"
+using namespace tcaxmlpp;
+
 
 static const
 char TNMS_USERADD_VERSION [] = ".11";
@@ -471,7 +474,7 @@ int main ( int argc, char **argv )
             deleteUser(sql, user, uid);
         } else {
             if ( ! updateUser(sql, uid, gid, auid, pw, method) )
-            	uid = 0;
+                uid = 0;
         }
     }
     else 
@@ -485,9 +488,16 @@ int main ( int argc, char **argv )
 
     if ( uid > 0 && ! deluser )
     {
-    	setUserAgent(sql, uid, agent);
-    	if ( ! config.empty() )
-    		setUserConfig(sql, uid, config);
+        setUserAgent(sql, uid, agent);
+        if ( ! config.empty() ) {
+            XmlDocument  doc;
+            if ( ! doc.readFile(config) ) {
+                std::cout << " Error parsing xml config: " << config << std::endl;
+                std::cout << doc.getErrorStr() << std::endl;
+            } else {
+                std::string xmlcfg = doc.NodeToString(doc.getRootNode());
+                setUserConfig(sql, uid, xmlcfg);
+            }
     }
 
     sql->dbclose();
