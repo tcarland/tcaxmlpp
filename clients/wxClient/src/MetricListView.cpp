@@ -40,15 +40,19 @@ MetricListView::Init()
 
     itemCol.SetText(_T("Name"));
     itemCol.SetImage(-1);
+    itemCol.SetWidth(35);
     this->InsertColumn(0, itemCol);
 
     itemCol.SetText(_T("Value Type"));
+    itemCol.SetWidth(10);
     this->InsertColumn(1, itemCol);
 
     itemCol.SetText(_T("Value"));
+    itemCol.SetWidth(25);
     this->InsertColumn(2, itemCol);
 
     itemCol.SetText(_T("Data"));
+    itemCol.SetWidth(35);
     this->InsertColumn(3, itemCol);
 
     this->AddDefaultItem();

@@ -111,9 +111,9 @@ ThreadLock::waitFor ( time_t seconds)
     status    = ::pthread_cond_timedwait(&_items, &_mutex, &to);
 
     if ( status == ETIMEDOUT )
-	return 0;
+        return 0;
     else if ( status != 0 )
-	return -1;
+        return -1;
 
     return 1;
 }
