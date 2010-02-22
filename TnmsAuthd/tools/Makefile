@@ -22,7 +22,6 @@ BIN=		tnms_useradd
 
 
 OBJS=		tnms_useradd.o
-
 ALL_OBJS=	$(OBJS)
 ALL_BINS=	$(BIN)
 

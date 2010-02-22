@@ -69,6 +69,7 @@ distclean: clean gsoap-clean test-clean
 
 install:
 ifdef TNMS_PREFIX
+	( cd tools; make install )
 	$(CP) $(BIN) $(TNMS_PREFIX)/sbin
 	@echo
 endif

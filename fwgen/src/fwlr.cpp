@@ -13,6 +13,9 @@ extern "C" {
 
 #include <vector>
 
+#include "Thread.h"
+#include "SynchronizedQueue.hpp"
+
 #include "FileUtils.h"
 #include "StringUtils.h"
 #include "EventManager.h"
@@ -20,6 +23,7 @@ using namespace tcanetpp;
 
 #include "FwLogEntry.h"
 #include "FwLogReport.h"
+#include "FwLogReader.h"
 using namespace fwgen;
 
 
@@ -126,6 +130,38 @@ int main ( int argc, char **argv )
     signal(SIGINT,  &sigHandler);
     signal(SIGTERM, &sigHandler);
 
+    SynchronizedQueue<FwLogEntry>  * queue = NULL;
+
+    time_t now;
+    FwLogEntry  fwe;
+    FwLogReport * fwrep    = NULL;
+    FwLogReader * fwreader = new FwLogReader(logfile);
+    fwreader->start();
+
+    queue = fwreader->getQueue();
+
+    while ( ! Alarm )
+    {
+        now = ::time(NULL);
+        if ( queue->pop(fwe) > 0 ) {
+            if ( fwrep == NULL ) {
+                std::string  agent = "fwlr/";
+                agent.append(fwe.host);
+                fwrep = new FwLogReport(agent);
+            }
+
+            fwrep->SendEntry(fwe, now);
+        } else {
+            queue->waitFor(5);
+            queue->unlock();
+        }
+        sleep(1);
+        if ( fwrep )
+            fwrep->FlushApi(now);
+    }
+
+    std::cout << "Finished." << std::endl;
+/*
     std::ifstream        ifs;
     std::ios::openmode   mode = std::ios::in;
 
@@ -169,6 +205,7 @@ int main ( int argc, char **argv )
     std::cout << "Finished." << std::endl;
 
     ifs.close();
+*/
 
     return 0;
 }
