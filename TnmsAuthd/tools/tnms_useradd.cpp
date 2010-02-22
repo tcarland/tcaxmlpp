@@ -31,6 +31,7 @@ usage()
 {
     printf("Usage: %s [-ADhLV] [-u username] [-g group] [-p password] [-m auth_method]\n", process);
     printf("          -A           :  User can be an agent\n");
+    printf("          -c <config>  :  XML configuration for user or agent\n");
     printf("          -h           :  Display help info and exit\n");
     printf("          -u <user>    :  Username to add \n");
     printf("          -g <group>   :  Name of user's group \n");
@@ -212,18 +213,37 @@ updateUser ( SqlSession * sql, uint32_t uid, uint32_t gid, uint32_t auid,
         std::cout << "Error updating user: " << sql->sqlErrorStr() << std::endl;
         return false;
     }
-    std::cout << "Updated user" << std::endl;
+    std::cout << " Updated user " << uid << std::endl;
 
     return true;
 }
 
+
 bool
-deleteUser ( SqlSession * sql, const std::string & user )
+updateUserConfig ( SqlSession * sql, uint32_t uid, const std::string & xmlconfig )
+{
+	Query  query = sql->newQuery();
+
+	query << "UPDATE " << _Dbname << ".user_configs SET config=\""
+	      << sql->escapeString(xmlconfig) << "\" WHERE uid=" << uid;
+
+	if ( ! sql->submitQuery(query) ) {
+		std::cout << "Error updating user config: " << sql->sqlErrorStr() << std::endl;
+		return false;
+	}
+
+	std::cout << " Updated the user configurations for uid " << uid << std::endl;
+
+	return true;
+}
+
+
+bool
+deleteUser ( SqlSession * sql, const std::string & user, uint32_t uid )
 {
     Query query = sql->newQuery();
 
-    query << "DELETE FROM " << _Dbname << ".users WHERE username=\""
-          << user << "\"";
+    query << "DELETE FROM " << _Dbname << ".users WHERE uid=" << uid;
 
     if ( ! sql->submitQuery(query) )
     {
@@ -326,19 +346,23 @@ int main ( int argc, char **argv )
     char    * pwc       = NULL;
     char    * groupc    = NULL;
     char    * methodc   = NULL;
+    char    * cfgc      = NULL;
     bool      deluser   = false;
     bool      listusers = false;
     bool      showint   = false;
     bool      agent     = false;
 
 
-    std::string   user, pw, group, method;
+    std::string   user, pw, group, method, config;
 
-    while ( (optChar = getopt(argc, argv, "ADg:hiLp:m:u:V")) != EOF ) {
+    while ( (optChar = getopt(argc, argv, "Ac:Dg:hiLp:m:u:V")) != EOF ) {
         switch ( optChar ) {
             case 'A':
                 agent = true;
                 break;
+            case 'c':
+            	cfgc = strdup(optarg);
+            	break;
             case 'D':
                 deluser = true;
                 break;
@@ -382,6 +406,11 @@ int main ( int argc, char **argv )
     if ( pwc ) {
         pw = pwc;
         ::free(pwc);
+    }
+
+    if ( cfgc ) {
+    	config = cfgc;
+    	::free(cfgc);
     }
 
     if ( methodc ) {
@@ -439,10 +468,10 @@ int main ( int argc, char **argv )
     if ( uid > 0 ) 
     {
         if ( deluser) {
-            deleteUser(sql, user);
+            deleteUser(sql, user, uid);
         } else {
-            if ( updateUser(sql, uid, gid, auid, pw, method) )
-            	setUserAgent(sql, uid, agent);
+            if ( ! updateUser(sql, uid, gid, auid, pw, method) )
+            	uid = 0;
         }
     }
     else 
@@ -451,9 +480,14 @@ int main ( int argc, char **argv )
             std::cout << "User '" << user << "' doesn't exist" << std::endl;
         } else {
             uid = addUser(sql, user, pw, gid, auid);
-            if ( uid > 0 )
-            	setUserAgent(sql, uid, agent);
         }
+    }
+
+    if ( uid > 0 && ! deluser )
+    {
+    	setUserAgent(sql, uid, agent);
+    	if ( ! config.empty() )
+    		setUserConfig(sql, uid, config);
     }
 
     sql->dbclose();

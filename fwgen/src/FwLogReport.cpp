@@ -25,7 +25,8 @@ FwLogReport::FlushApi ( const time_t & now )
     int  errcnt = 0;
 
     if ( ! _connection )
-        std::cout << "FwLogReport: no API connection, attempting reconnect" << std::endl;
+        std::cout << "FwLogReport: no API connection, attempting reconnect" 
+            << std::endl;
 
     do {
         retval = _api->send(now);

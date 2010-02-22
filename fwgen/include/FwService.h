@@ -11,8 +11,9 @@ namespace fwgen {
 
 class FwService;
 
-typedef std::map<int, FwService> FwSvcMap;
 
+
+typedef std::map<int, FwService> FwSvcMap;
 
 
 class FwService {

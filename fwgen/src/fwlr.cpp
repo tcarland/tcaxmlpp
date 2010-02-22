@@ -32,7 +32,7 @@ bool Alarm        = false;
 
 void usage()
 {
-    printf("Usage: %s -c <logfile>\n", process);
+    printf("Usage: %s -dDh -c <apicfg> -l <logfile>\n", process);
     exit(0);
 }
 
@@ -83,9 +83,9 @@ int main ( int argc, char **argv )
     if ( argc < 2 )
         usage();
 
-    while ( (optChar = ::getopt(argc, argv, "c:dDhtV")) != EOF ) {
+    while ( (optChar = ::getopt(argc, argv, "c:dDhl:tV")) != EOF ) {
         switch ( optChar ) {
-            case 'c':
+            case 'l':
                 logf = ::strdup(optarg);
                 break;
             case 'd':
@@ -151,7 +151,7 @@ int main ( int argc, char **argv )
             if ( FwLogEntry::ParseLogEntry(line, fwe) )
             {
                 if ( fwrep == NULL ) {
-                    std::string  agent = "fwgen/";
+                    std::string  agent = "fwlr/";
                     agent.append(fwe.host);
 
                     fwrep = new FwLogReport(agent);

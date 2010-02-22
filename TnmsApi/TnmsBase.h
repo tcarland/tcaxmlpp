@@ -98,7 +98,6 @@ class TnmsBase {
   private:
 
     TnmsTree*            _tree;
-    std::string          _agentName;
 
     TnmsAgent*           _conn;
     TnmsConfig           _config;
@@ -111,6 +110,7 @@ class TnmsBase {
 
     time_t               _holddown;
     time_t               _holddown_interval;
+    time_t               _reauth;
     time_t               _reconnect;
     time_t               _reconnect_interval;
     time_t               _reconfig;
