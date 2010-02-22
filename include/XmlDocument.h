@@ -137,14 +137,14 @@ class XmlDocument {
 
   protected:
 
-    std::string		_xmlfile;
-    std::string		_dtdfile;
+    std::string	        _xmlfile;
+    std::string	        _dtdfile;
     std::string         _encoding;
-    std::string		_errStr;
+    std::string	        _errStr;
     std::string         _roottag;
 
-    xmlDocPtr		_doc;
-    XmlNode*		_root;
+    xmlDocPtr           _doc;
+    XmlNode*            _root;
     XmlNodeFactory*     _nodeFactory;
     bool                _debug;
 
