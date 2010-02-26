@@ -3,6 +3,11 @@
 #   Build script for individual projects, or any sub-project that might wish 
 #   to be extracted from the overall workspace while keeping 
 
+
+PNAME=${0##*\/}
+VERSION="1.12"
+AUTHOR="tcarland@gmail.com"
+
 PARENT=".."
 TOPDIR="."
 LINKLIST="tcamake"
@@ -69,10 +74,8 @@ makeLinks()
 {
     local dryrun=$1
 
-    if [ -n "$dryrun" ]; then
-        echo "Making links: $LINKLIST "
-        echo " in $PWD"
-    fi
+    echo "  Making links: $LINKLIST "
+    
     for lf in $LINKLIST; do
         if [ -n "$dryrun" ]; then
             echo "  ln -s $TOPDIR/$lf ."
@@ -145,14 +148,14 @@ doDist()
 usage()
 {
     echo ""
-    echo "Usage: $0 [command] {option} "
+    echo "Usage: $PNAME [command] {option} "
     echo ""
     echo "   [command] :  a standard 'make' target (eg. all, clean, etc) "
     echo "                or one of the following commands."
     echo ""
-    echo "       'dist' [path] <dryrun> 
-                            : requires a valid path as {option}"
-    echo "                     Builds the complete distribution in 'path/projectname'"
+    echo "       'dist' [path] <dryrun> "
+    echo "                  : requires a valid path as {option}"
+    echo "                     Syncs the project to 'path/projectname'"
     echo "       'link'     : Creates project build links only"
     echo "       'unlink'   : Removes build links only"
     echo "       'clean'    : Removes build links and runs 'make clean'"
@@ -160,10 +163,12 @@ usage()
     echo "                     what links would be created. (dry run) "
     echo ""
     echo ""
-    echo "   Summary: $0  creates a complete distribution directory "
+    echo "   Summary: creates a complete distribution directory "
     echo "      that includes required project paths by creating "
     echo "      temporary soft links. Any unrecognized commands are "
     echo "      passed through to 'make'"
+    echo ""
+    echo "  $PNAME: Version: $VERSION by $AUTHOR"
     echo ""
 }
 
@@ -202,7 +207,7 @@ case "$1" in
         ;;
      'show')
         findTopDirectory
-        makeLinks 0
+        makeLinks 1
         exit 0
         ;;
     *)
