@@ -3,11 +3,12 @@
 #
 VERSION="0.2"
 AUTHOR="tcarland@gmail.com"
-MYNAME=${0/#.\//}
+
+PNAME=${0##*\/}
+
 
 PARENT=".."
 TOPDIR="."
-LINKLIST="tcamake common"
 BUILDDEF="build_defs"
 RSYNC="rsync"
 OPTIONS="-av"
@@ -24,7 +25,7 @@ reply=
 usage()
 {
     echo ""
-    echo "Usage: $MYNAME {options} [projectname] "
+    echo "Usage: $PNAME {options} [projectname] "
     echo "    Options:"
     echo "       -h|--help      =  display usage information"
     echo "       -n|--dryrun    =  enables test mode"

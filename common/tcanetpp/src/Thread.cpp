@@ -84,7 +84,7 @@ Thread::start() throw ( ThreadException )
 
     if ( _threadName.empty() ) {
         std::ostringstream  name;
-        name << "Thread_" << _tid;
+        name << "Thread_" << _tid; // pthread_self()
 	_threadName = name.str();
     }
 

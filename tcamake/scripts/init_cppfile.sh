@@ -1,14 +1,14 @@
 #!/bin/bash
 #
-#       init_sourcefile.sh
+#       init_cppfile.sh
 #
 #   creates a template source file with ifndef/define declarations
 #   and namespace declarations, if provided.
 
 
-VERSION="1"
+VERSION="1.2"
 AUTHOR="tcarland@gmail.com"
-MYNAME="init_sourcefile.sh"
+PNAME=${0##*\/}
 
 SOURCENAME=
 NAMESPACE=
@@ -16,20 +16,27 @@ EXT=
 DEFNAME=
 CLASS=1
 
-usage()
-{
-    echo ""
-    echo "Usage: $MYNAME -n <namespace>  sourcefile"
-    echo ""
-    return 0
-}
+
 
 version()
 {
-    echo "$MYNAME, Version $VERSION, $AUTHOR"
+    echo "$PNAME, Version $VERSION, $AUTHOR"
     echo ""
 }
 
+usage()
+{
+    echo ""
+    echo "Usage: $PNAME [-hCV] -n <namespace>  sourcefile"
+    echo ""
+    echo "    --help      | -h        : Show usage info and exit"
+    echo "    --noclass   | -C        : Do not autogenerate cpp class"
+    echo "    --namespace | -n <name> : Creates namespace tags accordingly"
+    echo "    --version   | -V        : Show version info and exit"
+    echo ""
+    version
+    return 0
+}
 
 setSourceName()
 {
@@ -160,7 +167,7 @@ namespace=
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        -C)
+        -C|--noclass)
             CLASS=
             ;;
         -h|--help)
@@ -171,6 +178,10 @@ while [ $# -gt 0 ]; do
             shift
             namespace=$1
             ;;
+        -V|--version)
+            version
+            exit 0
+            ;;
         *)
             filename=$1
             ;;
@@ -179,6 +190,10 @@ while [ $# -gt 0 ]; do
 done
 
 
+if [ -z "$filename" ]; then
+    usage
+    exit 0
+fi
 
 setSourceName $filename
 setDefineName $filename $namespace

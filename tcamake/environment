@@ -21,47 +21,49 @@ ifeq ($(TCA_PORT_IDENTIFIER), "SunOS_sun4u")
   LIB_SOCKET = -lsocket
   LIB_NSL = -lnsl
   LIB_PTHREAD = -lpthread
+  PTHREAD_CFLAGS = -pthread 
   LIB_DL = -ldl
 endif
 
 ifeq ($(TCA_PORT_IDENTIFIER), "Linux_i686")
-  # set defaults for linux intel
+  # set defaults for linux intel x86
   CFLAGS_ADD = -DTCA_PORT_LINUX_INTEL32
   EMANATE_OS = -DLINUX
   EMANATE_os = linux
   LIB_PTHREAD = -lpthread
-  LIB_DL = -ldl
   PTHREAD_CFLAGS = -pthread
+  LIB_DL = -ldl
 endif
 
 ifeq ($(TCA_PORT_IDENTIFIER), "Linux_x86_64")
-  # set defaults for linux intel
+  # set defaults for linux amd64/intelx86_64
   CFLAGS_ADD = -DTCA_PORT_LINUX_INTEL64
   EMANATE_OS = -DLINUX
   EMANATE_os = linux
   LIB_PTHREAD = -lpthread
+  PTHREAD_CFLAGS = -pthread
   LIB_DL = -ldl
   PTHREAD_CFLAGS = -pthread
 endif
 
 ifeq ($(TCA_PORT_IDENTIFIER), "Linux_ia64")
-  # set defaults for linux intel
+  # set defaults for linux intel itanium
   CFLAGS_ADD = -DTCA_PORT_LINUX_IA64
   EMANATE_OS = -DLINUX
   EMANATE_os = linux
   LIB_PTHREAD = -lpthread
-  LIB_DL = -ldl
   PTHREAD_CFLAGS = -pthread
+  LIB_DL = -ldl
 endif
 
 ifeq ($(TCA_PORT_IDENTIFIER), "Darwin_i386")
-  # set defaults for linux intel
+  # set defaults for macos
   CFLAGS_ADD = -DTCA_PORT_DARWIN_I386
   EMANATE_OS = -DDARWIN
   EMANATE_os = darwin
   LIB_PTHREAD = -lpthread
-  #LIB_DL = -ldl
   PTHREAD_CFLAGS = -pthread
+  #LIB_DL = -ldl
 endif
 
 ifeq ($(TCA_PORT_IDENTIFIER), "FreeBSD_i386")
