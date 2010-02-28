@@ -48,7 +48,7 @@ wxClient:
 	@echo
 
 external:
-	( cd common/ext; ./build.sh )
+	( cd common/ext; ./build_extlibs.sh )
 	@echo
 
 external-clean:
