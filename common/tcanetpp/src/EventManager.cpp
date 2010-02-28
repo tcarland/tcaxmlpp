@@ -77,7 +77,8 @@ EventManager::addTimerEvent ( EventTimerHandler * handler,
 {
     EventTimer  timer;
 
-    if ( (handler == NULL) || (sec == 0 && msec == 0) ) {
+    if ( (handler == NULL) || (sec == 0 && msec == 0) ) 
+    {
         _errstr = "EventManager::addTimerEvent: invalid parameters";
 	return 0;
     }
@@ -156,12 +157,14 @@ EventManager::addIOEvent ( EventIOHandler * handler, const sockfd_t & sfd,
 {
     EventIO  io;
 
-    if ( handler == NULL ) {
+    if ( handler == NULL ) 
+    {
         _errstr = "Invalid event handler";
 	return 0;
     }
 
-    if ( ! Socket::IsValidDescriptor(sfd) ) {
+    if ( ! Socket::IsValidDescriptor(sfd) ) 
+    {
         _errstr = "Invalid IO Descriptor";
         return 0;
     }
@@ -203,7 +206,8 @@ EventManager::removeEvent ( const evid_t & id )
     printf("EventManager::removeEvent() %lu\n", id);	
 #   endif
 
-    if ( (tIter = _timers.find(id)) != _timers.end() ) {
+    if ( (tIter = _timers.find(id)) != _timers.end() ) 
+    {
         if ( tIter->second.enabled )
             this->destroyEvent(tIter->second);
         _events.erase(id);
@@ -211,8 +215,10 @@ EventManager::removeEvent ( const evid_t & id )
 	return true;
     }
 
-    if ( (cIter = _clients.find(id)) != _clients.end() ) {
-        if ( cIter->second.enabled ) {
+    if ( (cIter = _clients.find(id)) != _clients.end() ) 
+    {
+        if ( cIter->second.enabled ) 
+        {
             FD_CLR(cIter->second.sfd, &_rset);
             FD_CLR(cIter->second.sfd, &_wset);
             FD_CLR(cIter->second.sfd, &_xset);
@@ -277,7 +283,8 @@ EventManager::eventLoop()
         EventManager::GetTimeOfDay(now);
 
         // select on our fdsets
-	if ( (rdy = ::select(_maxfdp, &_rset, &_wset, &_xset, &to)) < 0 ) {
+	if ( (rdy = ::select(_maxfdp, &_rset, &_wset, &_xset, &to)) < 0 ) 
+        {
 #           ifdef WIN32
             int err = WSAGetLastError();
             if ( err == WSAEINTR )
@@ -580,7 +587,9 @@ EventManager::getNewEventId()
     evid_t  id  = _lastid + 1;
 
     EventSet::iterator  sIter;
-    while ( id != _lastid ) {
+
+    while ( id != _lastid ) 
+    {
         if ( (sIter = _events.find(id)) == _events.end() && id != 0 )
             break;
         id++;

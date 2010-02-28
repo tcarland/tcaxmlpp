@@ -1,15 +1,13 @@
-/**  A Patricia Trie implementation based on Sedgewick's 
+/**
+  *     A Patricia Trie implementation based on Sedgewick's
   *  "Algorithm's in C". The original implementation has been
   *  extended to allow for a void* (rock) to be stored per node.
-  *  Thanks to Brian Grady for providing some of the initial  
-  *  Sedgewick implementation (pt_insert and remove).
-  *
   *     Note that some functions (notably longestMatch) make
   *  use of static variables, which can cause concurrancy
-  *  issues in a threaded environment, especially with multiple
-  *  patricia instances. If thread safety is needed, care should
-  *  be exercised taken to properly wrap function calls around a
-  *  mutex.
+  *  issues in a threaded environment.
+  *     If thread safety is needed, care should be exercised
+  *  taken to properly wrap function calls around a mutex.
+  *
   *
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
   *  @Author  tca@charltontechnology.net

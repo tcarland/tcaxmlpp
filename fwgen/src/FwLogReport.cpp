@@ -25,7 +25,8 @@ FwLogReport::FlushApi ( const time_t & now )
     int  errcnt = 0;
 
     if ( ! _connection )
-        std::cout << "FwLogReport: no API connection, attempting reconnect" << std::endl;
+        std::cout << "FwLogReport: no API connection, attempting reconnect" 
+            << std::endl;
 
     do {
         retval = _api->send(now);
@@ -106,10 +107,12 @@ FwLogReport::SendEntry ( FwLogEntry & fwe, const time_t & now )
         FwLogEntry::SetHostname(fwe);
         std::pair<FwMap::iterator, bool> insertR;
         insertR = _fwMap.insert( make_pair(fwe.absname, fwe) );
+
         if ( insertR.second ) {
             fIter = insertR.first;
             _api->add(fwe.absname, now);
             _api->add(fwe.absname + "/LastSeen", now);
+            _api->add(fwe.absname + "/Hits", now);
 
             if ( ! fwe.host.empty() ) {
                 _api->add(fwe.absname + "/Src_hostname", now);
@@ -117,11 +120,12 @@ FwLogReport::SendEntry ( FwLogEntry & fwe, const time_t & now )
             }
 
             _api->add(fwe.protom, now);
+            _api->add(fwe.protom + "/LastSeen", now);
             if ( keyIsSrc )
                 _api->update(fwe.protom, "SrcPort");
             else
                 _api->update(fwe.protom, "DstPort");
-            _api->add(fwe.protom + "/LastSeen", now);
+
         } else {
             return;
         }
@@ -134,6 +138,7 @@ FwLogReport::SendEntry ( FwLogEntry & fwe, const time_t & now )
 
     _api->update(fwe.absname, now, entry.count, TNMS_UINT64);
     _api->update(fwe.absname + "/LastSeen", now, entry.date);
+    _api->update(fwe.absname + "/Hits", now, entry.count, TNMS_UINT64);
     
     _api->update(fwe.protom, now, entry.count, TNMS_UINT64);
     _api->update(fwe.protom + "/LastSeen", now, entry.date);

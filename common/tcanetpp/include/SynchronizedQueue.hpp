@@ -95,6 +95,21 @@ template<class ValueType> class SynchronizedQueue {
     }
 
 
+    int  lock()
+    {
+    	return _mutex.lock();
+    }
+
+    int  unlock()
+    {
+    	return _mutex.unlock();
+    }
+
+    int  notify()
+    {
+    	return _mutex.notify();
+    }
+
     size_t size()
     {
         size_t  sz = 0;

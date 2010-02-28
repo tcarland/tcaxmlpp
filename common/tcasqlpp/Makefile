@@ -14,7 +14,7 @@ NEED_MYSQL = 1
 DB_OBJS =       src/MysqlSession.o
 endif
 
-ifdef TCANMS_DEBUG
+ifdef TNMS_DEBUG
 OPT_FLAGS =     -g
 endif
 
@@ -80,6 +80,6 @@ distclean: clean libclean test-clean
 	$(RM) $(BIN)
 
 install:
-ifdef TCANMS_PREFIX
+ifdef TNMS_PREFIX
 	@echo
 endif

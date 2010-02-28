@@ -1,12 +1,11 @@
 
-CREATE SCHEMA IF NOT EXISTS `tnmsauth`;
+CREATE SCHEMA IF NOT EXISTS `tnmsauthd`;
 
 
 CREATE USER 'tnmsauth'@'localhost' IDENTIFIED BY 'tnmsauth11b';
-GRANT ALL PRIVILEGES ON *.* TO 'tnmsauth'@'localhost';
+GRANT ALL PRIVILEGES ON tnmsauthd.* TO 'tnmsauth'@'localhost';
 
 CREATE USER 'tnmsauth'@'%' IDENTIFIED BY 'tnmsauth11b';
-GRANT ALL PRIVILEGES ON *.* TO 'tnmsauth'@'%';
-
+GRANT ALL PRIVILEGES ON tnmsauthd.* TO 'tnmsauth'@'%';
 
 

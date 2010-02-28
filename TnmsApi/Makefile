@@ -5,7 +5,7 @@ NEED_ZLIB_INCLUDE = 1
 NEED_TNMSCORE = 1
 NEED_ZIPSTREAM = 1
 
-ifdef TCANMS_DEBUG
+ifdef TNMS_DEBUG
 OPT_FLAGS =  -g
 endif
 
@@ -63,11 +63,12 @@ distclean: clean lib-clean doc-clean
 	$(RM) $(BIN)
 
 install:
-ifdef TCANMS_PREFIX
+ifdef TNMS_PREFIX
 	@echo "Installing TnmsAPI..."
-	$(MKDIR) $(TCANMS_PREFIX)/include/tnmsapi
-	$(MKDIR) $(TCANMS_PREFIX)/lib
-	$(RSYNC) --delete ./*.h $(TCANMS_PREFIX)/include/tnmsapi/
-	$(RSYNC) lib/ $(TCANMS_PREFIX)/lib/
+	$(MKDIR) $(TNMS_PREFIX)/include/tnmsapi
+	$(MKDIR) $(TNMS_PREFIX)/lib
+	$(RSYNC) --delete ./*.h $(TNMS_PREFIX)/include/tnmsapi/
+	$(RSYNC) lib/ $(TNMS_PREFIX)/lib/
 	@echo
 endif
+

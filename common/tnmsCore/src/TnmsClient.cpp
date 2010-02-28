@@ -248,8 +248,9 @@ TnmsClient::AuthRequestHandler ( const TnmsAuthRequest & request )
 
     _authname = _login;
     _authname.append("@").append(ipaddr);
+    _authname.append(":").append(StringUtils::toString(this->getHostPort()));
 
-    TnmsAuthRequest req(_login, request.agent_key());
+    TnmsAuthRequest req(_authname, request.agent_key());
     req.ipaddr(this->getAddr());
 
     if ( _auth )

@@ -41,7 +41,7 @@ FwLogEntry::ParseLogEntry ( const std::string & line, FwLogEntry & fwe )
         std::cout << "Line: '" << fwln << "'" << std::endl
             << "  has " << fields.size() << " fields, need " << nflds
             << std::endl;
-    } else if ( fields.size() > nflds ) { //udp match
+    } else if ( fields.size() > nflds ) { 
         FwLogEntry::SplitFields(fields);
 
         fwe.inf    = fields[0];

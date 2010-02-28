@@ -11,6 +11,9 @@ using namespace tcasqlpp;
 #include "StringUtils.h"
 using namespace tcanetpp;
 
+#include "XmlDocument.h"
+using namespace tcaxmlpp;
+
 
 static const
 char TNMS_USERADD_VERSION [] = ".11";
@@ -18,10 +21,10 @@ char TNMS_USERADD_VERSION [] = ".11";
 
 const char * process = "tnms_useradd";
 
-const char * _Dbhost  = "nebula";
-const char * _Dbuser  = "tnmsauthd";
-const char * _Dbname  = "tcanms";
-const char * _Dbpass  = "tcanms11b";
+const char * _Dbhost  = "localhost";
+const char * _Dbuser  = "tnmsauth";
+const char * _Dbname  = "tnmsauthd";
+const char * _Dbpass  = "tnmsauth11b";
 
 
 uint32_t addGroup ( SqlSession * sql, const std::string & group );
@@ -31,6 +34,7 @@ usage()
 {
     printf("Usage: %s [-ADhLV] [-u username] [-g group] [-p password] [-m auth_method]\n", process);
     printf("          -A           :  User can be an agent\n");
+    printf("          -c <config>  :  XML configuration for user or agent\n");
     printf("          -h           :  Display help info and exit\n");
     printf("          -u <user>    :  Username to add \n");
     printf("          -g <group>   :  Name of user's group \n");
@@ -158,11 +162,13 @@ addGroup ( SqlSession * sql, const std::string & group )
     return getGID(sql, group);
 }
 
-bool
+uint32_t
 addUser ( SqlSession * sql, const std::string & user, const std::string & pw, 
           uint32_t gid, uint32_t auid )
 {
     Query  query = sql->newQuery();
+    uint64_t id  = 0;
+    uint32_t uid = 0;
 
     query << "INSERT INTO " << _Dbname << ".users (username, gid, authtype_id";
 
@@ -179,11 +185,15 @@ addUser ( SqlSession * sql, const std::string & user, const std::string & pw,
 
     if ( ! sql->submitQuery(query) ) {
         std::cout << "Error adding user: " << sql->sqlErrorStr() << std::endl;
-        return false;
+        return uid;
     }
-    std::cout << "Added user: " << user << std::endl;
 
-    return true;
+    id  = sql->insert_id();
+    uid = (*(uint32_t*) &id);
+
+    std::cout << " Added user '" << user << "' uid=" << id << std::endl;
+
+    return uid;
 }
 
 
@@ -206,18 +216,37 @@ updateUser ( SqlSession * sql, uint32_t uid, uint32_t gid, uint32_t auid,
         std::cout << "Error updating user: " << sql->sqlErrorStr() << std::endl;
         return false;
     }
-    std::cout << "Updated user" << std::endl;
+    std::cout << " Updated user " << uid << std::endl;
 
     return true;
 }
 
+
 bool
-deleteUser ( SqlSession * sql, const std::string & user )
+updateUserConfig ( SqlSession * sql, uint32_t uid, const std::string & xmlconfig )
+{
+	Query  query = sql->newQuery();
+
+	query << "UPDATE " << _Dbname << ".user_configs SET config=\""
+	      << sql->escapeString(xmlconfig) << "\" WHERE uid=" << uid;
+
+	if ( ! sql->submitQuery(query) ) {
+		std::cout << "Error updating user config: " << sql->sqlErrorStr() << std::endl;
+		return false;
+	}
+
+	std::cout << " Updated the user configurations for uid " << uid << std::endl;
+
+	return true;
+}
+
+
+bool
+deleteUser ( SqlSession * sql, const std::string & user, uint32_t uid )
 {
     Query query = sql->newQuery();
 
-    query << "DELETE FROM " << _Dbname << ".users WHERE username=\""
-          << user << "\"";
+    query << "DELETE FROM " << _Dbname << ".users WHERE uid=" << uid;
 
     if ( ! sql->submitQuery(query) )
     {
@@ -225,6 +254,23 @@ deleteUser ( SqlSession * sql, const std::string & user )
         return false;
     }
     std::cout << "Deleted user: " << user << std::endl;
+
+    return true;
+}
+
+bool
+setUserAgent ( SqlSession * sql, uint32_t uid, bool agent )
+{
+    Query  query = sql->newQuery();
+
+    query << "UPDATE " << _Dbname << ".users SET is_agent=" << agent
+          << " WHERE uid=" << uid;
+
+    if ( ! sql->submitQuery(query) ) {
+        std::cout << "Error updating user: " << sql->sqlErrorStr() << std::endl;
+        return false;
+    }
+    std::cout << "Updated user agent status for uid " << uid << std::endl;
 
     return true;
 }
@@ -238,10 +284,10 @@ bool listUsers ( SqlSession * sql, uint32_t gid )
 
     Result::iterator  rIter;
 
-    query << "SELECT u.uid, u.authtype_id, u.gid, u.username, g.name, "
+    query << "SELECT u.uid, u.authtype_id, u.gid, u.username, u.is_agent, g.name, "
           << "m.method_name, m.authbin_name FROM " << _Dbname << ".users u JOIN " 
           << _Dbname << ".groups g on g.gid = u.gid "
-          << "JOIN " << _Dbname << ".authtypes m on m.authtype_id = u.authtype_id";
+          << "JOIN " << _Dbname << ".auth_types m on m.authtype_id = u.authtype_id";
 
     if ( gid > 0 )
         query << " WHERE u.gid=" << gid;
@@ -260,29 +306,33 @@ bool listUsers ( SqlSession * sql, uint32_t gid )
 
     std::cout << std::endl;
     std::cout << std::setiosflags(std::ios::left)
-         << std::setw(18) << "  user name  "
+         << std::setw(32) << "  user name  "
          << std::setw(8)  << " uid  "
          << std::setw(8)  << " gid  "
-         << std::setw(20) << "  group name  "
-         << std::setw(15) << "  auth method " << std::endl;
+         << std::setw(15) << " group name  "
+         << std::setw(15) << " authmethod "
+         << std::setw(5)  << " agent " << std::endl;
 
     std::cout << std::setiosflags(std::ios::left)
-         << std::setw(18) << "---------------"
+         << std::setw(32) << "----------------------"
          << std::setw(8)  << "-----"
          << std::setw(8)  << "-----"
-         << std::setw(20) << "---------------"
-         << std::setw(15) << "---------------"
+         << std::setw(15) << "-------------"
+         << std::setw(15) << "-----------"
+         << std::setw(5)  << "-----"
          << std::resetiosflags(std::ios::left) << std::endl;
 
    for ( rIter = res.begin(); rIter != res.end(); ++rIter ) {
         row = (Row) *rIter;
 
         std::cout << std::setiosflags(std::ios::left)
-            << std::setw(18) << ((std::string) row[3]) << " "
+            << std::setw(32) << ((std::string) row[3]) << " "
             << std::setw(8)  << StringUtils::fromString<int>(row[0])
             << std::setw(8)  << StringUtils::fromString<int>(row[2])
-            << std::setw(20) << ((std::string) row[4])
-            << std::setw(15) << ((std::string) row[5]);
+            << std::setw(15) << ((std::string) row[5])
+            << std::setw(15) << ((std::string) row[6])
+            << std::setw(5)  << ((std::string) row[4])
+            << std::endl;
     }
     std::cout << std::resetiosflags(std::ios::left) << std::endl;
     std::cout << std::endl;
@@ -299,19 +349,23 @@ int main ( int argc, char **argv )
     char    * pwc       = NULL;
     char    * groupc    = NULL;
     char    * methodc   = NULL;
+    char    * cfgc      = NULL;
     bool      deluser   = false;
     bool      listusers = false;
     bool      showint   = false;
     bool      agent     = false;
 
 
-    std::string   user, pw, group, method;
+    std::string   user, pw, group, method, config;
 
-    while ( (optChar = getopt(argc, argv, "ADg:hiLp:m:u:V")) != EOF ) {
+    while ( (optChar = getopt(argc, argv, "Ac:Dg:hiLp:m:u:V")) != EOF ) {
         switch ( optChar ) {
             case 'A':
                 agent = true;
                 break;
+            case 'c':
+            	cfgc = strdup(optarg);
+            	break;
             case 'D':
                 deluser = true;
                 break;
@@ -357,6 +411,11 @@ int main ( int argc, char **argv )
         ::free(pwc);
     }
 
+    if ( cfgc ) {
+    	config = cfgc;
+    	::free(cfgc);
+    }
+
     if ( methodc ) {
         method = methodc;
         ::free(methodc);
@@ -391,8 +450,11 @@ int main ( int argc, char **argv )
     if ( ! group.empty() )
         gid = getGID(sql, group);
 
-    if ( listusers )
+    if ( listusers ) {
         listUsers(sql, gid);
+        delete sql;
+        exit(0);
+    }
 
     if ( method.empty() )
         method = "dbstatic";
@@ -408,17 +470,34 @@ int main ( int argc, char **argv )
 
     if ( uid > 0 ) 
     {
-        if ( deluser)
-            deleteUser(sql, user);
-        else 
-            updateUser(sql, uid, gid, auid, pw, method);
+        if ( deluser) {
+            deleteUser(sql, user, uid);
+        } else {
+            if ( ! updateUser(sql, uid, gid, auid, pw, method) )
+                uid = 0;
+        }
     }
     else 
     {
-        if ( deluser )
+        if ( deluser ) {
             std::cout << "User '" << user << "' doesn't exist" << std::endl;
-        else
-            addUser(sql, user, pw, gid, auid);
+        } else {
+            uid = addUser(sql, user, pw, gid, auid);
+        }
+    }
+
+    if ( uid > 0 && ! deluser )
+    {
+        setUserAgent(sql, uid, agent);
+        if ( ! config.empty() ) {
+            XmlDocument  doc;
+            if ( ! doc.readFile(config) ) {
+                std::cout << " Error parsing xml config: " << config << std::endl;
+                std::cout << doc.getErrorStr() << std::endl;
+            } else {
+                std::string xmlcfg = doc.NodeToString(doc.getRootNode());
+                setUserConfig(sql, uid, xmlcfg);
+            }
     }
 
     sql->dbclose();

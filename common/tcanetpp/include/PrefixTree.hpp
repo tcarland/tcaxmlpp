@@ -64,96 +64,96 @@ class PrefixTree {
         : _hl(NULL),
           _lock(false)
     {
-	_pt   = pt_init();
+        _pt   = pt_init();
     }
 
     PrefixTree ( bool implicit_lock )
         : _hl(NULL),
           _lock(implicit_lock)
     {
-	_pt   = pt_init();
-	if ( _lock )
-	    pthread_mutex_init(&_mutex, NULL);
+        _pt   = pt_init();
+        if ( _lock )
+            pthread_mutex_init(&_mutex, NULL);
     }
 
     virtual ~PrefixTree()
     {
-	this->clear();
-	free(_pt);
-	if ( _lock )
-	    pthread_mutex_destroy(&_mutex);
+        this->clear();
+        free(_pt);
+        if ( _lock )
+            pthread_mutex_destroy(&_mutex);
     }
 
 
     int  insert  ( Prefix & p, T obj )
     {
-	int result = 0;
+        int result = 0;
 
-	if ( _lock )
-	    pthread_mutex_lock(&_mutex);
-	    
-	result = pt_insert(_pt, p.getCidr(), (void*) obj);
-	
-	if ( _lock )
-	    pthread_mutex_unlock(&_mutex);
+        if ( _lock )
+            pthread_mutex_lock(&_mutex);
+            
+        result = pt_insert(_pt, p.getCidr(), (void*) obj);
 
-	return result;
+        if ( _lock )
+            pthread_mutex_unlock(&_mutex);
+
+        return result;
     }
 
 
     T    remove  ( Prefix & p )
     {
-	if ( _lock )
-	    pthread_mutex_lock(&_mutex);
+        if ( _lock )
+            pthread_mutex_lock(&_mutex);
 
-	T object = (T) pt_remove(_pt, p.getCidr());
+        T object = (T) pt_remove(_pt, p.getCidr());
 
-	if ( _lock )
-	    pthread_mutex_unlock(&_mutex);
+        if ( _lock )
+            pthread_mutex_unlock(&_mutex);
 
-	return object;
+        return object;
     }
 
    
     T    exactMatch ( Prefix & p )
     {
-	if ( _lock )
-	    pthread_mutex_lock(&_mutex);
+        if ( _lock )
+            pthread_mutex_lock(&_mutex);
 
-	T object = (T) pt_matchRock(_pt, p.getCidr());
+        T object = (T) pt_matchRock(_pt, p.getCidr());
 
-	if ( _lock )
-	    pthread_mutex_unlock(&_mutex);
-	    
-	return object;
+        if ( _lock )
+            pthread_mutex_unlock(&_mutex);
+            
+        return object;
     }
 
 
     T    longestMatch ( Prefix & p )
     {
-	if ( _lock )
-	    pthread_mutex_lock(&_mutex);
+        if ( _lock )
+            pthread_mutex_lock(&_mutex);
 
-	T object = (T) pt_matchLongest(_pt, p.getCidr());
+        T object = (T) pt_matchLongest(_pt, p.getCidr());
 
-	if ( _lock )
-	    pthread_mutex_unlock(&_mutex);
+        if ( _lock )
+            pthread_mutex_unlock(&_mutex);
 
-	return object;
+        return object;
     }
 
 
     int  size()
     {
-	if ( _lock )
-	    pthread_mutex_lock(&_mutex);
+        if ( _lock )
+            pthread_mutex_lock(&_mutex);
 
         int sz = pt_size(_pt);
 
-	if ( _lock )
-	    pthread_mutex_unlock(&_mutex);
+        if ( _lock )
+            pthread_mutex_unlock(&_mutex);
 
-	return sz;
+        return sz;
     }
 
     
@@ -172,47 +172,47 @@ class PrefixTree {
 
     size_t memUsage()
     {
-	size_t sz    = 0;
-	int    nodes = 0;
+        size_t sz    = 0;
+        int    nodes = 0;
 
-	if ( _lock )
-	    pthread_mutex_lock(&_mutex);
-	
-	nodes = pt_nodes(_pt);
+        if ( _lock )
+            pthread_mutex_lock(&_mutex);
 
-	if ( _lock )
-	    pthread_mutex_unlock(&_mutex);
+        nodes = pt_nodes(_pt);
 
-	sz = (nodes * sizeof(ptNode_t));
+        if ( _lock )
+            pthread_mutex_unlock(&_mutex);
 
-	return sz;
+        sz = (nodes * sizeof(ptNode_t));
+
+        return sz;
     }
 
 
     size_t totalMemUsage()
     {
-	return(memUsage() + (size() * sizeof(T)));
+        return(memUsage() + (size() * sizeof(T)));
     }
 
 
     void clear()
     {
-	if ( _lock )
-	    pthread_mutex_lock(&_mutex);
+        if ( _lock )
+            pthread_mutex_lock(&_mutex);
 
-	if ( _hl )
-	    pt_free(_pt, _hl);
-	else
-	    pt_free(_pt, &ptClearHandler);
-	
-	if ( _lock )
-	    pthread_mutex_unlock(&_mutex);
+        if ( _hl )
+            pt_free(_pt, _hl);
+        else
+            pt_free(_pt, &ptClearHandler);
+
+        if ( _lock )
+            pthread_mutex_unlock(&_mutex);
     }
 
 
     void setFreeHandler ( nodeHandler_t handler )
     {
-	_hl = handler;
+        _hl = handler;
     }
 
 
@@ -220,10 +220,10 @@ class PrefixTree {
 
     static void ptClearHandler ( uint32_t addr, uint8_t mb, void * rock )
     {
-	T  obj = (T) rock;
-	if ( obj )
-	    delete obj;
-	return;
+        T  obj = (T) rock;
+        if ( obj )
+            delete obj;
+        return;
     }
 
 

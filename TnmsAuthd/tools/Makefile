@@ -1,6 +1,7 @@
 TOPDIR = ../..
 
 NEED_TCASQLPP = 1
+NEED_TCAXMLPP = 1
 NEED_TNMSCORE = 1
 NEED_PTHREADS = 1
 NEED_ZLIB = 1
@@ -10,7 +11,7 @@ ifdef USE_MYSQL
 NEED_MYSQL = 1
 endif
 
-ifdef TCANMS_DEBUG
+ifdef TNMS_DEBUG
 OPT_FLAGS= 	-g
 endif
 
@@ -21,7 +22,6 @@ BIN=		tnms_useradd
 
 
 OBJS=		tnms_useradd.o
-
 ALL_OBJS=	$(OBJS)
 ALL_BINS=	$(BIN)
 
@@ -43,8 +43,8 @@ distclean: clean
 	$(RM) $(ALL_BINS)
 
 install:
-ifdef TCANMS_PREFIX
-	$(CP) $(BIN) $(TCANMS_PREFIX)/bin
+ifdef TNMS_PREFIX
+	$(CP) $(BIN) $(TNMS_PREFIX)/bin
 	@echo
 endif
 

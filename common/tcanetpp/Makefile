@@ -12,7 +12,7 @@ NEED_LIBDL = 1
 
 #-------------------#
 
-ifdef TCANMS_DEBUG
+ifdef TNMS_DEBUG
   OPT_FLAGS = -g 
 # -DEV_DEBUG
 endif
@@ -112,12 +112,12 @@ ifdef DISTDIR
 endif
 
 install:
-ifdef TCANMS_PREFIX
-	@echo "Installing libtcanetpp to $(TCANMS_PREFIX)/lib"
-	$(MKDIR) $(TCANMS_PREFIX)/include/tcanetpp
-	$(MKDIR) $(TCANMS_PREFIX)/lib
-	$(RSYNC) --delete include/ $(TCANMS_PREFIX)/include/tcanetpp/
-	$(RSYNC) lib/ $(TCANMS_PREFIX)/lib/
+ifdef TNMS_PREFIX
+	@echo "Installing libtcanetpp to $(TNMS_PREFIX)/lib"
+	$(MKDIR) $(TNMS_PREFIX)/include/tcanetpp
+	$(MKDIR) $(TNMS_PREFIX)/lib
+	$(RSYNC) --delete include/ $(TNMS_PREFIX)/include/tcanetpp/
+	$(RSYNC) lib/ $(TNMS_PREFIX)/lib/
 	@echo
 endif
 

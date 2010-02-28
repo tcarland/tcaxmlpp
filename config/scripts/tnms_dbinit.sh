@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# tcanms_dbinit.sh
+# tnms_dbinit.sh
 #
 VERSION="0.1"
 AUTHOR="tcarland@gmail.com"
 
 PNAME=${0/#.\//}
-NAME="tcanms_dbinit.sh"
+NAME="tnms_dbinit.sh"
 CURDIR=`dirname $0`
 CONFIGDIR=
 PREFIX=
@@ -36,30 +36,30 @@ CONFIGDIR=$CURDIR
 
 echo ""
 echo "$PNAME: "
-if [ -z "$RC_TCANMS_BASHRC" ]; then
-    if [ -e $CONFIGDIR/tcanmsrc ]; then
-        echo "  Using rc: $CONFIGDIR/tcanmsrc"
-        source $CONFIGDIR/tcanmsrc
-    elif [ -e $HOME/tcanms/etc/tcanmsrc ]; then
-        echo "  Using rc from: $HOME/tcanms/etc/tcanmsrc"
-        source $HOME/tcanms/etc/tcanmsrc
-    elif [ -e $HOME/etc/tcanmsrc ]; then
-        echo "  Using rc from: $HOME/etc/tcanmsrc"
-        source $HOME/etc/tcanmsrc
-    elif [ -e $TCANMS_PREFIX/etc/tcanmsrc ]; then
-        echo "  Using rc from $TCANMS_PREFIX/etc/tcanmsrc"
-        source $TCANMS_PREFIX/etc/tcanmsrc
+if [ -z "$RC_TNMS_BASHRC" ]; then
+    if [ -e $CONFIGDIR/tnmsrc ]; then
+        echo "  Using rc: $CONFIGDIR/tnmsrc"
+        source $CONFIGDIR/tnmsrc
+    elif [ -e $HOME/tnms/etc/tnmsrc ]; then
+        echo "  Using rc from: $HOME/tnms/etc/tnmsrc"
+        source $HOME/tnms/etc/tnmsrc
+    elif [ -e $HOME/etc/tnmsrc ]; then
+        echo "  Using rc from: $HOME/etc/tnmsrc"
+        source $HOME/etc/tnmsrc
+    elif [ -e $TNMS_PREFIX/etc/tnmsrc ]; then
+        echo "  Using rc from $TNMS_PREFIX/etc/tnmsrc"
+        source $TNMS_PREFIX/etc/tnmsrc
     else
-        echo "Error: Failed to locate rc file: tcanmsrc"
+        echo "Error: Failed to locate rc file: tnmsrc"
         exit 1
     fi
 fi
 echo ""
 
-if [ -n "$TCANMS_PREFIX" ]; then
-    TCANMS_HOME="$TCANMS_PREFIX"
-    TCANMS_TMP="$TCANMS_HOME/tmp"
-    TCANMS_ETC="$TCANMS_HOME/etc"
+if [ -n "$TNMS_PREFIX" ]; then
+    TNMS_HOME="$TNMS_PREFIX"
+    TNMS_TMP="$TNMS_HOME/tmp"
+    TNMS_ETC="$TNMS_HOME/etc"
 fi
 
 
@@ -97,7 +97,7 @@ usage()
     echo "    on which to exec the sql."
     echo ""
     echo "    Lastly if no --sqlfile(-f) is specified, the script will check for three "
-    echo "    sql scripts in '$TCANMS_ETC'/dbname/dbname-{init|schema|setup}.sql. "
+    echo "    sql scripts in '$TNMS_ETC'/dbname/dbname-{init|schema|setup}.sql. "
     echo ""
     version
 }
@@ -111,7 +111,7 @@ version()
 
 init_db()
 {
-    local SQL="${TCANMS_TMP}/init_tcanms_db.sql"
+    local SQL="${TNMS_TMP}/init_tnms_db.sql"
 
     if [ -z "$dbname" ] || [ -z "$dbuser" ]; then
         echo "  DB Name macros are not set, aborting init_db()"
@@ -128,7 +128,7 @@ init_db()
 
     echo "init_db() creating sql script '$SQL'"
 
-    if [ "${TCANMS_USEDB}" == "mysql" ]; then
+    if [ "${TNMS_USEDB}" == "mysql" ]; then
         # generate sql
         echo "CREATE SCHEMA IF NOT EXISTS \`$dbname\`;" > $SQL
 
@@ -153,7 +153,7 @@ exec_sql()
     local sql=$1
     local retval=
 
-    if [ "${TCANMS_USEDB}" == "mysql" ]; then
+    if [ "${TNMS_USEDB}" == "mysql" ]; then
         local cmd="-u $auser"
 
         if [ -n "$ahost" ]; then
@@ -177,7 +177,7 @@ exec_sql()
 
 run_scripts()
 {
-    local path="$TCANMS_ETC/$dbname"    
+    local path="$TNMS_ETC/$dbname"    
 
     if [ ! -d $path ]; then
         echo "Error locating script path $path"

@@ -41,9 +41,10 @@ Additional utilities that are provided include:
     a thread-safe logging facility,
     NetworkDevice mapping.
 
-The library has no external dependencies outside of libc. The project can
+The library has few external dependencies outside of libc. The project can
 build individual libraries consisting of just the sub-components, or a 
-single, encompassing lib or 'libtcanetpp'.
+single, encompassing lib or 'libtcanetpp'. The pthreads library is used for 
+the Thread classes. 
 
 Documentation:
   The library is being documented in an API format via doxygen. 
@@ -57,9 +58,8 @@ Build:
 with 'SunOS_sun4u'). 
 
 Win32/64:
-  Visual studio project files should be provided for 
-win32 support (only the thread classes are iffy with windows and are not 
-compiled in under win32 (win32 pthread library may be compatible, but is 
-currently untested.) 
+  Visual studio project files should be provided for win32 support
+(only the thread classes are iffy with windows and are not compiled 
+under win32 (the win32 pthread library may be compatible, but ymmv) 
 
 

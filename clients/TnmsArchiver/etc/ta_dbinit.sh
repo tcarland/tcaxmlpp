@@ -3,7 +3,7 @@
 #  ta_initdb.sh  {schema}
 #     Generates the SQL create statements for an archiver database
 #     using the db credentials defined in ta_credentials.conf
-#     located in $TCANMS_HOME/etc and initializes the db.
+#     located in $TNMS_HOME/etc and initializes the db.
 #
 VERSION="0.1"
 AUTHOR="tcarland@gmail.com"
@@ -25,31 +25,31 @@ CONFIGDIR=$CURDIR
 
 echo ""
 echo "$PNAME: "
-if [ -z "$RC_TCANMS_BASHRC" ]; then
-    if [ -e $CONFIGDIR/tcanmsrc ]; then
-        echo "  Using rc: $CONFIGDIR/tcanmsrc"
-        source $CONFIGDIR/tcanmsrc
-    elif [ -e $HOME/tcanms/etc/tcanmsrc ]; then
-        echo "  Using rc from: $HOME/tcanms/etc/tcanmsrc"
-        source $HOME/tcanms/etc/tcanmsrc
-    elif [ -e $HOME/etc/tcanmsrc ]; then
-        echo "  Using rc from: $HOME/etc/tcanmsrc"
-        source $HOME/etc/tcanmsrc
-    elif [ -e $TCANMS_PREFIX/etc/tcanmsrc ]; then
-        echo "  Using rc from $TCANMS_PREFIX/etc/tcanmsrc"
-        source $TCANMS_PREFIX/etc/tcanmsrc
+if [ -z "$RC_TNMS_BASHRC" ]; then
+    if [ -e $CONFIGDIR/tnmsrc ]; then
+        echo "  Using rc: $CONFIGDIR/tnmsrc"
+        source $CONFIGDIR/tnmsrc
+    elif [ -e $HOME/tnms/etc/tnmsrc ]; then
+        echo "  Using rc from: $HOME/tnms/etc/tnmsrc"
+        source $HOME/tnms/etc/tnmsrc
+    elif [ -e $HOME/etc/tnmsrc ]; then
+        echo "  Using rc from: $HOME/etc/tnmsrc"
+        source $HOME/etc/tnmsrc
+    elif [ -e $TNMS_PREFIX/etc/tnmsrc ]; then
+        echo "  Using rc from $TNMS_PREFIX/etc/tnmsrc"
+        source $TNMS_PREFIX/etc/tnmsrc
     else
-        echo "Error: Failed to locate rc file: tcanmsrc"
+        echo "Error: Failed to locate rc file: tnmsrc"
         exit 1
     fi
 fi
 echo ""
 
-if [ -n "$TCANMS_PREFIX" ]; then
-    TCANMS_HOME="$TCANMS_PREFIX"
-    TCANMS_BIN="$TCANMS_HOME/bin"
-    TCANMS_TMP="$TCANMS_HOME/tmp"
-    TCANMS_ETC="$TCANMS_HOME/etc"
+if [ -n "$TNMS_PREFIX" ]; then
+    TNMS_HOME="$TNMS_PREFIX"
+    TNMS_BIN="$TNMS_HOME/bin"
+    TNMS_TMP="$TNMS_HOME/tmp"
+    TNMS_ETC="$TNMS_HOME/etc"
 fi
 
 # ------------------------------------------
@@ -67,11 +67,11 @@ usage()
 
 # ------------------------------------------
 
-DBINIT="${TCANMS_BIN}/tcanms_dbinit.sh"
-DBSQLC="${TCANMS_BIN}/ta_dbcreatesql.sh"
-DBCRED="${TCANMS_ETC}/ta_credentials.conf"
+DBINIT="${TNMS_BIN}/tnms_dbinit.sh"
+DBSQLC="${TNMS_BIN}/ta_dbcreatesql.sh"
+DBCRED="${TNMS_ETC}/ta_credentials.conf"
 
-SQLDIR="${TCANMS_ETC}/tnmsarchived"
+SQLDIR="${TNMS_ETC}/tnmsarchived"
 DBSQL="${SQLDIR}/ta_${SCHEMA}_schema.sql"
 
 if [ -z "$SCHEMA" ]; then
@@ -94,20 +94,20 @@ fi
 source $DBCRED
 
 
-if [ -z "$TCANMS_DBUSER" ] || [ -z "$TCANMS_DBPASS" ]; then
+if [ -z "$TNMS_DBUSER" ] || [ -z "$TNMS_DBPASS" ]; then
     echo "Error obtaining db user/password credentials from '$DBCRED'"
     echo ""
     usage
     exit 1
 fi
 
-if [ -z "$TCANMS_DBHOST" ]; then
-    TCANMS_DBHOST="localhost"
+if [ -z "$TNMS_DBHOST" ]; then
+    TNMS_DBHOST="localhost"
 fi
 
 if [ ! -d "$SQLDIR" ]; then
-    if [ ! -d "$TCANMS_ETC" ]; then
-        echo "Error: config path does not exist: '$TCANMS_ETC'"
+    if [ ! -d "$TNMS_ETC" ]; then
+        echo "Error: config path does not exist: '$TNMS_ETC'"
         exit 1
     fi
     mkdir -p $SQLDIR
@@ -128,8 +128,8 @@ if [ ! -e $DBSQL ]; then
 fi
 
 # exec db init
-echo "$DBINIT -D $SCHEMA -U $TCANMS_DBUSER -P $TCANMS_DBPASS -H $TCANMS_DBHOST -f $DBSQL -p"
-$DBINIT -D $SCHEMA -U $TCANMS_DBUSER -P $TCANMS_DBPASS -H $TCANMS_DBHOST -f $DBSQL -p
+echo "$DBINIT -D $SCHEMA -U $TNMS_DBUSER -P $TNMS_DBPASS -H $TNMS_DBHOST -f $DBSQL -p"
+$DBINIT -D $SCHEMA -U $TNMS_DBUSER -P $TNMS_DBPASS -H $TNMS_DBHOST -f $DBSQL -p
 retval=$?
 
 exit $retval

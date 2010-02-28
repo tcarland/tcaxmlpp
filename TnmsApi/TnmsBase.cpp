@@ -21,7 +21,7 @@ namespace tnmsApi {
 
 
 const
-std::string TnmsBase::ApiVersion = "1.20";
+std::string TnmsBase::ApiVersion = "1.21";
 
 
 template< typename Iterator, typename Value >
@@ -42,11 +42,11 @@ Iterator first_out_of_range( Iterator  begin,
 
 TnmsBase::TnmsBase ( const std::string & name )
     : _tree(new TnmsTree()),
-      _agentName(name),
       _conn(new TnmsAgent(_tree)),
       _hostPort(0),
       _holddown(0),
       _holddown_interval(DEFAULT_TNMS_HOLDDOWN_INTERVAL),
+      _reauth(0),
       _reconnect(0),
       _reconnect_interval(DEFAULT_TNMS_RECONNECT_INTERVAL),
       _reconfig(0),
@@ -54,25 +54,29 @@ TnmsBase::TnmsBase ( const std::string & name )
       _subscribed(false),
       _debug(false)
 
-{}
+{
+	_config.agent_name = name;
+}
 
 TnmsBase::TnmsBase ( const std::string & name,
                      const std::string & host,
                      uint16_t            port )
     : _tree(new TnmsTree()),
-      _agentName(name),
       _conn(new TnmsAgent(_tree)),
       _hostName(host),
       _hostPort(port),
       _holddown(0),
       _holddown_interval(DEFAULT_TNMS_HOLDDOWN_INTERVAL),
+      _reauth(0),
       _reconnect(0),
       _reconnect_interval(DEFAULT_TNMS_RECONNECT_INTERVAL),
       _reconfig(0),
       _reconfig_interval(DEFAULT_TNMS_RECONFIG_INTERVAL),
       _subscribed(false),
       _debug(false)
-{}
+{
+	_config.agent_name = name;
+}
 
 
 TnmsBase::~TnmsBase()
@@ -163,7 +167,7 @@ TnmsBase::add ( const std::string & name,
     }
 
     TnmsMetric   metric;
-    std::string  fullname = _agentName;
+    std::string  fullname = _config.agent_name;
     bool         result   = false;
 
     fullname.append("/").append(name);
@@ -191,7 +195,7 @@ TnmsBase::add ( const std::string & name,
 bool
 TnmsBase::remove ( const std::string & name )
 {
-    std::string fullname = _agentName;
+    std::string fullname = _config.agent_name;
     fullname.append("/").append(name);
     return _tree->remove(fullname);
 }
@@ -204,7 +208,7 @@ TnmsBase::update ( const std::string & name,
                    eValueType          type )
 {
     TnmsMetric   metric;
-    std::string  fullname = _agentName;
+    std::string  fullname = _config.agent_name;
     fullname.append("/").append(name);
 
     if ( ! _tree->request(fullname, metric) )
@@ -227,7 +231,7 @@ TnmsBase::update ( const std::string & name,
                    const std::string & value )
 {    
     TnmsMetric   metric;
-    std::string  fullname = _agentName;
+    std::string  fullname = _config.agent_name;
     fullname.append("/").append(name);
 
     if ( ! _tree->request(fullname, metric) )
@@ -247,7 +251,7 @@ bool
 TnmsBase::update ( const std::string & name, const std::string & data )
 {
     TnmsMetric   metric;
-    std::string  fullname = _agentName;
+    std::string  fullname = _config.agent_name;
     fullname.append("/").append(name);
 
     if ( ! _tree->request(fullname, metric) )
@@ -263,9 +267,8 @@ TnmsBase::update ( const std::string & name, const std::string & data )
 void
 TnmsBase::clear()
 {
-    //_tree->clear();
-    _tree->remove(_agentName);
-    _tree->add(_agentName);
+    _tree->remove(_config.agent_name);
+    _tree->add(_config.agent_name);
 }
 
 
@@ -275,7 +278,7 @@ TnmsBase::clear()
 int
 TnmsBase::checkConfig ( const time_t & now )
 {
-    if ( _config.agent_name.empty() && _agentName.empty() )
+    if ( _config.agent_name.empty() )
         return TNMSERR_CONFIG;
 
     if ( _configName.empty() && _xmlConfig.empty() )
@@ -336,7 +339,7 @@ TnmsBase::checkConnection ( const time_t & now )
             return TNMSERR_CONN_FAIL;
         } else if ( con > 0 ) {   // login
             LogFacility::LogToStream(_logName, "TnmsAPI: connection established.");
-            _conn->login(_agentName);
+            _conn->login(_config.agent_name);
             return TNMSERR_NONE;
         } else {                  // in progress
             LogFacility::LogToStream(_logName, "TnmsAPI: connection in progress.");
@@ -360,7 +363,7 @@ TnmsBase::checkSubscription ( const time_t & now )
             return this->reconfigure(now);
         }
 
-        TnmsRemove  remRoot(_agentName);
+        TnmsRemove  remRoot(_config.agent_name);
         _conn->sendMessage(&remRoot, true);
         //this->clear();
 
@@ -374,15 +377,15 @@ TnmsBase::checkSubscription ( const time_t & now )
             LogFacility::LogToStream(_logName, "TnmsAPI: error in tree subscription");
 
     } else if ( ! _conn->isAuthorized() ) {
-        if ( _reconnect > now ) {
+        if ( _reauth > now ) {
             return TNMSERR_CONN_DENIED;
         }
 
-        _reconnect   = now + _reconnect_interval;
+        _reauth      = now + _reconnect_interval;
         _subscribed  = false;
 
         LogFacility::LogToStream(_logName, "TnmsAPI: sending credentials.");
-        _conn->login(_agentName);
+        _conn->login(_config.agent_name);
     }
 
     return TNMSERR_NONE;
@@ -438,14 +441,13 @@ TnmsBase::reconfigure ( const time_t & now )
 
     // agent name
     if ( _config.agent_name.compare(oldconfig.agent_name) != 0 ) {
-        _agentName  = _config.agent_name;
         _subscribed = false;
         if ( _conn->isConnected() ) {
             LogFacility::LogToStream(_logName, "TnmsAPI::reconfigure() agent name modified, resetting.");
             _conn->close();
         }
         _tree->remove(oldconfig.agent_name);
-        _tree->add(_agentName);
+        _tree->add(_config.agent_name);
     }
 
     // server
@@ -505,7 +507,7 @@ TnmsBase::openLog ( const std::string & logfile, const time_t & now )
     strftime(line, 60, ".%Y%m%d", t);
 
     file.append(line);
-    prefix.append(_agentName);
+    prefix.append(_config.agent_name);
     _logName = prefix;
 
     LogFacility::OpenLogFile(_logName, prefix, file);
@@ -518,6 +520,7 @@ void
 TnmsBase::set_config ( const std::string & filename )
 {
     _configName = filename;
+    _reconfig   = 0;
 }
 
 
@@ -587,7 +590,7 @@ TnmsBase::set_syslog ( int facility )
 {
     std::string  prefix = "TnmsAPI:";
 
-    prefix.append(_agentName).append(" : ");
+    prefix.append(_config.agent_name).append(" : ");
     LogFacility::OpenSyslog(prefix, facility);
     return;
 }
