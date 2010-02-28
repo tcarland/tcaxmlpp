@@ -6,7 +6,8 @@
 VERSION="0.1"
 AUTHOR="tcarland@gmail.com"
 
-MYNAME=${0/#.\//}
+PNAME=${0##*\/}
+
 BASE=
 TARGET=
 RSYNC="rsync "
@@ -17,7 +18,7 @@ DRYRUN="n"
 usage()
 {
     echo ""
-    echo "Usage: $0 targetpath {dryrun}"
+    echo "Usage: $PNAME targetpath {dryrun}"
     echo ""
     echo "   Creates a new project workspace or repository"
     echo "   in 'targetpath'"
@@ -31,7 +32,7 @@ usage()
 
 version()
 {
-    echo "$MYNAME, Version $VERSION, $AUTHOR"
+    echo "$PNAME, Version $VERSION, $AUTHOR"
     echo ""
 }
 

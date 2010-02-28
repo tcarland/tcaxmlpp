@@ -7,6 +7,7 @@ else
   TOPDIR = .
 endif
 
+NEED_SOCKET = 1
 NEED_PTHREADS = 1
 NEED_LIBDL = 1
 

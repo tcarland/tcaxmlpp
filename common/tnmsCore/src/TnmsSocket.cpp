@@ -1352,7 +1352,6 @@ TnmsSocket::initHeader ( uint16_t type, size_t messagesize )
 
     if ( _hdr )    // check current header
     {
-        
         if ( _flush && _hdr->message_count >= _flushLimit )   // check flush limit
         {
             if ( _hdr->message_type != type )
@@ -1403,7 +1402,7 @@ TnmsSocket::initHeader ( uint16_t type, size_t messagesize )
     {
         _wxcbuff->setWritePtr(0);
         this->clearState();
-        _errstr = "ClientSocket::initHeader() out of space: ";
+        _errstr = "TnmsSocket::initHeader() write buffer out of space: ";
         _errstr.append(_hoststr);
         return false;
     }
@@ -1541,7 +1540,7 @@ TnmsSocket::uncompress ( uint32_t size )
             _rxbuff    = (char*) ::realloc(_rxbuff, _rxbuffsz);
 
             if ( _rxbuff == NULL ) {
-                _errstr = "ClientSocket::uncompress() Fatal error in realloc of rxbuff";
+                _errstr = "TnmsSocket::uncompress() Fatal error in realloc of rxbuff";
                 return -1;
             }
 
@@ -1555,13 +1554,16 @@ TnmsSocket::uncompress ( uint32_t size )
 
     unzipper.read_footer();
 
-    //size_t zin    = unzipper.rdbuf()->get_in_size();
-    size_t unzout = unzipper.rdbuf()->get_out_size();
+    size_t zin   = unzipper.rdbuf()->get_in_size();
+    size_t zout  = unzipper.rdbuf()->get_out_size();
 
-    if ( unzout == 0 )
+    Logger::Message  msg;
+    msg << "TnmsSocket::uncompress() zin=" << zin << " zout=" << zout;
+
+    if ( zout == 0 )
         return -1;
 
-    return unzout;
+    return zout;
 }
 
 // ------------------------------------------------------------------- //
