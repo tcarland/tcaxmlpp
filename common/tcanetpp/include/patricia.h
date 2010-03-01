@@ -42,6 +42,7 @@ extern "C" {
 #define PT_GETBIT(v, bit)  ((v) & (0x80000000 >> (bit)))
 #define PT_DELETE_FLAG     0x1
 #define PT_MASKLEN         32
+#define PT_MAXBITS         128
 
 
 typedef struct ptNode {

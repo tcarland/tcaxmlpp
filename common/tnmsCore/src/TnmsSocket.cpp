@@ -1554,11 +1554,8 @@ TnmsSocket::uncompress ( uint32_t size )
 
     unzipper.read_footer();
 
-    size_t zin   = unzipper.rdbuf()->get_in_size();
+    //size_t zin   = unzipper.rdbuf()->get_in_size();
     size_t zout  = unzipper.rdbuf()->get_out_size();
-
-    Logger::Message  msg;
-    msg << "TnmsSocket::uncompress() zin=" << zin << " zout=" << zout;
 
     if ( zout == 0 )
         return -1;
