@@ -107,6 +107,9 @@ AgentIOHandler::handle_read ( const EventIO & io )
         return;
 
     TnmsClient * client = (TnmsClient*) io.rock;
+    
+    if ( client == NULL )
+        return this->handle_close(io);
 
     if ( (rd = client->receive(io.abstime.tv_sec)) < 0 ) {
         LogFacility::LogMessage("AgentIOHandler::handle_read() error: " 

@@ -195,10 +195,27 @@ if [ -z "$filename" ]; then
     exit 0
 fi
 
+if [ -e $filename ]; then
+    echo "File '$filename' already exists. Overwrite? (y/n)"
+    read reply
+
+    case "$reply" in
+        "y" | "Y")
+            echo "Overwriting $filename"
+            ;;
+        *)
+            echo "Aborting."
+            exit 0
+            ;;
+    esac
+else
+    echo "Generating source file $filename"
+fi
+
 setSourceName $filename
 setDefineName $filename $namespace
 
-echo "File: $filename  Sourcename: $SOURCENAME"
+#echo "File: $filename  Sourcename: $SOURCENAME"
 
 testext=${EXT%c*}
 if [ -n "$testext" ]; then
