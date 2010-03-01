@@ -106,7 +106,7 @@ class XmlNode {
 
     // node and attribute containers
     XmlAttrMap&    getAttributeMap() { return _attrs; }
-    XmlAttrMap&    getAttrMap()      { return _attrs; }
+    XmlAttrMap&    getAttrMap()      { return this->getAttributeMap(); }
     XmlNodeList&   getNodeList()     { return _kids; }
 
     // attributes
