@@ -81,9 +81,11 @@ AgentIOHandler::handle_accept ( const EventIO & io )
     TnmsClient * client = new TnmsClient(_tree, _auth, sock, true);
     evid_t id = io.evmgr->addIOEvent(this, client->getSockFD(), (void*) client);
 
-    if ( id == 0 )
+    if ( id == 0 ) {
         LogFacility::LogMessage("AgentIOHandler::handle_accept() event error: " 
             + io.evmgr->getErrorStr());
+        return;
+    }
 
     //if ( client->useCompression() )
     //    client->enableCompression();
