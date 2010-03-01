@@ -64,7 +64,7 @@ int main ( int argc, char **argv )
                 << std::setiosflags(std::ios::left) << std::setw(20) 
                 << input << "  ==  " 
                 << std::setiosflags(std::ios::right) << std::setw(20)
-                << CidrUtils::toString(pfx) 
+                << CidrUtils::ToString(pfx) 
                 << std::resetiosflags(std::ios::right) << std::endl;
         }
     }

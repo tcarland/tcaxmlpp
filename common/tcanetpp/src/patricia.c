@@ -22,6 +22,7 @@
 **/
 #define _TCANETPP_PATRICIA_C
 
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -29,8 +30,7 @@
 
 
 static const
-char version[] = "$Id: patricia.c,v 1.9 2009/04/11 21:27:19 tca Exp $";
-
+char version[] = "$Id: patricia.c,v 1.9 2010/02/11 21:27:19 tca$";
 
 
 static cidr_t searchCidr;
@@ -42,7 +42,11 @@ static int    ptsize     = 0;
 
 //  Create a new node
 static ptNode_t*
-PT_new ( cidr_t cidr, int bit, ptNode_t * llink, ptNode_t * rlink, void * rock )
+PT_new ( cidr_t     cidr, 
+         int        bit, 
+         ptNode_t * llink, 
+         ptNode_t * rlink, 
+         void     * rock )
 {
     ptNode_t * np = NULL;
 
@@ -72,13 +76,17 @@ PT_visitR ( ptNode_t * node, int bit, nodeHandler_t handler )
 {
     int i;
 
-    if ( node->bit <= bit ) {
-	for ( i = 0; i < MAX_MASKLEN; i++ ) {
+    if ( node->bit <= bit ) 
+    {
+	for ( i = 0; i < PT_MASKLEN; i++ ) 
+        {
 	    if ( (node->rocks[i]) && handler ) {
 		handler(node->key, i, node->rocks[i]);
 	    }
 	}
-    } else {
+    } 
+    else 
+    {
 	PT_visitR(node->llink, node->bit, handler);
 	PT_visitR(node->rlink, node->bit, handler);
     }
@@ -90,10 +98,13 @@ PT_visitR ( ptNode_t * node, int bit, nodeHandler_t handler )
 static void
 PT_visitR_node ( ptNode_t * node, int bit, pvtNodeHandler_t handler )
 {
-    if ( node->bit <= bit ) {
+    if ( node->bit <= bit ) 
+    {
 	if ( handler ) 
 	    handler(node);
-    } else {
+    } 
+    else 
+    {
 	PT_visitR_node(node->llink, node->bit, handler);
 	PT_visitR_node(node->rlink, node->bit, handler);
     }
@@ -108,7 +119,7 @@ PT_searchR ( ptNode_t * node, ipv4addr_t key, int bit )
     if ( node->bit <= bit )
 	return node;
 
-    if ( GETBIT(key, node->bit) == 0 )
+    if ( PT_GETBIT(key, node->bit) == 0 )
 	return PT_searchR(node->llink, key, node->bit);
     
     return PT_searchR(node->rlink, key, node->bit);
@@ -117,30 +128,36 @@ PT_searchR ( ptNode_t * node, ipv4addr_t key, int bit )
 
 //  recursive insert into the trie 
 static ptNode_t*
-PT_insertR ( ptNode_t * h, cidr_t cidr, int bit, ptNode_t * p, void * rock )
+PT_insertR ( ptNode_t * head, 
+             cidr_t     cidr, 
+             int        bit, 
+             ptNode_t * p, 
+             void     * rock )
 {
-    ptNode_t * newNode = NULL;
+    ptNode_t * node = NULL;
 
-    if ( (h->bit >= bit) || (h->bit <= p->bit) ) {
-	newNode = PT_new(cidr, bit, 0, 0, rock);
+    if ( (head->bit >= bit) || (head->bit <= p->bit) ) 
+    {
+	node = PT_new(cidr, bit, 0, 0, rock);
 
-	if ( GETBIT(cidr.addr, bit) ) {
-	    newNode->llink = h;
-	    newNode->rlink = newNode;
+	if ( PT_GETBIT(cidr.addr, bit) ) {
+	    node->llink = head;
+	    node->rlink = node;
 	} else {
-	    newNode->llink = newNode;
-	    newNode->rlink = h;
+	    node->llink = node;
+	    node->rlink = head;
 	}
 
-	return newNode;
+	return node;
     }
 
-    if ( GETBIT(cidr.addr, h->bit) == 0 )
-	h->llink = PT_insertR(h->llink, cidr, bit, h, rock);
-    else
-	h->rlink = PT_insertR(h->rlink, cidr, bit, h, rock);
+    if ( PT_GETBIT(cidr.addr, head->bit) == 0 ) {
+	head->llink = PT_insertR(head->llink, cidr, bit, head, rock);
+    } else {
+	head->rlink = PT_insertR(head->rlink, cidr, bit, head, rock);
+    }
 
-    return h;
+    return head;
 }
 
 
@@ -150,15 +167,16 @@ PT_removeR ( ptNode_t * node, cidr_t cidr, int bit )
 {
     void * rock = NULL;
 
-    if ( node->bit <= bit ) {
-	if ( (node->key == cidr.addr) && (node->rocks[cidr.addrlen]) ) {
+    if ( node->bit <= bit ) 
+    {
+	if ( node->key == cidr.addr && node->rocks[cidr.addrlen] ) {
 	    rock = node->rocks[cidr.addrlen];
 	    node->rocks[cidr.addrlen] = NULL;
 	}
 	return rock;
     }
     
-    if ( GETBIT(cidr.addr, node->bit) == 0 )
+    if ( PT_GETBIT(cidr.addr, node->bit) == 0 )
 	return PT_removeR(node->llink, cidr, node->bit);
 
     return PT_removeR(node->rlink, cidr, node->bit);
@@ -177,8 +195,10 @@ PT_freeNodesR ( ptNode_t * head, ptNode_t * node, int bit, nodeHandler_t handler
     PT_freeNodesR(head, node->llink, node->bit, handler);
     PT_freeNodesR(head, node->rlink, node->bit, handler);
 
-    if ( node != head ) {
-	for ( i = 0; i < MAX_MASKLEN; i++ ) {
+    if ( node != head ) 
+    {
+	for ( i = 0; i < PT_MASKLEN; i++ ) 
+        {
 	    if ( node->rocks[i] && handler )
 		handler(node->key, i, node->rocks[i]);
 	}
@@ -211,9 +231,10 @@ PT_searchLongHandler ( ptNode_t * node )
 {
     int  i;
     
-    for ( i = 0; i < (MAX_MASKLEN + 1); i++ ) {
-	if ( (node->rocks[i]) && 
-	     (PT_basePrefix(searchCidr.addr, i) == node->key) ) {
+    for ( i = 0; i < (PT_MASKLEN + 1); i++ ) 
+    {
+	if ( node->rocks[i] && PT_basePrefix(searchCidr.addr, i) == node->key )  
+        {
 	    if ( i > resultCidr.addrlen ) {
 		resultCidr.addr    = node->key;
 		resultCidr.addrlen = i;
@@ -245,7 +266,7 @@ PT_countRocksHandler ( ipv4addr_t addr, uint8_t mb, void * rock )
 //--------------------------------------------------------------------
 
 
-//  create and initialize a new trie
+//  initialize a new trie
 ptNode_t*
 pt_init()
 {
@@ -280,13 +301,14 @@ pt_insert ( ptNode_t * head, cidr_t cidr, void * rock )
 
     node = PT_searchR(head->llink, cidr.addr, -1);
 
-    if ( cidr.addr != node->key ) {
+    if ( cidr.addr != node->key ) 
+    {
 	result = 1;
-	
-	for ( bit = 0; GETBIT(cidr.addr,bit) == GETBIT(node->key, bit); bit++ );
-	
+	for ( bit = 0; PT_GETBIT(cidr.addr,bit) == PT_GETBIT(node->key, bit); bit++ );
 	head->llink = PT_insertR(head->llink, cidr, bit, head, rock);
-    } else if ( ! node->rocks[cidr.addrlen] ) {
+    } 
+    else if ( ! node->rocks[cidr.addrlen] ) 
+    {
 	result = 1;
 	node->rocks[cidr.addrlen] = rock;
     }
@@ -297,7 +319,7 @@ pt_insert ( ptNode_t * head, cidr_t cidr, void * rock )
 
 //  returns 1 if the provided key has an exact match in the trie.
 int
-pt_match ( ptNode_t * head, cidr_t cidr )
+pt_exists ( ptNode_t * head, cidr_t cidr )
 {
     ptNode_t  * node;
 
@@ -313,7 +335,7 @@ pt_match ( ptNode_t * head, cidr_t cidr )
 //  function to provide an exact match to the provided key
 //  and return the associated void*, or NULL if there was no match
 void*
-pt_matchForRock ( ptNode_t * head, cidr_t cidr )
+pt_match ( ptNode_t * head, cidr_t cidr )
 {
     ptNode_t  * node;
     void      * rock = NULL;
@@ -340,7 +362,7 @@ pt_matchLongest ( ptNode_t * head, cidr_t cidr )
     PT_visitR_node(head->llink, -1, &PT_searchLongHandler);
 
     if ( resultCidr.addr > 0 )
-	rock = pt_matchForRock(head, resultCidr);
+	rock = pt_match(head, resultCidr);
 
     return rock;
 }
@@ -378,10 +400,11 @@ pt_nodes ( ptNode_t * head )
 {
     nodecnt = 0;
     
-    if ( head->llink != NULL )
+    if ( head->llink != NULL ) {
 	PT_visitR_node(head->llink, -1, &PT_countNodesHandler);
-    else
+    } else {
 	return -1;
+    }
     
     return nodecnt;
 }
@@ -390,8 +413,10 @@ pt_nodes ( ptNode_t * head )
 int
 pt_size ( ptNode_t * head )
 {
-    ptsize = 0;
+    ptsize  = 0;
+
     pt_visit(head, &PT_countRocksHandler);
+
     return ptsize;
 }
 

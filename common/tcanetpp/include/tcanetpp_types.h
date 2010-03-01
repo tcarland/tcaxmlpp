@@ -21,12 +21,14 @@
   * License along with tcanetpp.  
   * If not, see <http://www.gnu.org/licenses/>.
 **/
-#ifndef _TCANET_TYPES_H_
-#define _TCANET_TYPES_H_
+#ifndef _TCANETPP_TYPES_H_
+#define _TCANETPP_TYPES_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+
 
 #ifndef WIN32
 # include <inttypes.h>
@@ -36,15 +38,12 @@ extern "C" {
 #endif
 
 
-// win32 doesn't really standardize inttypes so 
-// create our own
+// not relying on win32 inttypes, so we define our own.
 #ifdef WIN32  
 
-# define INET_ADDRSTRLEN 16
+# define INET_ADDRSTRLEN  16
 
-  typedef long  ssize_t;
-  typedef int   socklen_t;
-
+  typedef long                 ssize_t;
   // from stdint.h 
   typedef signed char          int8_t;
   typedef unsigned char        uint8_t;
@@ -54,13 +53,12 @@ extern "C" {
   typedef unsigned             uint32_t;
   typedef long long            int64_t;
   typedef unsigned long long   uint64_t;
-  
+ 
+  typedef int                  socklen_t;
   typedef unsigned long        ipv4addr_t;
-  
   typedef SOCKET               sockfd_t;
   
-
-#else  // non-win32 platforms
+#else  
 
   typedef uint32_t             ipv4addr_t;
   typedef int                  sockfd_t;
@@ -68,16 +66,17 @@ extern "C" {
 #endif
 
 
+// our custom commonly used types
+#define INET_CIDRSTRLEN  20
+#define ERRORSTRLEN      256
+#define MAXMASKLEN       32
 
-#define INET_CIDRSTRLEN   20
-#define ERRORSTRLEN       256
-#define MAXMASKLEN        32
 
-typedef struct in_addr    inaddr_t;
+typedef struct in_addr         inaddr_t;
 
 typedef struct cidr {
-    ipv4addr_t  addr;
-    uint16_t    addrlen;
+    ipv4addr_t   addr;
+    uint16_t     addrlen;      // padded
 } cidr_t;
 
 
@@ -86,5 +85,5 @@ typedef struct cidr {
 # endif
 
 
-#endif // _TCANET_TYPES_H_
+#endif // _TCANETPP_TYPES_H_
 

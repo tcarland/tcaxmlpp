@@ -8,7 +8,7 @@ using namespace tcanetpp;
 
 int main ( int argc, char **argv )
 {
-    std::string localname = CidrUtils::getHostName();
+    std::string localname = CidrUtils::GetHostName();
     printf("Localhost name: %s\n\n", localname.c_str());
 
     // Query for all host addrs for a given forward
@@ -17,15 +17,16 @@ int main ( int argc, char **argv )
     if ( argc > 1 )
         name.assign(argv[1]);
 
-    AddrList  alist;
-    AddrList::iterator  aIter;
+    IpAddrList  alist;
+    IpAddrList::iterator  aIter;
 
-    CidrUtils::getHostAddrList(name, alist);
+    CidrUtils::GetHostAddrList(name, alist);
     int c = 1;
 
     printf("Resolving addresses for %s\n", name.c_str());
 
-    for ( aIter = alist.begin(); aIter != alist.end(); ++aIter, ++c ) {
+    for ( aIter = alist.begin(); aIter != alist.end(); ++aIter, ++c ) 
+    {
         ipv4addr_t addr = *aIter;
         printf("Addr %d is %u  :  %s\n", c, addr, CidrUtils::ntop(addr).c_str());
     }

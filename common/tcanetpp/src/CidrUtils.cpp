@@ -362,7 +362,7 @@ CidrUtils::GetHostAddr ( const std::string & host )
 
 
 void
-CidrUtils::GetHostAddrList ( const std::string & host, AddrList & addrlist )
+CidrUtils::GetHostAddrList ( const std::string & host, IpAddrList & addrlist )
 {
     struct hostent  *hp;
     char           **pptr;
@@ -398,4 +398,4 @@ CidrUtils::IsLoopback ( ipv4addr_t addr )
 
 } //namespace
 
-//  _TCANETPP_CIDR_CPP_ 
+//  _TCANETPP_CIDRUTILS_CPP_ 

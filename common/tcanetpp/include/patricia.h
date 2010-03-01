@@ -1,7 +1,7 @@
 /**
-  *     A Patricia Trie implementation based on Sedgewick's
-  *  "Algorithm's in C". The original implementation has been
-  *  extended to allow for a void* (rock) to be stored per node.
+  *     A Radix/Patricia Trie implementation based on Sedgewick's
+  *  "Algorithm's in C".
+  *
   *     Note that some functions (notably longestMatch) make
   *  use of static variables, which can cause concurrancy
   *  issues in a threaded environment.
@@ -39,9 +39,9 @@ extern "C" {
 # endif
 
 
-#define GETBIT(v, bit)  ((v) & (0x80000000 >> (bit)))
-#define PT_DELETE_FLAG  0x1
-#define MAX_MASKLEN     32
+#define PT_GETBIT(v, bit)  ((v) & (0x80000000 >> (bit)))
+#define PT_DELETE_FLAG     0x1
+#define PT_MASKLEN         32
 
 
 typedef struct ptNode {
@@ -50,7 +50,8 @@ typedef struct ptNode {
     uint32_t        flags;
     struct ptNode*  llink;
     struct ptNode*  rlink;
-    void*           rocks[MAX_MASKLEN + 1];
+    uint32_t        slots;
+    void*           rocks[PT_MASKLEN + 1];
 } ptNode_t;
 
 
@@ -63,8 +64,8 @@ ptNode_t*  pt_init();
 int        pt_insert       ( ptNode_t * head, cidr_t cidr, void * rock );
 void*      pt_remove       ( ptNode_t * head, cidr_t key );
 
-int        pt_match        ( ptNode_t * head, cidr_t key );
-void*      pt_matchForRock ( ptNode_t * head, cidr_t key );
+int        pt_exists       ( ptNode_t * head, cidr_t key );
+void*      pt_match        ( ptNode_t * head, cidr_t key );
 void*      pt_matchLongest ( ptNode_t * head, cidr_t key );
 
 void       pt_visit        ( ptNode_t * head, nodeHandler_t handler );

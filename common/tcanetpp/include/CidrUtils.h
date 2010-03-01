@@ -36,7 +36,7 @@ namespace tcanetpp {
 
 #define IPV4ADDR_LOOPBACK 16777343
 
-typedef std::vector<ipv4addr_t>  AddrList;
+typedef std::vector<ipv4addr_t>   IpAddrList;
 
 
 class CidrUtils {
@@ -88,7 +88,7 @@ public:
     static ipv4addr_t   GetHostAddr();
     static ipv4addr_t   GetHostAddr     ( const std::string & host );
     static void         GetHostAddrList ( const std::string & host, 
-                                          AddrList          & addrlist );
+                                          IpAddrList        & addrlist );
 
     static bool         IsLoopback      ( ipv4addr_t addr );
 

@@ -58,7 +58,7 @@ void debugNodeHandler ( ptNode_t * node )
     if ( (node->flags & PT_DELETE_FLAG) > 0 )
         printf("  delete flag set\n");
 
-    for ( i = 0; i < MAX_MASKLEN; i++ ) {
+    for ( i = 0; i < PT_MASKLEN; i++ ) {
         if ( (node->rocks[i]) )
             printf("  entry found for %s/%d\n", ip.c_str(), i);
     }
@@ -92,13 +92,13 @@ int main ( int argc, char **argv )
     }
 
     CidrUtils::StringToCidr(addrs[5], pfx);
-    CidrUtils::deAggregate(pfx, 24, srcp);
+    CidrUtils::DeAggregate(pfx, 24, srcp);
     
 
-    printf("v size is %d\n", srcp.size());
+    printf("v size is %lu\n", srcp.size());
 
     for ( vIter = srcp.begin(); vIter != srcp.end(); vIter++ )
-        printf("Prefix is %s\n", CidrUtils::toString(*vIter).c_str());
+        printf("Prefix is %s\n", CidrUtils::ToString(*vIter).c_str());
     //return 0;
 
     ptree = pt_init();
@@ -124,73 +124,13 @@ int main ( int argc, char **argv )
     }
    
     for ( vIter = srcp.begin(); vIter != srcp.end(); vIter++ ) {
-        if ( (tmp = pt_match(ptree, vIter->getCidr())) == 0 )
+        if ( (tmp = pt_exists(ptree, vIter->getCidr())) == 0 )
             printf("Search failed for %s\n", 
-                CidrUtils::toString(vIter->getPrefix()).c_str());
+                CidrUtils::ToString(vIter->getPrefix()).c_str());
         else
             printf("Found addr %s\n",
-                CidrUtils::toString(vIter->getPrefix()).c_str());
+                CidrUtils::ToString(vIter->getPrefix()).c_str());
     }
-
-
-/*
-
-    tmp = pt_match(ptree, addr1);
-
-    if ( tmp == 0 )
-        printf("Search failed for %s\n", CidrUtils::toString(addr1).c_str());
-    else 
-        printf("Found addr %s\n", CidrUtils::toString(addr1).c_str() );
-
-
-    tmp = pt_match(ptree, addr2);
-
-    if ( tmp == 0 )
-        printf("Search failed for %s\n",  CidrUtils::toString(addr2).c_str());
-    else {
-        printf("Found addr %s\n",  CidrUtils::toString(addr2).c_str());
-        //pt_remove(ptree, addr2);
-    }
-
-    tmp = pt_match(ptree, addr2);
-
-    if ( tmp == 0 ) {
-        printf("Search failed for %s\n",  CidrUtils::toString(addr2).c_str());
-        pt_insert(ptree, addr2, NULL);
-    } else {
-        printf("Found addr %s\n",  CidrUtils::toString(addr2).c_str());
-    }
-
-
-    tmp = pt_match(ptree, addr3);
-
-    if ( tmp == 0 )
-        printf("Search failed for %s\n",  CidrUtils::toString(addr3).c_str());
-    else {
-        printf("Found addr %s\n",  CidrUtils::toString(addr3).c_str());
-    }
-
-    tmp = pt_match(ptree, addr4);
-
-    if ( tmp == 0 )
-        printf("Search failed for %s\n",  CidrUtils::toString(addr4).c_str());
-    else {
-        printf("Found addr %s\n",  CidrUtils::toString(addr4).c_str());
-    }
-
-    tmp = pt_match(ptree, addr5);
-
-    if ( tmp == 0 )
-        printf("Search failed for %s\n",  CidrUtils::toString(addr5).c_str());
-    else {
-        printf("Found addr %s\n",  CidrUtils::toString(addr5).c_str());
-    }
-
-    //pt_visit(ptree, &printNodeHandler);
-
-    //pt_visit_debug(ptree, &debugNodeHandler);
-*/
-
 
     pt_free(ptree, &nodeFreeHandler);
 

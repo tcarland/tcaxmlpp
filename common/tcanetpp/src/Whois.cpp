@@ -45,14 +45,14 @@ Whois::init ( const std::string & host, uint16_t port )
     if ( host.empty() )
         return;
 
-    AddrList   addrs;
+    IpAddrList   addrs;
     CidrUtils::GetHostAddrList(host, addrs);
     if ( addrs.empty() ) { // error
         _errstr = "GetHostAddrList failed to resolve any addresses";
         return;
     }
 
-    AddrList::iterator  hIter;
+    IpAddrList::iterator  hIter;
     for ( hIter = addrs.begin(); hIter != addrs.end(); ++hIter )
     {
         ipv4addr_t & addr = *hIter;
