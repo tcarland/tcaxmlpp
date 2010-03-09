@@ -222,10 +222,11 @@ LIBS       += -lboost_regex-gcc-mt-1_33_1
 endif
 
 ifdef NEED_LIBXML2
-LIBXML2_HOME = $(TOPDIR)/common/ext/libxml2
-INCLUDES    += -I$(LIBXML2_HOME)/include
-LFLAGS      += -L$(LIBXML2_HOME)/.libs
-LIBS        += -lxml2
+#LIBXML2_HOME = $(TOPDIR)/common/ext/libxml2
+#INCLUDES    += -I$(LIBXML2_HOME)/include
+#LFLAGS      += -L$(LIBXML2_HOME)/.libsendif
+INCLUDES     += -I/usr/include/libxml2
+LIBS         += -lxml2
 endif
 
 ifdef NEED_ZLIB

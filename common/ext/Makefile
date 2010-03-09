@@ -6,7 +6,7 @@ TOPDIR = ../..
 include ${TOPDIR}/tcamake/project_defs
 
 
-all: zlib libxml2 net-snmp openssl
+all: zlib net-snmp openssl
 
 
 help:

@@ -87,7 +87,6 @@ SocketOption::SetKeepalive ( int val )
     return( SocketOption(SO_KEEPALIVE, val, "SO_KEEPALIVE") );
 }
 
-
 SocketOption
 SocketOption::SetRcvBuf ( int val )
 {
@@ -123,6 +122,7 @@ SocketOption::SetSndTimeout ( int val )
 {
     return ( SocketOption(SO_SNDTIMEO, val, "SO_SNDTIMEO") );
 }
+
 
 }  // namespace
 
