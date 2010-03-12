@@ -22,14 +22,6 @@ update-libxml2:
 	( cd libxml2; autoconf; aclocal; libtoolize --copy --force )
 	@echo
 
-# note: if configuration fails with libtool errors use 'make update-libxml2'
-#
-.PHONY: libxml2
-libxml2:
-	( cd libxml2; chmod u+w aclocal.m4; chmod u+wx configure; \
-	 sh ./configure; chmod u+w python/libxml2-py.c; make )
-	@echo
-
 net-snmp:
 	( cd net-snmp-5.2.3; \
 	  ./configure --prefix=/usr --with-gnuld --disable-applications \
