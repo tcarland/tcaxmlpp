@@ -35,7 +35,7 @@ namespace tcanetpp {
 #define DEFAULT_MUTEXPOOL_MAXSIZE 100
 
 
-typedef std::list<ThreadLock*>  ThreadLockPool;
+typedef std::list< ThreadLock* >  ThreadLockPool;
 
 
 /**  A class for managing a resource pool of mutexes. */

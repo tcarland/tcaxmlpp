@@ -28,10 +28,7 @@
 namespace tcanetpp {
 
 
-/**  Intended to simplify the synchronization of a complete method for
- *   convenience only. It intentionally does no checking of the underlying
- *   ThreadLock pointer.
- **/
+/**  Intended to simplify the synchronization of a class method.  */
 class ThreadAutoMutex {
 
   public:

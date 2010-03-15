@@ -1,5 +1,5 @@
 /**
-  *     A Radix/Patricia Trie implementation based on Sedgewick's
+  *     A Radix Trie implementation based on Sedgewick's
   *  "Algorithm's in C".
   *
   *     Note that some functions (notably longestMatch) make
@@ -64,8 +64,8 @@ ptNode_t*  pt_init();
 
 int        pt_insert       ( ptNode_t * head, cidr_t cidr, void * rock );
 void*      pt_remove       ( ptNode_t * head, cidr_t key );
-
 int        pt_exists       ( ptNode_t * head, cidr_t key );
+
 void*      pt_match        ( ptNode_t * head, cidr_t key );
 void*      pt_matchLongest ( ptNode_t * head, cidr_t key );
 

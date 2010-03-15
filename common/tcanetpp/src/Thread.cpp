@@ -36,9 +36,8 @@ extern "C" {
 namespace tcanetpp {
 
 
-static const
-char rcsid[] = "$Id: Thread.cpp,v 1.8 2007/09/16 04:40:57 tca Exp $";
 
+/* -------------------------------------------------------------- */
 
 Thread::Thread()
     : _Alarm(false),
@@ -62,6 +61,7 @@ Thread::~Thread()
 	this->stop();
 }
 
+/* -------------------------------------------------------------- */
 /** Initiates the start of the thread by create the underlying thread object.
  *  If the underlying call to the thread create() fails, a ThreadException is 
  *  thrown. Once start() succeeds, the new thread will initiate with the private 
@@ -94,6 +94,7 @@ Thread::start() throw ( ThreadException )
     return;
 }
 
+
 /**  Forcibly stops the thread, and if not detached from the thread it will
  *   attempt to join the thread. A ThreadException is thrown if the join 
  *   fails.
@@ -120,6 +121,7 @@ Thread::stop() throw ( ThreadException )
     return;
 }
 
+/* -------------------------------------------------------------- */
 
 /**  Sets a thread identity or name.  The thread will automatically be given 
  *   a name consisting of "Thread_x" where x is the thread id.  This
@@ -139,6 +141,7 @@ Thread::threadName() const
     return this->_threadName;
 }
 
+/* -------------------------------------------------------------- */
 
 /**  Indicates whether the thread is currently in the run state. */
 bool
@@ -193,6 +196,7 @@ Thread::finished()
     this->_running = false;
 }
 
+/* -------------------------------------------------------------- */
 
 } // namespace
 

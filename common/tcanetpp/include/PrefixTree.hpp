@@ -35,7 +35,7 @@ extern "C" {
 namespace tcanetpp {
 
 
-/**    A C++ template that wraps the use of the patricia trie implementation
+/**    A C++ template that wraps the use of the radix tree implementation
   *  from 'patricia.h'. 
   *  
   *    The underlying trie handles user data as void pointers so as a result,
@@ -60,15 +60,8 @@ class PrefixTree {
  
   public:
 
-    PrefixTree()
-        : _hl(NULL),
-          _lock(false)
-    {
-        _pt   = pt_init();
-    }
-
-    PrefixTree ( bool implicit_lock )
-        : _hl(NULL),
+    PrefixTree ( bool implicit_lock = false )
+        : _freeHandler(NULL),
           _lock(implicit_lock)
     {
         _pt   = pt_init();
@@ -200,10 +193,10 @@ class PrefixTree {
         if ( _lock )
             pthread_mutex_lock(&_mutex);
 
-        if ( _hl )
-            pt_free(_pt, _hl);
+        if ( _freeHandler )
+            pt_free(_pt, _freeHandler);
         else
-            pt_free(_pt, &ptClearHandler);
+            pt_free(_pt, &PTClearHandler);
 
         if ( _lock )
             pthread_mutex_unlock(&_mutex);
@@ -212,13 +205,13 @@ class PrefixTree {
 
     void setFreeHandler ( nodeHandler_t handler )
     {
-        _hl = handler;
+        _freeHandler = handler;
     }
 
 
   protected:
 
-    static void ptClearHandler ( uint32_t addr, uint8_t mb, void * rock )
+    static void PTClearHandler ( uint32_t addr, uint8_t mb, void * rock )
     {
         T  obj = (T) rock;
         if ( obj )
@@ -230,7 +223,7 @@ class PrefixTree {
   private:
 
     ptNode_t*                    _pt;
-    nodeHandler_t                _hl;
+    nodeHandler_t                _freeHandler;
 
     bool                         _lock;
     pthread_mutex_t              _mutex;
