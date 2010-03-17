@@ -1,0 +1,11 @@
+
+External Requirements:
+
+LibXml2
+wxWidgets
+zlib
+>=gsoap-2.7.14
+net-snmp
+>=openssl-0.9.8k
+
+
