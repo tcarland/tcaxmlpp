@@ -1,7 +1,10 @@
 #!/bin/bash
 #
 #   Build script for individual projects, or any sub-project that might wish 
-#   to be extracted from the overall workspace while keeping 
+#   to be extracted from the overall workspace.
+#
+#   Essentially provides a method to link the make environment within a 
+#   standalone project for exporting or distributing individually.
 
 
 PNAME=${0##*\/}
