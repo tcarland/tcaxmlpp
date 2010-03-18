@@ -14,7 +14,7 @@ NEED_LIBDL = 1
 
 #-------------------#
 
-ifdef DEBUG
+ifdef TNMS_DEBUG
   OPT_FLAGS = -g
 endif
 
@@ -87,7 +87,7 @@ ifdef DISTDIR
 endif
 
 install:
-ifdef PREFIX
+ifdef TNMS_PREFIX
 	@echo "Installing mylib to $(PREFIX)/lib"
 	$(RSYNC) --delete include/ $(PREFIX)/include/mylib/
 	$(RSYNC) lib/ $(PREFIX)/lib/
