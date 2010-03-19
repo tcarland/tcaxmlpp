@@ -5,39 +5,42 @@ Version: 20081030
 
 Overview:
 
-'tcamake' is a simplified build environment for code projects using GNU make. 
+'tcamake' is a build environment for code projects using GNU make. 
 It is not its own 'make' implementation. It simply wraps the use of 
 Gnu 'make' providing preset platform specific dependencies and environments. 
-The goal is to provide a clean and simple method of managing a large 
-project's and subproject dependencies in a common set of 'make' configurations.
-This allows for clean and logical Makefiles.
+The goal is to provide a clean and simplified method of managing a large 
+project and subproject dependencies in a common set of 'make' configurations 
+which allows for clean and logical Makefiles.
 
  The system has been used reliably for years and serves as my excuse to 
 avoid the GNU autoconf toolset. In fact, while certainly not as powerful 
 as the autotools, this Makefile template heirarchy lends itself nicely 
-as a build system alternative or addition to the autotools. It is surprisingly 
-capable and even useful for managing a build environment for large projects. 
+as a build system alternative or in addition to the autotools. It is 
+surprisingly capable and even useful for managing a build environment 
+for very large projects. 
 
-'tcamake' is nothing more than an include that defines all of the dependencies 
-of projects within the build system. It does not determine compiler 
-capabilities and library function checks like the Gnu autotools. If needed, 
-individual (sub)projects could still choose to incorporate GNU autoconf. 
-Additionally, macros and autodepends allow for very clean and simple Makefiles.
+'tcamake' is nothing more than an include heirarchy that defines all of 
+the dependencies of projects within the build system. It does not determine 
+compiler capabilities and library function checks like the Gnu autotools. 
+If needed, individual (sub)projects could still choose to incorporate 
+GNU autoconf. 
+
 
 
 Layout:
 
 The build environment layout is specific to a directory structure 
 starting with a root directory that is referred to as the 'top' directory 
-or $TOPDIR. This can be for a specific project or group of projects as needed.  The term project is used loosely to define an encompassing environment 
+or $TOPDIR. This can be for a specific project or group of projects as needed.  
+The term project is used loosely to define an encompassing environment 
 that may, in fact, contain many projects and is frequently referred to as 
-a 'workspace'. 
+a 'workspace' or 'repository'. This may often be the root VCS path. 
 
 An instance of the 'tcamake' build environment must exist at the 
 workspace top-level. For example, assume we have the following code 
-repository, '~/src/svn/repoX'. 'repoX' is considered the workspace 
+repository, '~/src/hg/release/repoX'. 'repoX' is considered the workspace 
 or TOPDIR. The build system would then be '$TOPDIR/tcamake' or in this
-case, '~/src/svn/repoX/tcamake'.
+case, '~/src/hg/release/repoX/tcamake'.
 
 Each subsequent project Makefile beneath the top-level must define 
 the TOPDIR environment variable to point to the relative root of the workspace.
@@ -88,7 +91,7 @@ The Files:
 
 Scripts:
 
-    A few scripts are provided for convenience.
+    A few scripts are provided for convenience, but are in reality a bit silly.
 
     build.sh:  Some projects within the workspace may wish to be 
       exported or built independently of the workspace. This script
