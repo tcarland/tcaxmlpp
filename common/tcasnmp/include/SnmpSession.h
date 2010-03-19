@@ -19,26 +19,28 @@ class SnmpSession {
 public:
     
     SnmpSession();
-    SnmpSession ( const std::string & host, const std::string & community );
+    SnmpSession ( const std::string & host, 
+                  const std::string & community );
     SnmpSession ( const NetworkDevice & device );
     
     virtual ~SnmpSession();
     
     
-    virtual bool                 openSession   ( const std::string & host,
-                                                 const std::string & community );
-    virtual bool                 openSession   ( const NetworkDevice & device,
-                                                 bool write = false );
+    virtual bool        openSession   ( const std::string & host,
+                                        const std::string & community );
+
+    virtual bool        openSession   ( const NetworkDevice & device,
+                                        bool write = false );
+    virtual void        closeSession();
+   
+
+    virtual SnmpPdu*    get       ( const std::string & oidstr );
+    virtual SnmpPdu*    get       ( SnmpOid   & oid );
     
-    virtual void                 closeSession();
+    virtual SnmpPdu*    getNext   ( const std::string & oidstr );
+    virtual SnmpPdu*    getNext   ( SnmpOid  & oid );
     
-    virtual SnmpPdu*             get       ( const std::string & oidstr );
-    virtual SnmpPdu*             get       ( SnmpOid   & oid );
-    
-    virtual SnmpPdu*             getNext   ( const std::string & oidstr );
-    virtual SnmpPdu*             getNext   ( SnmpOid  & oid );
-    
-    virtual SnmpPdu*             getNext   ( SnmpPdu  * response );
+    virtual SnmpPdu*    getNext   ( SnmpPdu  * response );
     
     
     /**  Performs the snmpset operation for the provided OID, type
@@ -55,27 +57,28 @@ public:
       *      a  IP Address, and
       *      b  Bits
      **/
-    virtual bool                 set       ( const std::string & soid, char type,
-                                             const std::string & value );
+    virtual bool        set       ( const std::string & soid, char type,
+                                    const std::string & value );
     
-    virtual const std::string &  getErrorStr();
-    virtual void                         setErrorStr ( const std::string & errstr ) { _errStr = errstr; }
+    virtual 
+    const std::string&  getErrorStr();
+    virtual void        setErrorStr ( const std::string & errstr ) { _errStr = errstr; }
     
     /*  Some common mib-2 snmp device queries  */
-    virtual std::string          getSysDescr();
-    virtual std::string          getSysName();
-    virtual time_t               getSysUpTime();
+    virtual std::string getSysDescr();
+    virtual std::string getSysName();
+    virtual time_t      getSysUpTime();
 
-    std::string                  community();
+    std::string         community();
 
 
     /**  Static function to ensure net-snmp library has been properly 
       *  initialized
      **/
-    static  void                 LibInit(); 
+    static  void        LibInit(); 
     
     /**  Releases(free's) a net-snmp PDU object */
-    static void                  ReleasePDU    ( SnmpPdu * pdu );
+    static void         ReleasePDU    ( SnmpPdu * pdu );
 
 
 protected:
@@ -88,15 +91,15 @@ protected:
   
   /**  Returns a boolean indicating whether the provided pdu is 
     *  still part of the base OID that was initially queried */
-  bool         hasBaseOid    ( struct snmp_pdu * response );
+  bool         hasBaseOid ( struct snmp_pdu * response );
 
 
-  struct snmp_session          _session;
-  void*                        _sptr;
-  oid*                         _baseOid;
-  size_t                       _baseLen;
-  std::string                  _community;
-  std::string                  _errStr;
+  struct snmp_session    _session;
+  void*                  _sptr;
+  oid*                   _baseOid;
+  size_t                 _baseLen;
+  std::string            _community;
+  std::string            _errStr;
 
 
 private:

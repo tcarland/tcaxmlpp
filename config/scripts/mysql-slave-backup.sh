@@ -3,9 +3,10 @@
 #  mysql-slave-backup.sh
 #
 
-VERSION="1.12"
-AUTHOR="tcarland@gmail.com"
 PNAME=${0##*\/}
+VERSION="1.11"
+AUTHOR="tcarland@gmail.com"
+
 BINLOGNAME="mysql-bin"
 MYSQLDIR="/var/lib/mysql"
 MYSQLDUMP_OPTIONS="--single-transaction --flush-logs --master-data=2 --all-databases"
@@ -14,6 +15,7 @@ DRYRUN=0
 
 MYSQLUSER=
 MYSQLPASS=
+MYSQLSOCK=
 TARGET=
 MASTER_LASTLOG=
 retval=
@@ -23,39 +25,30 @@ usage()
 {
     echo ""
     echo "Usage: $PNAME [options]  full|incremental"
-    echo "         --user   |-u <username>  =  Database username"
-    echo "         --pass   |-p <password>  =  Database users password (optional) "
-    echo "         --target |-t <target>    =  Backup target path (required)"
-    echo "         --data   |-d <datadir>   =  Path to Mysql data dir "
+    echo "           --user|-u <username>  =  Database username"
+    echo "           --pass|-p <password>  =  Database users password (optional) "
+    echo "           --target|-t <target>  =  Backup target path (required)"
+    echo "           --data|-d <datadir>   =  Path to Mysql data dir "
     echo "                                      (default: /var/lib/mysql)"
-    echo "         --help   |-h             =  Display usage information"
-    echo "         --dry-run|-n             =  Perform a dry-run (don't do anything)"
-    echo "         --version|-v             =  Display version information"
-    echo "         [action=full|inc]        =  Default action is 'incremental'"
-    echo "              incremental         =  Sync just the binary logs only"
-    echo "              full                =  Syncs logs, data dump of all databases,"
+    echo "           --help|-h             =  Display usage information"
+    echo "           --dry-run|-n          =  Perform a dry-run (don't do anything)"
+    echo "           --sock|-S             =  Provide an alternate socket to connect"
+    echo "                                      (eg. -S /var/run/mysqld/mysqld-inst1.sock)"
+    echo "           --version|-v          =  Display version information"
+    echo "          [action=full|inc]      =  Default action is 'incremental'"
+    echo "                incremental      =  Syncs to binary logs only"
+    echo "                full             =  Syncs logs, data dump of all databases,"
     echo "                                      purges old binary logs"
     echo ""
-    echo " eg. $PNAME --user root --pass mypass \\"
-    echo "            --target /m1/Backup/mysql full"
+    echo " eg. $PNAME --user root --pass mypass --target /m1/Backup/mysql full"
     echo ""
-    echo " ----------------"
-    echo ""
-    echo "    The script will perform a backup of the mysql slave "
-    echo "  database while stopping the mysql slave process via the "
-    echo "  'STOP SLAVE SQL_THREAD' command. This action requires the "
-    echo "  'mysqladmin' binary and sufficient mysql privileges."
-    echo "    The script also uses 'gzip' to compress the backups "
-    echo "   and 'rsync' to sync the binlogs."
-    echo ""
-    version
     return 1
 }
 
 
 version()
 {
-    echo " $PNAME: "
+    echo " $PNAME "
     echo "   Version = $VERSION"
     echo "   Author  = $AUTHOR"
     echo ""
@@ -70,6 +63,10 @@ startSlave()
         options="${options} --password=$MYSQLPASS"
     else
         options="${options} -p"
+    fi
+
+    if [ -n "$MYSQLSOCK" ]; then
+        options="${options} -S ${MYSQLSOCK}"
     fi
 
     if [ $DRYRUN -eq 1 ]; then
@@ -94,6 +91,10 @@ stopSlave()
         options="${options} --password=$MYSQLPASS"
     else
         options="${options} -p"
+    fi
+
+    if [ -n "$MYSQLSOCK" ]; then
+        options="${options} -S ${MYSQLSOCK}"
     fi
 
     if [ $DRYRUN -eq 1 ]; then
@@ -121,6 +122,10 @@ dumpSlave()
         options="${options} --password=$MYSQLPASS"
     else
         options="${options} -p"
+    fi
+
+    if [ -n "$MYSQLSOCK" ]; then
+        options="${options} -S ${MYSQLSOCK}"
     fi
 
     options="${options} $MYSQLDUMP_OPTIONS"
@@ -191,6 +196,10 @@ purgeLogs()
         options="${options} -p"
     fi
 
+    if [ -n "$MYSQLSOCK" ]; then
+        options="${options} -S ${MYSQLSOCK}"
+    fi
+
     if [ -z "$lastlog" ]; then
         echo "error, no lastlog set"
         return 1
@@ -238,8 +247,6 @@ checkTarget()
 }
 
 
-# MAIN 
-
 while [ $# -gt 0 ]; do
     case "$1" in
         -d|--debug)
@@ -267,6 +274,10 @@ while [ $# -gt 0 ]; do
             if [ -z "$MYSQLDIR" ]; then
                 echo "No data dir provided"
                 exit 1
+CREATE USER 'yukai'@'localhost' IDENTIFIED BY '12kiaG';
+GRANT ALL PRIVILEGES ON *.* TO 'yukai'@'localhost';
+
+
             fi
             if [ ! -d $MYSQLDIR ]; then
                 echo "Invalid directory $MYSQLDIR"
@@ -279,6 +290,10 @@ while [ $# -gt 0 ]; do
             ;;
         -n|--dry-run)
             DRYRUN=1
+            ;;
+        -S|--sock)
+            MYSQLSOCK="$2"
+            shift
             ;;
         -v|--version)
             version
@@ -298,7 +313,10 @@ if [ -z "$MYSQLUSER" ] || [ -z "$TARGET" ]; then
     exit 1
 fi
 
-# ---------------------------
+if [ -n "$MYSQLSOCK" ] && [ ! -e $MYSQLSOCK ]; then
+    echo "Error: local socket file not found: '$MYSQLSOCK'"
+    exit 1
+fi
 
 targetpath="$TARGET/$HOSTNAME"
 targetbinlog="$targetpath/binlog"
@@ -311,20 +329,19 @@ if [ $FULL -eq 1 ]; then
 else
     echo "Performing incremental backup..."
 fi
-
 if [ $DRYRUN -eq 1 ]; then
     echo "  DRYRUN enabled "
 fi
 echo ""
 
-# validate the target
+
 checkTarget $targetbinlog
 retval=$?
 if [ $retval -eq 1 ]; then
     exit 1
 fi
 
-# stop the slave process
+
 stopSlave
 retval=$?
 if [ $retval -eq 1 ]; then
@@ -333,14 +350,14 @@ else
     echo "Slave stopped"
 fi
 
-# sync the binlogs
+
 syncLogs $targetbinlog
 retval=$?
 if [ $retval -eq 1 ]; then
     exit 1
 fi
 
-# perform db dump if requested
+
 if [ $FULL -eq 1 ]; then
     dumpSlave $targetpath $savedate
     retval=$?
@@ -349,21 +366,21 @@ if [ $FULL -eq 1 ]; then
     fi
 fi
 
-# restart the slave process
+
 startSlave
 retval=$?
 if [ $retval -eq 1 ]; then
     exit 1
 fi
 
-# purge the old binlogs if requested
+
 if [ $FULL -eq 1 ]; then
     purgeLogs
     retval=$?
     if [ $retval -eq 1 ]; then
         exit 1
     else 
-        echo "Old logs purged"
+        echo "Logs purged"
     fi
 fi
 
