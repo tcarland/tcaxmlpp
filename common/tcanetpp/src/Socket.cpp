@@ -88,15 +88,16 @@ Socket::Socket ( ipv4addr_t ipaddr, uint16_t port, SocketType type, int protocol
 }
 
 
-Socket::Socket ( sockfd_t & fd, struct sockaddr_in & csock )
+Socket::Socket ( sockfd_t & fd, struct sockaddr_in & csock, int protocol )
     : _fd(fd),
       _sock(csock),
       _socktype(SOCKET_SERVER_CLIENT),
-      _proto(IPPROTO_TCP),
+      _proto(protocol),
       _block(false)
 {
     if ( Socket::IsValidDescriptor(this->_fd) ) {
-        _connected = true;
+        if ( _proto == IPPROTO_TCP )
+            _connected = true;
         _bound     = true;
     } else {
         _connected = false;
@@ -324,10 +325,17 @@ Socket::accept ( SocketFactory & factory )
     len = sizeof(csock);
     memset(&csock, 0, len);
 
-    if ( (cfd = ::accept(_fd, (struct sockaddr*) &csock, &len)) < 0 )
-    	return NULL;
+    if ( _proto == SOCKET_TCP )
+    {
+        if ( (cfd = ::accept(_fd, (struct sockaddr*) &csock, &len)) < 0 )
+        	return NULL;
 
-    client = factory(cfd, csock);
+        client = factory(cfd, csock);
+    }
+    else if ( _proto == SOCKET_UDP )
+    {
+    	client = factory(_fd, csock);
+    }
 
     if ( !_block )
     	Socket::Unblock(client);
@@ -442,27 +450,41 @@ Socket::write ( const void * vptr, size_t n )
 // ----------------------------------------------------------------------
 
 ssize_t
+Socket::readFrom ( void * vptr, size_t n, sockaddr_in & csock )
+{
+	socklen_t len;
+	ssize_t   rd;
+
+	if ( _proto != IPPROTO_UDP )
+		return -1;
+
+	len = sizeof(struct sockaddr_in);
+	rd  = ::recvfrom(_fd, (char*) vptr, n, 0, (struct sockaddr*) &csock, &len);
+
+	if ( rd < 0 ) {
+	#  ifdef WIN32
+	    int err = WSAGetLastError();
+        if ( err == WSAEINTR || err == WSAEWOULDBLOCK )
+            rd = 0;
+	#         else
+        if ( errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK )
+            rd = 0;
+	#   endif
+	}
+
+	return rd;
+}
+
+// ----------------------------------------------------------------------
+
+ssize_t
 Socket::read ( void * vptr, size_t n )
 {
     struct sockaddr_in csock;
-    socklen_t len;
     ssize_t   rd;
 
     if ( _proto == IPPROTO_UDP && ! _connected ) {
-        len = sizeof(struct sockaddr_in);
-	
-        rd  = ::recvfrom(_fd, (char*) vptr, n, 0, (struct sockaddr*) &csock, &len);
-	
-        if ( rd < 0 ) {
-#         ifdef WIN32
-	    int err = WSAGetLastError();
-            if ( err == WSAEINTR || err == WSAEWOULDBLOCK )
-                rd = 0;
-#         else
-            if ( errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK )
-                rd = 0;
-#         endif
-        }
+    	rd  = this->readFrom(vptr, n, csock);
     } else {
         rd = this->nreadn(vptr, n);
     }

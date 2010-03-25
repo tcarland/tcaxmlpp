@@ -106,7 +106,7 @@ class Socket {
 	
   protected:
 	
-    Socket ( sockfd_t & fd, struct sockaddr_in & csock );
+    Socket ( sockfd_t & fd, struct sockaddr_in & csock, int protocol = IPPROTO_TCP );
 	
 	
   public:
@@ -123,7 +123,7 @@ class Socket {
     Socket*             accept();
     Socket*             accept ( SocketFactory & factory );
     
-    bool                isConnected();
+    virtual bool        isConnected();
     bool                isServerSocket() const;
     
     ipv4addr_t          getAddress() const;
@@ -150,9 +150,10 @@ class Socket {
     const std::string&  getErrorString() const;
     const std::string&  errorStr() const  { return this->getErrorString(); }
     
-    
     virtual ssize_t     read     ( void * vptr, size_t n );
     virtual ssize_t     write    ( const void * vptr, size_t n );
+
+    virtual ssize_t     readFrom ( void * vptr, size_t n, sockaddr_in & csock );
             
     
   public:	

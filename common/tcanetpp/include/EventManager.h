@@ -44,7 +44,7 @@ namespace tcanetpp {
 #define evutomsec(x) (x / 1000)
 
 
-#define DEFAULT_EVU 10000    // default select timeout
+#define DEFAULT_EVU 500000   // default select timeout
 #define MAX_FDVAL   1024000  // max file descriptors
 #define NO_EVID     0 
  
@@ -165,6 +165,9 @@ class EventManager {
     const std::string&   getErrorStr() const { return this->_errstr; }
 
 
+    static void          GetTimeOfDay   ( timeval & t );
+
+
   protected:
 
     void                 verifyTimers();
@@ -176,8 +179,6 @@ class EventManager {
 
     evid_t               getNewEventId();
 
-    static void          GetTimeOfDay   ( timeval & t );
-    
 
   protected:
 

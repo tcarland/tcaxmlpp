@@ -113,7 +113,7 @@ class PrefixTree {
         if ( _lock )
             pthread_mutex_lock(&_mutex);
 
-        T object = (T) pt_matchRock(_pt, p.getCidr());
+        T object = (T) pt_match(_pt, p.getCidr());
 
         if ( _lock )
             pthread_mutex_unlock(&_mutex);
