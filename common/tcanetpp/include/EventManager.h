@@ -165,7 +165,7 @@ class EventManager {
     const std::string&   getErrorStr() const { return this->_errstr; }
 
 
-    static void          GetTimeOfDay   ( timeval & t );
+    int                  GetTimeOfDay   ( timeval & t );
 
 
   protected:

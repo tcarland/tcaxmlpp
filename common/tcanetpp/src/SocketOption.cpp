@@ -32,16 +32,25 @@ namespace tcanetpp {
 
 	
 SocketOption::SocketOption()	
-    : _optid(0),
+    : _level(0),
+      _optid(0),
       _optval(0)
 {}
 
-SocketOption::SocketOption ( int optid, int optval,
+SocketOption::SocketOption ( int level, int optid, int optval,
                              const std::string & name )
-    : _optid(optid),
+    : _level(level),
+      _optid(optid),
       _optval(optval),
       _namestr(name)
 {}
+
+
+int
+SocketOption::getOptionLevel() const
+{
+    return _level;
+}
 
 
 int
@@ -71,58 +80,71 @@ SocketOption::getOptionName() const
 SocketOption
 SocketOption::SetReuseAddr ( int val )
 {
-    return( SocketOption(SO_REUSEADDR, val, "SO_REUSEADDR") );
+    return( SocketOption(SOL_SOCKET, SO_REUSEADDR, val, "SO_REUSEADDR") );
 }
 
 SocketOption
 SocketOption::SetLinger ( int val )
 {
-    return( SocketOption(SO_LINGER, val, "SO_LINGER") );
+    return( SocketOption(SOL_SOCKET, SO_LINGER, val, "SO_LINGER") );
 }
 
 
 SocketOption
 SocketOption::SetKeepalive ( int val )
 {
-    return( SocketOption(SO_KEEPALIVE, val, "SO_KEEPALIVE") );
+    return( SocketOption(SOL_SOCKET, SO_KEEPALIVE, val, "SO_KEEPALIVE") );
 }
 
 SocketOption
 SocketOption::SetRcvBuf ( int val )
 {
-    return( SocketOption(SO_RCVBUF, val, "SO_RCVBUF") );
+    return( SocketOption(SOL_SOCKET, SO_RCVBUF, val, "SO_RCVBUF") );
 }
 
 SocketOption
 SocketOption::SetSndBuf ( int val )
 {
-    return( SocketOption(SO_SNDBUF, val, "SO_SNDBUF") );
+    return( SocketOption(SOL_SOCKET, SO_SNDBUF, val, "SO_SNDBUF") );
 }
 
 SocketOption
 SocketOption::SetRcvLoWat ( int val )
 {
-    return ( SocketOption(SO_RCVLOWAT, val, "SO_RCVLOWAT") );
+    return ( SocketOption(SOL_SOCKET, SO_RCVLOWAT, val, "SO_RCVLOWAT") );
 }
 
 SocketOption
 SocketOption::SetSndLoWat ( int val )
 {
-    return ( SocketOption(SO_SNDLOWAT, val, "SO_SNDLOWAT") );
+    return ( SocketOption(SOL_SOCKET, SO_SNDLOWAT, val, "SO_SNDLOWAT") );
 }
 
 SocketOption
 SocketOption::SetRcvTimeout ( int val )
 {
-    return ( SocketOption(SO_RCVTIMEO, val, "SO_RCVTIMEO") );
+    return ( SocketOption(SOL_SOCKET, SO_RCVTIMEO, val, "SO_RCVTIMEO") );
 }
 
 SocketOption
 SocketOption::SetSndTimeout ( int val )
 {
-    return ( SocketOption(SO_SNDTIMEO, val, "SO_SNDTIMEO") );
+    return ( SocketOption(SOL_SOCKET, SO_SNDTIMEO, val, "SO_SNDTIMEO") );
 }
 
+SocketOption
+SocketOption::SetNoFragment ( int val )
+{
+# ifdef WIN32
+    return ( SocketOption(IPPROTO_IP, IP_DONTFRAG, val, "IP_DONTFRAG") );
+# elif BSD
+    return ( SocketOption(IPPROTO_IP, IP_DONTFRAG, val, "IP_DONTFRAG") );
+# elif __sparc
+    return ( SocketOption(IPPROTO_IP, IP_DONTFRAG, val, "IP_DONTFRAG") );
+# else
+    return ( SocketOption(IPPROTO_IP, IP_MTU_DISCOVER, val, "IP_MTU_DISCOVER") );
+# endif
+}
 
 }  // namespace
 

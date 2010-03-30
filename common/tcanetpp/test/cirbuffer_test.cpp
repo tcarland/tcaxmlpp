@@ -1,5 +1,6 @@
 #define __CIRBUFFER_TEST__
 
+#include <cstdlib>
 #include <iostream>
 
 #include "CircularBuffer.h"

@@ -178,6 +178,7 @@ createServer ( int port )
 	    } else {
 		server->setNonBlocking();
 		server->setSocketOption(SocketOption::SetRcvBuf(65535));
+		server->setSocketOption(SocketOption::SetNoFragment(1));
 		return server;
 	    }
 	} catch ( SocketException err ) {

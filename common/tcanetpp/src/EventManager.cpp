@@ -328,6 +328,7 @@ EventManager::eventLoop()
         }
 
         // check for timer events
+        EventManager::GetTimeOfDay(now);
 	this->checkTimers(now);
 
         // single-shot
@@ -607,15 +608,18 @@ EventManager::getNewEventId()
 }
 
 
-void
+/* TO-DO: move this to ::clock_gettime. */
+int
 EventManager::GetTimeOfDay ( timeval & t )
 {
+    int r = 0;
+    // fix WIN32
 #   ifdef WIN32
     t.tv_sec = (long) ::time(NULL);
 #   else
-    ::gettimeofday(&t, 0);
+    r = ::gettimeofday(&t, 0);
 #   endif
-    return;
+    return r;
 }
 
 //---------------------------------------------------------------//
@@ -630,7 +634,7 @@ EventTimer::operator== ( const EventTimer & timer )
 bool
 EventTimer::operator< ( const EventTimer & timer )
 {
-    if ( this->evsec > 0 )
+    if ( this->evsec > 0 && this->evsec != timer.evsec )
         return(this->evsec < timer.evsec);
     return(this->evusec < timer.evusec);
 }

@@ -34,11 +34,13 @@ class SocketOption {
 public:
     
     SocketOption();
-    SocketOption ( int optname, int optval, const std::string & name = "" );
+    SocketOption ( int level, int optname, int optval,
+                   const std::string & name = "" );
     
     virtual ~SocketOption() {}
     
     
+    int   getOptionLevel() const;
     int   getOptionId() const;
     int   getOptionValue() const;
 
@@ -58,12 +60,14 @@ public:
     static SocketOption  SetSndLoWat   ( int val );
     static SocketOption  SetRcvTimeout ( int val );
     static SocketOption  SetSndTimeout ( int val );
+    static SocketOption  SetNoFragment ( int val );
     
 private:
-	
-    int             _optid;
-    int             _optval;
-    std::string     _namestr;
+
+    int                 _level;
+    int                 _optid;
+    int             	_optval;
+    std::string     	_namestr;
 	
 };
 

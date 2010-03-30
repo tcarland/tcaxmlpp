@@ -140,7 +140,10 @@ class Socket {
     const int&          getSocketProtocol() const;
     const uint16_t&     getPort() const;
 
-    int                 setSocketOption ( int optname, int optval );
+    void                setUdpNoClose ( bool noclose );
+    bool                getUdpNoClose() const;
+
+    int                 setSocketOption ( int level, int optname, int optval );
     int                 setSocketOption ( SocketOption sockopt );
     
     void                setBlocking();
@@ -195,6 +198,7 @@ class Socket {
     bool                    _bound;
     bool                    _connected;
     bool                    _block;
+    bool                    _noUdpClose;
     
 };
 

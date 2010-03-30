@@ -46,7 +46,8 @@ Socket::Socket()
       _port(0),
       _bound(false),
       _connected(false),
-      _block(false)
+      _block(false),
+      _noUdpClose(false)
 {
     Socket::ResetDescriptor(this->_fd);
 }
@@ -59,7 +60,8 @@ Socket::Socket ( ipv4addr_t ipaddr, uint16_t port, SocketType type, int protocol
       _port(port),
       _bound(false),
       _connected(false),
-      _block(false)
+      _block(false),
+      _noUdpClose(false)
 {
     Socket::ResetDescriptor(this->_fd);
     
@@ -93,11 +95,14 @@ Socket::Socket ( sockfd_t & fd, struct sockaddr_in & csock, int protocol )
       _sock(csock),
       _socktype(SOCKET_SERVER_CLIENT),
       _proto(protocol),
-      _block(false)
+      _block(false),
+      _noUdpClose(false)
 {
     if ( Socket::IsValidDescriptor(this->_fd) ) {
         if ( _proto == IPPROTO_TCP )
-            _connected = true;
+            _connected  = true;
+        else if ( _proto == IPPROTO_UDP )
+            _noUdpClose = true;
         _bound     = true;
     } else {
         _connected = false;
@@ -108,9 +113,11 @@ Socket::Socket ( sockfd_t & fd, struct sockaddr_in & csock, int protocol )
     _addrstr = Socket::ntop(csock.sin_addr.s_addr);
 }
 
+
 Socket::~Socket()
 {
-	this->close();
+    if ( ! this->_noUdpClose )
+        this->close();
 }
 
 // ----------------------------------------------------------------------
@@ -252,17 +259,18 @@ Socket::connect()
 void
 Socket::close()
 {
-    if ( Socket::IsValidDescriptor(_fd) ) {
-       _connected = false;
+   if ( ! this->_noUdpClose ) {
+        if ( Socket::IsValidDescriptor(_fd) ) {
+           _connected = false;
      
-#      ifdef WIN32
-       ::closesocket(this->_fd);
-#      else
-       ::close(this->_fd);
-#      endif
+#          ifdef WIN32
+           ::closesocket(this->_fd);
+#          else
+           ::close(this->_fd);
+#          endif
+       }
+       Socket::ResetDescriptor(_fd);
    }
-
-    Socket::ResetDescriptor(_fd);
 
    return;
 }
@@ -372,7 +380,7 @@ Socket::getPort() const
 const int&
 Socket::getSocketProtocol() const
 {
-    return _proto;
+    return this->_proto;
 }
 
 // ----------------------------------------------------------------------
@@ -380,7 +388,7 @@ Socket::getSocketProtocol() const
 const std::string&
 Socket::getAddressString() const
 {
-    return _addrstr;
+    return this->_addrstr;
 }
 
 // ----------------------------------------------------------------------
@@ -389,6 +397,26 @@ ipv4addr_t
 Socket::getAddress() const
 {
     return( (ipv4addr_t) _sock.sin_addr.s_addr );
+}
+
+// ----------------------------------------------------------------------
+/**  set/get methods for avoiding calling close on a udp socket
+ *   descriptor. This only gets set true by the protected constructor
+ *   when creating a UDP construct of a 'server-client' object. Calling
+ *   close on a server-client fd in UDP would result in closing on our
+ *   server object as well. This is a special-case condition only needed
+ *   when utilizing the SocketFactory with UDP sockets.
+ */
+void
+Socket::setUdpNoClose ( bool noclose )
+{
+    this->_noUdpClose = noclose;
+}
+
+bool
+Socket::getUdpNoClose() const
+{
+    return this->_noUdpClose;
 }
 
 // ----------------------------------------------------------------------
@@ -519,7 +547,7 @@ Socket::isBlocking()
 // ----------------------------------------------------------------------
 
 int
-Socket::setSocketOption ( int optname, int optval )
+Socket::setSocketOption ( int level, int optname, int optval )
 {
     char       serr[ERRORSTRLEN];
     socklen_t  len;
@@ -529,12 +557,13 @@ Socket::setSocketOption ( int optname, int optval )
     if ( ! Socket::IsValidDescriptor(_fd) )
         return -1;
 
-    if ( setsockopt(_fd, SOL_SOCKET, optname, (const char*) &optval, len) < 0 ) {
+    if ( ::setsockopt(_fd, level, optname, (const void*) &optval, len) < 0 ) {
 
 #       ifdef WIN32
         _errstr = "Socket: Error in call to setsockopt()";
 #       else
-        if ( strerror_r(errno, serr, ERRORSTRLEN) == 0 )
+        // could test for EOPNOTSUPP here
+        if ( ::strerror_r(errno, serr, ERRORSTRLEN) == 0 )
             _errstr = serr;
 #       endif
 
@@ -548,7 +577,9 @@ Socket::setSocketOption ( int optname, int optval )
 int 
 Socket::setSocketOption ( SocketOption option )
 {
-    return this->setSocketOption(option.getOptionId(), option.getOptionValue());
+    return this->setSocketOption(option.getOptionLevel(),
+                                 option.getOptionId(),
+                                 option.getOptionValue());
 }
 
 // ----------------------------------------------------------------------
