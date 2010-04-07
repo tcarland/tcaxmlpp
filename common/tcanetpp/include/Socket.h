@@ -145,6 +145,7 @@ class Socket {
 
     int                 setSocketOption ( int level, int optname, int optval );
     int                 setSocketOption ( SocketOption sockopt );
+    SocketOption        getSocketOption ( SocketOption sockopt );
     
     void                setBlocking();
     void                setNonBlocking();

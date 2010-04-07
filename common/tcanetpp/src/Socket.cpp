@@ -95,6 +95,8 @@ Socket::Socket ( sockfd_t & fd, struct sockaddr_in & csock, int protocol )
       _sock(csock),
       _socktype(SOCKET_SERVER_CLIENT),
       _proto(protocol),
+      _bound(false),
+      _connected(false),
       _block(false),
       _noUdpClose(false)
 {
@@ -462,8 +464,8 @@ Socket::isConnected()
 ssize_t
 Socket::write ( const void * vptr, size_t n )
 {
-    socklen_t len;
-    ssize_t   st;
+    socklen_t len = 0;
+    ssize_t   st  = 0;
 
     if ( _proto == IPPROTO_UDP && ! _connected ) {
         len = sizeof(_sock);
@@ -480,27 +482,27 @@ Socket::write ( const void * vptr, size_t n )
 ssize_t
 Socket::readFrom ( void * vptr, size_t n, sockaddr_in & csock )
 {
-	socklen_t len;
-	ssize_t   rd;
+    socklen_t len = 0;
+    ssize_t   rd  = 0;
 
-	if ( _proto != IPPROTO_UDP )
-		return -1;
+    if ( _proto != IPPROTO_UDP )
+        return -1;
 
-	len = sizeof(struct sockaddr_in);
-	rd  = ::recvfrom(_fd, (char*) vptr, n, 0, (struct sockaddr*) &csock, &len);
+    len = sizeof(struct sockaddr_in);
+    rd  = ::recvfrom(_fd, (char*) vptr, n, 0, (struct sockaddr*) &csock, &len);
 
-	if ( rd < 0 ) {
-	#  ifdef WIN32
-	    int err = WSAGetLastError();
+    if ( rd < 0 ) {
+#   ifdef WIN32
+        int  err  = WSAGetLastError();
         if ( err == WSAEINTR || err == WSAEWOULDBLOCK )
             rd = 0;
-	#         else
+#   else
         if ( errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK )
             rd = 0;
-	#   endif
-	}
+#   endif
+    }
 
-	return rd;
+    return rd;
 }
 
 // ----------------------------------------------------------------------
@@ -509,7 +511,7 @@ ssize_t
 Socket::read ( void * vptr, size_t n )
 {
     struct sockaddr_in csock;
-    ssize_t   rd;
+    ssize_t   rd  = 0;
 
     if ( _proto == IPPROTO_UDP && ! _connected ) {
     	rd  = this->readFrom(vptr, n, csock);
@@ -546,6 +548,25 @@ Socket::isBlocking()
 
 // ----------------------------------------------------------------------
 
+SocketOption
+Socket::getSocketOption ( SocketOption opt )
+{
+    SocketOption ropt;
+    socklen_t    vlen;
+    int          r, v;
+
+    vlen = sizeof(v);
+
+    r = ::getsockopt(_fd, opt.level(), opt.id(), &v, &vlen);
+
+    if ( r == 0 )
+        ropt = SocketOption(opt.level(), opt.id(), v, opt.name());
+
+    return ropt;
+}
+
+// ----------------------------------------------------------------------
+
 int
 Socket::setSocketOption ( int level, int optname, int optval )
 {
@@ -575,11 +596,11 @@ Socket::setSocketOption ( int level, int optname, int optval )
 
 
 int 
-Socket::setSocketOption ( SocketOption option )
+Socket::setSocketOption ( SocketOption opt )
 {
-    return this->setSocketOption(option.getOptionLevel(),
-                                 option.getOptionId(),
-                                 option.getOptionValue());
+    return this->setSocketOption(opt.level(),
+                                 opt.id(),
+                                 opt.value());
 }
 
 // ----------------------------------------------------------------------

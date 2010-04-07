@@ -47,28 +47,28 @@ SocketOption::SocketOption ( int level, int optid, int optval,
 
 
 int
-SocketOption::getOptionLevel() const
+SocketOption::level() const
 {
     return _level;
 }
 
 
 int
-SocketOption::getOptionId() const
+SocketOption::id() const
 {
     return _optid;
 }
 
 
 int
-SocketOption::getOptionValue() const
+SocketOption::value() const
 {
     return _optval;
 }
 
 
 const std::string&
-SocketOption::getOptionName() const
+SocketOption::name() const
 {
     return _namestr;
 }

@@ -40,14 +40,22 @@ public:
     virtual ~SocketOption() {}
     
     
-    int   getOptionLevel() const;
-    int   getOptionId() const;
-    int   getOptionValue() const;
+    int         level() const;
+    inline int  getOptionLevel() const { return this->level(); }
 
-    const std::string&  getOptionName() const;
-    const std::string&  getOptionNameString() const  { return this->getOptionName(); }
-    const std::string&  toString() const { return this->getOptionName(); }
+    int         id() const;
+    inline int  getOptionId() const { return this->id(); }
+
+    int         value() const;
+    inline int  getOptionValue() const { return this->value(); }
+
     
+    const std::string&   name() const;
+    inline
+    const std::string&   getOptionName() const { return this->name(); }
+    inline
+    const std::string&   toString() const { return this->name(); }
+
 
     /*  static Factory Methods  */
             

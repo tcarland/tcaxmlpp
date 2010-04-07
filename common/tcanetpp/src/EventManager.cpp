@@ -73,11 +73,11 @@ EventManager::~EventManager()
 
 evid_t
 EventManager::addTimerEvent ( EventTimerHandler * handler, 
-			      uint32_t sec, uint32_t msec, int count )
+			      uint32_t sec, uint32_t usec, int count )
 {
     EventTimer  timer;
 
-    if ( (handler == NULL) || (sec == 0 && msec == 0) ) 
+    if ( (handler == NULL) || (sec == 0 && usec == 0) )
     {
         _errstr = "EventManager::addTimerEvent: invalid parameters";
 	return 0;
@@ -93,14 +93,8 @@ EventManager::addTimerEvent ( EventTimerHandler * handler,
     timer.count   = count;
     timer.enabled = true;
 
-    if ( sec > 0 ) {
-	timer.evsec  = sec;
-        timer.evusec = 0;
-    } else {
-        timer.evsec  = 0;
-	timer.evusec = msectoevu(msec);
-	timer.abstime.tv_usec = timer.evusec;
-    }
+    timer.evsec  = sec;
+    timer.evusec = usec; //msectoevu(msec);
 
     timer.abstime.tv_sec  = 0;
     timer.abstime.tv_usec = 0;
@@ -110,7 +104,7 @@ EventManager::addTimerEvent ( EventTimerHandler * handler,
     _timers[timer.evid] = timer;
 
 #   ifdef EV_DEBUG
-    printf("id %lu:  %u sec - %u msec - %d count\n", timer.evid, sec, msec, count);
+    printf("id %lu:  %u sec - %u msec - %d count\n", timer.evid, sec, usec, count);
 #   endif 
     
     return timer.evid;
@@ -280,7 +274,6 @@ EventManager::eventLoop()
 	}
 #       endif
 
-        EventManager::GetTimeOfDay(now);
 
         // select on our fdsets
 	if ( (rdy = ::select(_maxfdp, &_rset, &_wset, &_xset, &to)) < 0 ) 
@@ -294,6 +287,8 @@ EventManager::eventLoop()
 		continue;
 #           endif
 	}
+
+        EventManager::GetTimeOfDay(now);
 
         // handle io events
 	for ( cIter = _clients.begin(); cIter != _clients.end(); cIter++ ) 

@@ -133,7 +133,7 @@ class EventManager {
 
     evid_t               addTimerEvent  ( EventTimerHandler * handler, 
                                           uint32_t            sec,
-                                          uint32_t            msec,
+                                          uint32_t            usec,
                                           int                 count = 0 );
 
     evid_t               addTimerEvent  ( EventTimerHandler * handler, 
