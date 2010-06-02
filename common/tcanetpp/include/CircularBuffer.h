@@ -1,9 +1,10 @@
 /**
   *   A circular buffer implementation which allows for direct access and 
   *  interaction to the underlying buffer. This was originally designed 
-  *  to read inbound udp fast and avoid memcpy's that occur in std read/write
-  *  functions. The get/set ptr functions should be used with caution.
-  *   Normal read/write() functions 
+  *  to read inbound udp fast while avoiding an additional memcpy that 
+  *  occurs in a std read/write function call. The get/set ptr functions 
+  *  should be used with caution.
+  *
   *
   * Copyright (c) 2008, 2009 Timothy Charlton Arland 
   *  @Author  tca@charltontechnology.net
@@ -47,7 +48,7 @@ namespace tcanetpp {
 #define MIN_CIRBUFFER_SIZE       1
 #define MAX_CIRBUFFER_SIZE       (4294967295U)
 #define DEFAULT_CIRBUFFER_SIZE   (1024000)
-#define CIRBUFFER_VERSION        "v0.97"
+#define CIRBUFFER_VERSION        "v1.97"
 
 
 // ----------------------------------------------------------------------
@@ -90,7 +91,6 @@ class CircularBuffer {
 
     bool           resize  ( size_t buffsize ) throw ( BufferException );
 
-
     void           clear();
     inline  void   reset()       { return this->clear(); }
     inline size_t  size() const  { return this->_buffsize; }
@@ -118,13 +118,13 @@ class CircularBuffer {
 
   private:
 
-    char*                   _buffer;    
-    char*                   _readPtr;
-    char*                   _writePtr;
-    char*                   _endPtr;   
-    char*                   _wrapPtr;   
+    char*          _buffer;    
+    char*          _readPtr;
+    char*          _writePtr;
+    char*          _endPtr;   
+    char*          _wrapPtr;   
 
-    size_t                  _buffsize;
+    size_t         _buffsize;
 
 };
 

@@ -60,6 +60,7 @@ class FindStaleIOEvents
   *  there are no subscribed clients or timers left to execute */
 EventManager::EventManager ( bool dieoff )
     : _evid(0),
+      _lastid(0),
       _minevu(DEFAULT_EVU),
       _dieoff(dieoff),
       _alarm(false), 
@@ -232,7 +233,7 @@ void
 EventManager::eventLoop()
 {
     timeval to, now;
-    int	    rdy;
+    int	    rdy = 0;
 
     EventIOMap::iterator   cIter;
 
@@ -288,7 +289,7 @@ EventManager::eventLoop()
 #           endif
 	}
 
-        EventManager::GetTimeOfDay(now);
+        EventManager::GetTimeOfDay(&now);
 
         // handle io events
 	for ( cIter = _clients.begin(); cIter != _clients.end(); cIter++ ) 
@@ -323,7 +324,7 @@ EventManager::eventLoop()
         }
 
         // check for timer events
-        EventManager::GetTimeOfDay(now);
+        EventManager::GetTimeOfDay(&now);
 	this->checkTimers(now);
 
         // single-shot
@@ -603,19 +604,51 @@ EventManager::getNewEventId()
 }
 
 
-/* TO-DO: move this to ::clock_gettime. */
+/* TODO: move this to ::clock_gettime. */
 int
-EventManager::GetTimeOfDay ( timeval & t )
+EventManager::GetTimeOfDay ( timeval * t )
 {
     int r = 0;
-    // fix WIN32
+    // TODO: fix WIN32
 #   ifdef WIN32
-    t.tv_sec = (long) ::time(NULL);
+    t->tv_sec = (long) ::time(NULL);
 #   else
-    r = ::gettimeofday(&t, 0);
+    r = ::gettimeofday(t, 0);
 #   endif
     return r;
 }
+
+
+float
+EventManager::TimevalToMs ( const timeval * tv )
+{
+    return( ((float)tv->tv_sec * 1000.0) + ((float)tv->tv_usec / 1000.0) );
+}
+
+float
+EventManager::TimevalDiffMs ( const timeval * t2, const timeval * t1 )
+{
+    timeval  rtv;
+    float    result;
+
+    EventManager::TimevalDiff(t2, t1, &rtv);
+    result = EventManager::TimevalToMs(&rtv);
+
+    return result;
+}
+
+
+void
+EventManager::TimevalDiff ( const timeval * t2, const timeval * t1, timeval * result )
+{
+    result->tv_sec  = t2->tv_sec - t1->tv_sec;
+    result->tv_usec = t2->tv_usec - t1->tv_usec;
+    if ( result->tv_usec < 0 ) {
+        --result->tv_sec;
+        result->tv_usec += 1000000;
+    }
+}
+
 
 //---------------------------------------------------------------//
 

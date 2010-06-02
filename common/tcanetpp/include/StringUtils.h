@@ -110,6 +110,21 @@ class StringUtils {
         }
     }
 
+    template< typename OutputIterator_ >
+    static inline void   split            ( const std::string  & str,
+                                            const std::string  & delimiter,
+                                            OutputIterator_      outI )
+    {   
+        std::string::size_type  begin = 0, end = 0;
+
+        while ( (begin = str.find_first_not_of(delimiter, begin)) != std::string::npos )
+        {   
+            end     = str.find_first_of(delimiter, begin);
+            *outI++ = str.substr(begin, end - begin);
+            begin   = end;
+        }
+    }
+
 
     static const size_t  MAXLINE;
 
@@ -186,7 +201,7 @@ class StringUtils {
     {
         std::wstring::size_type  begin = 0, end = 0;
 
-        while ( (begin = wstr.find_first_not_of(delimiter, begin)) != std::string::npos )
+        while ( (begin = wstr.find_first_not_of(delimiter, begin)) != std::wstring::npos )
         {
             end     = wstr.find_first_of(delimiter, begin);
             *outI++ = wstr.substr(begin, end - begin);
@@ -194,6 +209,20 @@ class StringUtils {
         }
     }
 
+    template< typename OutputIterator_ >
+    static inline void   split            ( const std::wstring  & str,
+                                            const std::wstring  & delimiter,
+                                            OutputIterator_       outI )
+    {
+        std::wstring::size_type  begin = 0, end = 0;
+
+        while ( (begin = str.find_first_not_of(delimiter, begin)) != std::wstring::npos )
+        {
+            end     = str.find_first_of(delimiter, begin);
+            *outI++ = str.substr(begin, end - begin);
+            begin   = end;
+        }
+    }
 
 #endif  // TCANET_WIDECHAR
 

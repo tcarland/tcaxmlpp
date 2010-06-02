@@ -8,29 +8,36 @@ else
 endif
 
 NEED_SOCKET = 1
-NEED_PTHREADS = 1
 NEED_LIBDL = 1
+ifdef USE_PTHREADS
+NEED_PTHREADS = 1
+endif
 
 #-------------------#
 
-ifdef TNMS_DEBUG
-  OPT_FLAGS = -g 
+ifdef GK_DEBUG
+  OPT_FLAGS =       -g 
 # -DEV_DEBUG
 endif
+
+OPT_FLAGS +=	    -fPIC -O2
+CCSHARED += 	    -Wl,-soname,$@
 
 INCLUDES =	    -Iinclude
 LIBS =
 
+TH_OBJS = 	    src/Thread.o src/ThreadLock.o  src/ThreadMutexPool.o
 OBJS =		    src/SocketOption.o src/Socket.o src/BufferedSocket.o \
                     src/CircularBuffer.o src/Serializer.o \
 		    src/Whois.o src/EventManager.o \
 		    src/CidrUtils.o src/StringUtils.o src/FileUtils.o \
-                    src/Thread.o src/ThreadLock.o  src/ThreadMutexPool.o \
 		    src/LogFacility.o src/random.o src/RandomPrefix.o \
 		    src/patricia.o src/DeviceMap.o \
 		    src/NetworkDevice.o src/NetworkInterface.o
-                    
-                    
+ifdef USE_PTHREADS
+OBJS +=		    $(TH_OBJS)
+endif
+
 CMDBUF_OBJS =       src/CmdBuf.o
 
 PT_OBJS =           src/patricia.o
@@ -38,7 +45,8 @@ TEST_OBJS = 	    src/pttest.o
 PFX_OBJS =  	    src/pfxtest.o
 
 BIN =		    ptest pfxtest
-ALL_OBJS =	    $(OBJS) $(TEST_OBJS) $(PFX_OBJS) $(PT_OBJS) $(CMDBUF_OBJS)
+ALL_OBJS =	    $(OBJS) $(TH_OBJS) $(TEST_OBJS) $(PFX_OBJS) $(PT_OBJS) \
+		    $(CMDBUF_OBJS)
 ALL_BINS = 	    $(BIN)
 
 
@@ -48,11 +56,11 @@ all: lib
 include ${TOPDIR}/tcamake/project_defs
 
 
-lib: arlib
+lib: arlib solib
 
 arlib: lib/libtcanetpp.a
 
-solib: lib/libtcanetpp.so.1.0.1
+solib: libtcanetpp.so.0.1.1
 
 libtcapt: lib/libtcapt.a
 
@@ -73,11 +81,11 @@ lib/libtcanetpp.a: ${OBJS}
 	$(make-lib-rule)
 	@echo
 
-lib/libtcanetpp.so.0.0.1: ${OBJS}
+libtcanetpp.so.0.1.1: ${OBJS}
 	( $(MKDIR) lib )
 	( $(RM) $@ lib/libtcanetpp.so )
 	$(make-so-rule)
-	( cd lib; ln -s $@ libtcanetpp.so )
+	( mv $@ lib/; cd lib; ln -s $@ libtcanetpp.so )
 	@echo
 
 documentation:
@@ -106,19 +114,19 @@ distclean: clean libclean doc-clean test-clean
 	@echo
 
 dist:
-ifdef DISTDIR
-	@echo "sync'ing tcanetpp to $(DISTDIR)/tcanetpp"
-	( $(RDIST) ./ $(DISTDIR)/tcanetpp/ )
+ifdef GK_DISTDIR
+	@echo "sync'ing tcanetpp to $(GK_DISTDIR)/tcanetpp"
+	( $(RDIST) ./ $(GK_DISTDIR)/tcanetpp/ )
 	@echo
 endif
 
-install:
-ifdef TNMS_PREFIX
-	@echo "Installing libtcanetpp to $(TNMS_PREFIX)/lib"
-	$(MKDIR) $(TNMS_PREFIX)/include/tcanetpp
-	$(MKDIR) $(TNMS_PREFIX)/lib
-	$(RSYNC) --delete include/ $(TNMS_PREFIX)/include/tcanetpp/
-	$(RSYNC) lib/ $(TNMS_PREFIX)/lib/
+install: clean
+ifdef GK_PREFIX
+	@echo "Installing libtcanetpp to $(GK_PREFIX)/lib"
+	$(MKDIR) $(GK_PREFIX)/include/tcanetpp
+	$(MKDIR) $(GK_PREFIX)/lib
+	$(RSYNC) --delete include/ $(GK_PREFIX)/include/tcanetpp/
+	$(RSYNC) lib/ $(GK_PREFIX)/lib/
 	@echo
 endif
 

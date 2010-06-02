@@ -32,16 +32,34 @@
 #endif
 
 
+#include "StringUtils.h"
+
+
 namespace tcanetpp {
 
 
 Socket::SocketFactory Socket::factory;
 
+// ----------------------------------------------------------------------
+
+Socket*
+Socket::SocketFactory::operator() ( sockfd_t & fd, sockaddr_in & csock, 
+                                    SocketType type, int protocol )
+{
+    return new Socket(fd, csock, type, protocol);
+}
+
+Socket*
+Socket::UdpSocketFactory::operator() ( sockfd_t & fd, sockaddr_in & csock,
+                                       SocketType type, int protocol )
+{
+    return new Socket(fd, _csock, type, protocol);
+}
 
 // ----------------------------------------------------------------------
 
 Socket::Socket()
-    : _socktype(SOCKET_NONE),
+    : _socktype(SOCKTYPE_NONE),
       _proto(0),
       _port(0),
       _bound(false),
@@ -65,35 +83,34 @@ Socket::Socket ( ipv4addr_t ipaddr, uint16_t port, SocketType type, int protocol
 {
     Socket::ResetDescriptor(this->_fd);
     
-    if ( _socktype <= SOCKET_NONE || _socktype > SOCKET_SERVER_CLIENT )
+    if ( _socktype <= SOCKTYPE_NONE || _socktype > SOCKTYPE_RAW )
         throw SocketException("Socket error: Invalid Socket type");
     
     if ( _proto < 0 || _proto > 255 )
         throw SocketException("Socket error: Invalid protocol");
     
-    memset(&_sock, 0, sizeof(struct sockaddr_in));
+    ::memset(&_sock, 0, sizeof(struct sockaddr_in));
     _sock.sin_family = AF_INET;
     _sock.sin_port   = htons(_port);
     
-    if ( _socktype == SOCKET_SERVER && ipaddr == 0 ) {
+    if ( (_socktype >= SOCKTYPE_SERVER && ipaddr == 0) ) {
         _sock.sin_addr.s_addr = htonl(INADDR_ANY);
     } else {
-        if ( ipaddr == 0 )
+        if ( ipaddr == 0 && _socktype < SOCKTYPE_SERVER )
             throw SocketException("Socket error: Invalid IP addr");
             
         _sock.sin_addr.s_addr = ipaddr;
         _addrstr = Socket::ntop(_sock.sin_addr.s_addr);
+        _hoststr = _addrstr;
+        _hoststr.append(":").append(StringUtils::toString(_port));
     }
-    
-    if ( this->_proto == IPPROTO_UDP )
-        this->init(_block);
 }
 
 
-Socket::Socket ( sockfd_t & fd, struct sockaddr_in & csock, int protocol )
+Socket::Socket ( sockfd_t & fd, sockaddr_in & csock, SocketType type, int protocol )
     : _fd(fd),
       _sock(csock),
-      _socktype(SOCKET_SERVER_CLIENT),
+      _socktype(type),
       _proto(protocol),
       _bound(false),
       _connected(false),
@@ -113,6 +130,8 @@ Socket::Socket ( sockfd_t & fd, struct sockaddr_in & csock, int protocol )
     
     _port    = ntohs(csock.sin_port);
     _addrstr = Socket::ntop(csock.sin_addr.s_addr);
+    _hoststr = _addrstr;
+    _hoststr.append(":").append(StringUtils::toString(_port));
 }
 
 
@@ -129,14 +148,14 @@ Socket::init ( bool block )
 {
     if ( ! Socket::IsValidDescriptor(_fd) ) {
         try {
-            Socket::InitializeSocket(_fd, _proto);
+            Socket::InitializeSocket(_fd, _socktype, _proto);
         } catch ( SocketException & err ) {
             _errstr = err.toString();
             return -1;
         }
     }
       
-    if ( _socktype == SOCKET_SERVER ) {
+    if ( _socktype == SOCKTYPE_SERVER ) {
     	this->setSocketOption(SocketOption::SetReuseAddr(1));
         
         if ( ! this->bind() )
@@ -164,7 +183,7 @@ Socket::bind()
     char  serr[ERRORSTRLEN];
     int   r = 0;
 
-    if ( _socktype != SOCKET_SERVER || _bound || ! Socket::IsValidDescriptor(_fd) ) {
+    if ( _socktype < SOCKTYPE_SERVER || _bound || ! Socket::IsValidDescriptor(_fd) ) {
     	_errstr = "Socket::bind() socket is not initialized";
         return r;
     }
@@ -192,7 +211,7 @@ Socket::bind()
 int
 Socket::listen()
 {
-    if ( _socktype != SOCKET_SERVER || _proto != IPPROTO_TCP )
+    if ( _socktype != SOCKTYPE_SERVER || _proto != IPPROTO_TCP )
         return 0;
         
     if ( ! this->_bound )
@@ -212,7 +231,7 @@ Socket::connect()
 {
     char  serr[ERRORSTRLEN];
 
-    if ( _socktype != SOCKET_CLIENT )
+    if ( _socktype != SOCKTYPE_CLIENT )
 	return -1;
 	
     if ( _connected )
@@ -329,7 +348,7 @@ Socket::accept ( SocketFactory & factory )
     socklen_t           len;
     sockfd_t            cfd;
 
-    if ( _socktype != SOCKET_SERVER )
+    if ( _socktype < SOCKTYPE_SERVER )
     	return NULL;
 
     len = sizeof(csock);
@@ -340,85 +359,17 @@ Socket::accept ( SocketFactory & factory )
         if ( (cfd = ::accept(_fd, (struct sockaddr*) &csock, &len)) < 0 )
         	return NULL;
 
-        client = factory(cfd, csock);
+        client = factory(cfd, csock, _socktype, _proto);
     }
     else if ( _proto == SOCKET_UDP )
     {
-    	client = factory(_fd, csock);
+    	client = factory(_fd, csock, _socktype, _proto);
     }
 
     if ( !_block )
     	Socket::Unblock(client);
 
     return client;
-}
-
-// ----------------------------------------------------------------------
-
-const sockfd_t&
-Socket::getDescriptor() const
-{
-    return _fd;
-}
-
-// ----------------------------------------------------------------------
-
-const SocketType&
-Socket::getSocketType() const
-{
-    return this->_socktype;
-}
-
-// ----------------------------------------------------------------------
-
-const uint16_t&
-Socket::getPort() const
-{
-    return this->_port;
-}
-
-// ----------------------------------------------------------------------
-
-const int&
-Socket::getSocketProtocol() const
-{
-    return this->_proto;
-}
-
-// ----------------------------------------------------------------------
-
-const std::string&
-Socket::getAddressString() const
-{
-    return this->_addrstr;
-}
-
-// ----------------------------------------------------------------------
-
-ipv4addr_t
-Socket::getAddress() const
-{
-    return( (ipv4addr_t) _sock.sin_addr.s_addr );
-}
-
-// ----------------------------------------------------------------------
-/**  set/get methods for avoiding calling close on a udp socket
- *   descriptor. This only gets set true by the protected constructor
- *   when creating a UDP construct of a 'server-client' object. Calling
- *   close on a server-client fd in UDP would result in closing on our
- *   server object as well. This is a special-case condition only needed
- *   when utilizing the SocketFactory with UDP sockets.
- */
-void
-Socket::setUdpNoClose ( bool noclose )
-{
-    this->_noUdpClose = noclose;
-}
-
-bool
-Socket::getUdpNoClose() const
-{
-    return this->_noUdpClose;
 }
 
 // ----------------------------------------------------------------------
@@ -467,7 +418,7 @@ Socket::write ( const void * vptr, size_t n )
     socklen_t len = 0;
     ssize_t   st  = 0;
 
-    if ( _proto == IPPROTO_UDP && ! _connected ) {
+    if ( (_proto == IPPROTO_UDP && ! _connected) || _socktype == SOCKTYPE_RAW ) {
         len = sizeof(_sock);
         st  = ::sendto(_fd, (const char*) vptr, n, 0, (struct sockaddr*) &_sock, len);
     } else {
@@ -485,7 +436,7 @@ Socket::readFrom ( void * vptr, size_t n, sockaddr_in & csock )
     socklen_t len = 0;
     ssize_t   rd  = 0;
 
-    if ( _proto != IPPROTO_UDP )
+    if ( _proto == IPPROTO_TCP && _socktype != SOCKTYPE_RAW )
         return -1;
 
     len = sizeof(struct sockaddr_in);
@@ -601,6 +552,81 @@ Socket::setSocketOption ( SocketOption opt )
     return this->setSocketOption(opt.level(),
                                  opt.id(),
                                  opt.value());
+}
+
+// ----------------------------------------------------------------------
+
+const sockfd_t&
+Socket::getDescriptor() const
+{
+    return _fd;
+}
+
+// ----------------------------------------------------------------------
+
+const SocketType&
+Socket::getSocketType() const
+{
+    return this->_socktype;
+}
+
+// ----------------------------------------------------------------------
+
+const uint16_t&
+Socket::getPort() const
+{
+    return this->_port;
+}
+
+// ----------------------------------------------------------------------
+
+const int&
+Socket::getSocketProtocol() const
+{
+    return this->_proto;
+}
+
+// ----------------------------------------------------------------------
+
+const std::string&
+Socket::getAddressString() const
+{
+    return this->_addrstr;
+}
+
+
+const std::string&
+Socket::getHostString() const
+{
+    return this->_hoststr;
+}
+
+// ----------------------------------------------------------------------
+
+ipv4addr_t
+Socket::getAddress() const
+{
+    return( (ipv4addr_t) _sock.sin_addr.s_addr );
+}
+
+// ----------------------------------------------------------------------
+/**  set/get methods for avoiding calling close on a udp socket
+ *   descriptor. This only gets set true by the protected constructor
+ *   when creating a UDP construct of a 'server-client' object. Calling
+ *   close on a server-client fd in UDP would result in closing on our
+ *   server object as well. This is a special-case condition only needed
+ *   when utilizing the SocketFactory with UDP sockets.
+ */
+void
+Socket::setUdpNoClose ( bool noclose )
+{
+    this->_noUdpClose = noclose;
+}
+
+bool
+Socket::getUdpNoClose() const
+{
+    return this->_noUdpClose;
 }
 
 // ----------------------------------------------------------------------
@@ -738,7 +764,7 @@ Socket::nreadn ( void * vptr, size_t n )
     while ( nleft > 0 ) {
         if ( (nread = ::recv(_fd, ptr, nleft, 0)) < 0 ) {
 	    
-#       ifdef WIN32
+#         ifdef WIN32
         	
 	    int err = WSAGetLastError();
             if ( err == WSAEINTR ) 
@@ -773,30 +799,46 @@ Socket::nreadn ( void * vptr, size_t n )
 // ----------------------------------------------------------------------
 
 void
-Socket::InitializeSocket ( sockfd_t & fd, int & proto ) throw ( SocketException )
+Socket::InitializeSocket ( sockfd_t & fd, int socktype, int proto ) 
+    throw ( SocketException )
 {
     char   serr[ERRORSTRLEN];
-    std::string errstr = "Socket::initSocket() Fatal Error";
+    std::string errstr = "Socket::initSocket() Fatal Error ";
 
-    if ( proto == IPPROTO_TCP ) {
-    	fd = socket(AF_INET, SOCK_STREAM, 0);
-    } else if ( proto == IPPROTO_UDP ) {
-    	fd = socket(AF_INET, SOCK_DGRAM, 0);
-    } else {
-        errstr.append(": Unsupported protocol");
-        throw SocketException(errstr);
+    if ( socktype > SOCKTYPE_NONE && socktype < SOCKTYPE_RAW )
+    {
+        if ( proto == IPPROTO_TCP ) {
+            fd = socket(AF_INET, SOCK_STREAM, 0);
+        } else if ( proto == IPPROTO_UDP ) {
+            fd = socket(AF_INET, SOCK_DGRAM, 0);
+        } else {
+            errstr.append(": Unsupported protocol");
+            throw SocketException(errstr);
+        }
+    }
+    else if ( socktype == SOCKTYPE_RAW )
+    {
+        fd = socket(AF_INET, SOCK_RAW, proto);
     }
 
     if ( ! Socket::IsValidDescriptor(fd) ) {
 
 #       ifdef WIN32
-    	errstr.append(": Failed to initialize socket");
-#       else	
-    	strerror_r(errno, serr, ERRORSTRLEN);
-    	errstr.append(serr);
+        errstr.append(": Failed to initialize socket");
+#       else
+        if ( errno == EACCES || errno == EPERM ) {
+            errstr.append("EACCES: Permission denied");
+        } else if ( errno == EAFNOSUPPORT ) {
+            errstr.append("EAFNOSUPPORT: Address Family not supported");
+        } else if ( errno == EINVAL ) {
+            errstr.append("EINVAL: Unknown protocol or PF not supported");
+        } else {
+            strerror_r(errno, serr, ERRORSTRLEN);
+            errstr.append(serr);
+        }
 #     	endif
 
-    	throw SocketException(errstr);
+        throw SocketException(errstr);
     }
 
     return;
@@ -836,6 +878,33 @@ Socket::ntop ( ipv4addr_t addr )
 
     return((std::string) ip);
 }
+
+// ----------------------------------------------------------------------
+
+uint16_t
+Socket::IpChkSum ( uint16_t * t, int n )
+{
+    uint16_t res = 0;
+    uint32_t sum = 0;
+    uint8_t  ob  = 0;
+
+    while ( n > 1 ) {
+        sum += *t++;
+        n   -= 2;
+    }
+
+    if ( n == 1 ) {
+        *(uint8_t*)(&ob) = *(uint8_t*) t;
+        sum += ob;
+    }
+
+    sum  = ( sum >> 16 ) + ( sum & 0xFFFF );
+    sum += ( sum >> 16 );
+    res  = ~sum;
+
+    return res;
+}
+
 
 // ----------------------------------------------------------------------
 

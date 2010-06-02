@@ -172,7 +172,7 @@ createServer ( int port )
     while ( retry < 4 ) {
 
 	try {
-	    server = new BufferedSocket(0, port, SOCKET_SERVER, IPPROTO_TCP);
+	    server = new BufferedSocket(0, port, SOCKTYPE_SERVER, SOCKET_TCP);
 	    if ( ! server->init(true) ) {
 		printf("Socket error: %s\n", server->errorStr().c_str());
 	    } else {

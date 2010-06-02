@@ -40,7 +40,9 @@ namespace tcanetpp {
 LogFacility::StreamMap  LogFacility::_StreamMap  = LogFacility::StreamMap();
 
 #ifndef WIN32
+#ifdef PTHREADS
 tcanetpp::ThreadLock  LogFacility::_Lock         = tcanetpp::ThreadLock();
+#endif
 #endif
 
 
@@ -443,7 +445,7 @@ void
 LogFacility::CloseLogFacility()
 {
     LogFacility::CloseSyslog();
-    LogFacility::RemoveLogStreams(true);
+    LogFacility::RemoveLogStreams(false);
 }
 
 
@@ -630,6 +632,7 @@ bool
 LogFacility::Lock()
 { 
 #   ifndef WIN32
+#   ifdef PTHREADS
     if ( LogFacility::_InitLock && LogFacility::_TryLock ) {
         if ( LogFacility::_Lock.tryLock() <= 0 )
             return false;
@@ -637,6 +640,7 @@ LogFacility::Lock()
         if ( LogFacility::_Lock.lock() <= 0 )
             return false;
     }
+#   endif
 #   endif
 
     return true;
@@ -646,8 +650,10 @@ void
 LogFacility::Unlock()
 {
 #   ifndef WIN32
+#   ifdef PTHREADS
     if ( LogFacility::_InitLock )
         LogFacility::_Lock.unlock();
+#   endif
 #   endif 
     return;
 }

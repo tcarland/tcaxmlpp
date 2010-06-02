@@ -164,8 +164,19 @@ class EventManager {
 
     const std::string&   getErrorStr() const { return this->_errstr; }
 
+ 
+  public:
 
-    int                  GetTimeOfDay   ( timeval & t );
+    static int           GetTimeOfDay   ( timeval * t );
+
+    static float         TimevalToMs    ( const timeval * tv );
+
+    static float         TimevalDiffMs  ( const timeval * t2, 
+                                          const timeval * t1 );
+
+    static void          TimevalDiff    ( const timeval * t2, 
+                                          const timeval * t1, 
+                                          timeval * result );
 
 
   protected:

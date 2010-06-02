@@ -39,7 +39,7 @@ CmdBuf::CmdBuf()
 }
 
 
-CmdBuf::CmdBuf ( u_int bufsize )
+CmdBuf::CmdBuf ( size_t bufsize )
 {
     if ( bufsize >= MINIMUM_CMDBUF_SIZE || bufsize <= MAXIMUM_CMDBUF_SIZE )
 	_bufsize = bufsize;

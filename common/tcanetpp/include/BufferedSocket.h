@@ -42,10 +42,10 @@ class BufferedSocket : public Socket {
       public:
         virtual ~BufferedSocketFactory() {}
 
-        virtual Socket* operator() ( sockfd_t           & fd, 
-                                     struct sockaddr_in & csock )
+        virtual Socket* operator() ( sockfd_t & fd, sockaddr_in & csock,
+                                     SocketType type, int proto )
         {
-            return( (Socket*) new BufferedSocket(fd, csock) );
+            return( (Socket*) new BufferedSocket(fd, csock, type, proto) );
         }
     };
 
@@ -54,8 +54,10 @@ class BufferedSocket : public Socket {
 
   protected:
 
-    BufferedSocket ( sockfd_t           & fd, 
-                     struct sockaddr_in & csock );
+    BufferedSocket ( sockfd_t    & fd, 
+                     sockaddr_in & csock,
+                     SocketType    type,
+                     int           proto );
 
   public:
 

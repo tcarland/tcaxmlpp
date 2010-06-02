@@ -49,7 +49,7 @@ class CmdBuf {
   public:
 
     CmdBuf();
-    CmdBuf ( u_int bufsize );
+    CmdBuf ( size_t bufsize );
 
     virtual ~CmdBuf();
 

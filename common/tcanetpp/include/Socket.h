@@ -50,19 +50,18 @@ namespace tcanetpp {
 
 #define SOCKET_TCP  IPPROTO_TCP
 #define SOCKET_UDP  IPPROTO_UDP
-#define SOCKET_RAW  IPPROTO_RAW
-
+#define SOCKET_ICMP IPPROTO_ICMP
 
 
 /**  Socket types for Socket constructor  */
 typedef enum SocketType
 {
-    SOCKET_NONE = 0,
-    SOCKET_CLIENT = 1,
-    SOCKET_SERVER = 2,
-    SOCKET_SERVER_CLIENT = 3
+    SOCKTYPE_NONE = 0,
+    SOCKTYPE_CLIENT = 1,
+    SOCKTYPE_SERVER_CLIENT = 2,
+    SOCKTYPE_SERVER = 3,
+    SOCKTYPE_RAW = 4
 } sockType_t;
-
 
 
 
@@ -81,15 +80,24 @@ class Socket {
 
     class SocketFactory {
       public:
-
         virtual ~SocketFactory() {}
             
-        virtual Socket* operator() ( sockfd_t & fd, struct sockaddr_in & csock )
-        {
-            return new Socket(fd, csock);
-        }
+        virtual Socket* operator() ( sockfd_t & fd, sockaddr_in & csock, 
+                                     SocketType type, int protocol );
     };
 
+
+    class UdpSocketFactory : public SocketFactory {
+        sockaddr_in  _csock;
+      public:
+        explicit UdpSocketFactory ( sockaddr_in sock )
+            : _csock(sock)
+        {}
+        virtual ~UdpSocketFactory() {}
+
+        virtual Socket* operator() ( sockfd_t & fd, sockaddr_in & csock,
+                                     SocketType type, int protocol );
+    };
 
     static SocketFactory  factory;
 	
@@ -106,8 +114,7 @@ class Socket {
 	
   protected:
 	
-    Socket ( sockfd_t & fd, struct sockaddr_in & csock, int protocol = IPPROTO_TCP );
-	
+    Socket ( sockfd_t & fd, sockaddr_in & csock, SocketType type, int protocol );
 	
   public:
     
@@ -128,10 +135,12 @@ class Socket {
     
     ipv4addr_t          getAddress() const;
     const std::string&  getAddressString() const;
+    const std::string&  getHostString() const;
 
     ipv4addr_t          getAddr() const       { return this->getAddress(); }
     const std::string&  getAddrString() const { return this->getAddressString(); }
     const std::string&  getAddrStr() const    { return this->getAddressString(); }
+    const std::string&  getHostStr() const    { return this->getHostString(); }
     
     const sockfd_t&     getDescriptor() const;
     const sockfd_t&     getFD() const    { return this->getDescriptor(); }
@@ -171,27 +180,30 @@ class Socket {
     static bool         IsValidDescriptor ( const sockfd_t & fd );
     static void         ResetDescriptor   ( sockfd_t & fd );
 
-    
+    static uint16_t     IpChkSum ( uint16_t * t, int n );
+   
+
   protected:
     
     ssize_t             nwriten  ( const void * vptr, size_t n );
     ssize_t             nreadn   ( void * vptr, size_t n );
     
     
-    static void InitializeSocket ( sockfd_t & fd, int & proto )
+    static void InitializeSocket ( sockfd_t & fd, int type, int proto )
         throw ( SocketException );
     
     
   protected:
     
     std::string	            _addrstr;
+    std::string	            _hoststr;
     std::string	            _errstr;
     
     
   private:
     
     sockfd_t                _fd;
-    struct sockaddr_in      _sock;
+    sockaddr_in             _sock;
     SocketType              _socktype;
     int                     _proto;
     uint16_t                _port;

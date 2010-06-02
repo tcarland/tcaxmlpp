@@ -132,6 +132,7 @@ SocketOption::SetSndTimeout ( int val )
     return ( SocketOption(SOL_SOCKET, SO_SNDTIMEO, val, "SO_SNDTIMEO") );
 }
 
+
 SocketOption
 SocketOption::SetNoFragment ( int val )
 {
@@ -145,6 +146,14 @@ SocketOption::SetNoFragment ( int val )
     return ( SocketOption(IPPROTO_IP, IP_MTU_DISCOVER, val, "IP_MTU_DISCOVER") );
 # endif
 }
+
+
+SocketOption
+SocketOption::SetTTL ( int val )
+{
+    return ( SocketOption(IPPROTO_IP, IP_TTL, val, "IP_TTL") );
+}
+
 
 }  // namespace
 

@@ -25,7 +25,7 @@
 #define _TCANETPP_CONFIG_H_
  
 
-#define TCANETPP_VERSION  "11.11.2009"
+#define TCANETPP_VERSION  "03.16.2010"
 
 
 // for enabling widechar default

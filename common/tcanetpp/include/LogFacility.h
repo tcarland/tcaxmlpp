@@ -38,7 +38,9 @@ extern "C" {
 #include <sstream>
 
 #ifndef WIN32
-# include "ThreadLock.h"
+# ifdef PTHREADS
+#  include "ThreadLock.h"
+# endif
 #endif
 
 namespace tcanetpp {
@@ -91,7 +93,7 @@ class LogFacility {
     static std::ostream*  RemoveLogStream ( const std::string & logname,
                                             bool del  = false );
 
-    static void           RemoveLogStreams( bool del  = true );
+    static void           RemoveLogStreams( bool del  = false );
     
 
     static void           CloseSyslog();
@@ -206,7 +208,9 @@ private:
     static StreamMap             _StreamMap;
 
 #   ifndef WIN32
+#   ifdef PTHREADS
     static tcanetpp::ThreadLock  _Lock;
+#   endif
 #   endif
 
     static std::string           _LogName;

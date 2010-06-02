@@ -42,8 +42,8 @@ BufferedSocket::BufferedSocket()
       _wbx(false) 
 {}
 
-BufferedSocket::BufferedSocket ( ipv4addr_t ip, uint16_t port, SocketType socktype, int proto )
-    : Socket(ip, port, socktype, proto),
+BufferedSocket::BufferedSocket ( ipv4addr_t ip, uint16_t port, SocketType type, int proto )
+    : Socket(ip, port, type, proto),
       _rbuffer(new CircularBuffer()),
       _wbuffer(NULL),
       _wbx(false)
@@ -51,8 +51,8 @@ BufferedSocket::BufferedSocket ( ipv4addr_t ip, uint16_t port, SocketType sockty
     this->init(false);
 }
 
-BufferedSocket::BufferedSocket ( sockfd_t & fd, struct sockaddr_in & csock )
-    : Socket(fd, csock),
+BufferedSocket::BufferedSocket ( sockfd_t & fd, sockaddr_in & csock, SocketType type, int proto )
+    : Socket(fd, csock, type, proto),
       _rbuffer(new CircularBuffer()),
       _wbuffer(NULL),
       _wbx(false)

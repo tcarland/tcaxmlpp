@@ -46,7 +46,7 @@ int main ( int argc, char **argv )
 
     port = atoi(argv[1]);
 
-    sock = new BufferedSocket(addr, port, SOCKET_CLIENT, IPPROTO_TCP);
+    sock = new BufferedSocket(addr, port, SOCKTYPE_CLIENT, IPPROTO_TCP);
     //sock->setDebug(true);
 
     if ( sock->connect() < 0 ) {

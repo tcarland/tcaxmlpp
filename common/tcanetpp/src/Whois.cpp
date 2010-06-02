@@ -60,7 +60,7 @@ Whois::init ( const std::string & host, uint16_t port )
         if ( _sock )
             delete _sock;
 
-        _sock = new Socket(addr, port, SOCKET_CLIENT, SOCKET_TCP);
+        _sock = new Socket(addr, port, SOCKTYPE_CLIENT, SOCKET_TCP);
         _sock->setBlocking();
         if ( _sock->connect() > 0 )
             break;

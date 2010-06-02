@@ -68,7 +68,9 @@ public:
     static SocketOption  SetSndLoWat   ( int val );
     static SocketOption  SetRcvTimeout ( int val );
     static SocketOption  SetSndTimeout ( int val );
+
     static SocketOption  SetNoFragment ( int val );
+    static SocketOption  SetTTL        ( int val );
     
 private:
 
