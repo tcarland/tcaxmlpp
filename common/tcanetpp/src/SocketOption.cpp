@@ -143,7 +143,8 @@ SocketOption::SetNoFragment ( int val )
 # elif __sparc
     return ( SocketOption(IPPROTO_IP, IP_DONTFRAG, val, "IP_DONTFRAG") );
 # else
-    return ( SocketOption(IPPROTO_IP, IP_MTU_DISCOVER, val, "IP_MTU_DISCOVER") );
+    //return ( SocketOption(IPPROTO_IP, IP_MTU_DISCOVER, val, "IP_MTU_DISCOVER") );
+    return ( SocketOption() );
 # endif
 }
 

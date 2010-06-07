@@ -182,7 +182,7 @@ TnmsSocket::openConnection ( const std::string & host, uint16_t port )
         delete _sock;
     }
 
-    _sock = new BufferedSocket(addr, _port, SOCKET_CLIENT, SOCKET_TCP);
+    _sock = new BufferedSocket(addr, _port, SOCKTYPE_CLIENT, SOCKET_TCP);
 
     _sock->setNonBlocking();
     _sock->rxBufferSize(TNMS_PACKET_SIZE);

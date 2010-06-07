@@ -334,7 +334,7 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
             _agentId = 0;
         }
 
-        _agent = new Socket(0, nsvrcfg.agent_port, SOCKET_SERVER, SOCKET_TCP);
+        _agent = new Socket(0, nsvrcfg.agent_port, SOCKTYPE_SERVER, SOCKET_TCP);
 
         if ( ! _agent->init(false) ) {
             LogFacility::LogMessage("TnmsManager::parseConfig: Error creating agent server socket" 
@@ -360,7 +360,7 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
             _clientId = 0;
         }
 
-        _client = new Socket(0, nsvrcfg.client_port, SOCKET_SERVER, SOCKET_TCP);
+        _client = new Socket(0, nsvrcfg.client_port, SOCKTYPE_SERVER, SOCKET_TCP);
 
         if ( ! _client->init(false) ) {
             LogFacility::LogMessage("TnmsManager::parseConfig: Error creating client server socket" 

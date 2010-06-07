@@ -23,7 +23,7 @@ using namespace tcasqlpp;
 namespace tnmsauth {
 
 
-std::string TnmsAuthManager::_Version = "v0.186";
+std::string TnmsAuthManager::_Version = "v0.187";
 
 
 TnmsAuthManager::TnmsAuthManager ( const std::string & config ) 
@@ -285,7 +285,7 @@ TnmsAuthManager::parseConfig ( const std::string & cfg, const time_t & now )
         }
 
         _authHandler = new AuthdIOHandler(_authDb);
-        _svr         = new Socket(0, acfg.tnms_port, SOCKET_SERVER, IPPROTO_TCP);
+        _svr         = new Socket(0, acfg.tnms_port, SOCKTYPE_SERVER, IPPROTO_TCP);
 
         if ( _svr->init(false) < 0 ) {
             LogFacility::LogMessage("Config error creating server " 
