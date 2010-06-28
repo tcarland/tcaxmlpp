@@ -22,7 +22,9 @@
 **/
 #define _TCANETPP_RANDOM_C_
 
-#include <unistd.h>
+#ifndef WIN32
+# include <unistd.h>
+#endif
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>

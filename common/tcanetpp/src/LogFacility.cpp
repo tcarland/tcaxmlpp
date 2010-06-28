@@ -30,6 +30,9 @@
 
 #include "LogFacility.h"
 
+#ifdef WIN32
+# pragma warning (disable:4996)
+#endif
 
 namespace tcanetpp {
 
@@ -598,11 +601,12 @@ LogFacility::GetTimeString ( const time_t & now )
     std::string  timestr;
 
 #   ifdef WIN32
-    char * tptr = ::ctime(&now);
-    ::strncpy(tstr, tptr, 32);
+    if ( ::ctime_s(tstr, 32, &now) != 0 )
+        return timestr;
 #   else
     ::ctime_r(&now, tstr);
 #   endif
+
     timestr = tstr;
     timestr = timestr.substr(0, timestr.length() - 1);
 

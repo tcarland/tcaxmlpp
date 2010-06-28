@@ -95,13 +95,7 @@ FileUtils::IsDirectory ( const std::string & dname )
 bool
 FileUtils::IsSymlink ( const std::string & dname )
 {
-# ifdef WIN32
-    struct _stat sb;
-
-    if ( ::_stat(dname.c_str(), &sb) == 0 )
-        if ( S_IFLNK & sb.st_mode )
-            return true;
-# else
+# ifndef WIN32
     struct stat  sb;
 
     if ( ::stat(dname.c_str(), &sb) < 0 )

@@ -21,7 +21,7 @@ namespace tnmsApi {
 
 
 const
-std::string TnmsBase::ApiVersion = "1.21";
+std::string TnmsBase::ApiVersion = "1.22";
 
 
 template< typename Iterator, typename Value >

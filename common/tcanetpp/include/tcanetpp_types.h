@@ -35,16 +35,14 @@ extern "C" {
 # include <unistd.h>
 # include <netinet/in.h>
 # include <errno.h>
+# include <sys/types.h>
 #endif
 
 
 // not relying on win32 inttypes, so we define our own.
 #ifdef WIN32  
 
-# define INET_ADDRSTRLEN  16
-
   typedef long                 ssize_t;
-  // from stdint.h 
   typedef signed char          int8_t;
   typedef unsigned char        uint8_t;
   typedef short                int16_t;

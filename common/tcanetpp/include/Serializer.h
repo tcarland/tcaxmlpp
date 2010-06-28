@@ -5,7 +5,8 @@ extern "C" {
 # include <string.h>
 }
 #include <string>
-#include <inttypes.h>
+
+#include "tcanetpp_types.h"
 
 
 namespace tcanetpp {

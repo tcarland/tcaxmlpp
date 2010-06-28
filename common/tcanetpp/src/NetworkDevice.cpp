@@ -22,9 +22,11 @@
 #define _TCANETPP_NETWORKDEVICE_CPP_
 
 extern "C" {
+#ifndef WIN32
 # include <netdb.h>
 # include <unistd.h>
 # include <sys/socket.h>
+#endif
 }
 #include <vector>
 
@@ -375,17 +377,12 @@ NetworkDevice::setDevice ( const std::string & host )
 bool
 NetworkDevice::setDevice ( const ipv4addr_t & addr )
 {
-    struct hostent * hp;
-
     this->_deviceAddr = addr;
+    this->_deviceName = CidrUtils::GetHostName(addr);
 
-    hp = ::gethostbyaddr(&_deviceAddr, sizeof(_deviceAddr), AF_INET);
-
-    if ( hp ) {
-	_deviceName = hp->h_name;
-    } else {
+    if ( _deviceName.empty() ) {
 	_deviceName = CidrUtils::ntop(_deviceAddr);
-	return false;
+        return false;
     }
 
     return true;

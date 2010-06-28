@@ -193,10 +193,10 @@ Socket::bind()
     if ( r != 0 ) {
 	_errstr = "Socket::bind() Failed to bind";
 	
-#       ifndef WIN32
+#   ifndef WIN32
 	if ( strerror_r(errno, serr, ERRORSTRLEN) == 0 )
             _errstr = serr;
-#       endif
+#   endif
 	
         return -1;
     }
@@ -508,7 +508,11 @@ Socket::getSocketOption ( SocketOption opt )
 
     vlen = sizeof(v);
 
+#   ifdef WIN32
+    r = ::getsockopt(_fd, opt.level(), opt.id(), (char*)&v, &vlen);
+#   else
     r = ::getsockopt(_fd, opt.level(), opt.id(), &v, &vlen);
+#   endif
 
     if ( r == 0 )
         ropt = SocketOption(opt.level(), opt.id(), v, opt.name());
@@ -529,18 +533,19 @@ Socket::setSocketOption ( int level, int optname, int optval )
     if ( ! Socket::IsValidDescriptor(_fd) )
         return -1;
 
-    if ( ::setsockopt(_fd, level, optname, (const void*) &optval, len) < 0 ) {
-
-#       ifdef WIN32
+#   ifdef WIN32
+    if ( ::setsockopt(_fd, level, optname, (const char*) &optval, len) < 0 ) {
         _errstr = "Socket: Error in call to setsockopt()";
-#       else
+        return -1;
+    }
+#   else
+    if ( ::setsockopt(_fd, level, optname, (const void*) &optval, len) < 0 ) {
         // could test for EOPNOTSUPP here
         if ( ::strerror_r(errno, serr, ERRORSTRLEN) == 0 )
             _errstr = serr;
-#       endif
-
         return -1;
     }
+#   endif
 
     return 1;
 }

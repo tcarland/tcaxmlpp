@@ -56,7 +56,7 @@ typedef struct ptNode {
 } ptNode_t;
 
 
-typedef void (*nodeHandler_t) (uint32_t, uint8_t, void*);
+typedef void (*nodeHandler_t) (uint32_t, uint16_t, void*);
 typedef void (*pvtNodeHandler_t)(ptNode_t*);
 
 

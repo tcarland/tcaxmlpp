@@ -212,7 +212,7 @@ PT_freeNodesR ( ptNode_t * head, ptNode_t * node, int bit, nodeHandler_t handler
 
 //  function used internally to 'base' a prefix
 static ipv4addr_t
-PT_basePrefix ( ipv4addr_t addr, uint8_t mb )
+PT_basePrefix ( ipv4addr_t addr, uint16_t mb )
 {
     ipv4addr_t  mask;
     
@@ -256,7 +256,7 @@ PT_countNodesHandler ( ptNode_t * node )
 
 //  callback used by pt_size() to count allocated children
 static void
-PT_countRocksHandler ( ipv4addr_t addr, uint8_t mb, void * rock )
+PT_countRocksHandler ( ipv4addr_t addr, uint16_t mb, void * rock )
 {
     if ( rock )
 	ptsize++;

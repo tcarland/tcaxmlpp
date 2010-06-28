@@ -137,7 +137,7 @@ SocketOption
 SocketOption::SetNoFragment ( int val )
 {
 # ifdef WIN32
-    return ( SocketOption(IPPROTO_IP, IP_DONTFRAG, val, "IP_DONTFRAG") );
+    return ( SocketOption(IPPROTO_IP, IP_DONTFRAGMENT, val, "IP_DONTFRAGMENT") );
 # elif BSD
     return ( SocketOption(IPPROTO_IP, IP_DONTFRAG, val, "IP_DONTFRAG") );
 # elif __sparc

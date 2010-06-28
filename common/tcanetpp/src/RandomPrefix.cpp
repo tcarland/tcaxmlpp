@@ -24,9 +24,11 @@
 
 extern "C" {
 # include <time.h>
-# include <unistd.h>
 # include <stdlib.h>
 # include <math.h>
+#ifndef WIN32
+# include <unistd.h>
+#endif
 }
 
 #include "RandomPrefix.h"

@@ -1,0 +1,5 @@
+
+
+export USE_PTHREADS=true
+export TNMS_DEBUG=true
+export TNMS_PREFIX=/opt/tcanms

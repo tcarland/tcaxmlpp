@@ -86,7 +86,11 @@ CidrUtils::ToString ( ipv4addr_t addr, uint8_t mb )
     char  cidr[INET_CIDRSTRLEN];
 
     std::string  cidrStr = CidrUtils::ntop(addr);
-    snprintf(cidr, INET_CIDRSTRLEN, "%s%s%u", cidrStr.c_str(), "/", mb);
+#   ifdef WIN32
+    ::_snprintf(cidr, INET_CIDRSTRLEN, "%s%s%u", cidrStr.c_str(), "/", mb);
+#   else
+    ::snprintf(cidr, INET_CIDRSTRLEN, "%s%s%u", cidrStr.c_str(), "/", mb);
+#   endif
 
     cidrStr.assign(cidr);
 
@@ -168,7 +172,7 @@ CidrUtils::GetCidrRange ( uint8_t mb, uint8_t * subnet_pos )
     if ( subnet_pos )
         *subnet_pos = pos;
 
-    return (int) pow(2, (8 - mb));
+    return ::pow((double)2, (double)(8 - mb));
 }
 
 int
@@ -210,7 +214,7 @@ CidrUtils::DeAggregate ( Prefix & p, uint8_t mb, std::vector<Prefix> &v )
 	! CidrUtils::IsBasePrefix(p.getPrefix(), p.getPrefixLen()) )
 	return false;
 
-    num = (int) pow(2, (mb - p.getPrefixLen()));
+    num = (int) ::pow((double)2, (double)(mb - p.getPrefixLen()));
 
     indxA = ( 3 - ((32 - p.getPrefixLen()) / 8) );
     indxB = ( 3 - ((32 - mb) / 8) );

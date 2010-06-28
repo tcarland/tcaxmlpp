@@ -24,10 +24,10 @@ extern "C" {
 using namespace tcanetpp;
 
 
-#define SEQTIMEOUT      2
+#define SEQTIMEOUT      1
 #define MAXCONLOSS      3
 
-const char* Version = "v0.13";
+const char* Version = "v0.14";
 bool Alarm = false;
 int  Pid   = 0;
 
@@ -73,22 +73,22 @@ struct IcmpResponse {
 
 void usage()
 {
-    std::cout << "Usage: gktrace [-cdihv] <host|ip>" << std::endl
+    std::cout << "Usage: gktrace [-cdihV] <host|ip>" << std::endl
               << "    -c | --count  <num>  : Number of test iterations" << std::endl
               << "    -d | --debug         : Enable debug output" << std::endl
               << "    -h | --help          : Print help info and exit" << std::endl
               << "    -i | --interval <ms> : milliseconds between test iterations" << std::endl
               << "                            (default = 1000 or 1 second)" << std::endl
+              << "    -I | --icmp          : use icmp only" << std::endl
               << "    -n | --nodns         : do not resolve the results" << std::endl
-              << "    -v | --version       : Print version info and exit" << std::endl;
+              << "    -V | --version       : Print version info and exit" << std::endl;
     exit(0);
 }
 
 
 void version()
 {
-    std::cout << "gktrace version: " << Version << std::endl;
-    exit(0);
+    std::cout << "gktrace " << Version << std::endl;
 }
 
 
@@ -117,12 +117,12 @@ dropPriv()
     if ( geteuid() != 0 )
         return;
 
-    uid  = getuid();
-    gid  = getgid();
-    setegid(gid);
-    seteuid(uid);
+    uid  = ::getuid();
+    gid  = ::getgid();
+    ::setegid(gid);
+    ::seteuid(uid);
 
-    if ( geteuid() != uid )
+    if ( ::geteuid() != uid )
         throw Exception("dropPrivileges() failed");
 
     return;
@@ -151,7 +151,7 @@ ssize_t readIcmpHeader ( CircularBuffer * buff, neticmp_h * icmph )
 }
 
 
-size_t  readIcmpResponse ( CircularBuffer * buff, IcmpResponse & response )
+ssize_t readIcmpResponse ( CircularBuffer * buff, IcmpResponse & response )
 {
     ssize_t   rd;
 
@@ -207,21 +207,23 @@ int main ( int argc, char ** argv )
     int       count    = 100;
     bool      debug    = false;
     bool      resolve  = true;
+    bool      icmp     = false;
     timeval   tvin, tvo;
 
     static struct option l_opts[] = { {"debug", no_argument, 0, 'd'},
                                       {"count", required_argument, 0, 'c'},
                                       {"nodns", no_argument, 0, 'n'},
                                       {"interval", required_argument, 0, 'i'},
+                                      {"icmp", no_argument, 0, 'I'},
                                       {"help", no_argument, 0, 'h'},
-                                      {"version", no_argument, 0, 'v'},
+                                      {"version", no_argument, 0, 'V'},
                                       {0,0,0,0}
                                     };
 
     if ( argc < 2 )
         usage();
 
-    while ( (optChar = getopt_long(argc, argv, "c:dhi:nv", l_opts, &optindx)) != EOF )
+    while ( (optChar = getopt_long(argc, argv, "c:dhIi:nv", l_opts, &optindx)) != EOF )
     {
         switch ( optChar ) {
             case 'c':
@@ -229,6 +231,9 @@ int main ( int argc, char ** argv )
                 break;
             case 'd':
                 debug = true;
+                break;
+            case 'I':
+                icmp = true;
                 break;
             case 'i':
                 interval = StringUtils::fromString<int>(optarg);
@@ -239,8 +244,9 @@ int main ( int argc, char ** argv )
             case 'n':
                 resolve = false;
                 break;
-            case 'v':
+            case 'V':
                 version();
+                exit(0);
                 break;
             default:
                 break;
@@ -272,8 +278,8 @@ int main ( int argc, char ** argv )
     Socket * icmps = new Socket(dstaddr, SOCKET_ICMP, SOCKTYPE_RAW, SOCKET_ICMP);
 
     udps->init(false);
-    udps->setSocketOption(SocketOption::SetNoFragment(0));
     icmps->init(false);
+    udps->setSocketOption(SocketOption::SetNoFragment(0));
 
     dropPriv();
 
@@ -305,13 +311,11 @@ int main ( int argc, char ** argv )
     udph->length  = htons(idsz);
     udph->chksum  = 0;
 
-    udata->hop    = 0;
-    udata->proto  = SOCKET_UDP;
-    udata->ipaddr = 0;
-    udata->seq    = 0;
-    udata->cnt    = 0;
-
-    std::cout << "Sending UDP datagrams to " << dstname << std::endl;
+    if ( icmp )
+        std::cout << "Sending ICMP datagrams to ";
+    else
+        std::cout << "Sending UDP datagrams to ";
+    std::cout << dstname << std::endl;
 
     uint16_t    ttl     = 0;
     uint16_t    maxhops = 30;
@@ -362,6 +366,9 @@ int main ( int argc, char ** argv )
 
             if ( pathd )
                 pdata.seq++;
+
+            if ( icmp )
+                pdata.proto = SOCKET_ICMP;
 
             *udata = pdata;
 
@@ -530,6 +537,9 @@ int main ( int argc, char ** argv )
             std::cout << std::endl;
 
             send  = true;
+        } else {
+            // read block so small sleep
+            ::usleep(300);
         }
 
         if ( tvo.tv_sec == 0 || send  )
@@ -539,8 +549,9 @@ int main ( int argc, char ** argv )
     }
 
 
-    std::cout << std::endl << std::endl
-        << "Destination: " << CidrUtils::ntop(dstaddr);
+    std::cout << std::endl << std::endl;
+    version();
+    std::cout << "Destination: " << CidrUtils::ntop(dstaddr);
     if ( resolve )
         std::cout << " <" << CidrUtils::GetHostName(dstaddr) << ">  ";
     std::cout << " Hop count: " << phops << std::endl;
@@ -550,11 +561,11 @@ int main ( int argc, char ** argv )
               << std::setw(18) << "  address  " 
               << std::setw(8) << "    loss%    " 
               << std::setw(10)  << "rtt (ms)" 
-              << std::setw(8) << "min" 
-              << std::setw(8) << "max" 
+              << std::setw(10) << "min" 
+              << std::setw(10) << "max" 
               << std::setw(10) << "ipdv"
-              << std::setw(8) << "min"
-              << std::setw(8) << "max";
+              << std::setw(10) << "min"
+              << std::setw(10) << "max";
     if ( resolve )
         std::cout << "     dns";
     std::cout << std::endl
@@ -562,7 +573,6 @@ int main ( int argc, char ** argv )
     if ( resolve )
         std::cout << "---------------------------";
     std::cout << std::endl;
-
 
 
     PathVector::iterator  pIter;
@@ -586,11 +596,11 @@ int main ( int argc, char ** argv )
                   << std::setw(18) << std::setiosflags(std::ios_base::right) <<  hopname 
                   << std::setw(5)  << loss << "% (" << pdata.cnt << "/" << pdata.seq << ")"
                   << std::setw(10) << std::setprecision(3) << rttavg
-                  << std::setw(8) << std::setprecision(3) << pdata.rtt_min
-                  << std::setw(8) << std::setprecision(3) << pdata.rtt_max
+                  << std::setw(10) << std::setprecision(3) << pdata.rtt_min
+                  << std::setw(10) << std::setprecision(3) << pdata.rtt_max
                   << std::setw(10) << std::setprecision(3) << rtdavg
-                  << std::setw(8) << std::setprecision(3) << pdata.rtd_min
-                  << std::setw(8) << std::setprecision(3) << pdata.rtd_max;
+                  << std::setw(10) << std::setprecision(3) << pdata.rtd_min
+                  << std::setw(10) << std::setprecision(3) << pdata.rtd_max;
         if ( resolve )
             std::cout << "    <" << CidrUtils::GetHostName(pdata.ipaddr) << "> ";
         
