@@ -1,10 +1,13 @@
 
 External Requirements:
 
-LibXml2
+libxml2
 wxWidgets
-zlib
+
+Lib requirements included.
+---- 
 >=gsoap-2.7.14
+zlib
 net-snmp
 >=openssl-0.9.8k
 

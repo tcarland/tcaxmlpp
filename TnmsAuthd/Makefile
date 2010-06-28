@@ -60,12 +60,24 @@ clean:
 .PHONY: test
 test:
 	( cd test; make soap; make )
+	@echo
 
 test-clean:
 	( cd test; make distclean )
+	@echo
+
+.PHONY: tools
+tools:
+	( cd tools ; make all )
+	@echo
+
+tools-clean:
+	( cd tools; make distclean )
+	@echo
 
 distclean: clean gsoap-clean test-clean
 	$(RM) $(ALL_BINS)
+	@echo
 
 install:
 ifdef TNMS_PREFIX
