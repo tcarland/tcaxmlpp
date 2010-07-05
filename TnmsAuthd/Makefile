@@ -34,7 +34,7 @@ ALL_OBJS=	$(GSOAP_OBJS) $(SOAP_OBJS) $(OBJS)
 ALL_BINS=	$(BIN)
 
 
-all: soap tnmsauthd
+all: soap tnmsauthd tools
 soap: gsoap
 
 include $(TOPDIR)/tcamake/project_defs

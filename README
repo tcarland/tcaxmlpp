@@ -12,3 +12,11 @@ net-snmp
 >=openssl-0.9.8k
 
 
+
+Install:
+
+
+create a system account for the tcanms environment.
+
+adduser -d /opt/tcanms -U -s /sbin/nologin tcanms
+

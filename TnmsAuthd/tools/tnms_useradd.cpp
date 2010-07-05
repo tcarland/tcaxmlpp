@@ -1,5 +1,9 @@
 #define _TNMS_USERADD_CPP_
 
+extern "C" {
+# include <string.h>
+}
+
 #include <iostream>
 #include <iomanip>
 #include <stdexcept>
@@ -16,7 +20,7 @@ using namespace tcaxmlpp;
 
 
 static const
-char TNMS_USERADD_VERSION [] = ".11";
+char TNMS_USERADD_VERSION [] = "v1.11";
 
 
 const char * process = "tnms_useradd";
@@ -496,8 +500,9 @@ int main ( int argc, char **argv )
                 std::cout << doc.getErrorStr() << std::endl;
             } else {
                 std::string xmlcfg = doc.NodeToString(doc.getRootNode());
-                setUserConfig(sql, uid, xmlcfg);
+                updateUserConfig(sql, uid, xmlcfg);
             }
+        }
     }
 
     sql->dbclose();
