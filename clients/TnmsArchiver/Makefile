@@ -65,10 +65,10 @@ distclean: clean
 
 install:
 ifdef TNMS_PREFIX
-	$(CP) $(BIN) $(TNMS_PREFIX)/sbin
-	$(CP) etc/ta_dbinit.sh $(TNMS_PREFIX)/bin
-	$(CP) etc/ta_dbcreatesql.sh $(TNMS_PREFIX)/bin
-	$(CP) etc/ta_credentials.conf.example $(TNMS_PREFIX)/etc
+	$(CP) $(BIN) $(TNMS_PREFIX)/tnms/sbin
+	$(CP) etc/ta_dbinit.sh $(TNMS_PREFIX)/tnms/bin
+	$(CP) etc/ta_dbcreatesql.sh $(TNMS_PREFIX)/tnms/bin
+	$(CP) etc/ta_credentials.conf.example $(TNMS_PREFIX)/tnms/etc
 	@echo
 endif
 

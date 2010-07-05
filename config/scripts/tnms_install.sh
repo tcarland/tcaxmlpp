@@ -27,21 +27,21 @@ if [ -z "$RC_TNMS_BASHRC" ]; then
     if [ -e $CONFIGDIR/tnmsrc ]; then
         echo "$PNAME: using rc: $CONFIGDIR/tnmsrc"
         source $CONFIGDIR/tnmsrc
-    elif [ -e $HOME/tnmsrc ]; then
-        echo "$PNAME: using rc from: $HOME/tnmsrc"
-        source $HOME/tnmsrc
+    elif [ -e $HOME/tnms/tnmsrc ]; then
+        echo "$PNAME: using rc from: $HOME/tnms/tnmsrc"
+        source $HOME/tnms/tnmsrc
     else
         echo "$PNAME: Error: Failed to locate rc file: tnmsrc"
         exit 1
     fi
 fi
-echo ""
 
 # we remap to our destination
-PREFIX=$TNMS_PREFIX
+PREFIX=$TNMS_PREFIX/tnms
 export TNMS_HOME="${PREFIX}"
 export TNMS_BIN=${TNMS_HOME}/bin
 export TNMS_SBIN=${TNMS_HOME}/sbin
+export TNMS_ETC=${TNMS_HOME}/etc
 export TNMS_TMP=${TNMS_HOME}/tmp
 export TNMS_LOGS=${TNMS_HOME}/logs
 
@@ -131,19 +131,30 @@ init_env_configs()
     echo "  Syncing configs from '$cfgenv/$cfghost'"
 
     if [ -e $rcfile ]; then
-        echo "cp $rcfile ~/"
+        echo "  'cp $rcfile ~/'"
         cp $rcfile ~/
     fi
 
     if [ -d $cfgpath ]; then
-        echo "      $RSYNC -r $cfgpath $target"
+        echo "  '$RSYNC -r $cfgpath $target'"
         $RSYNC -r $cfgpath $target
     else
-        echo " Error, path not valid: $cfgpath"
+        echo "  Error, path not valid: $cfgpath"
         return 1
     fi
 
     return 0
+}
+
+
+copy_scripts()
+{
+    echo "  Copying scripts to $TNMS_HOME"
+    ( cp $CONFIGDIR/tnms.sh $TNMS_BIN )
+    ( cp $CONFIGDIR/tnms_functions.sh $TNMS_BIN )
+    ( cp $CONFIGDIR/tnms_dbinit.sh $TNMS_BIN )
+    ( cp $CONFIGDIR/mysql* $TNMS_BIN )
+    ( cp $CONFIGDIR/tnmsrc $TNMS_ETC )
 }
 
 
@@ -203,13 +214,18 @@ create_subdirs
 if [ -n "$ENVIR" ] && [ -n "$HOST" ]; then
     init_env_configs $ENVIR $HOST
 else
-    echo "Target environment and host not provided, configs NOT sync'd."
+    echo ""
+    echo "  !! Target environment and host not provided, configs NOT sync'd."
+    echo "     Set the env vars TNMS_ENV and TNMS_HOST variables to sync configs"
+    echo "     
+    echo ""
 fi
+
+copy_scripts
 
 if [ $RETVAL -eq 1 ]; then
     echo "$PNAME: finished with errors."
 else
-    echo ""
     echo "$PNAME: finished successfully."
 fi
 echo ""

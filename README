@@ -20,3 +20,8 @@ create a system account for the tcanms environment.
 
 adduser -d /opt/tcanms -U -s /sbin/nologin tcanms
 
+source config/environment/$ENV/bashrc
+
+sudo -u $ROLEUSER -H make install
+
+
