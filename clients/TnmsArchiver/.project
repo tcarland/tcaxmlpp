@@ -4,6 +4,7 @@
 	<comment></comment>
 	<projects>
 		<project>TnmsApi</project>
+		<project>tcasqlpp</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -251,7 +251,6 @@ DbArchiver::deleteTimePeriods ( DbIndexList & indices )
     }
 
     return;
-
 }
 
 
