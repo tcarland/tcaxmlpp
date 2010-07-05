@@ -217,7 +217,6 @@ else
     echo ""
     echo "  !! Target environment and host not provided, configs NOT sync'd."
     echo "     Set the env vars TNMS_ENV and TNMS_HOST variables to sync configs"
-    echo "     
     echo ""
 fi
 
