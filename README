@@ -22,6 +22,12 @@ adduser -d /opt/tcanms -U -s /sbin/nologin tcanms
 
 source config/environment/$ENV/bashrc
 
-sudo -u $ROLEUSER -H make install
+sudo -u $ROLEUSER -H /bin/bash
+make install
+./bin/tnms_dbinit.sh -D tnmsauthd -U tnmsauth -P tnmsauth11b -x tca -p
 
+./bin/ta_dbinit.sh fwlr
+./bin/ta_dbinit.sh tcanms
+
+tnms_useradd -A -u fwlr/nebula -g tnmsagents -m dbstatic
 

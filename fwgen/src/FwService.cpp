@@ -14,7 +14,7 @@ namespace fwgen {
 
 
 bool
-FwService::ParseServices ( const std::string & svcfile, FwSvcMap & svcmap )
+FwService::ParseServices ( const std::string & svcfile, FwSvcMap & svcmap, bool debug )
 {
     std::ifstream        ifs;
 
@@ -69,10 +69,12 @@ FwService::ParseServices ( const std::string & svcfile, FwSvcMap & svcmap )
                 StringUtils::trim(svc.desc);
             }
 
-            std::cout << " :" << svc.name << ":" << svc.port << ":" << svc.proto;
-            if ( ! svc.desc.empty() )
-                std::cout << ":" << svc.desc;
-            std::cout << std::endl;
+            if ( debug ) {
+	            std::cout << " :" << svc.name << ":" << svc.port << ":" << svc.proto;
+	            if ( ! svc.desc.empty() )
+	                std::cout << ":" << svc.desc;
+	            std::cout << std::endl;
+            }
 
             svcmap[svc.port] = svc;
         }
@@ -97,7 +99,7 @@ int main()
     FwSvcMap     map;
     std::string  svcs = ETC_SERVICES;
 
-    FwService::ParseServices(svcs, svcmap);
+    FwService::ParseServices(svcs, svcmap, true);
 
     return 0;
 }

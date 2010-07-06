@@ -114,7 +114,7 @@ init_db()
     local SQL="${TNMS_TMP}/init_tnms_db.sql"
 
     if [ -z "$dbname" ] || [ -z "$dbuser" ]; then
-        echo "  DB Name macros are not set, aborting init_db()"
+        echo "  dbname or dbuser options are not set, aborting init_db()"
         return 1
     fi
     if [ -z "$dbhost" ]; then

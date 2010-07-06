@@ -26,12 +26,13 @@ class FwService {
     std::string  desc;
 
 
-
     FwService() : port(0) {}
+
     ~FwService() {}
 
 
-    static bool  ParseServices ( const std::string & svcfile, FwSvcMap & svcmap );
+    static bool  ParseServices ( const std::string & svcfile, FwSvcMap & svcmap,
+    		                     bool  debug = false );
 
 };
 

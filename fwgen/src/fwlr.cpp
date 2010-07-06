@@ -88,7 +88,7 @@ int main ( int argc, char **argv )
     if ( argc < 2 )
         usage();
 
-    while ( (optChar = getopt(argc, argv, "c:dDhL:tV")) != EOF ) {
+    while ( (optChar = getopt(argc, argv, "c:dDhl:tV")) != EOF ) {
         switch ( optChar ) {
             case 'c':
             	cfg = strdup(optarg);
@@ -102,7 +102,7 @@ int main ( int argc, char **argv )
             case 'h':
                 usage();
                 break;
-            case 'L':
+            case 'l':
                 logf   = strdup(optarg);
                 break;
             case 't':
@@ -160,7 +160,7 @@ int main ( int argc, char **argv )
                 } else {
 	                std::string  agent = "fwlr/";
 	                agent.append(fwe.host);
-	                fwrep = new FwLogReport(agent);
+	                fwrep = new FwLogReport(agent, "localhost", 15605);
                 }
             }
 

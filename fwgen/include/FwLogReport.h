@@ -33,6 +33,7 @@ class FwLogReport {
     int  FlushApi  ( const time_t & now );
     void SendEntry ( FwLogEntry & fwe, const time_t & now );
 
+
   private:
 
     FwMap     _fwMap;

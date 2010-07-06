@@ -34,14 +34,14 @@ FwLogReport::FlushApi ( const time_t & now )
     int  errcnt = 0;
 
     if ( ! _connection )
-        std::cout << "FwLogReport: no API connection, attempting reconnect" 
+        std::cout << "FwLogReport::FlushApi() no API connection, attempting reconnect"
             << std::endl;
 
     do {
         retval = _api->send(now);
         
         if ( retval == 1 ) {
-            std::cout << "Invalid configuration" << std::endl;
+            std::cout << "  FwLogReport::FlushApi(): API has Invalid configuration" << std::endl;
             return retval;
         }
 
@@ -54,22 +54,20 @@ FwLogReport::FlushApi ( const time_t & now )
                 std::cout.flush();
                 sleep(1);
             } else if ( retval == TNMSERR_CONN_DENIED ) {
-                std::cout << "Not authorized." << std::endl;
+                std::cout << "  FwLogReport::FlushApi() Not authorized." << std::endl;
                 _connection = false;
                 break;
             }
             errcnt++;
         } else {
             if ( ! _connection )
-                std::cout << std::endl << "Connected." << std::endl;
+                std::cout << std::endl << "  FwLogReport::FlushApi(): Connected." << std::endl;
             _connection = true;
         }
     } while ( retval > 0 && errcnt < 8 );
 
     if ( ! _connection )
-        std::cout << std::endl << "  Connection failed" << std::endl;
-
-    //std::cout << std::endl;
+        std::cout << std::endl << "   FwLogReport::FlushApi(): Connection failed" << std::endl;
 
     return retval;
 }
