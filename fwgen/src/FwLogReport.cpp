@@ -8,13 +8,22 @@ namespace fwgen {
 
 
 
-FwLogReport::FwLogReport ( const std::string & agent )
+FwLogReport::FwLogReport ( const std::string & agent, const std::string & host, uint16_t port )
     : _connection(false)
 {
-    _api = new TnmsAPI(agent, "localhost", 15300);
-    _api->set_config("etc/fwlr_comet.xml");
+    _api = new TnmsAPI(agent, host, port);
+    //_api->set_config("etc/fwlr_comet.xml");
 
-    FwService::ParseServices(ETC_SERVICES, _svcMap);
+    FwService::ParseServices(ETC_SERVICES, this->_svcMap);
+}
+
+FwLogReport::FwLogReport ( const std::string & config )
+    : _connection(false)
+{
+	_api = new TnmsAPI("fwlr");
+	_api->set_config(config);
+
+	FwService::ParseServices(ETC_SERVICES, this->_svcMap);
 }
 
 

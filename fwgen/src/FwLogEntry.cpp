@@ -16,7 +16,7 @@ namespace fwgen {
 
 
 bool
-FwLogEntry::ParseLogEntry ( const std::string & line, FwLogEntry & fwe )
+FwLogEntry::ParseLogEntry ( const std::string & line, FwLogEntry & fwe, bool debug )
 {
     StringFields  fields;
 
@@ -64,11 +64,13 @@ FwLogEntry::ParseLogEntry ( const std::string & line, FwLogEntry & fwe )
             fwe.host = datehost.substr(indx+1);
         }
 
-        std::cout << fwe.date << " " << fwe.host << " FW: IN=" 
+        if ( debug ) {
+	        std::cout << fwe.date << " " << fwe.host << " FW: IN="
                   << fwe.inf << " OUT=" << fwe.outf << " SRC=" 
                   << fwe.src << " DST=" << fwe.dst << " PROTO=" 
                   << fwe.proto  << " SPT=" << fwe.spt << " DPT=" 
                   << fwe.dpt << std::endl;
+        }
     } else
         return false;
 

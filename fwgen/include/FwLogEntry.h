@@ -48,7 +48,8 @@ class FwLogEntry {
 
 
     static bool   ParseLogEntry ( const std::string & line,
-                                  FwLogEntry        & fwe );
+                                  FwLogEntry        & fwe,
+                                  bool                debug = false );
 
     static void   SetHostname   ( FwLogEntry & fwe );
 

@@ -2,8 +2,8 @@
 
 <tnms version="0.1">
     <tnmsapi
-        agent_name="fwlr/comet"
-        logfile="fwlr-comet.log"
+        agent_name="fwlr/nebula"
+        logfile="fwlr-nebula.log"
         syslog="false"
         debug="true"
         version="1">

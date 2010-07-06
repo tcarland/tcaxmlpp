@@ -22,7 +22,12 @@ typedef std::map<std::string, FwLogEntry>  FwMap;
 class FwLogReport {
   public:
 
-    FwLogReport ( const std::string & agent );
+    FwLogReport ( const std::string & agent,
+    		      const std::string & host,
+    		      uint16_t            port );
+
+    FwLogReport ( const std::string & config );
+
     ~FwLogReport();
 
     int  FlushApi  ( const time_t & now );

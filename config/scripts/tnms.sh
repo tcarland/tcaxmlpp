@@ -41,9 +41,9 @@ if [ -z "$RC_TNMS_BASHRC" ]; then
     if [ -e $CONFIGDIR/tnmsrc ]; then
         echo "Using rc file from $CONFIGDIR"
         source $CONFIGDIR/tnmsrc
-    elif [ -e $HOME/tnmsrc ]; then
-        echo "Using rc file from $HOME"
-        source $HOME/tnmsrc
+    elif [ -e $HOME/tnms/etc/tnmsrc ]; then
+        echo "Using rc file from $HOME/tnms/etc"
+        source $HOME/tnms/etc/tnmsrc
     elif [ -e $CURDIR/tnmsrc ]; then
         echo "Using rc file from $CURDIR"
         source $CURDIR/tnmsrc

@@ -46,9 +46,9 @@ if [ -z "$RC_TNMS_BASHRC" ]; then
     elif [ -e $HOME/etc/tnmsrc ]; then
         echo "  Using rc from: $HOME/etc/tnmsrc"
         source $HOME/etc/tnmsrc
-    elif [ -e $TNMS_PREFIX/etc/tnmsrc ]; then
+    elif [ -e $TNMS_PREFIX/tnms/etc/tnmsrc ]; then
         echo "  Using rc from $TNMS_PREFIX/etc/tnmsrc"
-        source $TNMS_PREFIX/etc/tnmsrc
+        source $TNMS_PREFIX/tnms/etc/tnmsrc
     else
         echo "Error: Failed to locate rc file: tnmsrc"
         exit 1
@@ -57,7 +57,7 @@ fi
 echo ""
 
 if [ -n "$TNMS_PREFIX" ]; then
-    TNMS_HOME="$TNMS_PREFIX"
+    TNMS_HOME="$TNMS_PREFIX/tnms"
     TNMS_TMP="$TNMS_HOME/tmp"
     TNMS_ETC="$TNMS_HOME/etc"
 fi
@@ -97,7 +97,7 @@ usage()
     echo "    on which to exec the sql."
     echo ""
     echo "    Lastly if no --sqlfile(-f) is specified, the script will check for three "
-    echo "    sql scripts in '$TNMS_ETC'/dbname/dbname-{init|schema|setup}.sql. "
+    echo "    sql scripts in $TNMS_ETC/dbname/dbname-{init|schema|setup}.sql. "
     echo ""
     version
 }

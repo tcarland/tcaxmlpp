@@ -274,10 +274,6 @@ while [ $# -gt 0 ]; do
             if [ -z "$MYSQLDIR" ]; then
                 echo "No data dir provided"
                 exit 1
-CREATE USER 'yukai'@'localhost' IDENTIFIED BY '12kiaG';
-GRANT ALL PRIVILEGES ON *.* TO 'yukai'@'localhost';
-
-
             fi
             if [ ! -d $MYSQLDIR ]; then
                 echo "Invalid directory $MYSQLDIR"
