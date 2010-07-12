@@ -29,8 +29,8 @@ CIDR_OBJS=	cidrtest.o
 PT_OBJS=        
 PTT_OBJS=	pt_test.o
 
-BIN=		pingt asnwho ipconvert client server pttest strtest bufftest \
-		cidrtest packtest gktrace
+BIN=		pingt asnwho ipconvert client server cachetest pttest \
+		strtest bufftest cidrtest packtest gktrace
 
 ALL_OBJS=	$(OBJS) $(ASOBJ) $(STROBJ) $(CBUFF_OBJS) $(CIDR_OBJS)
 ALL_BINS= 	$(BIN)
@@ -74,6 +74,10 @@ hashtest: hash_test.o
 	@echo
 
 pfxtest: pfxtreetest.o
+	$(make-cxxbin-rule)
+	@echo
+
+cachetest: pfxcachetest.o
 	$(make-cxxbin-rule)
 	@echo
 

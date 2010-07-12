@@ -72,13 +72,12 @@ class PrefixTree {
     virtual ~PrefixTree()
     {
         this->clear();
-        free(_pt);
         if ( _lock )
             pthread_mutex_destroy(&_mutex);
     }
 
 
-    int  insert  ( Prefix & p, T obj )
+    int  insert  ( const Prefix & p, T obj )
     {
         int result = 0;
 
@@ -94,7 +93,7 @@ class PrefixTree {
     }
 
 
-    T    remove  ( Prefix & p )
+    T    remove  ( const Prefix & p )
     {
         if ( _lock )
             pthread_mutex_lock(&_mutex);
@@ -108,7 +107,7 @@ class PrefixTree {
     }
 
    
-    T    exactMatch ( Prefix & p )
+    T    exactMatch ( const Prefix & p )
     {
         if ( _lock )
             pthread_mutex_lock(&_mutex);
@@ -122,7 +121,7 @@ class PrefixTree {
     }
 
 
-    T    longestMatch ( Prefix & p )
+    T    longestMatch ( const Prefix & p )
     {
         if ( _lock )
             pthread_mutex_lock(&_mutex);
@@ -211,7 +210,7 @@ class PrefixTree {
 
   protected:
 
-    static void PTClearHandler ( uint32_t addr, uint8_t mb, void * rock )
+    static void PTClearHandler ( uint32_t addr, uint16_t mb, void * rock )
     {
         T  obj = (T) rock;
         if ( obj )

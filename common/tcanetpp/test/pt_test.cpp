@@ -66,7 +66,7 @@ void debugNodeHandler ( ptNode_t * node )
     return;
 }
 
-void nodeFreeHandler ( uint32_t addr, uint8_t mb, void * rock )
+void nodeFreeHandler ( uint32_t addr, uint16_t mb, void * rock )
 {
     Prefix* p = (Prefix*) rock;
     if ( p ) {

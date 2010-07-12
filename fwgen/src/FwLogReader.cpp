@@ -48,7 +48,7 @@ FwLogReader::run()
         if ( _squeue.size() > 0 )
             _squeue.notify();
 
-        sleep(2);
+        ::usleep(1000);
     } while ( ifs.eof() && ! this->_Alarm );
 
     ifs.close();
