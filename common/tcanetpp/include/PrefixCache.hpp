@@ -33,6 +33,10 @@
 namespace tcanetpp {
 
 
+/**  Used as the Radix Node in the underlying PrefixTree of a
+ *   PrefixCache instance. The PrefixCacheItem wraps the 
+ *   given ValueType with an associated timer.
+ **/
 template <typename ValueType>
 class PrefixCacheItem {
 
@@ -54,14 +58,14 @@ class PrefixCacheItem {
 
     virtual ~PrefixCacheItem() {}
 
-    void            timeout ( int val )  { _expire = timeout; }
-    int             timeout()            { return _expire; }
+    void           timeout ( long val )   { _expire = timeout; }
+    long           timeout()              { return _expire; }
 
-    const Prefix&   getPrefix()          { return _prefix; }
-    Timer           getTimer()           { return _timer; }
-    ValueType       getValue()           { return _value; }
+    const Prefix&  getPrefix()            { return _prefix; }
+    Timer          getTimer()             { return _timer; }
+    ValueType      getValue()             { return _value; }
 
-    void            setTimer ( Timer t ) { this->_timer = t; }
+    void           setTimer ( Timer & t ) { this->_timer = t; }
 
 
   private:
@@ -69,10 +73,14 @@ class PrefixCacheItem {
     Prefix         _prefix;
     ValueType      _value;
     Timer          _timer;
-    int            _expire;
+    long           _expire;
 };
 
 
+/**  The PrefixCache class provides an interface for tracking objects 
+ *   by a given IPV4 Prefix. It uses an underlying Radix Tree to provide 
+ *   a longest match lookup for the cache.
+ **/
 template <typename ValueType>
 class PrefixCache {
 
@@ -95,6 +103,10 @@ class PrefixCache {
     virtual ~PrefixCache() {}
 
 
+    /**  Performs a lookup of the given 'Prefix', and return false if 
+     *   the prefix already exists or insert fails and true on 
+     *   successful insert.
+     **/
     bool insert ( Prefix & p, ValueType item, const time_t & now )
     {
         CacheItem * ci = this->_pt->exactMatch(p);
@@ -103,8 +115,10 @@ class PrefixCache {
             return false;
 
         TimerSetIter  timer;
+
         ci    = new CacheItem(p, item, now);
         timer = _timers.insert(CachePair(now + _cacheTimeout, ci));
+
         ci->setTimer(timer);
 
         if ( this->_pt->insert(p, ci) == 0 ) {
@@ -116,19 +130,20 @@ class PrefixCache {
     }
 
 
+    /** Removes the cache entry for the given Prefix and returns
+     *  the corresponding template object.
+     **/
     ValueType remove ( Prefix & p )
     {
-        ValueType val;
-
+        ValueType   val;
         CacheItem * ci = this->_pt->exactMatch(p);
 
-        if ( ci == NULL )
-            return val;
-        if ( ci.getPrefix() != p )
+        if ( ci == NULL || ci.getPrefix() != p )
             return val;
 
         val = ci->getValue();
         ci  = this->_pt->remove(p);
+
         if ( ci )
             delete ci;
 
@@ -136,27 +151,51 @@ class PrefixCache {
     }
 
 
-    ValueType match  ( Prefix & p )
+    /**  Performs an exact match of the given Prefix and returns 
+     *   return the success of the lookup and sets the provided 
+     *   template object parameter accordingly.
+     **/
+    bool  match  ( const Prefix & p, ValueType & val )
     {
-        ValueType  val;
-
         CacheItem * ci = this->_pt->exactMatch(p);
 
         if ( ci == NULL )
-            return val;
+            return false;
 
-        return ci->getValue();
+        val = ci->getValue();
+
+        return true;
     }
 
+    /**  Performs a longest match lookup for the given Prefix
+     *   and retur the success of the lookup setting the 
+     *   target parameter accordingly.
+     **/
+    bool longestMatch ( const Prefix & p, ValueType & val )
+    {
+        CacheItem * ci = this->_pt->longestMatch(p);
 
+        if ( ci == NULL )
+            return false;
+
+        val = ci->getValue();
+
+        return true;
+    }
+
+    /**  Updates the timer for the given Prefix to the provided 
+     *   time plus the configured cache timeout interval.
+     *   Returns false if the prefix is not found.
+     **/
     bool refresh ( Prefix & p, time_t & now )
     {
-    	CacheItem * ci  = this->match(p);
+        TimerSetIter  timer;
+    	CacheItem    *ci  = this->_pt->exactMatch(p);
 
     	if ( NULL == ci || ci.getPrefix().getPrefix() == 0 )
             return false;
 
-        TimerSetIter  timer  = ci->getTimer();
+        timer = ci->getTimer();
     	ci->setExpireTime(now + _cacheTimeout);
     	_timers.erase(timer);
     	timer = _timers.insert(CachePair(ci->getExpireTime(), ci));
@@ -166,37 +205,49 @@ class PrefixCache {
     }
 
 
+    /**  Expires any entries that are older than the given @param now. 
+     *  The cache entries removed are provided in the @param  itemlist.
+     **/
     int  expireStale ( const time_t & now, std::list<ValueType> & itemlist )
     {
-        CacheItem       *ci, *cr;
-        TimerSetIter     tIter = _timers.begin();
+        CacheItem     *ci, *cr = NULL;
+        TimerSetIter   tIter, rIter;
+        
+        tIter = _timers.begin();
 
         while ( tIter != _timers.end() && tIter->first < now ) {
             ci = tIter->second;
 
-            itemlist.push_back(ci->getValue());
+            if ( ci )
+                itemlist.push_back(ci->getValue());
             
-            TimerSetIter  rIter = tIter;
+            rIter = tIter;
             ++tIter;
             _timers.erase(rIter);
-            cr = this->_pt->remove(ci->getPrefix());
-            if ( cr == ci )
-                delete ci;
+
+            if ( ci ) {
+                cr = this->_pt->remove(ci->getPrefix());
+                if ( ci == cr )
+                    delete ci;
+            }
         }
 
         return itemlist.size();
     }
 
+    /**  The number of entries in the cache. */
     size_t size() 
     {
         return this->_pt->size();
     }
 
+    /**  Returns the current cache timeout interval in seconds */
     const time_t&  cacheTimeout() const
     {
         return _cacheTimeout;
     }
 
+    /**  Sets the current cache timeout interval to the given value */
     void cacheTimeout ( time_t timeout_interval )
     {
         _cacheTimeout = timeout_interval;
@@ -207,7 +258,6 @@ class PrefixCache {
 
     CacheTree*          _pt;
     CacheTimerSet       _timers;
-
     time_t              _cacheTimeout;
     bool                _lock;
 };

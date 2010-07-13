@@ -23,6 +23,7 @@ char * addrs[] = { "10.0.0.0/8",
                    "172.16.8.0/24"
                  };
 
+
 struct myitem {
     std::string  addrstr;
     time_t       t;
@@ -90,6 +91,8 @@ int main ( int argc, char **argv )
 
         now = ::time(NULL);
     }
+
+    std::cout << "finished." << std::endl;
 
     return 0;
 }
