@@ -8,6 +8,7 @@
 #define _TCASQLPP_MYSQLSESSION_H_
 
 #include <time.h>
+#include <inttypes.h>
 
 #include <list>
 #include <vector>
