@@ -63,8 +63,12 @@ std::string        LogFacility::_LogTimeStr = "";
 
 
 // ----------------------------------------------------------------------
-/**  Initializes a thread-safe version of the LogFacility. */
 
+/**  Initializes a thread-safe version of the LogFacility.
+  *  If @param trylock is true, the mutex lock is non-blocking and if the
+  *  mutex is not available, the various log functions will potentially
+  *  return without logging the message.
+ **/
 bool
 LogFacility::InitThreaded ( bool trylock )
 {
@@ -111,7 +115,9 @@ LogFacility::OpenLogFile ( const std::string & logname,
     return fstrm->is_open();
 }
 
+
 // ----------------------------------------------------------------------
+
 
 bool
 LogFacility::OpenSyslog ( const std::string & prefix, int facility )
@@ -130,7 +136,9 @@ LogFacility::OpenSyslog ( const std::string & prefix, int facility )
     return false;
 }
 
+
 // ----------------------------------------------------------------------
+
 
 bool
 LogFacility::OpenLogStream ( const std::string & logname, const std::string & prefix, std::ostream * stream )
@@ -138,7 +146,9 @@ LogFacility::OpenLogStream ( const std::string & logname, const std::string & pr
      return(LogFacility::AddLogStream(logname, prefix, stream));
 }
 
+
 // ----------------------------------------------------------------------
+
 
 bool
 LogFacility::AddLogStream ( const std::string & logname, const std::string & prefix, std::ostream * stream )
@@ -161,6 +171,7 @@ LogFacility::AddLogStream ( const std::string & logname, const std::string & pre
 
     return result;
 }
+
 
 std::ostream*
 LogFacility::RemoveLogStream ( const std::string & logname, bool del )
@@ -188,6 +199,17 @@ LogFacility::RemoveLogStream ( const std::string & logname, bool del )
     return ptr;
 }
 
+/**  Removes all streams from the LogFacility.
+ *
+ *   @param del  indicates whether the function should also try to
+ *   'delete' the underlying log streams.  This can be dangerous
+ *   and is generally not recommended. The better method when managing
+ *   multiple logstreams in one application (rare), is to track the
+ *   logname and remove them individually taking care to handle the
+ *   associated log stream appropriately.  For instance, adding
+ *   std::cerr as a log stream and then calling this function with
+ *   del = true would cause a segfault.
+ */
 void
 LogFacility::RemoveLogStreams ( bool del )
 {
@@ -197,7 +219,7 @@ LogFacility::RemoveLogStreams ( bool del )
         return;
 
     for ( sIter = _StreamMap.begin(); sIter != _StreamMap.end(); ++sIter ) {
-        if ( sIter->second.logStream == NULL )
+        if ( sIter->second.logStream == NULL || sIter->second.logStream == &std::cout )
             continue;
         
         if ( del )
@@ -217,6 +239,10 @@ LogFacility::RemoveLogStreams ( bool del )
 
 // ----------------------------------------------------------------------
 
+/*  Returns the current state of the entire LogFacility. If no log streams
+ *  exist or are currently 'enabled' this will return false, otherwise true
+ *  if any one or more log streams are enabled
+ */
 bool
 LogFacility::LogFacilityIsOpen()
 {
@@ -229,6 +255,8 @@ LogFacility::LogFacilityIsOpen()
     return false;
 }
 
+
+/**  Set the log state of an existing log facility. */
 bool
 LogFacility::SetEnabled ( const std::string & logname, bool enabled )
 {
@@ -247,6 +275,12 @@ LogFacility::SetEnabled ( const std::string & logname, bool enabled )
     return true;
 }
 
+
+/**  There are two conditions under which this function can fail. If
+ *   the underlying mutex fails or the @param logname as provided does
+ *   not exist. For this reason, the actual boolean indicating whether
+ *   an existing stream is 'enabled' is a pass-by-value parameter.
+ */
 bool
 LogFacility::GetEnabled ( const std::string & logname, bool & enabled )
 {
@@ -266,6 +300,11 @@ LogFacility::GetEnabled ( const std::string & logname, bool & enabled )
     return result;
 }
 
+/**  Sets the current 'broadcast' state.  Messages can be intentionally
+ *   broadcast using the 'LogToAllStreams' function. Alternatively,
+ *   broadcasting can be explicitly forced for all logging by all threads
+ *   by setting the broadcast state to true via this function.
+ */
 void
 LogFacility::SetBroadcast ( bool broadcast )
 {
@@ -324,6 +363,13 @@ LogFacility::IsOpen ( const std::string & logname )
 
 // ----------------------------------------------------------------------
 
+/**  Logs a message via the LogFacility::Message object to the default or
+ *   primary LogFacility as defined by 'SetDefaultLogName' function.
+ *
+ *   Note that level is validated via this call so messages logged as the
+ *   LOGFAC_DEBUG log level will only really log if the
+ *   LogFacility::SetDebug(true) has be set when NOT using syslog.
+ */
 void
 LogFacility::LogMessage ( LogFacility::Message & logmsg, int level )
 {
@@ -331,11 +377,15 @@ LogFacility::LogMessage ( LogFacility::Message & logmsg, int level )
 }
 
 
+/**  Alternate LogMessage allowing control of the newline character. This
+ *   mainly applies to not syslog logstreams.
+ */
 void
 LogFacility::LogMessage ( const std::string & entry, int level, bool newline )
 {
     return LogFacility::LogMessage(LogFacility::_LogName, entry, level, newline);
 }
+
 
 void
 LogFacility::LogMessage ( const std::string & logname, 
@@ -349,6 +399,9 @@ LogFacility::LogMessage ( const std::string & logname,
         LogFacility::Unlock();
     }
 #   endif
+
+    if ( level == LOGFAC_DEBUG && ! LogFacility::GetDebug() )
+        return;
                
     if ( logname.empty() || LogFacility::_Broadcast )
         LogFacility::LogToAllStreams(entry, newline);
@@ -360,6 +413,7 @@ LogFacility::LogMessage ( const std::string & logname,
 
 // ----------------------------------------------------------------------
 
+/**  Broadcasts a log message to all enabled log streams */
 void
 LogFacility::LogToAllStreams ( const std::string & entry, bool newline )
 {
@@ -378,6 +432,9 @@ LogFacility::LogToAllStreams ( const std::string & entry, bool newline )
             dead.push_back(sIter->first);
             continue;
         }
+
+        if ( ! sIter->second.enabled )
+            continue;
 
         if ( ! sIter->second.logPrefix.empty() )
             *(strm) << sIter->second.logPrefix << ": ";
