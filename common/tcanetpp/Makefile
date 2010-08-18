@@ -15,7 +15,7 @@ endif
 
 #-------------------#
 
-ifdef GK_DEBUG
+ifdef TNMS_DEBUG
   OPT_FLAGS =       -g 
 # -DEV_DEBUG
 endif
@@ -114,7 +114,7 @@ distclean: clean libclean doc-clean test-clean
 	@echo
 
 dist:
-ifdef GK_DISTDIR
+ifdef TNMS_DISTDIR
 	@echo "sync'ing tcanetpp to $(TNMS_DISTDIR)/tcanetpp"
 	( $(RDIST) ./ $(TNMS_DISTDIR)/tcanetpp/ )
 	@echo

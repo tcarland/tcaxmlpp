@@ -215,10 +215,14 @@ LIBS   += $(LIB_SOCKET) $(LIB_NSL)
 endif
 
 ifdef NEED_BOOST_REGEXP
-BOOST_HOME  = $(TOPDIR)/common/ext/boost_1_33_1
-LFLAGS     += -L$(BOOST_HOME)/stage/lib
-INCLUDES   += -I$(BOOST_HOME)
-LIBS       += -lboost_regex-gcc-mt-1_33_1
+BOOST_HOME  = /usr
+LFLAGS     += -L$(BOOST_HOME)/lib/boost-1_35
+INCLUDES   += -I$(BOST_HOME)/include/boost-1_35
+ifdef NEED_PTHREADS
+    LIBS       += -lboost_regex-mt
+else
+    LIBS       += -lboost_regex
+endif
 endif
 
 ifdef NEED_LIBXML2
