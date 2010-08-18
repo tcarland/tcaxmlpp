@@ -11,10 +11,12 @@ extern "C" {
 #include <iostream>
 
 #include "tcanetpp_ip.h"
+#include "random.h"
 #include "Socket.h"
 #include "Exception.hpp"
 #include "CidrUtils.h"
 #include "StringUtils.h"
+#include "Serializer.h"
 #include "CircularBuffer.h"
 using namespace tcanetpp;
 
@@ -25,13 +27,15 @@ using namespace tcanetpp;
 bool Alarm = false;
 int  Pid   = 0;
 
-static std::string Version = "v0.90";
+static std::string Version  = "v0.92";
+static std::string RandData = std::string("");
+
 
 struct icmp_ts {
     uint32_t  secs;
     uint32_t  usecs;
-
-    icmp_ts() : secs(0), usecs(0) {}
+    uint32_t  size;
+    icmp_ts() : secs(0), usecs(0), size(0) {}
 };
 
 
@@ -190,6 +194,26 @@ neticmp_h* readHeader ( CircularBuffer * buff )
     return NULL;
 }
 
+
+static void InitDataBlock ( size_t length )
+{
+    uint32_t  val;
+    double    range = 255.0;
+    int       dsize = length;
+
+    tcanet_seed();
+    RandData.clear();
+
+    for ( int i = 0; i < dsize; i++ )
+    {
+        val = tcanet_randomValue(range);
+        RandData.push_back( (char)(*((uint8_t*)&val)) );
+    }
+
+    return;
+}
+
+
 int main ( int argc, char ** argv )
 {
     char      optChar;
@@ -274,6 +298,7 @@ int main ( int argc, char ** argv )
     icmp_ts    * its     = NULL;
     char       * wptr    = NULL;
     char       * wbuff   = NULL;
+    char       * data    = NULL;
     bool         sendReq = true;
 
     sockaddr_in  csock;
@@ -293,9 +318,10 @@ int main ( int argc, char ** argv )
 
     CircularBuffer * rbuff = new CircularBuffer(buflen);
 
-    wbuff       = (char*) malloc(idsz);
+    wbuff       = (char*) malloc(buflen);
     req         = (neticmp_h*) wbuff;
-    its         = (icmp_ts*) wbuff + sizeof(icmp_ts);
+    its         = (icmp_ts*) wbuff + sizeof(neticmp_h);
+    data        = wbuff + idsz;
 
     req->type   = ICMP_ECHO;
     req->code   = 0;
@@ -306,13 +332,22 @@ int main ( int argc, char ** argv )
     if ( count > 0 )
         cnt = count;
 
+    if ( size > (buflen - idsz) )
+        size = buflen - idsz - 4;
+
+    size     += Serializer::PadLen(size);
+    InitDataBlock(size);
+    const char * d = RandData.substr(0, size).data();
+    ::memcpy(data, d, size);
+    its->size = size;
+
     std::cout << "Sending ";
     if ( count > 0 )
-        std::cout << "(" << count << ") ";
+        std::cout << "(" << count << ") " ;
     std::cout << "ICMP echo requests from " << CidrUtils::ntop(srcaddr)
         << " to " << CidrUtils::ntop(dstaddr) << " (" << host << ")" 
         << std::endl;
-
+    std::cout << "ICMP data size is " << size << std::endl;
 
     while ( ! Alarm )
     {
@@ -334,7 +369,11 @@ int main ( int argc, char ** argv )
             req->seq++;
             req->chksum  = Socket::IpChkSum((uint16_t*)req, idsz);
 
-            wt = icmps->write(wbuff, idsz);
+            sz  = idsz + size; // account for added data size
+
+            req->chksum  = Socket::IpChkSum((uint16_t*)req, sz);
+
+            wt = icmps->write(wbuff, sz);
             if ( wt < 0 )
                 errorOut("Error in write " + icmps->getErrorString());
             

@@ -72,6 +72,7 @@ class PrefixTree {
     virtual ~PrefixTree()
     {
         this->clear();
+        free(_pt);
         if ( _lock )
             pthread_mutex_destroy(&_mutex);
     }
@@ -121,7 +122,7 @@ class PrefixTree {
     }
 
 
-    T    longestMatch ( const Prefix & p )
+    T    longestMatch ( Prefix & p )
     {
         if ( _lock )
             pthread_mutex_lock(&_mutex);

@@ -27,6 +27,7 @@ struct  ArchiveDbConfig
     std::string  db_pass;
 };
 
+
 /** Schema specific configuration. */
 struct  SchemaConfig
 {
@@ -43,7 +44,7 @@ struct  SchemaConfig
           tables_to_keep(DEFAULT_TABLE_COUNT),
           flush_interval(DEFAULT_FLUSH_INTERVAL),
           cache_index(true)
-        {}
+    {}
 };
 
 

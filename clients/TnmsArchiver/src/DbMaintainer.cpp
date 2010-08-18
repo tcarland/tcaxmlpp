@@ -201,10 +201,8 @@ template<typename OutputIterator_>
 void
 DbMaintainer::getIntervalsToCreate ( OutputIterator_ out )
 {
-    std::set_difference(
-        _current.begin(), _current.end(),
-        _dbperiods.begin(), _dbperiods.end(), out
-    );
+    std::set_difference(_current.begin(), _current.end(),
+                        _dbperiods.begin(), _dbperiods.end(), out);
     return;
 }
 
@@ -215,10 +213,8 @@ DbMaintainer::getIntervalsToDelete ( OutputIterator_ out )
 {
     if ( _numTables > 0 ) 
     {
-        std::set_difference( 
-            _dbperiods.begin(), _dbperiods.end(),
-            _current.begin(), _current.end(), out
-        );
+        std::set_difference(_dbperiods.begin(), _dbperiods.end(),
+                            _current.begin(), _current.end(), out);
     }
     return;
 }
@@ -232,8 +228,6 @@ operator<< ( std::ostream & out, const DbTimePeriod & t )
 
     return out << "[ " << start_str << "/" << end_str << "]" << std::endl;
 }
-
-
 
 
 } // namespace

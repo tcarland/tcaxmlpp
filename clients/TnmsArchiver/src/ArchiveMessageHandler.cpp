@@ -30,10 +30,10 @@ ArchiveMessageHandler::AddHandler ( const TnmsAdd & add )
     ArchiverSet::iterator  aIter;
     const std::string    & name = add.getElementName();
      
-    if ( ! StringUtils::startsWith(name, _rootname) )
-        return;
-    else
+    if ( StringUtils::startsWith(name, _rootname) )
         _client->subscribe(name);
+    else
+        return;
 
     if ( LogFacility::GetDebug() )
         LogFacility::LogMessage("ArchiveMessageHandler::AddHandler() " + name);

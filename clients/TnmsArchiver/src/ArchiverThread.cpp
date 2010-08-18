@@ -72,6 +72,8 @@ ArchiverThread::run()
             this->runUpdates(now);
         else if ( _timer.id == _fid )
             this->runUpdates(now, true);
+        else if ( _timer.id == _mid )
+            _archiver->runMaintainer(now);
 
         this->_timer.mutex.unlock();
     }

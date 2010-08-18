@@ -35,6 +35,7 @@ ArchiveClient::init()
     this->setMessageHandler(new ArchiveMessageHandler(sub.name, this, _archivers));
 }
 
+
 void
 ArchiveClient::setSubscribed ( bool sub )
 {

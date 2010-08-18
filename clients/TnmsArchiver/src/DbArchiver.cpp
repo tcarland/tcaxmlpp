@@ -36,10 +36,12 @@ DbArchiver::runUpdates ( const time_t & now, bool flush )
     {
         LogFacility::LogMessage("DbArchiver intitiating database connection");
         if ( ! sql->connect() ) {
-            LogFacility::LogMessage("DbArchiver: ERROR in connection: " + sql->sqlErrorStr());
+            LogFacility::LogMessage("DbArchiver: ERROR in connection: " 
+                + sql->sqlErrorStr());
             return;
         }
-        LogFacility::LogMessage("Archive connection established for " + schema.index_table);
+        LogFacility::LogMessage("Archive connection established for " 
+            + schema.index_table);
     }
 
     if ( ! notifier->lock() )
