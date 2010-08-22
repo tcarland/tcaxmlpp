@@ -1,12 +1,12 @@
 /**
   *   A circular buffer implementation which allows for direct access and 
   *  interaction to the underlying buffer. This was originally designed 
-  *  to read inbound udp fast while avoiding an additional memcpy that 
-  *  occurs in a std read/write function call. The get/set ptr functions 
+  *  to read inbound udp fast while avoiding an additional memcpy's that 
+  *  occur in a std read/write function calls. The get/set ptr functions 
   *  should be used with caution.
   *
   *
-  * Copyright (c) 2008, 2009 Timothy Charlton Arland 
+  * Copyright (c) 2001,2002,2008,2009 Timothy Charlton Arland 
   *  @Author  tca@charltontechnology.net
   *
   * This file is part of tcanetpp.
@@ -66,7 +66,17 @@ class BufferException : public Exception {
 
 
 // ----------------------------------------------------------------------
-
+/**  The CircularBuffer implentation is primarily intended as a packet
+  *  buffer and was conceived for use with reading UDP datagrams rapidly.
+  *  It allows direct access to an underlying char* for direct writing and 
+  *  reading saving multiple memcpy's that result from normal read()/writes().
+  *  It is also useful to use the safe read()/write() methods which guarantee
+  *  safe operation as well as truly treating the buffer as circular. This 
+  *  use case as a packetbuffer is intended to allow the buffer to hold many 
+  *  datagrams efficiently at once for bulk reads in larger buffering scenarios 
+  *  and unlike most buffers, it is truly circular, allowing writes to wrap and
+  *  essentially trail the read position.
+ **/
 class CircularBuffer {
 
   public:

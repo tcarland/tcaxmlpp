@@ -44,12 +44,11 @@ int EventManager::_maxfdp = MAX_FDVAL;
 #endif
 
 
+/**  Predicate for locating events that are no longer valid. */
 class FindStaleIOEvents 
 {
     explicit FindStaleIOEvents() {}
-
-    bool operator() ( const EventIO & io )
-    {
+    bool operator() ( const EventIO & io ) {
         return io.enabled;
     }
 };
@@ -72,6 +71,11 @@ EventManager::~EventManager()
 {}
 
 
+/**  Creates a new timer event using the provided handler.
+  *  The parameters represent the timing interval, not absolute time,
+  *  in both seconds and/or microseconds, as well as an optional count
+  *  for the number of times the event should fire (0 = forever).
+ **/
 evid_t
 EventManager::addTimerEvent ( EventTimerHandler * handler, 
 			      uint32_t sec, uint32_t usec, int count )
@@ -112,6 +116,12 @@ EventManager::addTimerEvent ( EventTimerHandler * handler,
 }
 
 
+/**  Creates a new timer event with the provided @param handler and 
+  *  @param abstime  as the absolute time the event will fire, meaning 
+  *  the event will fire just once. It is up to the user to ensure the 
+  *  absolute time given is in the future relative to the EventManager's 
+  *  clock.
+ **/
 evid_t
 EventManager::addTimerEvent ( EventTimerHandler * handler, time_t abstime )
 {
@@ -145,7 +155,11 @@ EventManager::addTimerEvent ( EventTimerHandler * handler, time_t abstime )
 }
 
 
-
+/**  Creates a new IO Event for the provided file descriptor and associated handler.
+  *  @param isServer  provides for special handling of the file descriptor and any
+  *   reads on this descriptor result in the EventIOHandler::handle_accept() to be 
+  *   called instead of the handle_read() function.
+ **/
 evid_t
 EventManager::addIOEvent ( EventIOHandler * handler, const sockfd_t & sfd, 
                            void * rock, bool isServer )
@@ -191,6 +205,7 @@ EventManager::addIOEvent ( EventIOHandler * handler, const sockfd_t & sfd,
 }
 
 
+/**  Removes the event associated to the given event id. */
 bool
 EventManager::removeEvent ( const evid_t & id )
 {
@@ -228,7 +243,9 @@ EventManager::removeEvent ( const evid_t & id )
 }
 
 
-
+/**  The main entry point to the EventManager System. This method blocks
+  *  until the EventManager is signaled or terminates on its own.
+ **/
 void
 EventManager::eventLoop()
 {
@@ -348,6 +365,7 @@ EventManager::eventLoop()
 }
 
 
+/**  Locates the EventTimer object for the given event id. */
 const EventTimer*
 EventManager::findTimerEvent ( const evid_t & id ) const
 {
@@ -362,6 +380,7 @@ EventManager::findTimerEvent ( const evid_t & id ) const
 }
 
 
+/**  Locates the EventIO object for the given event id. */
 const EventIO*
 EventManager::findIOEvent ( const evid_t & id ) const
 {
@@ -376,6 +395,7 @@ EventManager::findIOEvent ( const evid_t & id ) const
 }
 
 
+/**  Return the number of current active events, both timer and io */
 size_t
 EventManager::activeEvents() const
 {
@@ -383,13 +403,14 @@ EventManager::activeEvents() const
 }
 
 
+/**  Returns the number of currently active timer events. */
 size_t
 EventManager::activeTimers() const
 {
     return _timers.size();
 }
 
-
+/**  Returns the number of currently active io events. */
 size_t
 EventManager::activeClients() const
 {
@@ -397,6 +418,10 @@ EventManager::activeClients() const
 }
 
 
+/**  Checks the validity of an event id. An event id is considered valid
+  *  when the event id's associated Event object is currently active 
+  *  within the EventManager (ie. exists and ->isEnabled())
+ **/
 bool
 EventManager::isActive ( const evid_t & id ) const
 {

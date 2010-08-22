@@ -38,7 +38,9 @@ struct EventTimer;
 struct EventIO;
 
 
-
+/**  This interface provides the callback mechanism for an 'EventTimer' 
+  *  (timer event) within the EventManager. 
+ **/
 class EventTimerHandler {
     
   public:
@@ -51,6 +53,9 @@ class EventTimerHandler {
 
 
 
+/**  This interface provides the callback mechanism for an 'EventIO' 
+  *  (io event) within the EventManager. 
+ **/
 class EventIOHandler {
     
   public:

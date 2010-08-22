@@ -97,6 +97,7 @@ class XmlDocument {
 
     bool                 initDocument   ( const std::string & filename, 
                                           bool create = false );
+    bool                 docIsValid() const;
 
     virtual bool         saveDocument();
     virtual void         clearDocument();

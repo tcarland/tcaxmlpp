@@ -15,23 +15,23 @@ namespace tcanetpp {
 class Exception : public std::runtime_error {
 	
 public:
-	
-	explicit Exception ( const std::string & errstr )
-		: std::runtime_error(errstr)
-	{}
-	
-	virtual ~Exception() throw() {}
-	
-	virtual void printErr() const
-	{
-		fprintf(stderr, "Exception: %s\n", this->what());
-	}
-	
-	virtual std::string toString() const
-	{
-		return this->what();
-	}
-	
+    
+    explicit Exception ( const std::string & errstr )
+            : std::runtime_error(errstr)
+    {}
+    
+    virtual ~Exception() throw() {}
+    
+    virtual void printErr() const
+    {
+        fprintf(stderr, "Exception: %s\n", this->what());
+    }
+    
+    virtual std::string toString() const
+    {
+        return this->what();
+    }
+    
 };
 
 } // namespace

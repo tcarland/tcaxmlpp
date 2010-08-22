@@ -47,13 +47,18 @@ namespace tcanetpp {
 #define DEFAULT_EVU 500000   // default select timeout
 #define MAX_FDVAL   1024000  // max file descriptors
 #define NO_EVID     0 
- 
+
+
 typedef uint64_t  evid_t;    // event registration id
 
 
 class EventManager;
 
 
+/**  A timer event within the EventManager is tracked by an instance of this
+  *  object. When the event fires, the handler associated with this event is 
+  *  provided a const pointer to this struct.
+ **/
 struct EventTimer {
     evid_t              evid;      // event id
 
@@ -84,8 +89,8 @@ typedef std::map<evid_t, EventTimer>  EventTimerMap;
 
 
 /**  The EventIO struct represents an IO event. When an event is fired,
-  *  a const pointer to this struct is provided to the event handler.
-  *  ( see EventHandlers.h )
+  *  a const pointer to this struct is provided to the associated io 
+  *  event handler. ( see EventHandlers.h )
  **/
 struct EventIO {
     evid_t             evid;      // event id

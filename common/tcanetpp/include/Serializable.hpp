@@ -7,6 +7,7 @@
 namespace tcanetpp {
 
 
+/**  An interface that can be used to serialize objects and/or messages */
 class Serializable {
 
 public:

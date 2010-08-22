@@ -35,6 +35,12 @@ class Prefix;
 typedef std::vector<Prefix>  PrefixList;
 
 
+/**  An instance of the Prefix class represents a single 'cidr' 
+  *  format IP Address and its associated mask length. The class 
+  *  is used with the tcanetpp library and provides convenient 
+  *  sorting and equality operators for use with the Standard 
+  *  Template Library.
+ **/
 class Prefix {
 
   public:

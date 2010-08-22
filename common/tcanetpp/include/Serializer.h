@@ -15,6 +15,9 @@ namespace tcanetpp {
 #define SERIALIZER_WORDSIZE 4
 
 
+/**  A utility class defining Pack and Unpack functions for serializing 
+  *  data and ensuring proper byte alignment and padding. 
+ **/
 class Serializer {
 
   public:

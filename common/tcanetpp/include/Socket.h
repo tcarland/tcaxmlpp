@@ -75,7 +75,11 @@ public:
 };
 
 
-
+/**  The Socket class represents a BSD style socket using either
+  *  the GNU C Library or Winsock2 in the case of WIN32 hosts and 
+  *  provides an object-oriented interface for performing socket
+  *  io.
+ **/
 class Socket {
   public:
 

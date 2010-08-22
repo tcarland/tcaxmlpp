@@ -6,7 +6,7 @@
   *  use of static variables, which can cause concurrancy
   *  issues in a threaded environment.
   *     If thread safety is needed, care should be exercised
-  *  taken to properly wrap function calls around a mutex.
+  *  to properly wrap function calls around a mutex.
   *
   *
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
