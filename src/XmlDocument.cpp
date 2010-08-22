@@ -36,7 +36,7 @@ bool
 XmlDocument::_Libinit = false;
 
 const char*
-XmlDocument::_Version = "1.3.3";
+XmlDocument::_Version = "1.3.4";
 
 //-------------------------------------------------------------//
 
@@ -134,6 +134,20 @@ XmlDocument::initDocument ( const std::string & filename, bool create )
     }
 
     return result;
+}
+
+//-------------------------------------------------------------//
+
+/**  Returns a boolean indicating the current state of the 
+  *  underlying xml parser. If the document initialization has 
+  *  failed or has not yet occured, this returns false
+ **/
+bool
+XmlDocument::docIsValid() const
+{
+    if ( NULL == _doc )
+        return false;
+    return true;
 }
 
 //-------------------------------------------------------------//
