@@ -3,17 +3,17 @@
 <tnms version="0.1">
 
     <TnmsAuthd
-        agent_name="tcanms/tnmsauthd-master"
+        agent_name="tnms/auth/tnmsauthd-master"
         tnms_port="15901"
         soap_port="15902"
 
         pemfile=""
-        logfile="TnmsAuthd.log"
+        logfile="/opt/tcanms/tnms/logs/tnmsauthd_master.log"
         syslog="false"
         debug="true"
 
         db_host="localhost"
-        db_name="tnmsauth"
+        db_name="tnmsauthd"
         db_user="tnmsauth"
         db_pass="tnmsauth11b"
 
@@ -24,9 +24,9 @@
         max_db_threads="75">
 
         <client
-            name="server_a"
+            name="devserver_C"
             host="localhost"
-            port="15300"
+            port="15605"
             holddown="30"
             reconnect="30"/>
 
