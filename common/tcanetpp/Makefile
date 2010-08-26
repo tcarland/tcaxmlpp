@@ -122,11 +122,11 @@ endif
 
 install: clean
 ifdef TNMS_PREFIX
-	@echo "Installing libtcanetpp to $(TNMS_PREFIX)/tnms/lib"
-	$(MKDIR) $(TNMS_PREFIX)/tnms/include/tcanetpp
-	$(MKDIR) $(TNMS_PREFIX)/tnms/lib
-	$(RSYNC) --delete include/ $(TNMS_PREFIX)/tnms/include/tcanetpp/
-	$(RSYNC) lib/ $(TNMS_PREFIX)/tnms/lib/
+	@echo "Installing libtcanetpp to $(TNMS_PREFIX)/lib"
+	$(MKDIR) $(TNMS_PREFIX)/include/tcanetpp
+	$(MKDIR) $(TNMS_PREFIX)/lib
+	$(RSYNC) --delete include/ $(TNMS_PREFIX)/include/tcanetpp/
+	$(RSYNC) lib/ $(TNMS_PREFIX)/lib/
 	@echo
 endif
 

@@ -67,10 +67,10 @@ distclean: clean lib-clean doc-clean
 install:
 ifdef TNMS_PREFIX
 	@echo "Installing TnmsAPI..."
-	$(MKDIR) $(TNMS_PREFIX)/tnms/include/tnmsapi
-	$(MKDIR) $(TNMS_PREFIX)/tnms/lib
-	$(RSYNC) --delete ./*.h $(TNMS_PREFIX)/tnms/include/tnmsapi/
-	$(RSYNC) lib/ $(TNMS_PREFIX)/tnms/lib/
+	$(MKDIR) $(TNMS_PREFIX)/include/tnmsapi
+	$(MKDIR) $(TNMS_PREFIX)/lib
+	$(RSYNC) --delete ./*.h $(TNMS_PREFIX)/include/tnmsapi/
+	$(RSYNC) lib/ $(TNMS_PREFIX)/lib/
 	@echo
 endif
 

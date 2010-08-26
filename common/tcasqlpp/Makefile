@@ -40,7 +40,7 @@ include $(TOPDIR)/tcamake/project_defs
 lib: arlib
 
 arlib: lib/libtcasqlpp.a
-solib: libtcasqlpp.so.0.1.1
+solib: libtcasqlpp.so.1.1.19
 
 
 lib/libtcasqlpp.a: $(OBJS)
@@ -49,7 +49,7 @@ lib/libtcasqlpp.a: $(OBJS)
 	ld -r -o $@ $(OBJS) $(LFLAGS)
 	@echo
 
-libtcasqlpp.so.0.1.1: $(OBJS)
+libtcasqlpp.so.1.1.19: $(OBJS)
 	$(make-so-rule)
 	$(RM) lib/$@ lib/libtcasqlsqlpp.so
 	( mkdir -p lib; mv $@ lib/; \
@@ -85,4 +85,9 @@ distclean: clean libclean test-clean
 install:
 ifdef TNMS_PREFIX
 	@echo
+	$(MKDIR) $(TNMS_PREFIX)/include/tcasqlpp
+	$(MKDIR) $(TNMS_PREFIX)/lib
+	$(RSYNC) --delete include/ $(TNMS_PREFIX)/include/tcasqlpp/
+	$(RSYNC) lib/ $(TNMS_PREFIX)/lib/
+
 endif

@@ -81,5 +81,10 @@ distclean: clean lib-clean doc-clean test-clean
 
 install:
 ifdef TNMS_PREFIX
-	@echo
+	@echo "Installing libtnmsCore to $(TNMS_PREFIX)/lib"
+	$(MKDIR) $(TNMS_PREFIX)/include/tnmsCore
+	$(MKDIR) $(TNMS_PREFIX)/lib
+	$(RSYNC) --delete include/ $(TNMS_PREFIX)/include/tnmsCore/
+	$(RSYNC) lib/ $(TNMS_PREFIX)/lib/
+
 endif

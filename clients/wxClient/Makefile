@@ -64,7 +64,7 @@ distclean: clean
 
 install:
 ifdef TNMS_PREFIX
-	$(CP) $(BIN) $(TNMS_PREFIX)/tnms/bin
+	$(CP) $(BIN) $(TNMS_PREFIX)/bin
 	@echo
 endif
 

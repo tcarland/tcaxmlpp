@@ -76,5 +76,10 @@ distclean: clean libclean doc-clean
 
 install:
 ifdef TNMS_PREFIX
-	@echo
+	@echo   
+	$(MKDIR) $(TNMS_PREFIX)/include/tcasnmp
+	$(MKDIR) $(TNMS_PREFIX)/lib
+	$(RSYNC) --delete include/ $(TNMS_PREFIX)/include/tcasnmp/
+	$(RSYNC) lib/ $(TNMS_PREFIX)/lib/
+
 endif
