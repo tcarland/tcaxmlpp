@@ -75,7 +75,7 @@ tools-clean:
 	( cd tools; make distclean )
 	@echo
 
-distclean: clean gsoap-clean test-clean
+distclean: clean gsoap-clean test-clean tools-clean
 	$(RM) $(ALL_BINS)
 	@echo
 
