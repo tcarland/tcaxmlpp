@@ -87,3 +87,8 @@ distclean: clean lib-clean test-distclean
 	@echo
 
 install:
+	$(MKDIR) $(TNMS_PREFIX)/include/tcaxmlpp
+	$(MKDIR) $(TNMS_PREFIX)/lib
+	$(RSYNC) --delete include/ $(TNMS_PREFIX)/include/tcaxmlpp/
+	$(RSYNC) lib/ $(TNMS_PREFIX)/lib/
+
