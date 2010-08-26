@@ -79,7 +79,7 @@ bool
 TnmsAPI::update ( const std::string & element_name, 
                   const time_t      & now, 
                   uint64_t          & value,
-                  eValueType          type ) 
+                  uint16_t            type ) 
 {
     return ( ((TnmsBase*)api)->update(element_name, now, value, type) );
 }

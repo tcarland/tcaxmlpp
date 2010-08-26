@@ -18,6 +18,9 @@ ifdef TNMS_DEBUG
 OPT_FLAGS =     -g
 endif
 
+OPT_FLAGS +=	-fPIC -O2
+CCSHARED += 	-Wl,-soname,$@
+
 INCLUDES =	-Iinclude -I$(TOPDIR)/common/tcanetpp/include
 LIBS = 
 

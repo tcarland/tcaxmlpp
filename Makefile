@@ -1,6 +1,10 @@
 # ------------------------
 #  Top-level Makefile
 #
+
+export USE_PTHREADS=1
+
+
 include ./tcamake/build_defs
 
 # ------------------------

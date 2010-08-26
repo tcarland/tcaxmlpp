@@ -10,20 +10,23 @@ ifdef TNMS_DEBUG
 OPT_FLAGS =  -g
 endif
 
-INCLUDES =              -Iinclude
+OPT_FLAGS +=	-fPIC -O2
+CCSHARED += 	-Wl,-soname,$@
+
+INCLUDES =      -Iinclude
 LIBS =
 
-OBJS =                  src/TnmsOid.o src/TnmsSocket.o \
-			src/TnmsMessage.o src/TnmsMetric.o \
-			src/TnmsAuthRequest.o src/TnmsAuthReply.o \
-			src/AuthClient.o \
-			src/TnmsConfig.o src/TnmsMessageHandler.o \
-			src/TnmsTree.o src/TnmsClient.o \
-			src/TnmsSubscriber.o
+OBJS =          src/TnmsOid.o src/TnmsSocket.o \
+		src/TnmsMessage.o src/TnmsMetric.o \
+		src/TnmsAuthRequest.o src/TnmsAuthReply.o \
+		src/AuthClient.o \
+		src/TnmsConfig.o src/TnmsMessageHandler.o \
+		src/TnmsTree.o src/TnmsClient.o \
+		src/TnmsSubscriber.o
 
 BIN =                        
-ALL_OBJS =              $(OBJS)
-ALL_BINS =              $(BIN)
+ALL_OBJS =      $(OBJS)
+ALL_BINS =      $(BIN)
 
 
 all: lib test

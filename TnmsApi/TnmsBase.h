@@ -44,7 +44,7 @@ class TnmsBase {
     bool    update    ( const std::string & name, 
                         const time_t      & now,
                         uint64_t          & value, 
-                        eValueType          type );
+                        uint16_t            type );
 
     bool    update    ( const std::string & name, 
                         const time_t      & now,

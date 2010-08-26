@@ -5,9 +5,6 @@
 
 #include <string>
 
-#include "tnmsCore.h"
-using namespace tnmsCore;
-
 
 #ifndef DLLOPT
 #  if defined (WIN32) && ! defined (TNMSAPI_NODLL)
@@ -50,7 +47,7 @@ class DLLOPT TnmsAPI {
     bool    update  ( const std::string & element_name, 
                       const time_t      & now, 
                       uint64_t          & value,
-                      eValueType          type );
+                      uint16_t            type );
 
     bool    update  ( const std::string & element_name, 
                       const time_t      & now,

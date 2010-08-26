@@ -3,6 +3,7 @@
 extern "C" {
 #include <unistd.h>
 #include <sys/stat.h>
+#include <string.h>
 }
 
 #include <fstream>
@@ -16,7 +17,12 @@ extern "C" {
 
 
 #include "ConsoleThread.h"
+
 #include "LogFacility.h"
+#include "StringUtils.h"
+
+#include "tnmsCore.h"
+using namespace tnmsCore;
 
 
 namespace tnmsconsole {

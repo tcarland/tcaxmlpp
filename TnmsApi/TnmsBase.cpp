@@ -21,7 +21,7 @@ namespace tnmsApi {
 
 
 const
-std::string TnmsBase::ApiVersion = "1.22";
+std::string TnmsBase::ApiVersion = "1.22.1";
 
 
 template< typename Iterator, typename Value >
@@ -205,10 +205,11 @@ bool
 TnmsBase::update ( const std::string & name, 
                    const time_t      & now, 
                    uint64_t          & value, 
-                   eValueType          type )
+                   uint16_t            type )
 {
     TnmsMetric   metric;
     std::string  fullname = _config.agent_name;
+    eValueType   valtype  = (eValueType) type;
     fullname.append("/").append(name);
 
     if ( ! _tree->request(fullname, metric) )
@@ -217,7 +218,7 @@ TnmsBase::update ( const std::string & name,
     if ( LogFacility::GetDebug() )
         LogFacility::LogToStream(_logName, "TnmsAPI::update() " + name);
 
-    metric.setValue(type, value);
+    metric.setValue(valtype, value);
     metric.setTimestamp(now);
     _tree->update(metric);
 

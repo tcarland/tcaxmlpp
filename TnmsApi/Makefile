@@ -9,6 +9,8 @@ ifdef TNMS_DEBUG
 OPT_FLAGS =  -g
 endif
 
+OPT_FLAGS += -fPIC -O2
+
 LIBS =
 INCLUDES =              -I.
 
