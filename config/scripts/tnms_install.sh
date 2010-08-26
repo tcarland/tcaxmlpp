@@ -30,6 +30,9 @@ if [ -z "$RC_TNMS_BASHRC" ]; then
     elif [ -e $HOME/tnms/tnmsrc ]; then
         echo "$PNAME: using rc from: $HOME/tnms/tnmsrc"
         source $HOME/tnms/tnmsrc
+    elif [ -e $HOME/tnms/etc/tnmsrc ]; then
+        echo "$PNAME: using rc from: $HOME/tnms/etc/tnmsrc"
+        source $HOME/tnms/etc/tnmsrc
     else
         echo "$PNAME: Error: Failed to locate rc file: tnmsrc"
         exit 1
@@ -37,7 +40,7 @@ if [ -z "$RC_TNMS_BASHRC" ]; then
 fi
 
 # we remap to our destination
-PREFIX=$TNMS_PREFIX/tnms
+PREFIX=$TNMS_PREFIX
 export TNMS_HOME="${PREFIX}"
 export TNMS_BIN=${TNMS_HOME}/bin
 export TNMS_SBIN=${TNMS_HOME}/sbin
