@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "tcanetpp_types.h"
 
 
 namespace fwgen {

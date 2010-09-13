@@ -46,7 +46,7 @@ fi
 echo ""
 
 if [ -n "$TNMS_PREFIX" ]; then
-    TNMS_HOME="$TNMS_PREFIX/tnms"
+    TNMS_HOME="$TNMS_PREFIX"
     TNMS_BIN="$TNMS_HOME/bin"
     TNMS_TMP="$TNMS_HOME/tmp"
     TNMS_ETC="$TNMS_HOME/etc"

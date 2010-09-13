@@ -3,6 +3,12 @@
 
 #include "FwLogReport.h"
 
+#include "StringUtils.h"
+using namespace tcanetpp;
+
+#include "tnmsCore.h"
+using namespace tnmsCore;
+
 
 namespace fwgen {
 

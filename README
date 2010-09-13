@@ -2,7 +2,7 @@
 External Requirements:
 
 libxml2
-wxWidgets
+wxWidgets (wxGTK)
 
 Lib requirements included.
 ---- 
@@ -10,7 +10,7 @@ Lib requirements included.
 zlib
 net-snmp
 >=openssl-0.9.8k
-
+>=wxGTK-2.8.10.1-r5
 
 
 Install:
@@ -24,7 +24,7 @@ Install:
 3. Create a system account for the tnms environment:
 
     TNMS_ENV="dev"
-    ROLEUSER="tcanms"
+    ROLEUSER="tnms"
 
     useradd -d /opt/tcanms -m -U -s /sbin/nologin $ROLEUSER
     sudo -u $ROLEUSER -H /bin/bash
@@ -40,10 +40,12 @@ Install:
     ./bin/tnms_dbinit.sh -D tnmsauthd -U tnmsauth -P tnmsauth11b -x tca -p
 
     ./bin/ta_dbinit.sh fwlr
-    ./bin/ta_dbinit.sh tcanms
+    ./bin/ta_dbinit.sh tnms
 
 4. Add agents to authdb.
 
     tnms_useradd -A -u fwlr/nebula -g tnmsagents -m dbstatic
+
+
 
 
