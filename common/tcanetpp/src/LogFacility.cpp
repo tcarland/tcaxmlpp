@@ -57,8 +57,8 @@ bool               LogFacility::_Syslog     = false;
 bool               LogFacility::_Broadcast  = false;
 bool               LogFacility::_Enabled    = false;
 bool               LogFacility::_Debug      = false;
-std::string        LogFacility::_LogName   = "";
-std::string        LogFacility::_LogPrefix  = "tcanetpp::LogFacility";
+std::string        LogFacility::_LogName    = "";
+std::string        LogFacility::_LogPrefix  = "";
 std::string        LogFacility::_LogTimeStr = "";
 
 
@@ -569,17 +569,17 @@ LogFacility::SetLogPrefix ( const std::string & logname, const std::string & pre
 }
 
 std::string
-LogFacility::GetLogPrefix ( const std::string & logname )
+LogFacility::GetLogPrefix ( const std::string & logName )
 {
     std::string  prefix;
 
-    if ( logname.empty() )
+    if ( logName.empty() )
         return LogFacility::_LogPrefix;
 
     if ( ! LogFacility::Lock() )
         return prefix;
 
-    StreamMap::iterator  sIter = _StreamMap.find(logname);
+    StreamMap::iterator  sIter = _StreamMap.find(logName);
     if ( sIter != _StreamMap.end() )
         prefix = sIter->second.logPrefix;
 
@@ -589,12 +589,13 @@ LogFacility::GetLogPrefix ( const std::string & logname )
 }
 
 bool
-LogFacility::SetDefaultLogName ( const std::string & name )
+LogFacility::SetDefaultLogName ( const std::string & logName )
 {
-    if ( name.empty() )
+    if ( logName.empty() )
         return false;
 
-    LogFacility::_LogName = name;
+    LogFacility::_LogName = logName;
+
     return true;
 }
 
@@ -602,6 +603,54 @@ std::string
 LogFacility::GetDefaultLogName()
 {
     return LogFacility::_LogName;
+}
+
+// ----------------------------------------------------------------------
+
+/**  RotateLogFile will automatically rotate a file log each day based 
+  *  on the 'localtime' result of the provided time. Each logstream tracks
+  *  the day of year value, so if this function is called within the same 
+  *  day, the log will not be rotated (and the function returns false).
+  *  When called with a time that is of a different day of year, the existing
+  *  log stream is closed and a new logstream is created based on the logname
+  *  with an appended '.log_YYYYMMDD'.
+  *  It is up to the user to ensure that the underlying logstream is a proper
+  *  log file stream.
+ **/
+bool
+LogFacility::RotateLogFile ( const std::string & logName, const time_t & now )
+{
+    if ( logName.empty() )
+        return false;
+
+    StreamMap::iterator sIter = _StreamMap.find(logName);
+    if ( sIter == _StreamMap.end() )
+        return false;
+
+    char       datestr[64];
+    struct tm *ltm     = ::localtime(&now);
+    int        today   = ltm->tm_yday;
+    bool       rotated = false;
+
+    if ( sIter->second.today == 0 ) 
+    {
+        sIter->second.today = today;
+        return rotated;
+    }
+
+    if ( sIter->second.today != today ) 
+    {
+        LogFacility::CloseLogFile(logName);
+
+        ::strftime(datestr, 64, ".log_%Y%02m%02d", ltm);
+        std::string logfile = logName;
+        logfile.append(datestr);
+        sIter->second.today = today;
+
+        rotated = LogFacility::OpenLogFile(logName, LogFacility::GetLogPrefix(), logfile, true);
+    }
+
+    return rotated;
 }
 
 // ----------------------------------------------------------------------
@@ -668,6 +717,20 @@ LogFacility::GetTimeString ( const time_t & now )
     timestr = timestr.substr(0, timestr.length() - 1);
 
     return timestr;
+}
+
+// ----------------------------------------------------------------------
+
+int
+LogFacility::GetDayOfYear ( const time_t & now )
+{
+    struct tm *ltm = ::localtime(&now);
+    int      today = 0;
+    
+    if ( ltm ) 
+        today = ltm->tm_yday;
+
+    return today;
 }
 
 // ----------------------------------------------------------------------

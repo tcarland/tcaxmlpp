@@ -38,9 +38,13 @@ typedef struct IpHeader {
     uint32_t  srcaddr;
     uint32_t  dstaddr;
 
-    IpHeader() : version(0x45), tos(0), length(0), id(0), frag(0),
-                 ttl(0), chksum(0), srcaddr(0), dstaddr(0)
+    IpHeader() 
+        : version(0x45), tos(0), 
+          length(0), id(0), 
+          frag(0), ttl(0), chksum(0), 
+          srcaddr(0), dstaddr(0)
     {}
+
 } netip_h;
 
 
@@ -50,8 +54,11 @@ typedef struct UdpHeader {
     uint16_t  length;
     uint16_t  chksum;
 
-    UdpHeader() : srcport(0), dstport(0), length(0), chksum(0)
+    UdpHeader() 
+        : srcport(0), dstport(0), 
+          length(0),  chksum(0)
     {}
+
 } netudp_h;
 
 
@@ -61,8 +68,12 @@ typedef struct IcmpHeader {
     uint16_t chksum;
     uint16_t id;
     uint16_t seq;
-    IcmpHeader() : type(0), code(0), chksum(0), id(0), seq(0)
+
+    IcmpHeader()
+        : type(0), code(0), chksum(0), 
+          id(0), seq(0)
     {}
+
 } neticmp_h;
 
 

@@ -147,7 +147,7 @@ class LogFacility {
     static time_t         GetLogTime();
 
     static std::string    GetTimeString   ( const time_t & now );
-
+    static int            GetDayOfYear    ( const time_t & now );
 
     static bool           SetEnabled      ( const std::string & logname, bool enable );
     static bool           GetEnabled      ( const std::string & logname, bool & enabled );
@@ -160,6 +160,8 @@ class LogFacility {
     static void           SetDebug        ( bool debug );
     static bool           GetDebug();
 
+    static bool           RotateLogFile   ( const std::string & logname,
+                                            const time_t & now );
 
 private:
 
@@ -179,11 +181,13 @@ private:
         std::string    logName;
         std::string    logPrefix;
         std::ostream*  logStream;
+        int            today;
         bool           enabled;
         bool           showTime;
 
         LogStream ( std::ostream * strm = NULL )
             : logStream(strm),
+              today(0),
               enabled(true),
               showTime(true)
         {
@@ -197,6 +201,7 @@ private:
             : logName(logName_),
               logPrefix(logPrefix_),
               logStream(strm),
+              today(0),
               enabled(true),
               showTime(true)
         {
