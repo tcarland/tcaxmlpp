@@ -185,6 +185,8 @@ int main ( int argc, char **argv )
     }
 
     LogFacility::LogMessage("Finished.");
+    if ( ! daemon )
+        LogFacility::RemoveLogStream("stdout");
     LogFacility::CloseLogFacility();
 
     return 0;
