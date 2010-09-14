@@ -7,6 +7,7 @@
 #include "FwService.h"
 
 #include "StringUtils.h"
+#include "LogFacility.h"
 using namespace tcanetpp;
 
 
@@ -21,10 +22,11 @@ FwService::ParseServices ( const std::string & svcfile, FwSvcMap & svcmap, bool 
     ifs.open(svcfile.c_str(), std::ios::in);
 
     if ( ! ifs ) {
-        std::cout << "Error opening: " << svcfile << std::endl;
+        LogFacility::LogMessage("Error opening services file: " + svcfile);
         return false;
-    } else
-        std::cout << "Parsing services file: " << svcfile << std::endl;
+    } else {
+        LogFacility::LogMessage("Parsing services file: " + svcfile);
+    }
 
 
     char line[BIGSTRLINE];

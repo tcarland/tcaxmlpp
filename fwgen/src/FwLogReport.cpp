@@ -4,6 +4,7 @@
 #include "FwLogReport.h"
 
 #include "StringUtils.h"
+#include "LogFacility.h"
 using namespace tcanetpp;
 
 #include "tnmsCore.h"
@@ -18,18 +19,15 @@ FwLogReport::FwLogReport ( const std::string & agent, const std::string & host, 
     : _connection(false)
 {
     _api = new TnmsAPI(agent, host, port);
-    //_api->set_config("etc/fwlr_comet.xml");
-
     FwService::ParseServices(ETC_SERVICES, this->_svcMap);
 }
 
 FwLogReport::FwLogReport ( const std::string & config )
     : _connection(false)
 {
-	_api = new TnmsAPI("fwlr");
-	_api->set_config(config);
-
-	FwService::ParseServices(ETC_SERVICES, this->_svcMap);
+    _api = new TnmsAPI("fwlr");
+    _api->set_config(config);
+    FwService::ParseServices(ETC_SERVICES, this->_svcMap);
 }
 
 
@@ -40,14 +38,13 @@ FwLogReport::FlushApi ( const time_t & now )
     int  errcnt = 0;
 
     if ( ! _connection )
-        std::cout << "FwLogReport::FlushApi() no API connection, attempting reconnect"
-            << std::endl;
+        LogFacility::LogMessage("FwLogReport::FlushApi() no API connection, attempting reconnect");
 
     do {
         retval = _api->send(now);
         
         if ( retval == 1 ) {
-            std::cout << "  FwLogReport::FlushApi(): API has Invalid configuration" << std::endl;
+            LogFacility::LogMessage("FwLogReport::FlushApi(): API has Invalid configuration");
             return retval;
         }
 
@@ -60,20 +57,20 @@ FwLogReport::FlushApi ( const time_t & now )
                 std::cout.flush();
                 sleep(1);
             } else if ( retval == TNMSERR_CONN_DENIED ) {
-                std::cout << "  FwLogReport::FlushApi() Not authorized." << std::endl;
+                LogFacility::LogMessage("  FwLogReport::FlushApi() Not authorized.");
                 _connection = false;
                 break;
             }
             errcnt++;
         } else {
             if ( ! _connection )
-                std::cout << std::endl << "  FwLogReport::FlushApi(): Connected." << std::endl;
+                LogFacility::LogMessage("  FwLogReport::FlushApi(): Connected.");
             _connection = true;
         }
     } while ( retval > 0 && errcnt < 8 );
 
     if ( ! _connection )
-        std::cout << std::endl << "   FwLogReport::FlushApi(): Connection failed" << std::endl;
+        LogFacility::LogMessage("  FwLogReport::FlushApi(): Connection failed");
 
     return retval;
 }
@@ -91,15 +88,15 @@ FwLogReport::SendEntry ( FwLogEntry & fwe, const time_t & now )
     //  src <=> dst  
     fwe.absname = fwe.inf;
     fwe.absname.append("/").append(fwe.src);
-    fwe.absname.append("<=>").append(fwe.dst);
+    fwe.absname.append("<->").append(fwe.dst);
     fwe.protom  = fwe.absname;
 
     int srcp = StringUtils::fromString<int>(fwe.spt);
     int dstp = StringUtils::fromString<int>(fwe.dpt);
 
     bool keyIsSrc = false;
-    if ( dstp < 1024 )
-    {  // srcport is key
+    if ( dstp < 1024 ) // srcport is default key
+    {  
         sIter = _svcMap.find(dstp);
         fwe.protom.append("/").append(fwe.dpt);
     } else {
@@ -127,24 +124,26 @@ FwLogReport::SendEntry ( FwLogEntry & fwe, const time_t & now )
             _api->add(fwe.absname + "/LastSeen", now);
             _api->add(fwe.absname + "/Hits", now);
 
+            _api->add(fwe.absname + "/Src_hostname", now);
             if ( ! fwe.host.empty() ) {
-                _api->add(fwe.absname + "/Src_hostname", now);
                 _api->update(fwe.absname + "/Src_hostname", now, fwe.host);
             }
 
             _api->add(fwe.protom, now);
             _api->add(fwe.protom + "/LastSeen", now);
-            if ( keyIsSrc )
-                _api->update(fwe.protom, "SrcPort");
-            else
-                _api->update(fwe.protom, "DstPort");
-
+            if ( keyIsSrc ) {
+                _api->add(fwe.protom + "/SrcPort", now);
+                _api->add(fwe.protom + "/" + fwe.dpt + "/DstPort", now);
+            } else {
+                _api->add(fwe.protom + "/DstPort", now);
+                _api->add(fwe.protom + "/" + fwe.spt + "/SrcPort", now);
+            }
         } else {
             return;
         }
     }
 
-    std::cout << "FwLogReport entry: '" << fwe.protom << "'" << std::endl;
+    LogFacility::LogMessage("FwLogReport: " + fwe.protom);
 
     FwLogEntry & entry = fIter->second;
     entry.count++;

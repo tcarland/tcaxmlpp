@@ -6,6 +6,7 @@
 #include <cstdlib>
 
 #include "StringUtils.h"
+#include "LogFacility.h"
 using namespace tcanetpp;
 
 
@@ -30,7 +31,7 @@ FwLogReader::run()
 
     ifs.open(_logfile.c_str(), mode);
     if ( ! ifs ) {
-        std::cout << "Error reading logfile ";
+        LogFacility::LogMessage("Error reading logfile: " + _logfile);
         return;
     }
 
@@ -45,10 +46,11 @@ FwLogReader::run()
             }
         }
 
-        if ( _squeue.size() > 0 )
+        if ( _squeue.size() > 0 ) {
             _squeue.notify();
+        }
 
-        ::usleep(1000);
+        ::usleep(500);
     } while ( ifs.eof() && ! this->_Alarm );
 
     ifs.close();
@@ -56,7 +58,8 @@ FwLogReader::run()
     return;
 }
 
-SynchronizedQueue<FwLogEntry>*
+
+FwLogQueue*
 FwLogReader::getQueue()
 {
     return &this->_squeue;

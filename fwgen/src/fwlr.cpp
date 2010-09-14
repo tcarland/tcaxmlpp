@@ -19,6 +19,7 @@ extern "C" {
 #include "FileUtils.h"
 #include "StringUtils.h"
 #include "EventManager.h"
+#include "LogFacility.h"
 using namespace tcanetpp;
 
 #include "FwLogEntry.h"
@@ -32,6 +33,7 @@ using namespace fwgen;
 static const
 char process[]    = "fwlr";
 bool Alarm        = false;
+char Version[]    = "v0.5.1";
 
 
 void usage()
@@ -42,6 +44,7 @@ void usage()
 
 void version()
 {
+    printf("%s Version: %s\n", process, Version);
     exit(0);
 }
 
@@ -140,7 +143,14 @@ int main ( int argc, char **argv )
     signal(SIGINT,  &sigHandler);
     signal(SIGTERM, &sigHandler);
 
-    SynchronizedQueue<FwLogEntry>  * queue = NULL;
+    LogFacility::InitThreaded(true);
+
+    if ( daemon )
+        LogFacility::OpenSyslog("fwlr", 5);
+    else
+        LogFacility::OpenLogStream("stdout", "fwlr", &std::cout);
+
+    FwLogQueue * queue = NULL;
 
     time_t now;
     FwLogEntry  fwe;
@@ -169,12 +179,13 @@ int main ( int argc, char **argv )
             queue->waitFor(5);
             queue->unlock();
         }
-        sleep(1);
+        
         if ( fwrep )
             fwrep->FlushApi(now);
     }
 
-    std::cout << "Finished." << std::endl;
+    LogFacility::LogMessage("Finished.");
+    LogFacility::CloseLogFacility();
 
     return 0;
 }

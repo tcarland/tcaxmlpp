@@ -13,6 +13,8 @@ using namespace tcanetpp;
 namespace fwgen {
 
 
+typedef SynchronizedQueue<FwLogEntry>  FwLogQueue;
+
 
 class FwLogReader : public tcanetpp::Thread {
 
@@ -25,13 +27,15 @@ class FwLogReader : public tcanetpp::Thread {
 
     virtual void run();
 
-    SynchronizedQueue<FwLogEntry>*  getQueue();
+
+    FwLogQueue*  getQueue();
+
 
   private:
 
-   SynchronizedQueue<FwLogEntry>  _squeue;
-   std::string                    _logfile;
-   bool                           _tail;
+   FwLogQueue             _squeue;
+   std::string            _logfile;
+   bool                   _tail;
 
 };
 

@@ -11,7 +11,8 @@ namespace fwgen {
 
 
 /*
- * Jan 30 08:31:26 nebula kernel: FW: 
+ * Jan 30 08:31:26 nebula kernel: FW:
+ *   1      2     3       4                   5              6      7         8        9      10        11        12        13      14
  * IN=ppp0 OUT= MAC= SRC=146.201.161.125 DST=75.214.27.0 LEN=39 TOS=0x00 PREC=0x00 TTL=113 ID=22852 PROTO=UDP SPT=10885 DPT=4324 LEN=19 
  */
 
