@@ -8,7 +8,7 @@
 namespace tnmsApi {
 
 
-
+/**  Constructor for instantiating a new agent(api) instance*/
 TnmsAPI::TnmsAPI ( const std::string & agent_name ) 
 {
     std::string  agentName;
@@ -19,7 +19,13 @@ TnmsAPI::TnmsAPI ( const std::string & agent_name )
     api = (void*) new TnmsBase(agentName);
 }
 
-
+/**  Constructor for instantiating a new agent(api) instance
+  * to the provided server host:port.
+  *
+  * @param agent_name  is the initial 'unique' name of this agent.
+  * @param host_name   is the hostname of the server to connect.
+  * @param host_port   is the port number of the server.
+ */
 TnmsAPI::TnmsAPI ( const std::string & agent_name,
                    const std::string & host_name,
                    uint16_t            host_port )
@@ -74,7 +80,26 @@ TnmsAPI::remove ( const std::string & element_name )
     return ( ((TnmsBase*)api)->remove(element_name) );
 }
 
-
+/**@
+  *  Update an element where the @param element_name represents
+  *  a non-string value type. The value provided to the api is 
+  *  always an unsigned 64-bit integer, and any desired type 
+  *  should simply be cast to this type which can be reinterpreted 
+  *  by the client based on @param type. 
+  *  The supported types are based on the enum tnmsCore::eValueType
+  *  with the following types:
+  *
+  *  typedef enum eValueType {
+  *      TNMS_NONE    = 0,
+  *      TNMS_INT32   = 1,
+  *      TNMS_UINT32  = 2,
+  *      TNMS_INT64   = 3,
+  *      TNMS_UINT64  = 4,
+  *      TNMS_FLOAT   = 5,
+  *      TNMS_STRING  = 6 
+  *  } e_valueType_t;
+  *
+ **/
 bool
 TnmsAPI::update ( const std::string & element_name, 
                   const time_t      & now, 
@@ -85,6 +110,7 @@ TnmsAPI::update ( const std::string & element_name,
 }
 
 
+/**  Updates @param element_name to the provided string value */
 bool
 TnmsAPI::update ( const std::string   & element_name, 
                     const time_t      & now, 
@@ -94,6 +120,9 @@ TnmsAPI::update ( const std::string   & element_name,
 }
 
 
+/**  Update the atomic data element to be carried with the key/value 
+  *  pair defined by @param element_name
+ **/
 bool
 TnmsAPI::update ( const std::string  & element_name,
                   const std::string  & data )
@@ -102,13 +131,14 @@ TnmsAPI::update ( const std::string  & element_name,
 }
 
 
+/**  Clears the current tree of all metrics */
 void
 TnmsAPI::clear() 
 {
     return ( ((TnmsBase*)api)->clear() );
 }
 
-
+/**  Convenience method to set/change the running api config */
 void
 TnmsAPI::set_config ( const std::string & filename ) 
 {
@@ -116,26 +146,35 @@ TnmsAPI::set_config ( const std::string & filename )
 }
 
 
+/**  Convenience method to set the hold-down interval of the 
+  *  running api instance. 
+  *  @param  secs   defines the number of secconds to gather
+  *  updates for reporting. Only updated elements are sent
+  *  once this interval has expired. All subsequent sends 
+  *  will always send out any queued or waiting messages 
+  *  whose holddown_interval has expired. 
+ **/
 void
 TnmsAPI::holddown_interval ( time_t  secs )
 {
     return ( ((TnmsBase*)api)->holddown_interval(secs) );
 }
 
+/** Return the configured hold-down interval in seconds */
 time_t
 TnmsAPI::holddown_interval() 
 {
     return ( ((TnmsBase*)api)->holddown_interval() );
 }
 
-
+/** Interval to delay reconnect attempts */
 void
 TnmsAPI::reconnect_interval ( time_t secs ) 
 {
     return ( ((TnmsBase*)api)->reconnect_interval(secs) );
 }
 
-
+/** Return the configured reconnect interval in seconds */
 time_t
 TnmsAPI::reconnect_interval() 
 {
