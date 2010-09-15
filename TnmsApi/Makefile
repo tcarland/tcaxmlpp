@@ -26,6 +26,7 @@ all: lib
 
 include ${TOPDIR}/tcamake/project_defs
 
+.PHONY:lib
 lib:	arlib
 
 arlib:	lib/libTnmsApi.a
@@ -44,14 +45,20 @@ lib/libTnmsApi.so.0.0.1: ${OBJS}
 	( cd lib; ln -s $@ libTnmsApi.so )
 	@echo
 
-clean:
-	$(RM) $(OBJS) \
-	*.D *.d *.bd *.o lib/*.bd *.bd \
-	src/*.D src/*.d src/*.bd src/*.o src/*.bd 
+documentation: docs
+.PHONY:docs
+docs: 
+	( cd docs; make documentation )
+	@echo
 
 doc-clean:
 	( cd docs; $(MAKE) clean )
 	@echo
+
+clean:
+	$(RM) $(OBJS) \
+	*.D *.d *.bd *.o lib/*.bd *.bd \
+	src/*.D src/*.d src/*.bd src/*.o src/*.bd 
 
 lib-clean:
 	$(RM) lib

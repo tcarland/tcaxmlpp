@@ -2,7 +2,7 @@ all: documentation
 
 
 documentation:
-#	( doxygen )
+	( doxygen )
 
 clean:
 	rm -rf html latex
