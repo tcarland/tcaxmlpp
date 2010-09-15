@@ -17,8 +17,8 @@ LINKLIST="tcamake"
 BUILDDEF="build_defs"
 DODIST=0
 RSYNC="rsync"
-OPTIONS="-avL --delete"
-DRYRUN=" --dry-run"
+OPTIONS="-avL --delete --exclude=.cvs --exclude=.svn --exclude=.hg "
+DRYRUN="--dry-run"
 retval=0
 
 
@@ -236,7 +236,7 @@ makeLinks
 if [ $DODIST -eq 0 ]; then
     doBuild $1
 else
-    doDist $2
+    doDist $2 $3
 fi
 
 clearLinks
