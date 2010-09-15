@@ -139,9 +139,10 @@ doDist()
     fi
 
     if [ -n "$dryrun" ]; then
-        $options="${options}${dryrun}"
+        options="${options}${dryrun}"
     fi
 
+    echo "$RSYNC $options ./ $dstpath"
     $RSYNC $options ./ $dstpath
 
     return 0
