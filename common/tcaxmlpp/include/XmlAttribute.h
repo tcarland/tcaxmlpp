@@ -1,9 +1,13 @@
 /**
-  *  XmlAttribute - This class manages an xml attribute which is 
-  *  generally attached to a node.
+  * @file XmlAttribute.h
+  *
+  *   This class manages an xml attribute which is generally attached 
+  * to a parent node.
   *  
   * Copyright(c) 2008, Timothy Charlton Arland
-  * @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcaxmlplus.
   *
@@ -33,14 +37,12 @@ namespace tcaxmlpp {
 class XmlNode;
 
 
-/**  An XmlAttribute object instance represents a single key/value
-  *  xml attribute pair.  That in itself is basic enough that
-  *  a stl <pair> or a struct could be used instead however,
-  *  the XmlNode class already provides direct attribute
-  *  manipulation. This class provides an interface to XmlNode
-  *  for performing 'live' xml attribute node updates if 
-  *  applicable. XmlAttribute objects are both created and destroyed
-  *  by XmlNode which should be where most user interaction occurs.
+/**    An XmlAttribute object instance represents a single key/value
+  * attribute pair. 
+  *    This class provides an interface to XmlNode for performing 
+  * 'live' xml attribute node updates if applicable. 
+  * XmlAttribute objects are both created and destroyed
+  * by XmlNode which should be where most interaction occurs.
  **/
 class XmlAttribute {
 

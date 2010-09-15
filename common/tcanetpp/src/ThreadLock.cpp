@@ -1,8 +1,10 @@
 /**
-  *   ThreadLock class
+  * @file ThreadLock.cpp
   *
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author  tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *
@@ -105,10 +107,9 @@ ThreadLock::unlock()
 /* ----------------------------------------------------------------------- */
  
 
-/**  A blocking wait condition
+/**  A blocking wait condition.
   *
-  *  As is the case with the ptreads API, the mutex must be locked 
-  *  first. 
+  *  As with the pthreads API, the mutex must be locked first. 
  **/
 int
 ThreadLock::wait()
@@ -119,10 +120,10 @@ ThreadLock::wait()
 }
 
 
-/**  A timed wait that blocks for @param seconds.
+/**  A timed wait that blocks for given number of seconds.
+  *  As with the pthreads API, the mutex must be locked first.
   *
-  *  As is the case with the ptreads API, the mutex must be locked 
-  *  first. 
+  *  @param seconds is the number of seconds to block.
  **/
 int
 ThreadLock::waitFor ( time_t seconds)

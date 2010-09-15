@@ -1,9 +1,12 @@
-/**  Global config.h which defines certain requirements
-  *  that have not yet been automated through a configure
-  *  mechanism.
+/**
+  * @file tcanetpp_config.h
+  *
+  *    Library config.h which defines certain requirements.
   *   
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *
@@ -25,7 +28,7 @@
 #define _TCANETPP_CONFIG_H_
  
 
-#define TCANETPP_VERSION  "08.09.2010"
+#define TCANETPP_VERSION  "09.15.2010"
 
 
 // for enabling widechar default

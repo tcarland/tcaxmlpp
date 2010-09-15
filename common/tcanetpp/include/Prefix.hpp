@@ -1,9 +1,13 @@
 /**
-  *  Prefix - Represents a network CIDR address or a network IP Address 
-  *     in the standard CIDR notation of x.x.x.x/yy.
+  * @file Prefix.hpp
+  *
+  *   Represents a network CIDR address or a network IP Address 
+  * in the standard CIDR notation of x.x.x.x/yy.
   *  
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *

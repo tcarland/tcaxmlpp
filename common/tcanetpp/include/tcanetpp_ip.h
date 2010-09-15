@@ -1,8 +1,12 @@
-/**
-  *  tcanetpp_ip - Defines our IP headers for use with raw sockets.
+/** 
+  * @file tcanetpp_ip.h
+  *
+  *   Defines our IP headers for use with raw sockets.
   *
   * Copyright (c) 2010 Timothy Charlton Arland
-  *  @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *
@@ -26,6 +30,10 @@
 #include "tcanetpp_types.h"
 
 
+/**  The IP header defined for use within this lib to avoid 
+  *  performing platform specific defines since the header 
+  *  and its fields vary slightly in convention across systems
+ **/
 typedef struct IpHeader {
     uint8_t   version;
     uint8_t   tos;
@@ -47,7 +55,7 @@ typedef struct IpHeader {
 
 } netip_h;
 
-
+/**  The UDP Header definition. */
 typedef struct UdpHeader {
     uint16_t  srcport;
     uint16_t  dstport;
@@ -61,7 +69,7 @@ typedef struct UdpHeader {
 
 } netudp_h;
 
-
+/**  The ICMP Header definition */
 typedef struct IcmpHeader {
     uint8_t  type;
     uint8_t  code;

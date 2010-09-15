@@ -1,3 +1,7 @@
+/** 
+  * @file Serializer.cpp
+  *
+ **/
 #define _TCANETPP_SERIALIZER_CPP_
 
 #include "Serializer.h"

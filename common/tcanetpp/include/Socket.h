@@ -1,9 +1,13 @@
 /**
-  *  Socket.h -  The base Socket class providing an object-oriented
-  *   interface to sockets for both Unix and Win32 platforms.
+  * @file Socket.h
+  *
+  *    The base Socket class providing an object-oriented
+  * interface to sockets for both Unix and Win32 platforms.
   * 
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *
@@ -83,6 +87,7 @@ public:
 class Socket {
   public:
 
+    /**  The default Socket factory class used by Socket::accept() */
     class SocketFactory {
       public:
         virtual ~SocketFactory() {}
@@ -92,6 +97,12 @@ class Socket {
     };
 
 
+    /**   A Socket factory class used to created derived Socket classes
+      * for UDP based sockets. Since UDP is connectionless, there is 
+      * no listen socket descriptor, yet maintaining a separate client 
+      * instance of the Socket class might be desired. Doing this requires
+      * using the same descriptor which this factory makes possible.
+     **/
     class UdpSocketFactory : public SocketFactory {
         sockaddr_in  _csock;
       public:
@@ -148,7 +159,7 @@ class Socket {
     const std::string&  getHostStr() const    { return this->getHostString(); }
     
     const sockfd_t&     getDescriptor() const;
-    const sockfd_t&     getFD() const    { return this->getDescriptor(); }
+    const sockfd_t&     getFD() const         { return this->getDescriptor(); }
     
     const SocketType&   getSocketType() const;
     const int&          getSocketProtocol() const;
@@ -166,7 +177,7 @@ class Socket {
     bool                isBlocking();
     
     const std::string&  getErrorString() const;
-    const std::string&  errorStr() const  { return this->getErrorString(); }
+    const std::string&  errorStr() const     { return this->getErrorString(); }
     
     virtual ssize_t     read     ( void * vptr, size_t n );
     virtual ssize_t     write    ( const void * vptr, size_t n );

@@ -1,8 +1,12 @@
 /**   
-  *   A thread-safe queue implementation.
+  * @file SynchronizedQueue.hpp
+  *
+  *   A thread-safe wrapper to the STL queue.
   *  
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *
@@ -110,11 +114,6 @@ template<class ValueType> class SynchronizedQueue {
     	return _mutex.notify();
     }
 
-    size_t maxSize() const
-    {
-        return this->_maxSize;
-    }
-
     size_t size()
     {
         size_t  sz = 0;
@@ -125,7 +124,7 @@ template<class ValueType> class SynchronizedQueue {
         sz = _queue.size();
         _mutex.unlock();
 
-	return sz;
+	    return sz;
     }
 
     bool empty() { return this->isEmpty(); }
@@ -155,12 +154,21 @@ template<class ValueType> class SynchronizedQueue {
         _mutex.unlock();
     }
 
+    size_t maxSize()
+    {
+        return _maxSize;
+    }
+
+    void maxSize ( size_t maxsz )
+    {
+        _maxSize = maxsz;
+    }
 
   private:
 
     std::queue<ValueType>    _queue;
-    ThreadLock               _mutex;
     size_t                   _maxSize;
+    ThreadLock               _mutex;
 
 
 };

@@ -1,9 +1,12 @@
-/**  $Id: PrefixTree.hpp,v 1.9 2003/10/03 21:27:19 tca Exp $
+/**
+  * @file PrefixTree.h
   *
-  *   PrefixTree - stl wrapper to a patricia tree
+  *   A STL wrapper to the patricia tree (patricia.h)
   *    
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *

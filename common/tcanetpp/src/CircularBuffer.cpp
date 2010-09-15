@@ -1,8 +1,10 @@
 /**
-  *   CircularBuffer.cpp
+  * @file CircularBuffer.cpp
   *
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author  tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *
@@ -105,7 +107,7 @@ CircularBuffer::init() throw ( BufferException )
 }
 
 // ----------------------------------------------------------------------
-/**   Reads <n> bytes from the circular buffer to the
+/**   Reads 'n' bytes from the circular buffer to the
   *   provided buffer, returning the number of bytes
   *   actually copied to the buffer.
   *
@@ -143,7 +145,7 @@ CircularBuffer::read ( void *buff, size_t n )
 }
 
 // ----------------------------------------------------------------------
-/**   Writes <n> bytes from the provided buffer to the 
+/**   Writes 'n' bytes from the provided buffer to the 
   *   CirBuffer returning the number of bytes written.
   *
   *   @param buff  the buffer from which to copy.

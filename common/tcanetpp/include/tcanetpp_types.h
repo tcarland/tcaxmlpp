@@ -1,9 +1,13 @@
 /** 
+  * @file tcanetpp_types.h
+  *
   *   This header provides various defintions and typedefs that help to ensure 
-  *   cross-platform compilation, primarily between Unix and Win32.
+  * cross-platform compilation, primarily between Unix and Win32.
   *   
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *
@@ -64,13 +68,16 @@ extern "C" {
 #endif
 
 
-// our custom commonly used types
-#define INET_CIDRSTRLEN  20
-#define ERRORSTRLEN      256
-#define MAXMASKLEN       32
+// some commonly used defines and types
+//
+#define INET_CIDRSTRLEN   20
+#define ERRORSTRLEN       256
+#define MAXMASKLEN        32
+#define IPV4ADDR_LOOPBACK 16777343
+ 
 
+typedef struct in_addr    inaddr_t;
 
-typedef struct in_addr         inaddr_t;
 
 /** Struct defining an IP Address and its associated Mask 
  *  length in bits representing the a.b.c.d/mb cidr format. 

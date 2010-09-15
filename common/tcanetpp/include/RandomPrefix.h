@@ -1,8 +1,10 @@
 /**  
-  *   Random number and prefix generation. 
-  * 
+  * @file RandomPrefix.h
+  *
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author  tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *
@@ -30,6 +32,7 @@
 namespace tcanetpp {
     
 
+/** Random number and prefix generation */
 class Random {
 
   public:

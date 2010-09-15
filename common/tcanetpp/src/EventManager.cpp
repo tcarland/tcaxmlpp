@@ -1,9 +1,12 @@
-/**  EventManager
-  * 
+/** 
+  * @file EventManager.cpp
+  *
   *   Class for handling multiplexing data I/O and timer events.
   * 
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author  tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *
@@ -156,6 +159,9 @@ EventManager::addTimerEvent ( EventTimerHandler * handler, time_t abstime )
 
 
 /**  Creates a new IO Event for the provided file descriptor and associated handler.
+  *  @param handler is the pointer to an EventIOHandler object.
+  *  @param sfd is the file handle to track for the given I/O event.
+  *  @param rock is a user provided void* for associating user data with the event.
   *  @param isServer  provides for special handling of the file descriptor and any
   *   reads on this descriptor result in the EventIOHandler::handle_accept() to be 
   *   called instead of the handle_read() function.

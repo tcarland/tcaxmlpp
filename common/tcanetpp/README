@@ -1,7 +1,9 @@
 /** $Id: README,v 1.0 2009/04/07 13:42:00 tca Exp $
   *
   * Copyright (c) 2008, 2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  * 
+  * @section LICENSE
   *
   * tcanetpp is free software: you can redistribute it and/or modify
   * it under the terms of the GNU Lesser General Public License as 
@@ -18,9 +20,10 @@
   * If not, see <http://www.gnu.org/licenses/>.
  **/
 
-                        tcanetpp
+/**
+  @mainpage   tcanetpp
 
-Overview:
+@section overview Overview:
 
    The 'tcanetpp' library is C/C++ library for providing core
 networking functionality with an object-oriented interface. The 
@@ -48,11 +51,11 @@ build individual libraries consisting of just the sub-components, or a
 single, encompassing lib of 'libtcanetpp'. The pthreads library is used for 
 the Thread classes. 
 
-Documentation:
+@section docs Documentation:
   The library is being documented in an API format via doxygen. 
 Run 'make documentation' to generate the docs (doxygen req.)
 
-Build:
+@section build Build:
 
 *nix:
   Uses tcamake build environment to set dependencies for simply running
@@ -64,4 +67,4 @@ Win32/64:
 (only the thread classes are iffy with windows and are not compiled 
 under win32 (the win32 pthread library may be compatible, but ymmv) 
 
-
+*/

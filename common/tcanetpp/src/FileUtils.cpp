@@ -1,7 +1,10 @@
 /**
+  * @file FileUtils.cpp
   *
-  *  * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
+  * @author  tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *

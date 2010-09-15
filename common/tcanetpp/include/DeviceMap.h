@@ -1,8 +1,12 @@
 /**
-  *  DeviceMap is a container of NetworkDevice objects.
+  * @file DeviceMap.h
+  *
+  *    A container of NetworkDevice objects.
   * 
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *
@@ -34,6 +38,9 @@ namespace tcanetpp {
 class NetworkDevice;
 
 
+/**  A map of host ip to NetworkDevice object with an interface 
+  * extending an STL map.
+ **/
 class DeviceMap {
 
   public:

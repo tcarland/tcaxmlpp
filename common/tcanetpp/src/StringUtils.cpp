@@ -1,8 +1,12 @@
 /**
-  *  A collection of static methods for c++ string manipulation.
+  * @file StringUtils.cpp
+  *
+  *   A collection of static methods for c++ string manipulation.
   *
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author  tca@charltontechnology.net
+  *
+  * @section LICENSE 
   *
   * This file is part of tcanetpp.
   *
@@ -116,7 +120,7 @@ StringUtils::equalsIgnoreCase ( const std::string & strA, const std::string & st
 
 // ----------------------------------------------------------------------
 /**@{  Returns the first (or last) index of @param match in the given string,
-  *    and a negative value no match
+  *    @param str or a negative value if no match.
  **/
 
 int
@@ -228,7 +232,12 @@ StringUtils::trim ( std::string & str )
 
 
 // ----------------------------------------------------------------------
-/**@{  Strips all occurances of @param rem from the provided string. */
+/**@{
+  *  Strips all occurances of one string from another string.
+  *  @param str is the provided string on which to operate.
+  *  @param rem is the string to match and remove from the provided
+  *  string.
+ **/
 void
 StringUtils::strip ( std::string & str, const std::string & rem )
 {

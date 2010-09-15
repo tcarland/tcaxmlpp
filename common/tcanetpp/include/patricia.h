@@ -1,16 +1,18 @@
 /**
-  *     A Radix Trie implementation based on Sedgewick's
-  *  "Algorithm's in C".
+  * @file patricia.h
   *
-  *     Note that some functions (notably longestMatch) make
-  *  use of static variables, which can cause concurrancy
-  *  issues in a threaded environment.
-  *     If thread safety is needed, care should be exercised
-  *  to properly wrap function calls around a mutex.
+  *    A Radix Trie implementation.
   *
+  *    Note that some functions (notably longestMatch) make
+  * use of static variables, which can cause concurrancy
+  * issues in a threaded environment.
+  *    If thread safety is needed, care should be exercised
+  * to properly wrap function calls around a mutex.
   *
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *

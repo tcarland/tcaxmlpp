@@ -1,9 +1,12 @@
-/**  $Id: ThreadLock.h,v 1.8 2003/09/29 04:40:57 tca Exp $
+/**
+  * @file ThreadLock.h
   *
   *   Threadlock provides a wrapper to a pthread conditional mutex.
   * 
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *
@@ -34,6 +37,10 @@ extern "C" {
 namespace tcanetpp {
 
 
+/** A simple wrapper to a pthread mutex and conditional allowing
+  * us to create class or function level locking and conditional
+  * trylock/notify functionality.
+ **/
 class ThreadLock {
 
   public:

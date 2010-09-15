@@ -1,8 +1,10 @@
 /**
-  *  ThreadMutexPool.h
+  * @file ThreadMutexPool.h
   *
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *
@@ -38,7 +40,9 @@ namespace tcanetpp {
 typedef std::list< ThreadLock* >  ThreadLockPool;
 
 
-/**  A class for managing a resource pool of mutexes. */
+/**  A class for managing a resource pool of pthread mutex's 
+  *  represented by a tcanetpp::ThreadLock instance. 
+ **/
 class ThreadMutexPool {
 
   public:

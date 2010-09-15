@@ -1,8 +1,10 @@
 /**  
-  *  BufferedSocket.cpp
+  *  @file  BufferedSocket.cpp
   *
-  * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
+  *  Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
   *  @Author  tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *
@@ -33,6 +35,16 @@ char rcsid[] = "$Id: BufferedSocket.cpp,v 0.3 2009/01/03 03:02:00 tca Exp $";
 
 
 BufferedSocket::BufferedSocketFactory  BufferedSocket::factory;
+
+
+Socket*
+BufferedSocket::BufferedSocketFactory::operator() ( sockfd_t    & fd, 
+                                                    sockaddr_in & csock,
+                                                    SocketType    type, 
+                                                    int           proto )
+{
+    return( (Socket*) new BufferedSocket(fd, csock, type, proto) );
+}
 
 
 BufferedSocket::BufferedSocket() 

@@ -1,7 +1,10 @@
-/**  DeviceMap 
+/**
+  * @file DeviceMap.cpp
   *
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author  tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *

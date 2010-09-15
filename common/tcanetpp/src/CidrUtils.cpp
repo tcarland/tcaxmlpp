@@ -1,8 +1,13 @@
 /**  
-  *  Network ip address/prefix/cidr manipulation methods
+  * @file CidrUtils.cpp
+  * 
+  *   The CidrUtils class is a collection of static utility functions for 
+  * manipulating IP Address, Prefix, and Cidr's.
   *  
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @Author  tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *
@@ -48,7 +53,20 @@ CidrUtils::IsBasePrefix ( ipv4addr_t addr, uint8_t mb )
 
 
 //-------------------------------------------------------------------//
-
+/**  Returns the corresponding 'Network' Address of a given 
+  *  IP Address and 'Netmask'.
+  *
+  *   example:
+  *
+  *     Prefix     addr;
+  *     ipv4addr_t netaddr;
+  *
+  *     CidrUtils::StringToCidr("192.168.1.34/24", addr);
+  *     netaddr = CidrUtils::ToBasePrefix(addr.getPrefix(), addr.getPrefixLen());
+  *     prinf("result: %s\n", CidrUtils::ntop(netaddr).c_str());
+  *
+  *      'result: 192.168.1.0'
+ **/
 ipv4addr_t
 CidrUtils::ToBasePrefix ( ipv4addr_t addr, uint8_t mb )
 {
@@ -67,12 +85,16 @@ CidrUtils::ToBasePrefix ( ipv4addr_t addr, uint8_t mb )
 
 //-------------------------------------------------------------------//
 
+/** Convert the given IPv4 address to a string wrapping the 'ntop' function. */
 std::string
 CidrUtils::ToString ( ipv4addr_t addr )
 {
     return CidrUtils::ntop(addr);
 }
 
+/**@{
+  *   Converts the given Prefix object to a cidr formatted string. 
+ **/
 std::string
 CidrUtils::ToString ( const Prefix & pfx )
 {
@@ -96,6 +118,7 @@ CidrUtils::ToString ( ipv4addr_t addr, uint8_t mb )
 
     return cidrStr;
 }
+/*@}*/
 
 //-------------------------------------------------------------------//
 
@@ -149,10 +172,15 @@ CidrUtils::StringToCidr ( const std::string & cidrStr, Prefix & pfx )
 
 //-------------------------------------------------------------------//
 
+/** Converts a given number of mask bits to the integer value of 
+  * an IPv4 Netmask (eg. 24 maskbits = 255.255.255.0 netmask)
+ **/
 ipv4addr_t
 CidrUtils::BitsToMask ( uint8_t mb )
 {
     ipv4addr_t  mask = 0xffffffff;
+    if ( mb > 32 )
+        return mask;
     mask = mask >> (32 - mb) << (32 - mb);
     return mask;
 }

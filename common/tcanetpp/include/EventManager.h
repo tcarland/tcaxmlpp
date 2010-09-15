@@ -1,10 +1,12 @@
-/**   EventManager
+/** @file
   * 
+  * EventManager
   *   Class for handling multiplexing data I/O and timer events.
-  *   Note that Timer events currently lack sub-second granularity.
   *
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *

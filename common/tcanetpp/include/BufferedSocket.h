@@ -1,8 +1,10 @@
-/**
-  *  BufferedSocket.h
+/** 
+  * @file BufferedSocket.h
   *
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *
@@ -31,7 +33,9 @@
 namespace tcanetpp {
 
 
-
+/**  BufferedSocket adds read and optional write buffering
+  *  functionality to the base tcanetpp::Socket class.
+ **/
 class BufferedSocket : public Socket {
 
   public:
@@ -43,10 +47,7 @@ class BufferedSocket : public Socket {
         virtual ~BufferedSocketFactory() {}
 
         virtual Socket* operator() ( sockfd_t & fd, sockaddr_in & csock,
-                                     SocketType type, int proto )
-        {
-            return( (Socket*) new BufferedSocket(fd, csock, type, proto) );
-        }
+                                     SocketType type, int proto );
     };
 
     static BufferedSocketFactory   factory;

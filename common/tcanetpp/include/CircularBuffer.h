@@ -1,13 +1,16 @@
 /**
+  * @file CircularBuffer.h
+  *
   *   A circular buffer implementation which allows for direct access and 
   *  interaction to the underlying buffer. This was originally designed 
   *  to read inbound udp fast while avoiding an additional memcpy's that 
   *  occur in a std read/write function calls. The get/set ptr functions 
   *  should be used with caution.
   *
-  *
   * Copyright (c) 2001,2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *

@@ -1,9 +1,13 @@
 /**
-  * htonq() and ntohq() macros for handling uint64_t
-  *   or unsigned long long's.
+  * @file byte_order.h
+  *
+  *   htonq() and ntohq() macros for handling uint64_t
+  * or unsigned long long's.
   *
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *

@@ -1,9 +1,12 @@
-/**  $Id: Thread.h,v 1.8 2003/09/29 04:40:57 tca Exp $
+/**  
+  * @file Thread.h
   *
-  *    An abstract Thread class
+  *    An abstract Thread class wrapping libpthread.
   *  
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  *  @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcanetpp.
   *
@@ -47,7 +50,7 @@ class ThreadException : public Exception {
 
 
 /**
-  *  The Thread class is an abstract class for instantiating an object
+  *  The Thread class is an abstract interface class for instantiating an object
   *  as a thread. A derived object must provide its own 'run()' implementation.
   *  The thread is started via the base class's non-virtual method 'start()', 
   *  which sets up the thread and makes the call to the virtual 'init() method 
