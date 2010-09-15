@@ -109,8 +109,8 @@ doBuild()
 
 doDist()
 {
-    local target=$1
-    local dryrun=$2
+    local target="$1"
+    local dryrun="$2"
     local curdir=$PWD
     local pname=`basename $curdir`
     local options="$OPTIONS"
@@ -139,7 +139,7 @@ doDist()
     fi
 
     if [ -n "$dryrun" ]; then
-        options="${options}${dryrun}"
+        options="${options}${DRYRUN}"
     fi
 
     echo "$RSYNC $options ./ $dstpath"
