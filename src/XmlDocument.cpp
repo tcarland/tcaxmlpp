@@ -1,8 +1,10 @@
 /**
-  *  XmlDocument
+  * @file XmlDocument.cpp
   *
   * Copyright(c) 2008, Timothy Charlton Arland
-  * @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcaxmlplus.
   *
@@ -36,7 +38,7 @@ bool
 XmlDocument::_Libinit = false;
 
 const char*
-XmlDocument::_Version = "1.3.4";
+XmlDocument::_Version = "1.3.5";
 
 //-------------------------------------------------------------//
 

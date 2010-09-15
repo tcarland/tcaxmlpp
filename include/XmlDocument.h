@@ -1,9 +1,13 @@
 /**
-  *  XmlDocument - provides an interface for parsing and 
+  * @file XmlDocument.h
+  *  
+  *    This class provides an interface for parsing and 
   *  holding a XML document structure using libxml2's DOM api. 
   *
   * Copyright(c) 2008, Timothy Charlton Arland
-  * @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcaxmlplus.
   *
@@ -20,7 +24,6 @@
   * You should have received a copy of the GNU Lesser General Public 
   * License along with tcaxmlplus.  
   * If not, see <http://www.gnu.org/licenses/>.
-  *
  **/
 #ifndef XmlDocument_h
 #define XmlDocument_h

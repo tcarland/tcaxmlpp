@@ -1,8 +1,10 @@
 /**
-  * XmlAttribute.cpp
+  * @file XmlAttribute.cpp
   *
   * Copyright(c) 2008, Timothy Charlton Arland
-  * @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcaxmlplus.
   *

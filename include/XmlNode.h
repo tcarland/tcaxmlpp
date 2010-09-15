@@ -1,9 +1,12 @@
 /**
-  *  XmlNode - Class for manipulating a node, its children, and 
-  *  its attributes.
+  * @file XmlNode.h
+  *    Class for manipulating a node, its children, and 
+  * its attributes.
   *
   * Copyright(c) 2008, Timothy Charlton Arland
-  * @Author  tca@charltontechnology.net
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
   *
   * This file is part of tcaxmlplus.
   *
@@ -43,10 +46,10 @@ typedef XmlAttrMap::iterator                    XmlAttrIter;
 
 //-----------------------------------------------------------//
 
-/**  The XmlNode object acts as a container for all subnodes or 
-  *  children. The class ignores type information and handles all 
-  *  attributes and node tags as strings. The root level XmlNode
-  *  object would provide the primary interface to manipulating 
+/**  The XmlNode object acts as a container for all sub-nodes or 
+  *  children. The class ignores xsd type information and handles 
+  *  all attributes and node tags as strings. The root level XmlNode
+  *  object would provide the primary interface into manipulating 
   *  the xml content.
  **/
 class XmlNode {
@@ -164,7 +167,9 @@ class XmlNode {
       public:
         XmlNode * node;
         
-        explicit FindXmlNode ( XmlNode * n ) : node(n) {}
+        explicit FindXmlNode ( XmlNode * n ) 
+            : node(n) 
+        {}
         
         bool operator() ( const XmlNode* n )
         {
@@ -181,7 +186,8 @@ class XmlNode {
         explicit FindXmlNodeName ( const std::string & name_, 
                                    const std::string & key_, 
                                    const std::string & val_ )
-           : name(name_), key(key_), val(val_) {}
+           : name(name_), key(key_), val(val_) 
+        {}
 
         bool operator() ( XmlNode * node )
         {
@@ -193,14 +199,13 @@ class XmlNode {
     };
 
 
-
   protected:
 
     virtual void   recursiveWalk();
     virtual void   readNodeAttributes();
 
-
     void           setParent  ( XmlNode * parent );
+
 
   protected:
 
