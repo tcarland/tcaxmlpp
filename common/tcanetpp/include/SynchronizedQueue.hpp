@@ -110,6 +110,11 @@ template<class ValueType> class SynchronizedQueue {
     	return _mutex.notify();
     }
 
+    size_t maxSize() const
+    {
+        return this->_maxSize;
+    }
+
     size_t size()
     {
         size_t  sz = 0;
@@ -120,7 +125,7 @@ template<class ValueType> class SynchronizedQueue {
         sz = _queue.size();
         _mutex.unlock();
 
-	    return sz;
+	return sz;
     }
 
     bool empty() { return this->isEmpty(); }
@@ -154,8 +159,8 @@ template<class ValueType> class SynchronizedQueue {
   private:
 
     std::queue<ValueType>    _queue;
-    size_t                   _maxSize;
     ThreadLock               _mutex;
+    size_t                   _maxSize;
 
 
 };

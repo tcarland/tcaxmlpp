@@ -106,10 +106,10 @@ int main ( int argc, char **argv )
                 usage();
                 break;
             case 'l':
-                logf   = strdup(optarg);
+                logf = strdup(optarg);
                 break;
             case 't':
-                tail   = true;
+                tail = true;
                 break;
             case 'V':
                 version();
@@ -162,8 +162,11 @@ int main ( int argc, char **argv )
 
     while ( ! Alarm )
     {
+
         now = ::time(NULL);
-        if ( queue->pop(fwe) > 0 ) {
+
+        if ( queue->pop(fwe) > 0 ) 
+        {
             if ( fwrep == NULL ) {
             	if ( ! config.empty() ) {
             		fwrep = new FwLogReport(config);
@@ -175,13 +178,26 @@ int main ( int argc, char **argv )
             }
 
             fwrep->SendEntry(fwe, now);
-        } else {
+        } 
+        else 
+        {
             queue->waitFor(5);
             queue->unlock();
         }
         
         if ( fwrep )
-            fwrep->FlushApi(now);
+            fwrep->FlushApi(now);        
+            
+        if ( ! tail && ! fwreader->isRunning() && queue->size() == 0 ) {
+            fwreader->stop();
+            delete fwreader;
+            tail      = true;
+            LogFacility::LogMessage("Full pass completed, switching to tail mode");
+            fwreader  = new FwLogReader(logfile, tail);
+            fwreader->start();
+            queue = fwreader->getQueue();
+        }
+
     }
 
     LogFacility::LogMessage("Finished.");

@@ -30,10 +30,13 @@ FwLogReader::run()
         mode |= std::ios::ate;
 
     ifs.open(_logfile.c_str(), mode);
+
     if ( ! ifs ) {
         LogFacility::LogMessage("Error reading logfile: " + _logfile);
         return;
     }
+
+    LogFacility::LogMessage("FwLogReader started for logfile: " + _logfile);
 
     do 
     {
@@ -41,18 +44,24 @@ FwLogReader::run()
         {
             FwLogEntry   fwe;
 
-            if ( FwLogEntry::ParseLogEntry(line, fwe) ) {
+            if ( FwLogEntry::ParseLogEntry(line, fwe) )
                 _squeue.push(fwe);
-            }
         }
 
-        if ( _squeue.size() > 0 ) {
+        if ( _squeue.size() > 0 )
             _squeue.notify();
-        }
 
-        ::usleep(500);
-    } while ( ifs.eof() && ! this->_Alarm );
+        ::usleep(5000000);
 
+        if ( ifs.eof() && ! _tail )
+            this->_Alarm = true;
+
+        if ( ifs.eof() )
+            ifs.clear();
+
+    } while ( ! this->_Alarm );
+
+    LogFacility::LogMessage("FwLogReader thread terminating..");
     ifs.close();
 
     return;

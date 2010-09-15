@@ -134,9 +134,13 @@ FwLogReport::SendEntry ( FwLogEntry & fwe, const time_t & now )
             if ( keyIsSrc ) {
                 _api->add(fwe.protom + "/SrcPort", now);
                 _api->add(fwe.protom + "/" + fwe.dpt + "/DstPort", now);
+                _api->add(fwe.protom + "/" + fwe.dpt + "/Protocol", now);
+                _api->update(fwe.protom + "/" + fwe.dpt + "/Protocol", now, fwe.proto);
             } else {
                 _api->add(fwe.protom + "/DstPort", now);
                 _api->add(fwe.protom + "/" + fwe.spt + "/SrcPort", now);
+                _api->add(fwe.protom + "/" + fwe.dpt + "/Protocol", now);
+                _api->update(fwe.protom + "/" + fwe.dpt + "/Protocol", now, fwe.proto);
             }
         } else {
             return;
