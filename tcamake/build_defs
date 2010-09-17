@@ -4,9 +4,9 @@
 export TCAMAKE_PROJECT="true"
 
 # there are a few additional variables used by the build system 
-# they are listed completely in the tcanmsrc file which is simply
+# they are listed completely in the rc file which can be
 # sourced here. A few of the key flags are commented below and 
-# can be set and uncommented to override the rc file
+# can be set and uncommented to override the rc file.
 #
 #
 #TCANMS_DEBUG = 1

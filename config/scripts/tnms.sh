@@ -7,7 +7,7 @@
 #
 
 PNAME=${0##*\/}
-VERSION="1.12"
+VERSION="1.13"
 AUTHOR="tcarland@gmail.com"
 
 SYSHOME=""
@@ -86,7 +86,7 @@ INITERR=0
 usage()
 {
     echo ""
-    echo "Usage: $0 {start|stop|restart|info}  [service]  [key]"
+    echo "Usage: $PNAME {start|stop|restart|info}  [service]  [key]"
     echo ""
     echo "  service = service name to start"
     echo "  key     = process identifier "

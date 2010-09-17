@@ -1,8 +1,12 @@
+#  Makefile for tcasqlpp
+#
 ifdef TCAMAKE_PROJECT
 TOPDIR = ../..
 else
 TOPDIR = .
 endif
+
+NEED_TCANETPP_INCLUDE = 1
 
 ifdef USE_POSTGRESQL
 NEED_LIBPQXX = 1
@@ -14,7 +18,12 @@ NEED_MYSQL = 1
 DB_OBJS =       src/MysqlSession.o
 endif
 
-ifdef TNMS_DEBUG
+ifndef DB_OBJS
+$(warning 'Required environment variable not found, check the README for details')
+$(error 'ERROR database type not found. eg. export USE_MYSQL=1')
+endif
+
+ifdef GK_DEBUG
 OPT_FLAGS =     -g
 endif
 
@@ -37,7 +46,7 @@ all: lib
 include $(TOPDIR)/tcamake/project_defs
 
 
-lib: arlib
+lib: arlib solib
 
 arlib: lib/libtcasqlpp.a
 solib: libtcasqlpp.so.1.1.19
@@ -46,14 +55,14 @@ solib: libtcasqlpp.so.1.1.19
 lib/libtcasqlpp.a: $(OBJS)
 	@echo $(OBJS)
 	( mkdir -p lib )
-	ld -r -o $@ $(OBJS) $(LFLAGS)
+	$(make-lib-rule)
 	@echo
 
 libtcasqlpp.so.1.1.19: $(OBJS)
+	( $(MKDIR) lib )
+	( $(RM) $@ lib/libtcasqlpp.so )
 	$(make-so-rule)
-	$(RM) lib/$@ lib/libtcasqlsqlpp.so
-	( mkdir -p lib; mv $@ lib/; \
-	  cd lib; ln -s $@ libtcasqlpp.so )
+	( mv $@ lib/; cd lib; ln -s $@ libtcasqlpp.so )
 	@echo
 
 .PHONY: test

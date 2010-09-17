@@ -45,7 +45,7 @@ AuthDbThread::run()
 
     if ( sql == NULL )
     {
-        LogFacility::LogMessage("AuthDbThread::run() failed to acquire db handle " 
+        LogFacility::LogMessage("AuthDbThread::run() invalid DB handle: " 
             + _dbpool->getErrorStr());
         return;
     }
@@ -87,7 +87,7 @@ AuthDbThread::authenticate ( const std::string & username,
 
     SqlSessionInterface * sql = _dbpool->acquire();
     if ( sql == NULL ) {
-        LogFacility::LogMessage("AuthDbThread::authenticate() Error acquiring DB handle" 
+        LogFacility::LogMessage("AuthDbThread::authenticate() invalid DB handle: " 
             + _dbpool->getErrorStr());
         return result;
     }
@@ -163,7 +163,8 @@ AuthDbThread::isAuthentic ( const std::string & username,
     SqlSessionInterface * sql = _dbpool->acquire();
 
     if ( sql == NULL ) {
-        LogFacility::LogMessage("AuthDbThread::isAuthentic() Invalid database handle");
+        LogFacility::LogMessage("AuthDbThread::isAuthentic() invalid DB handle: " 
+            + _dbpool->getErrorStr());
         return false;
     }
     if ( userdb == NULL )

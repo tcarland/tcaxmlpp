@@ -1,8 +1,24 @@
-/**  MysqlSession
-  *   sqlplus wrapper to an SQL session
+/**  MysqlSession.cpp
+  *  
+  * Copyright (c) 2008,2009 Timothy Charlton Arland 
+  *  @Author  tca@charltontechnology.net
   *
-  *  @Author   tcarland.gmail.com
-  *  @Version  1.6
+  * This file is part of tcasqlpp.
+  *
+  * tcasqlpp is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU Lesser General Public License as 
+  * published by the Free Software Foundation, either version 3 of 
+  * the License, or (at your option) any later version.
+  *
+  * tcasqlpp is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Lesser General Public License for more details.
+  *
+  * You should have received a copy of the GNU Lesser General Public 
+  * License along with tcasqlpp.  
+  * If not, see <http://www.gnu.org/licenses/>.
+  *
  **/
 #define _TCASQLPP_MYSQLSESSION_CPP_
 
@@ -28,8 +44,10 @@ MysqlSession::MysqlSession() throw ( SqlException )
 }
 
 
-MysqlSession::MysqlSession ( const std::string & dbname, const std::string & dbhost,
-			     const std::string & dbuser, const std::string & dbpass,
+MysqlSession::MysqlSession ( const std::string & dbname, 
+                             const std::string & dbhost,
+			     const std::string & dbuser, 
+                             const std::string & dbpass,
                              const std::string & dbport )
     throw ( SqlException )
     : _dbcon(NULL),
@@ -86,8 +104,10 @@ MysqlSession::init() throw ( SqlException )
 
 
 bool
-MysqlSession::dbconnect ( const std::string & dbname, const std::string & dbhost,
-                          const std::string & dbuser, const std::string & dbpass,
+MysqlSession::dbconnect ( const std::string & dbname, 
+                          const std::string & dbhost,
+                          const std::string & dbuser, 
+                          const std::string & dbpass,
                           const std::string & dbport )
     throw ( SqlException )
 {

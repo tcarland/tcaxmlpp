@@ -6,6 +6,7 @@
 TCA_PORT_OS         := $(shell uname)
 TCA_PORT_MACHINE    := $(shell uname -m)
 TCA_PORT_IDENTIFIER := "$(TCA_PORT_OS)_$(TCA_PORT_MACHINE)"
+TCAMAKE_KV          := $(shell uname -r)
 
 LIB_SOCKET=
 LIB_NSL=

@@ -1,5 +1,28 @@
-#ifndef _TCASQL_PGSQLSESSION_H_
-#define _TCASQL_PGSQLSESSION_H_
+/**  PgsqlSession.h
+  *    c++ wrapper to a Postgres session instance.
+  *  
+  * Copyright (c) 2008,2009 Timothy Charlton Arland 
+  *  @Author  tca@charltontechnology.net
+  *
+  * This file is part of tcasqlpp.
+  *
+  * tcasqlpp is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU Lesser General Public License as 
+  * published by the Free Software Foundation, either version 3 of 
+  * the License, or (at your option) any later version.
+  *
+  * tcasqlpp is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Lesser General Public License for more details.
+  *
+  * You should have received a copy of the GNU Lesser General Public 
+  * License along with tcasqlpp.  
+  * If not, see <http://www.gnu.org/licenses/>.
+  *
+ **/
+#ifndef _TCASQLPP_PGSQLSESSION_H_
+#define _TCASQLPP_PGSQLSESSION_H_
 
 #include <string>
 
@@ -76,4 +99,4 @@ class PgsqlSession : public SqlSessionInterface {
 }  // namespace
 
 
-#endif  //  _TCASQL_PGSQLSESSION_H_ 
+#endif  //  _TCASQLPP_PGSQLSESSION_H_ 

@@ -1,8 +1,25 @@
 /**  MysqlSession.h
-  *   sqlplus wrapper to a MYSQL session instance.
+  *    c++ wrapper to a MYSQL session instance.
+  *  
+  * Copyright (c) 2008,2009 Timothy Charlton Arland 
+  *  @Author  tca@charltontechnology.net
   *
-  *  @Author   tcarland@gmail.com
-  *  @Version  1.6
+  * This file is part of tcasqlpp.
+  *
+  * tcasqlpp is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU Lesser General Public License as 
+  * published by the Free Software Foundation, either version 3 of 
+  * the License, or (at your option) any later version.
+  *
+  * tcasqlpp is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Lesser General Public License for more details.
+  *
+  * You should have received a copy of the GNU Lesser General Public 
+  * License along with tcasqlpp.  
+  * If not, see <http://www.gnu.org/licenses/>.
+  *
  **/
 #ifndef _TCASQLPP_MYSQLSESSION_H_
 #define _TCASQLPP_MYSQLSESSION_H_
@@ -31,10 +48,10 @@ namespace tcasqlpp {
 typedef std::vector<std::string>   Row;
 
 /**  Result is an ordered list of Row data */
-typedef std::list<Row>             Result;
+typedef std::list<Row>   Result;
 
 
-/**  Query is simply a convenient std::stringstream 
+/**  Query is a convenient std::stringstream 
   *  used to construct sql statements.
  **/
 class Query : public std::stringstream {
@@ -64,8 +81,10 @@ class MysqlSession : public SqlSessionInterface {
     MysqlSession() 
         throw ( SqlException );
     
-    MysqlSession ( const std::string & dbname, const std::string & dbhost, 
-                   const std::string & dbuser, const std::string & dbpass,
+    MysqlSession ( const std::string & dbname, 
+                   const std::string & dbhost, 
+                   const std::string & dbuser, 
+                   const std::string & dbpass,
                    const std::string & dbport = "" )
         throw ( SqlException );
     
@@ -114,6 +133,7 @@ class MysqlSession : public SqlSessionInterface {
 
     void           timeout     ( time_t timeout );
     time_t         timeout();
+
     void           compression ( bool use_compression );
     bool           compression();
 
@@ -150,6 +170,7 @@ class MysqlSession : public SqlSessionInterface {
   private:
 
     void  init() throw ( SqlException );
+
 
   protected:
 
