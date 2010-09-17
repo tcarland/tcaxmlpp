@@ -24,4 +24,15 @@ if [ -z "$TNMS_PREFIX" ]; then
     export TNMS_PREFIX="$TNMS_HOME"
 fi
 
+if [ -n "$TNMS_USEDB" ]; then
+    if [ $TNMS_USEDB == "mysql" ]; then
+        export USE_MYSQL=1
+        export USE_PGSQL=""
+    elif  [ $TNMS_USEDB == "pgsql" ]; then
+        export USE_MYSQL=""
+        export USE_PGSQL=1
+    fi
+fi
+
+
 
