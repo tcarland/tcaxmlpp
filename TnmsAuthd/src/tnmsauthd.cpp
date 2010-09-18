@@ -1,6 +1,5 @@
 #define _TNMSAUTH_TNMSAUTHD_CPP_
 
-
 extern "C" {
 #include <unistd.h>
 #include <signal.h>
@@ -9,6 +8,7 @@ extern "C" {
 
 #include <cstdio>
 #include <cstdlib>
+#include <getopt.h>
 
 #include "FileUtils.h"
 using namespace tcanetpp;
@@ -92,8 +92,20 @@ int main ( int argc, char **argv )
     bool         debug   = true;
     bool         verbose = false;
     bool         daemon  = false;
-    
-    while ( (optChar = getopt(argc, argv, "c:dDvV")) != EOF ) {
+   
+
+    static struct option l_opts[] = { {"config", required_argument, 0, 'c'},
+                                      {"debug", no_argument, 0, 'd'},
+                                      {"daemon", no_argument, 0, 'D'},
+                                      {"help", no_argument, 0, 'h'},
+                                      {"verbose", no_argument, 0, 'v'},
+                                      {"version", no_argument, 0, 'V'},
+                                      {0,0,0,0}
+                                    };
+    int optindx = 0;
+
+
+    while ( (optChar = getopt_long(argc, argv, "c:dDhvV", l_opts, &optindx)) != EOF ) {
         
         switch ( optChar ) {
             case 'c':
@@ -104,6 +116,9 @@ int main ( int argc, char **argv )
               break;
             case 'D':
               daemon = true;
+              break;
+            case 'h':
+              usage();
               break;
             case 'v':
               verbose = true;
