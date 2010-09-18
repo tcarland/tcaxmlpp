@@ -9,6 +9,7 @@ extern "C" {
 
 #include <cstdio>
 #include <cstdlib>
+#include <getopt.h>
 
 #include "FileUtils.h"
 using namespace tcanetpp;
@@ -33,7 +34,7 @@ void version()
 
 void usage()
 {
-    printf("Usage: %s [-dDvV] [-c cfg]\n", process);
+    printf("Usage: %s [-dDhvV] [-c cfg]\n", process);
     printf("          -c <cfg>  :  xml configuration file (required)\n");
     printf("          -d        :  enable debug output\n");
     printf("          -D        :  run as a background daemon\n");
@@ -92,7 +93,19 @@ int main ( int argc, char **argv )
     bool         verbose = false;
     bool         daemon  = false;
     
-    while ( (optChar = getopt(argc, argv, "c:dDvV")) != EOF ) {
+
+    static struct option l_opts[] = { {"config", required_argument, 0, 'c'},
+                                      {"debug", no_argument, 0, 'd'},
+                                      {"daemon", no_argument, 0, 'D'},
+                                      {"help", no_argument, 0, 'h'},
+                                      {"verbose", no_argument, 0, 'v'},
+                                      {"version", no_argument, 0, 'V'},
+                                      {0,0,0,0}
+                                    };
+    int optindx = 0;
+
+
+    while ( (optChar = getopt_long(argc, argv, "c:dDhvV", l_opts, &optindx)) != EOF ) {
         
         switch ( optChar ) {
             case 'c':
@@ -103,6 +116,9 @@ int main ( int argc, char **argv )
               break;
             case 'D':
               daemon = true;
+              break;
+            case 'h':
+              usage();
               break;
             case 'v':
               verbose = true;

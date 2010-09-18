@@ -34,7 +34,7 @@ void version()
 
 void usage()
 {
-    printf("Usage: %s [-dDvV] [-c cfg]\n", process);
+    printf("Usage: %s [-dDhvV] [-c cfg]\n", process);
     printf("          -c <cfg>  :  xml configuration file (required)\n");
     printf("          -d        :  enable debug output\n");
     printf("          -D        :  run as a background daemon\n");
