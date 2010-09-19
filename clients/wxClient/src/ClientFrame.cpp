@@ -7,6 +7,7 @@
 #include <wx/dirctrl.h>
 #include <wx/dir.h>
 #include <wx/splitter.h>
+#include <wx/aboutdlg.h>
 
 #include "ConnectDialog.h"
 
@@ -17,6 +18,9 @@ using namespace tcanetpp;
 
 
 // ----------------------------------------------------------------------
+
+wxString
+ClientFrame::_Version = _T("0.3.37");
 
 // ----------------------------------------------------------------------
 
@@ -40,9 +44,6 @@ ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
                  wxPoint(-1, -1), wxSize(-1, -1), wxLC_LIST);
     
     spl2->SplitHorizontally(_mlist, _lCtrl2);
-
-    //this->initEvents();
-    
 
     //Connect(wxID_ANY, wxEVT_CONTEXT_MENU,
         //wxContextMenuEventHandler(ClientFrame::OnContextAny));
@@ -93,12 +94,16 @@ ClientFrame::initMenuBar()
 {
     _menuBar   = new wxMenuBar();
     _menuFile  = new wxMenu();
+    _menuAbout = new wxMenu();
+
     // Top-level :  File
     _menuFile->Append(new wxMenuItem(_menuFile, TNMS_ID_CONNECT, wxT("&Connect")));
     _menuFile->Append(new wxMenuItem(_menuFile, TNMS_ID_DISCONN, wxT("&Disconnect")));
     _menuFile->AppendSeparator();
     _menuFile->Append(new wxMenuItem(_menuFile, wxID_EXIT, wxT("&Quit")));
+    _menuAbout->Append(new wxMenuItem(_menuAbout, TNMS_ID_VERSION, wxT("&Version")));
     _menuBar->Append(_menuFile, wxT("&File"));
+    _menuBar->Append(_menuAbout, wxT("&About"));
 
     SetMenuBar(_menuBar);
 
@@ -108,6 +113,8 @@ ClientFrame::initMenuBar()
         wxCommandEventHandler(ClientFrame::OnDisconnect));
     Connect(wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, 
         wxCommandEventHandler(ClientFrame::OnQuit));
+    Connect(TNMS_ID_VERSION, wxEVT_COMMAND_MENU_SELECTED,
+        wxCommandEventHandler(ClientFrame::OnVersion));
 }
 
 
@@ -144,17 +151,32 @@ ClientFrame::OnTreeContext ( wxTreeEvent & event )
     menu->AppendRadioItem(wxID_ANY, wxT("Nothing"), wxT(""));
     menu->AppendRadioItem(TNMS_ID_SUBSCRIBE_ITEM, wxT("Subscribe to Item"), wxT(""));
     menu->AppendRadioItem(TNMS_ID_UNSUBSCRIBE_ITEM, wxT("Unsubscribe to Item"), wxT(""));
+    menu->AppendRadioItem(TNMS_ID_SUBSCRIBE_LEVEL, wxT("Subscribe to Level"), wxT(""));
+    menu->AppendRadioItem(TNMS_ID_UNSUBSCRIBE_LEVEL, wxT("unsubscribe to Level"), wxT(""));
     
     PopupMenu(menu, point);
 
     if ( menu->IsChecked(TNMS_ID_SUBSCRIBE_ITEM) )
     {
-        LogFacility::LogMessage(" OnContext Subscribe");
+        LogFacility::LogMessage(" OnTreeContext Subscribe Item " + name);
         this->Subscribe(name, _mlist->Subscriber());
     }
     else if ( menu->IsChecked(TNMS_ID_UNSUBSCRIBE_ITEM) )
     {
-        LogFacility::LogMessage(" OnContext Unsubscribe");
+        LogFacility::LogMessage(" OnTreeContext Unsubscribe Item " + name);
+        this->Unsubscribe(name, _mlist->Subscriber());
+        _mlist->RemoveMetric(name);
+    }
+    else if ( menu->IsChecked(TNMS_ID_SUBSCRIBE_LEVEL) )
+    {
+        name.append("/");
+        LogFacility::LogMessage(" OnTreeContext Subscribe Level " + name);
+        this->Subscribe(name, _mlist->Subscriber());
+    }
+    else if ( menu->IsChecked(TNMS_ID_UNSUBSCRIBE_LEVEL) )
+    {
+        name.append("/");
+        LogFacility::LogMessage(" OnTreeContext Unsubscribe Level " + name);
         this->Unsubscribe(name, _mlist->Subscriber());
         _mlist->RemoveMetric(name);
     }
@@ -213,13 +235,10 @@ ClientFrame::OnConnect ( wxCommandEvent & event )
 
     this->SetStatusText(wxT("Connecting to ") + username + wxT("@") + servname, 1);
 
-    //uint16_t pn = StringUtils::fromString<uint16_t>(port);
-    
     cl.client->openConnection(cl.servername, cl.port);
     cl.client->login(cl.username, cl.password);
     _stree->iomgr->addClient(cl.client);
     
-    //user.append("@").append(sn).append(":").append(port);
     username.append(_T("@")).append(servname).append(_T(":")).append(portname);
     _clientMap[username] = cl;
 
@@ -239,6 +258,16 @@ ClientFrame::OnQuit ( wxCommandEvent & event )
     Close(true);
 }
 
+void
+ClientFrame::OnVersion ( wxCommandEvent & event )
+{
+    wxAboutDialogInfo  info;
+    info.SetName(_T("TnmsWxClient"));
+    info.SetVersion(ClientFrame::_Version);
+    info.SetDescription(_T("Test client interface to the Tnms system"));
+    info.SetCopyright(_T("(c) 2010 Charlton Technology"));
+    ::wxAboutBox(info);
+}
 
 void
 ClientFrame::OnExpandItem ( wxCommandEvent & event )

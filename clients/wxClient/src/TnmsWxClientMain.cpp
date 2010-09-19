@@ -19,6 +19,8 @@ BEGIN_EVENT_TABLE(TnmsWxClientMain, wxApp)
     EVT_TIMER(TGUITIMER_ID, TnmsWxClientMain::OnTimer)
 END_EVENT_TABLE()
 
+std::string
+TnmsWxClientMain::_Version = "0.2.19";
 
 // ----------------------------------------------------------------------
 

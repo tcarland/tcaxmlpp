@@ -8,17 +8,22 @@ using namespace tcanetpp;
 
 
 const char* vt_names[] = 
-{ "TNMS_NONE", "TNMS_INT32", 
-  "TNMS_UINT32", "TNMS_INT64", 
-  "TNMS_UINT64", "TNMS_FLOAT", 
-  "TNMS_STRING"
+{ 
+    "TNMS_NONE", 
+    "TNMS_INT32", 
+    "TNMS_UINT32", 
+    "TNMS_INT64", 
+    "TNMS_UINT64", 
+    "TNMS_FLOAT", 
+    "TNMS_STRING"
 };
 
 
-MetricListView::MetricListView ( wxWindow * parent, const wxWindowID   id,
-                                                    const wxPoint    & pos,
-                                                    const wxSize     & size,
-                                                    long               style )
+MetricListView::MetricListView ( wxWindow         * parent, 
+                                 const wxWindowID   id,
+                                 const wxPoint    & pos,
+                                 const wxSize     & size,
+                                 long               style )
     : wxListCtrl(parent, id, pos, size, style|wxLC_REPORT|wxLC_HRULES),
       _sub(new TnmsSubscriber()),
       _lastid(0),

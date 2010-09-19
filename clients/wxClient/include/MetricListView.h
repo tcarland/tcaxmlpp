@@ -8,7 +8,9 @@
 
 #define TNMS_ID_MLIST  7005
 
+
 typedef std::map<std::string, long>  MetricListMap;
+
 
 
 class MetricListView : public wxListCtrl {
@@ -26,6 +28,7 @@ class MetricListView : public wxListCtrl {
     bool        AddMetric      ( TnmsMetric & metric );
     bool        UpdateMetric   ( long id, TnmsMetric & metric );
     bool        RemoveMetric   ( const std::string & name );
+
 
     void        Sync();
 

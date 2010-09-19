@@ -5,6 +5,7 @@
 #include <string>
 
 #include <wx/wx.h>
+#include <wx/string.h>
 
 #include "TnmsWxTree.h"
 #include "MetricListView.h"
@@ -34,31 +35,30 @@ class ClientFrame : public wxFrame {
     bool          Unsubscribe     ( const std::string & name,
                                     TreeSubscriber    * sub );
 
+    void          OnConnect       ( wxCommandEvent & event );
+    void          OnDisconnect    ( wxCommandEvent & event );
+    void          OnVersion       ( wxCommandEvent & event );
+    void          OnQuit          ( wxCommandEvent & event );
+
     void          OnListActivate  ( wxListEvent    & event );
-
     void          OnTreeSelect    ( wxTreeEvent    & event );
-
     void          OnTreeContext   ( wxTreeEvent    & event );
     void          OnListContext   ( wxListEvent    & event );
 
     void          OnContextAny    ( wxContextMenuEvent & event );
 
-    void          OnConnect       ( wxCommandEvent & event );
-    void          OnDisconnect    ( wxCommandEvent & event );
-    void          OnQuit          ( wxCommandEvent & event );
-
     void          OnDelete        ( wxCommandEvent & event );
     void          OnExpandItem    ( wxCommandEvent & event );
     void          OnCollapseItem  ( wxCommandEvent & event );
 
-    void          OnTimer         ( wxTimerEvent & event );
+    void          OnTimer         ( wxTimerEvent   & event );
 
     void          DropAllConnections();
+
 
   protected:
 
     void          initMenuBar();
-    //void          initEvents();
     void          sendClientSub   ( const std::string & name );
     void          sendClientUnsub ( const std::string & name );
 
@@ -86,6 +86,7 @@ class ClientFrame : public wxFrame {
     
     typedef std::map<wxString, Connection>  ClientMap;
 
+
   private:
 
     TnmsTree_R *         _stree;
@@ -98,10 +99,13 @@ class ClientFrame : public wxFrame {
     wxPanel *            _mainPanel;
     wxMenuBar *          _menuBar;
     wxMenu *             _menuFile;
+    wxMenu *             _menuAbout;
 
     wxGenericDirCtrl *   _gdir;
     wxListCtrl *         _lCtrl1;
     wxListCtrl *         _lCtrl2;
+
+    static wxString      _Version;
 
 };
 

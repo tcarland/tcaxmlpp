@@ -40,6 +40,8 @@ class TnmsWxClientMain : public wxApp {
 
     ClientFrame *       _mframe;
 
+    static std::string  _Version;
+
     DECLARE_EVENT_TABLE()
 };
 

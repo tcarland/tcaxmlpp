@@ -14,7 +14,7 @@
 #define TNMS_ID_WXTREE   7001
 #define TNMS_ID_CONNECT  7010
 #define TNMS_ID_DISCONN  7011
-
+#define TNMS_ID_VERSION  7050
 
 
 class TreeItem : public wxTreeItemData {
@@ -79,8 +79,8 @@ class TnmsWxTree : public wxControl {
     int           Subscribe       ( const std::string & name, TreeSubscriber * sub );
     int           Unsubscribe     ( const std::string & name, TreeSubscriber * sub );
 
-
     void          DoResize();
+
 
     void          Sync();
 
