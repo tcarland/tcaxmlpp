@@ -45,8 +45,6 @@ class ClientFrame : public wxFrame {
     void          OnTreeContext   ( wxTreeEvent    & event );
     void          OnListContext   ( wxListEvent    & event );
 
-    void          OnContextAny    ( wxContextMenuEvent & event );
-
     void          OnDelete        ( wxCommandEvent & event );
     void          OnExpandItem    ( wxCommandEvent & event );
     void          OnCollapseItem  ( wxCommandEvent & event );

@@ -28,7 +28,7 @@ class MetricListView : public wxListCtrl {
     bool        AddMetric      ( TnmsMetric & metric );
     bool        UpdateMetric   ( long id, TnmsMetric & metric );
     bool        RemoveMetric   ( const std::string & name );
-
+    bool        Unsubscribe    ( const std::string & name );
 
     void        Sync();
 

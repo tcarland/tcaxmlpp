@@ -88,7 +88,8 @@ FwLogReport::SendEntry ( FwLogEntry & fwe, const time_t & now )
     //  src <=> dst  
     fwe.absname = fwe.inf;
     fwe.absname.append("/").append(fwe.src);
-    fwe.absname.append("<->").append(fwe.dst);
+    // 
+    //fwe.absname.append("<->").append(fwe.dst);
     fwe.protom  = fwe.absname;
 
     int srcp = StringUtils::fromString<int>(fwe.spt);

@@ -124,8 +124,12 @@ MetricListView::AddMetric ( TnmsMetric & metric )
 
     _metrics[metric.getElementName()] = id;
 
+    if ( LogFacility::GetDebug() )
+        LogFacility::LogMessage("MetricListView::AddMetric()"); 
+
     return this->UpdateMetric(id, metric);
 }
+
 
 bool
 MetricListView::UpdateMetric ( long id, TnmsMetric & metric )
@@ -146,8 +150,13 @@ MetricListView::UpdateMetric ( long id, TnmsMetric & metric )
     this->SetItem(id, 2, val);
     this->SetItem(id, 3, _T(" "));
 
+    if ( LogFacility::GetDebug() )
+        LogFacility::LogMessage("MetricListView::UpdateMetric() " 
+            + metric.getElementName());
+
     return true;
 }
+
 
 bool
 MetricListView::RemoveMetric ( const std::string & name )
@@ -162,15 +171,37 @@ MetricListView::RemoveMetric ( const std::string & name )
     this->DeleteItem(mIter->second);
     _metrics.erase(mIter);
 
+    LogFacility::LogMessage("MetricListView::RemoveMetric() " + name);
+
     return true;
+}
+
+bool
+MetricListView::Unsubscribe ( const std::string & name )
+{
+    MetricListMap::iterator  mIter;
+    bool result = false;
+
+    for ( mIter = _metrics.begin(); mIter != _metrics.end(); ++mIter )
+    {
+        if ( StringUtils::startsWith(mIter->first, name) )
+        {
+            this->DeleteItem(mIter->second);
+            _metrics.erase(mIter);
+            result = true;
+        }
+    }
+
+    return result;
 }
 
 
 void
 MetricListView::Sync()
 {
-    if ( ! _sub->haveUpdates() || ! _syncEnabled )
+    if ( ! _sub->haveUpdates() || ! _syncEnabled ) {
         return;
+    }
 
     this->Hide();
 
@@ -199,13 +230,16 @@ MetricListView::Sync()
     TreeRemoveSet & removes = _sub->removes;
     for ( rIter = removes.begin(); rIter != removes.end(); ) 
     {
+        if ( ! this->RemoveMetric(*rIter) )
+            LogFacility::LogMessage("MetricListView::Sync() error removing metric " 
+                + *rIter);
+/*
         mIter = _metrics.find(*rIter);
-
         if ( mIter != _metrics.end() ) {
             this->DeleteItem(mIter->second);
             _metrics.erase(mIter);
         }
-
+*/
         removes.erase(rIter++);
     }
 
@@ -229,11 +263,13 @@ MetricListView::Sync()
     return;
 }
 
+
 void
 MetricListView::EnableSync()
 {
     _syncEnabled = true;
 }
+
 
 void
 MetricListView::DisableSync()

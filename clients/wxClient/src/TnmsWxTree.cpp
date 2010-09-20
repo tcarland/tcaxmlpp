@@ -179,7 +179,7 @@ TnmsWxTree::Subscribe ( const std::string & absoluteName, TreeSubscriber * sub )
 }
 
 // ----------------------------------------------------------------------
-//  UnSubscribes to the requested name and returns the number of subscribers
+//  Unsubscribes to the requested name and returns the number of subscribers
 //  to the element.
 
 int

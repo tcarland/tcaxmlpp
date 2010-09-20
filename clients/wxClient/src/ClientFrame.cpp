@@ -20,7 +20,7 @@ using namespace tcanetpp;
 // ----------------------------------------------------------------------
 
 wxString
-ClientFrame::_Version = _T("0.3.37");
+ClientFrame::_Version = _T("0.3.40");
 
 // ----------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
     wxSplitterWindow * spl1 = new wxSplitterWindow(this, -1); 
     wxSplitterWindow * spl2 = new wxSplitterWindow(spl1, -1);
 
-    _tree   = new TnmsWxTree(spl1, TNMS_ID_TREE, wxT("tcanms"), 
+    _tree   = new TnmsWxTree(spl1, TNMS_ID_TREE, wxT("tnms"), 
                 wxPoint(-1, -1), spl1->GetSize());
     _tree->SetTnmsTree(_stree);
 
@@ -45,9 +45,6 @@ ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
     
     spl2->SplitHorizontally(_mlist, _lCtrl2);
 
-    //Connect(wxID_ANY, wxEVT_CONTEXT_MENU,
-        //wxContextMenuEventHandler(ClientFrame::OnContextAny));
-    
     //-------------------------------------------------------
     //  Tree events
     //Connect(TNMS_ID_TREE, wxEVT_SIZE,
@@ -137,7 +134,7 @@ ClientFrame::OnTreeSelect ( wxTreeEvent & event )
 void
 ClientFrame::OnTreeContext ( wxTreeEvent & event )
 {
-    LogFacility::LogMessage("ClientFrame::OnContext(tree) ");
+    LogFacility::LogMessage("ClientFrame::OnTreeContext() ");
     
     wxTreeItemId  id  = event.GetItem();
     TnmsMetric metric = _tree->GetItemMetric(id);
@@ -149,10 +146,10 @@ ClientFrame::OnTreeContext ( wxTreeEvent & event )
     point = ScreenToClient(point);
 
     menu->AppendRadioItem(wxID_ANY, wxT("Nothing"), wxT(""));
-    menu->AppendRadioItem(TNMS_ID_SUBSCRIBE_ITEM, wxT("Subscribe to Item"), wxT(""));
+    menu->AppendRadioItem(TNMS_ID_SUBSCRIBE_ITEM,   wxT("Subscribe to Item"), wxT(""));
     menu->AppendRadioItem(TNMS_ID_UNSUBSCRIBE_ITEM, wxT("Unsubscribe to Item"), wxT(""));
     menu->AppendRadioItem(TNMS_ID_SUBSCRIBE_LEVEL, wxT("Subscribe to Level"), wxT(""));
-    menu->AppendRadioItem(TNMS_ID_UNSUBSCRIBE_LEVEL, wxT("unsubscribe to Level"), wxT(""));
+    menu->AppendRadioItem(TNMS_ID_UNSUBSCRIBE_LEVEL, wxT("Unsubscribe to Level"), wxT(""));
     
     PopupMenu(menu, point);
 
@@ -175,10 +172,10 @@ ClientFrame::OnTreeContext ( wxTreeEvent & event )
     }
     else if ( menu->IsChecked(TNMS_ID_UNSUBSCRIBE_LEVEL) )
     {
+        _mlist->Unsubscribe(name);
         name.append("/");
         LogFacility::LogMessage(" OnTreeContext Unsubscribe Level " + name);
         this->Unsubscribe(name, _mlist->Subscriber());
-        _mlist->RemoveMetric(name);
     }
 
     return;
@@ -188,23 +185,7 @@ ClientFrame::OnTreeContext ( wxTreeEvent & event )
 void
 ClientFrame::OnListContext ( wxListEvent & event )
 {
-    LogFacility::LogMessage("ClientFrame::OnContext(list) ");
-}
-
-void
-ClientFrame::OnContextAny ( wxContextMenuEvent & event )
-{
-    LogFacility::LogMessage("ClientFrame::OnContextAny ");
-
-    wxMenu  * menu  = new wxMenu();
-    wxPoint   point = wxGetMousePosition();
-
-    menu->AppendRadioItem(TNMS_ID_SUBSCRIBE_ITEM, wxT("Subscribe to Item"), wxT(""));
-    menu->AppendRadioItem(TNMS_ID_SUBSCRIBE_LEVEL, wxT("Subscribe to Level"), wxT(""));
-
-    PopupMenu(menu, point.x, point.y);
-
-    return;
+    LogFacility::LogMessage("ClientFrame::OnListContext() ");
 }
 
 
@@ -265,7 +246,7 @@ ClientFrame::OnVersion ( wxCommandEvent & event )
     info.SetName(_T("TnmsWxClient"));
     info.SetVersion(ClientFrame::_Version);
     info.SetDescription(_T("Test client interface to the Tnms system"));
-    info.SetCopyright(_T("(c) 2010 Charlton Technology"));
+    info.SetCopyright(_T("(c) 2010 Timothy Charlton Arland"));
     ::wxAboutBox(info);
 }
 
