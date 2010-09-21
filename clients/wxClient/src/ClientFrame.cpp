@@ -47,8 +47,6 @@ ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
 
     //-------------------------------------------------------
     //  Tree events
-    //Connect(TNMS_ID_TREE, wxEVT_SIZE,
-        //wxSizeEventHandler(TnmsWxTree::OnSize));
 
     //Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_EXPANDED, 
         //wxCommandEventHandler(ClientFrame::OnExpandItem));
@@ -70,7 +68,7 @@ ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
         wxTreeEventHandler(TnmsWxTree::OnDelete));
     
     //-------------------------------------------------------
-    //  List1 events
+    //  Metric List events
     Connect(TNMS_ID_MLIST, wxEVT_COMMAND_LIST_ITEM_ACTIVATED,
         wxListEventHandler(ClientFrame::OnListActivate));
     Connect(TNMS_ID_MLIST, wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK,
