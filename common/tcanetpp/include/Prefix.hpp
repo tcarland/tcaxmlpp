@@ -55,7 +55,7 @@ class Prefix {
         _pfx.addrlen  = 0;
     }
 
-    Prefix ( ipv4addr_t addr, uint8_t len )
+    Prefix ( ipv4addr_t addr, uint16_t len )
     {
         _pfx.addr     = addr;
         _pfx.addrlen  = len;

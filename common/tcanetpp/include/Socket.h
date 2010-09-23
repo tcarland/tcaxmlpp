@@ -30,8 +30,6 @@
 
 
 #ifdef WIN32
-# include <Winsock2.h>
-# include <ws2tcpip.h>
 # pragma warning (disable:4267)
 #else
 # include <sys/types.h>

@@ -34,7 +34,10 @@ extern "C" {
 
 
 
-#ifndef WIN32
+#ifdef WIN32
+# include <Winsock2.h>
+# include <ws2tcpip.h>
+#else
 # include <inttypes.h>
 # include <unistd.h>
 # include <netinet/in.h>

@@ -200,7 +200,7 @@ CidrUtils::GetCidrRange ( uint8_t mb, uint8_t * subnet_pos )
     if ( subnet_pos )
         *subnet_pos = pos;
 
-    return ::pow((double)2, (double)(8 - mb));
+    return( ::pow((double)2, (double)(8 - mb)) );
 }
 
 int

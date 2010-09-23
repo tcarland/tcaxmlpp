@@ -15,7 +15,7 @@ endif
 
 #-------------------#
 
-ifdef TNMS_DEBUG
+ifdef GK_DEBUG
   OPT_FLAGS =       -g 
 # -DEV_DEBUG
 endif
@@ -114,19 +114,19 @@ distclean: clean libclean doc-clean test-clean
 	@echo
 
 dist:
-ifdef TNMS_DISTDIR
-	@echo "sync'ing tcanetpp to $(TNMS_DISTDIR)/tcanetpp"
-	( $(RDIST) ./ $(TNMS_DISTDIR)/tcanetpp/ )
+ifdef GK_DISTDIR
+	@echo "sync'ing tcanetpp to $(GK_DISTDIR)/tcanetpp"
+	( $(RDIST) ./ $(GK_DISTDIR)/tcanetpp/ )
 	@echo
 endif
 
 install: clean
-ifdef TNMS_PREFIX
-	@echo "Installing libtcanetpp to $(TNMS_PREFIX)/lib"
-	$(MKDIR) $(TNMS_PREFIX)/include/tcanetpp
-	$(MKDIR) $(TNMS_PREFIX)/lib
-	$(RSYNC) --delete include/ $(TNMS_PREFIX)/include/tcanetpp/
-	$(RSYNC) lib/ $(TNMS_PREFIX)/lib/
+ifdef GK_PREFIX
+	@echo "Installing libtcanetpp to $(GK_PREFIX)/lib"
+	$(MKDIR) $(GK_PREFIX)/include/tcanetpp
+	$(MKDIR) $(GK_PREFIX)/lib
+	$(RSYNC) --delete include/ $(GK_PREFIX)/include/tcanetpp/
+	$(RSYNC) lib/ $(GK_PREFIX)/lib/
 	@echo
 endif
 
