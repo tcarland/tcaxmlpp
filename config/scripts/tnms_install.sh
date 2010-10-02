@@ -2,11 +2,11 @@
 #
 #  tnms_install.sh
 #
-VERSION="0.32"
+VERSION="1.32"
 AUTHOR="tcarland@gmail.com"
 
-#PNAME=${0/#.\//}
 PNAME=${0##*\/}
+
 RSYNC="rsync"
 CONFIGDIR=
 PREFIX=
@@ -27,12 +27,12 @@ if [ -z "$RC_TNMS_BASHRC" ]; then
     if [ -e $CONFIGDIR/tnmsrc ]; then
         echo "$PNAME: using rc: $CONFIGDIR/tnmsrc"
         source $CONFIGDIR/tnmsrc
-    elif [ -e $HOME/tnms/tnmsrc ]; then
-        echo "$PNAME: using rc from: $HOME/tnms/tnmsrc"
-        source $HOME/tnms/tnmsrc
-    elif [ -e $HOME/tnms/etc/tnmsrc ]; then
-        echo "$PNAME: using rc from: $HOME/tnms/etc/tnmsrc"
-        source $HOME/tnms/etc/tnmsrc
+    elif [ -e $HOME/tnmsrc ]; then
+        echo "$PNAME: using rc from: $HOME/tnmsrc"
+        source $HOME/tnmsrc
+    elif [ -e $HOME/etc/tnmsrc ]; then
+        echo "$PNAME: using rc from: $HOME/etc/tnmsrc"
+        source $HOME/etc/tnmsrc
     else
         echo "$PNAME: Error: Failed to locate rc file: tnmsrc"
         exit 1

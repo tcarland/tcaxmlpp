@@ -6,7 +6,7 @@
 export LANG=en_US.ISO8859-1
 export PS1="\h{\u}$ "
 
-export TNMS_HOME="${HOME}/tnms"
+export TNMS_HOME="${HOME}"
 export TNMSHOME="${TNMS_HOME}"
 
 export TNMS_BIN=${TNMS_HOME}/bin
