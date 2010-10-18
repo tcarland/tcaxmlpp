@@ -6,8 +6,8 @@ fi
 
 CURDIR=.
 if [ -z "$RC_TNMS_BASHRC" ]; then
-    if [ -e ~/tnms/etc/tnmsrc ]; then
-        source ~/tnms/etc/tnmsrc
+    if [ -e ~/etc/tnmsrc ]; then
+        source ~/etc/tnmsrc
     elif [ -e $CURDIR/tnmsrc ]; then 
         source $CURDIR/tnmsrc
     fi
