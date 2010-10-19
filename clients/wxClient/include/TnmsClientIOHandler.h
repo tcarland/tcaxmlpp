@@ -3,7 +3,6 @@
 
 #include <set>
 
-
 #include "EventHandlers.hpp"
 #include "Exception.hpp"
 #include "ThreadLock.h"
@@ -21,8 +20,10 @@ class TnmsClientIOHandler : public tcanetpp::EventIOHandler {
   public:
 
     TnmsClientIOHandler ( ThreadLock * readLock = NULL );
+
     virtual ~TnmsClientIOHandler();
     
+
     /* EventIOHandler */
 
     virtual void handle_accept  ( const EventIO & io ) {}
@@ -41,6 +42,7 @@ class TnmsClientIOHandler : public tcanetpp::EventIOHandler {
 
     void         addClient      ( TnmsClient * client );
     void         removeClient   ( TnmsClient * client );
+
 
   protected:
 

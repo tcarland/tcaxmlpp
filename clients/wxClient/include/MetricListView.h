@@ -31,12 +31,12 @@ class MetricListView : public wxListCtrl {
     bool        Unsubscribe    ( const std::string & name );
 
     void        Sync();
+    void        EnableSync();
+    void        DisableSync();
 
 
     TreeSubscriber*  Subscriber();
 
-    void        EnableSync();
-    void        DisableSync();
 
   private:
 

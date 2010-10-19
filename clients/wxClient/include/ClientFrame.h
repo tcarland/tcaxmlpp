@@ -30,26 +30,26 @@ class ClientFrame : public wxFrame {
     virtual ~ClientFrame();
 
 
-    bool          Subscribe       ( const std::string & name,
-                                    TreeSubscriber    * sub );
-    bool          Unsubscribe     ( const std::string & name,
-                                    TreeSubscriber    * sub );
+    bool          Subscribe         ( const std::string & name,
+                                      TreeSubscriber    * sub );
+    bool          Unsubscribe       ( const std::string & name,
+                                      TreeSubscriber    * sub );
 
-    void          OnConnect       ( wxCommandEvent & event );
-    void          OnDisconnect    ( wxCommandEvent & event );
-    void          OnVersion       ( wxCommandEvent & event );
-    void          OnQuit          ( wxCommandEvent & event );
+    void          OnConnect         ( wxCommandEvent & event );
+    void          OnDisconnect      ( wxCommandEvent & event );
+    void          OnVersion         ( wxCommandEvent & event );
+    void          OnQuit            ( wxCommandEvent & event );
 
-    void          OnListActivate  ( wxListEvent    & event );
-    void          OnTreeSelect    ( wxTreeEvent    & event );
-    void          OnTreeContext   ( wxTreeEvent    & event );
-    void          OnListContext   ( wxListEvent    & event );
+    void          OnListActivate    ( wxListEvent    & event );
+    void          OnTreeSelect      ( wxTreeEvent    & event );
+    void          OnTreeContext     ( wxTreeEvent    & event );
+    void          OnListContext     ( wxListEvent    & event );
 
-    void          OnDelete        ( wxCommandEvent & event );
-    void          OnExpandItem    ( wxCommandEvent & event );
-    void          OnCollapseItem  ( wxCommandEvent & event );
+    void          OnDelete          ( wxCommandEvent & event );
+    void          OnExpandItem      ( wxCommandEvent & event );
+    void          OnCollapseItem    ( wxCommandEvent & event );
 
-    void          OnTimer         ( wxTimerEvent   & event );
+    void          OnTimer           ( wxTimerEvent   & event );
 
     void          DropAllConnections();
 
@@ -57,23 +57,23 @@ class ClientFrame : public wxFrame {
   protected:
 
     void          initMenuBar();
-    void          sendClientSub   ( const std::string & name );
-    void          sendClientUnsub ( const std::string & name );
+    void          sendSubscribe    ( const std::string & name );
+    void          sendUnsubscribe  ( const std::string & name );
 
 
   protected:
 
     struct Connection
     {
-        std::string  username;
-        std::string  password;
+        std::string    username;
+        std::string    password;
 
-        std::string  servername;
-        uint16_t     port;
-        bool         req;
-        bool         enabled;
+        std::string    servername;
+        uint16_t       port;
+        bool           req;
+        bool           enabled;
 
-        TnmsClient*  client;
+        TnmsClient*    client;
 
         Connection() : port(0), 
                        req(false),
@@ -82,7 +82,7 @@ class ClientFrame : public wxFrame {
         {}
     };
     
-    typedef std::map<wxString, Connection>  ClientMap;
+    typedef std::map< wxString, Connection >  ClientMap;
 
 
   private:

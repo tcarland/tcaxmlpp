@@ -33,6 +33,7 @@ MetricListView::MetricListView ( wxWindow         * parent,
     this->Init();
 }
 
+
 MetricListView::~MetricListView()
 {
 }
@@ -62,6 +63,7 @@ MetricListView::Init()
 
     this->AddDefaultItem();
 }
+
 
 void
 MetricListView::AddDefaultItem()
@@ -99,6 +101,7 @@ MetricListView::getNewId()
     _lastid++;
     return id;
 }
+
 
 TreeSubscriber*
 MetricListView::Subscriber()
@@ -175,6 +178,7 @@ MetricListView::RemoveMetric ( const std::string & name )
 
     return true;
 }
+
 
 bool
 MetricListView::Unsubscribe ( const std::string & name )

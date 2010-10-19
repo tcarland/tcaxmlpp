@@ -14,13 +14,13 @@ using namespace tcanetpp;
 // ----------------------------------------------------------------------
 
 IMPLEMENT_APP(TnmsWxClientMain)
-
 BEGIN_EVENT_TABLE(TnmsWxClientMain, wxApp)
     EVT_TIMER(TGUITIMER_ID, TnmsWxClientMain::OnTimer)
 END_EVENT_TABLE()
 
+
 std::string
-TnmsWxClientMain::_Version = "0.2.19";
+TnmsWxClientMain::_Version = "0.3.41";
 
 // ----------------------------------------------------------------------
 
@@ -35,6 +35,7 @@ TnmsWxClientMain::TnmsWxClientMain ( int msecs )
 
     _guiTimer.Start(msecs);
 }
+
 
 TnmsWxClientMain::~TnmsWxClientMain()
 {

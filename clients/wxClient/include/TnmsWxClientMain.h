@@ -1,12 +1,11 @@
 #ifndef _TNMSWXCLIENT_MAIN_H_
 #define _TNMSWXCLIENT_MAIN_H_
 
-
 #include <wx/wx.h>
 #include <wx/timer.h>
 
-
 #include "TnmsTree_R.hpp"
+
 
 #define TGUITIMER_ID  6999
 #define TINTERVAL_MS  3000

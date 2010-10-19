@@ -6,8 +6,11 @@
 #include <wx/imaglist.h>
 #include <wx/treectrl.h>
 
+
 #include "TnmsTree_R.hpp"
 
+
+typedef std::map<std::string, TnmsTree::NotifySet>  SubscriberMap;
 
 
 #define TNMS_ID_TREE     7000
@@ -15,6 +18,7 @@
 #define TNMS_ID_CONNECT  7010
 #define TNMS_ID_DISCONN  7011
 #define TNMS_ID_VERSION  7050
+
 
 
 class TreeItem : public wxTreeItemData {
@@ -28,7 +32,6 @@ class TreeItem : public wxTreeItemData {
  
 };
 
-typedef std::map<std::string, TnmsTree::NotifySet>  SubscriberMap;
 
 
 class TnmsWxTree : public wxControl {
@@ -44,21 +47,21 @@ class TnmsWxTree : public wxControl {
     TnmsWxTree();
 
     TnmsWxTree ( wxWindow        * parent,
-                 const wxWindowID  id    = wxID_ANY,
-                 const wxString  & name  = wxT("TnmsWxTree"),
-                 const wxPoint   & pos   = wxDefaultPosition,
-                 const wxSize    & size  = wxDefaultSize,
-                 long              style = wxSUNKEN_BORDER );
+                 const wxWindowID  id     = wxID_ANY,
+                 const wxString  & name   = wxT("TnmsWxTree"),
+                 const wxPoint   & pos    = wxDefaultPosition,
+                 const wxSize    & size   = wxDefaultSize,
+                 long              style  = wxSUNKEN_BORDER );
 
     virtual ~TnmsWxTree();
 
 
     bool          Create ( wxWindow        * parent,
-                           const wxWindowID  id    = wxID_ANY,
-                           const wxString  & name  = wxT("TnmsWxTree"),
-                           const wxPoint   & pos   = wxDefaultPosition,
-                           const wxSize    & size  = wxDefaultSize,
-                           long              style = wxSUNKEN_BORDER );
+                           const wxWindowID  id     = wxID_ANY,
+                           const wxString  & name   = wxT("TnmsWxTree"),
+                           const wxPoint   & pos    = wxDefaultPosition,
+                           const wxSize    & size   = wxDefaultSize,
+                           long              style  = wxSUNKEN_BORDER );
 
 
     void          Init();
@@ -114,5 +117,5 @@ class TnmsWxTree : public wxControl {
 };
 
 
-#endif
+#endif  // _TNMSWXTREE_H_
 

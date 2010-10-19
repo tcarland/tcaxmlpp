@@ -144,9 +144,9 @@ TnmsWxTree::GetItemMetric ( wxTreeItemId & id )
 }
 
 // ----------------------------------------------------------------------
-//  Subscribes to the requested name and returns the number of subscribers
-//  to the element.
-
+/**  Subscribes to the requested name and returns the number of subscribers
+  *  to the element.
+ **/
 int
 TnmsWxTree::Subscribe ( const std::string & absoluteName, TreeSubscriber * sub )
 {
@@ -179,9 +179,9 @@ TnmsWxTree::Subscribe ( const std::string & absoluteName, TreeSubscriber * sub )
 }
 
 // ----------------------------------------------------------------------
-//  Unsubscribes to the requested name and returns the number of subscribers
-//  to the element.
-
+/**  Unsubscribes to the requested name and returns the number of subscribers
+  *  to the element.
+ **/
 int
 TnmsWxTree::Unsubscribe ( const std::string & absoluteName, TreeSubscriber * sub )
 {
@@ -244,7 +244,6 @@ TnmsWxTree::RecursiveAdd ( TnmsTree::Node * node )
 
 // ----------------------------------------------------------------------
 
-
 void
 TnmsWxTree::Add ( TnmsTree::Node * node )
 {
@@ -256,7 +255,6 @@ TnmsWxTree::Add ( TnmsTree::Node * node )
 
     return;
 }
-
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------

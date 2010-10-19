@@ -20,7 +20,7 @@ using namespace tcanetpp;
 // ----------------------------------------------------------------------
 
 wxString
-ClientFrame::_Version = _T("0.3.40");
+ClientFrame::_Version = _T("0.3.41");
 
 // ----------------------------------------------------------------------
 
@@ -96,6 +96,7 @@ ClientFrame::initMenuBar()
     _menuFile->Append(new wxMenuItem(_menuFile, TNMS_ID_DISCONN, wxT("&Disconnect")));
     _menuFile->AppendSeparator();
     _menuFile->Append(new wxMenuItem(_menuFile, wxID_EXIT, wxT("&Quit")));
+    // Top-level : About
     _menuAbout->Append(new wxMenuItem(_menuAbout, TNMS_ID_VERSION, wxT("&Version")));
     _menuBar->Append(_menuFile, wxT("&File"));
     _menuBar->Append(_menuAbout, wxT("&About"));
@@ -153,26 +154,26 @@ ClientFrame::OnTreeContext ( wxTreeEvent & event )
 
     if ( menu->IsChecked(TNMS_ID_SUBSCRIBE_ITEM) )
     {
-        LogFacility::LogMessage(" OnTreeContext Subscribe Item " + name);
+        LogFacility::LogMessage(" OnTreeContext subscribe Item " + name);
         this->Subscribe(name, _mlist->Subscriber());
     }
     else if ( menu->IsChecked(TNMS_ID_UNSUBSCRIBE_ITEM) )
     {
-        LogFacility::LogMessage(" OnTreeContext Unsubscribe Item " + name);
+        LogFacility::LogMessage(" OnTreeContext unsubscribe Item " + name);
         this->Unsubscribe(name, _mlist->Subscriber());
         _mlist->RemoveMetric(name);
     }
     else if ( menu->IsChecked(TNMS_ID_SUBSCRIBE_LEVEL) )
     {
         name.append("/");
-        LogFacility::LogMessage(" OnTreeContext Subscribe Level " + name);
+        LogFacility::LogMessage(" OnTreeContext subscribe Level " + name);
         this->Subscribe(name, _mlist->Subscriber());
     }
     else if ( menu->IsChecked(TNMS_ID_UNSUBSCRIBE_LEVEL) )
     {
         _mlist->Unsubscribe(name);
         name.append("/");
-        LogFacility::LogMessage(" OnTreeContext Unsubscribe Level " + name);
+        LogFacility::LogMessage(" OnTreeContext unsubscribe Level " + name);
         this->Unsubscribe(name, _mlist->Subscriber());
     }
 
@@ -195,7 +196,7 @@ ClientFrame::OnConnect ( wxCommandEvent & event )
     if ( dlg->ShowModal() == wxID_OK ) {
         LogFacility::LogMessage("OnConnect() OK");
     } else {
-        LogFacility::LogMessage("OnConnect() Cancelled");
+        LogFacility::LogMessage("OnConnect() Canceled");
         return;
     }
 
@@ -224,6 +225,7 @@ ClientFrame::OnConnect ( wxCommandEvent & event )
     dlg->Destroy();
 }
 
+
 void
 ClientFrame::OnDisconnect ( wxCommandEvent & event )
 {
@@ -237,6 +239,7 @@ ClientFrame::OnQuit ( wxCommandEvent & event )
     Close(true);
 }
 
+
 void
 ClientFrame::OnVersion ( wxCommandEvent & event )
 {
@@ -247,6 +250,7 @@ ClientFrame::OnVersion ( wxCommandEvent & event )
     info.SetCopyright(_T("(c) 2010 Timothy Charlton Arland"));
     ::wxAboutBox(info);
 }
+
 
 void
 ClientFrame::OnExpandItem ( wxCommandEvent & event )
@@ -299,6 +303,7 @@ ClientFrame::OnTimer ( wxTimerEvent & event )
     return;
 }
 
+
 void
 ClientFrame::DropAllConnections()
 {
@@ -326,38 +331,45 @@ ClientFrame::Subscribe ( const std::string & name, TreeSubscriber * sub )
 {
     if ( _tree->Subscribe(name, sub) == 1 )
         this->sendClientSub(name);
-
     return true;
 }
+
 
 bool
 ClientFrame::Unsubscribe ( const std::string & name, TreeSubscriber * sub )
 {
     if ( _tree->Unsubscribe(name, sub) == 0 )
         this->sendClientUnsub(name);
-
     return true;
 }
 
+
 void
-ClientFrame::sendClientSub ( const std::string & name )
+ClientFrame::sendSubscribe ( const std::string & name )
 {
-    _stree->mutex->lock();
     ClientMap::iterator  cIter;
+
+    _stree->mutex->lock();
+
     for ( cIter = _clientMap.begin(); cIter != _clientMap.end(); ++cIter )
         cIter->second.client->subscribe(name);
+
     _stree->mutex->unlock();
 }
 
 
 void
-ClientFrame::sendClientUnsub ( const std::string & name )
+ClientFrame::sendUnsubscribe ( const std::string & name )
 {
-    _stree->mutex->lock();
     ClientMap::iterator  cIter;
+
+    _stree->mutex->lock();
+
     for ( cIter = _clientMap.begin(); cIter != _clientMap.end(); ++cIter )
         cIter->second.client->unsubscribe(name);
+
     _stree->mutex->unlock();
 }
 
 
+// _CLIENTFRAME_CPP_

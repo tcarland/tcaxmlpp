@@ -7,7 +7,9 @@
 using namespace tcanetpp;
 
 
-/**  ClientIOTimer */
+//------------------------------------------------------------------------------
+
+//  ClientIOTimer
 void
 TnmsClientIOThread::ClientIOTimer::timeout ( const EventTimer & timer )
 {
@@ -18,7 +20,6 @@ TnmsClientIOThread::ClientIOTimer::timeout ( const EventTimer & timer )
 }
 
 //------------------------------------------------------------------------------
-
 
 TnmsClientIOThread::TnmsClientIOThread ( TnmsTree * tree, ThreadLock * rlock )
     : _evmgr(new tcanetpp::EventManager()),
@@ -46,6 +47,7 @@ TnmsClientIOThread::run()
 
     return;
 }
+
 
 void
 TnmsClientIOThread::timeout ( const EventTimer & timer )
@@ -87,6 +89,7 @@ TnmsClientIOThread::addClient ( TnmsClient * client )
     return true;
 }
 
+
 bool
 TnmsClientIOThread::removeClient ( TnmsClient * client )
 {
@@ -108,4 +111,5 @@ TnmsClientIOThread::removeClient ( TnmsClient * client )
 }
 
 
+// _TNMSCLIENTIOTHREAD_CPP_
 

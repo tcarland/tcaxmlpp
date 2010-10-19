@@ -4,7 +4,6 @@
 
 
 
-
 bool
 ClientSubscriber::queueAdd ( TnmsTree::Node * node )
 {
@@ -17,6 +16,7 @@ ClientSubscriber::queueAdd ( TnmsTree::Node * node )
 
     return true;
 }
+
 
 bool
 ClientSubscriber::queueUpdate ( TnmsTree::Node * node )
@@ -31,6 +31,7 @@ ClientSubscriber::queueUpdate ( TnmsTree::Node * node )
     return true;
 }
 
+
 bool
 ClientSubscriber::queueRemove ( TnmsTree::Node * node )
 {
@@ -44,6 +45,7 @@ ClientSubscriber::queueRemove ( TnmsTree::Node * node )
     return true;
 }
 
+
 //-------------------------
 //  The subscriber's add/update/remove queues are public
 //  so the reader (only) must lock the mutex prior to 
@@ -54,11 +56,13 @@ ClientSubscriber::lock()
     return _mutex.lock();
 }
 
+
 int
 ClientSubscriber::trylock()
 {
     return _mutex.tryLock();
 }
+
 
 int
 ClientSubscriber::unlock()

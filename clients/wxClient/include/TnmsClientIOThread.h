@@ -3,8 +3,6 @@
 
 #include <map>
 
-
-
 #include "Thread.h"
 #include "ThreadLock.h"
 #include "EventManager.h"
@@ -33,6 +31,7 @@ class TnmsClientIOThread : public Thread {
     bool          addClient    ( TnmsClient * client );
     bool          removeClient ( TnmsClient * client );
 
+
   public:
 
     typedef std::map<TnmsClient*, evid_t>   ClientEventMap;
@@ -40,16 +39,18 @@ class TnmsClientIOThread : public Thread {
 
   protected:
 
-    class ClientIOTimer : public EventTimerHandler 
-    {
-        public:
+    class ClientIOTimer : public EventTimerHandler  {
+      public:
         explicit ClientIOTimer ( TnmsClientIOThread * iothread_ )
             : iothread(iothread_)
         {}
+
         virtual ~ClientIOTimer() {}
 
-        void timeout  ( const EventTimer & timer );
-        void finished ( const EventTimer & timer ) {}
+        void  timeout    ( const EventTimer & timer );
+        void  finished   ( const EventTimer & timer ) {}
+
+      public:
 
         TnmsClientIOThread *  iothread;
     };

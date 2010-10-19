@@ -44,8 +44,8 @@ TnmsAPI::~TnmsAPI()
 
 /**   send()  gives time to the the API. The API instance will only send
   * data when this method is called.  The API is completely non-blocking
-  * and should be called as frequently as possible by the owning 
-  * application's main loop (at least once a second if not faster).  The 
+  * and should be called as frequently as possible by the application's
+  * main loop (at least once a second if not faster).  The
   * API will only trigger an interval of sending all updates based on 
   * the 'holddown' attribute.  For example, if the holddown is set to 30
   * seconds, then all updates within the 30 second interval are aggregated into 
