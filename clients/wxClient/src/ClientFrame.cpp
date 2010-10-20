@@ -330,7 +330,7 @@ bool
 ClientFrame::Subscribe ( const std::string & name, TreeSubscriber * sub )
 {
     if ( _tree->Subscribe(name, sub) == 1 )
-        this->sendClientSub(name);
+        this->sendSubscribe(name);
     return true;
 }
 
@@ -339,7 +339,7 @@ bool
 ClientFrame::Unsubscribe ( const std::string & name, TreeSubscriber * sub )
 {
     if ( _tree->Unsubscribe(name, sub) == 0 )
-        this->sendClientUnsub(name);
+        this->sendUnsubscribe(name);
     return true;
 }
 
