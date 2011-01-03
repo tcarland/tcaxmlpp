@@ -5,6 +5,7 @@ extern "C" {
 # include <unistd.h>
 # include <sys/stat.h>
 }
+#include <getopt.h>
 
 #include <fstream>
 #include <iostream>
@@ -33,20 +34,28 @@ using namespace fwgen;
 static const
 char process[]    = "fwlr";
 bool Alarm        = false;
-char Version[]    = "v0.5.1";
+char Version[]    = "v0.5.2";
 
 
 void usage()
 {
-    printf("Usage: %s -dDht -c <apicfg> -l <logfile>\n", process);
-    exit(0);
+    std::cout << "Usage: " << process << " [-dDhtV] -c <apicfg> -l <logfile>" << std::endl
+              << "   -c | --config  <apicfg>  : Tnms API xml configuration" << std::endl
+              << "   -d | --debug             : Enable debug output " << std::endl
+              << "   -D | --daemon            : Run as daemon" << std::endl
+              << "   -t | --tail              : Start reading of logfile at the tail" << std::endl
+              << "   -l | --logfile <logfile> : The name of the logfile to parse" << std::endl
+              << "   -V | --version           : Print version info and exit" << std::endl;
+     exit(0);
 }
+
 
 void version()
 {
     printf("%s Version: %s\n", process, Version);
     exit(0);
 }
+
 
 void initDaemon ( const char* pname )
 {
@@ -82,16 +91,28 @@ int main ( int argc, char **argv )
 {
     std::string logfile, config;
     char        optChar;
-    char      * logf   = NULL;
-    char      * cfg    = NULL;
-    bool        debug  = false;
-    bool        daemon = false;
-    bool        tail   = false;
+    char      * logf    = NULL;
+    char      * cfg     = NULL;
+    bool        debug   = false;
+    bool        daemon  = false;
+    bool        tail    = false;
+    int         optindx = 0;
+
+
+    static struct option l_opts[] = { {"debug", no_argument, 0, 'd'},
+                                      {"config", required_argument, 0, 'c'},
+                                      {"daemon", no_argument, 0, 'D'},
+                                      {"help", no_argument, 0, 'h'},
+                                      {"logfile", required_argument, 0, 'm'},
+                                      {"tail", no_argument, 0, 't'},
+                                      {"version", no_argument, 0, 'V'},
+                                      {0,0,0,0}
+                                    };
 
     if ( argc < 2 )
         usage();
 
-    while ( (optChar = getopt(argc, argv, "c:dDhl:tV")) != EOF ) {
+    while ( (optChar = getopt_long(argc, argv, "c:dDhl:tV", l_opts, &optindx)) != EOF ) {
         switch ( optChar ) {
             case 'c':
             	cfg = strdup(optarg);
