@@ -11,15 +11,11 @@ all: zlib net-snmp openssl
 
 help:
 	@echo "Make targets are required to build external libs as needed. "
-	@echo "Available make targets: net-snmp mysqlpp udplibrary zlib libxml2"
+	@echo "Available make targets: net-snmp mysqlpp udplibrary zlib"
 
 .PHONY: zlib
 zlib:
 	( cd zlib; sh ./configure; make )
-	@echo
-
-update-libxml2:
-	( cd libxml2; autoconf; aclocal; libtoolize --copy --force )
 	@echo
 
 net-snmp:
@@ -46,14 +42,11 @@ distclean:
 		( cd net-snmp-5.2.3; make distclean ) \
 	fi
 	( cd zlib; make distclean )
-	if [ -f libxml2/Makefile ]; then\
-		( cd libxml2; make distclean ) \
-	fi
 	( cd openssl-0.9.8k; make clean )
 	@echo
 
 install:
-ifdef PREFIX
+ifdef TNMS_PREFIX
 	@echo "Installing external auth binaries to $(PREFIX)/bin"
 	if [ ! -d $(PREFIX)/bin ]; then \
 		( mkdir $(PREFIX)/bin ) \
