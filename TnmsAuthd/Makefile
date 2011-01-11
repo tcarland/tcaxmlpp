@@ -68,7 +68,7 @@ test-clean:
 
 .PHONY: tools
 tools:
-	( cd tools ; make all )
+	( cd tools; make all )
 	@echo
 
 tools-clean:
