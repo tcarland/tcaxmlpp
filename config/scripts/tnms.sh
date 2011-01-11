@@ -7,7 +7,7 @@
 #
 
 PNAME=${0##*\/}
-VERSION="1.13"
+VERSION="1.14"
 AUTHOR="tcarland@gmail.com"
 
 SYSHOME=""
@@ -86,7 +86,7 @@ INITERR=0
 usage()
 {
     echo ""
-    echo "Usage: $PNAME {start|stop|restart|info}  [service]  [key]"
+    echo "Usage: $PNAME {start|stop|restart|info} [service] [key]"
     echo ""
     echo "  service = service name to start"
     echo "  key     = process identifier "
@@ -388,7 +388,7 @@ if [ $retval -eq 0 ]; then
         send_errlog $INITERRLOG
     else
 	echo
-	echo "Error Log:"
+	echo "Error Summary:"
         cat $INITERRLOG 
     fi
 fi
