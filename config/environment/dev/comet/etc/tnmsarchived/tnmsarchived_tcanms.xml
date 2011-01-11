@@ -4,7 +4,7 @@
 
 <tnmsarchived
     agent_name="tnms/archiver/tnms"
-    logfile="/opt/tcanms/tnms/logs/tnmsarchived_tcanms.log"
+    logfile="/opt/tnms/logs/tnmsarchived_tnms.log"
     syslog="false"
     debug="true"
     version="1"

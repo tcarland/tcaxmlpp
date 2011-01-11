@@ -8,7 +8,7 @@
         soap_port="15902"
 
         pemfile=""
-        logfile="/opt/tcanms/tnms/logs/tnmsauthd_master.log"
+        logfile="/opt/tnms/logs/tnmsauthd_master.log"
         syslog="false"
         debug="true"
 
