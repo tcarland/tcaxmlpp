@@ -42,8 +42,10 @@ TestHexApp::run()
 
     init_pair(1, COLOR_WHITE, COLOR_BLACK);
 
-    HexPanel * mainPanel = this->createPanel("main", LINES-statheight, COLS, 0, 0);
-    HexPanel * statPanel = this->createPanel("status", statheight, COLS, LINES-statheight, 0);
+    HexPanel *mainPanel, *statPanel; 
+
+    mainPanel = this->createPanel("main", LINES-statheight, COLS, 0, 0);
+    statPanel = this->createPanel("status", statheight, COLS, LINES-statheight, 0);
 
     // we still cannot use draw() w/o display handlers, so call refresh directly
     mainPanel->setTopPanel();

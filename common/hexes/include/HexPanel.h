@@ -51,6 +51,10 @@ class HexPanel {
     void        setTitle();
     void        setTopPanel();
 
+    int         width();
+    int         height();
+
+    void        enableBorder ( bool border );
     void        enableScroll ( bool scroll );
     bool        scrollable() const;
 
@@ -75,6 +79,7 @@ class HexPanel {
     int                  _maxLines;
     int                  _selected;
     bool                 _scrollable;
+    bool                 _drawBorder;
 };
 
 

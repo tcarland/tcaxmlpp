@@ -17,12 +17,22 @@ namespace hexes {
 class HexPanel;
 
 
+/**
+  * Frontend to a 'Hex' application. HexApp provides the 
+  * entrypoint to a ncurses/panel application and allows 
+  * the spawning and control of windows/panels. 
+  *
+  * TODO: 
+  *   1/13/11: still everything at this point.
+  *   - add panel stack handling.
+  *   - we are managing the HexPanel ptr's; 
+  *     should we use boost::shared_ptr<>?  
+  *   - HexWindow really needed? pull into HexPanel?
+  *   - color schemes
+  *   - window/text attributes
+  *   - rescale logic
+ **/
 class HexApp {
-
-    struct Position {
-        int row;
-        int col;
-    };
 
     typedef std::vector<HexPanel*>              PanelStack;
     typedef std::map<std::string, HexPanel*>    PanelMap;
@@ -35,6 +45,7 @@ class HexApp {
 
 
     virtual void run() {}
+
     virtual int  draw();
     virtual int  rescale();
 
@@ -50,31 +61,32 @@ class HexApp {
 
     void         setTopPanel   ( HexPanel * panel );
 
-
     void         destroyPanels();
-    bool         hasColors() const;
+    bool         hasColor() const;
+
+    int          width();
+    int          height();
+    int          getMaxWidth();
+    int          getMaxHeight();
 
 
   protected:
 
 
-
-  private:
-
-    static void InitCurses ( bool termRaw, bool echo );
-
+    static void  InitCurses ( bool termRaw, bool echo );
 
 
   private:
 
-    static bool         NCURSES_LIBINIT;
+    static bool         _CURSESINIT;
     
     PanelMap            _panels;
+    HexPanel *          _curPanel;
 
     int                 _row;
     int                 _col;
     bool                _echo;
-    bool                _hasColors;
+    bool                _hasColor;
 
     std::string         _errstr;
 

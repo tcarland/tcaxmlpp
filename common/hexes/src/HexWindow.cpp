@@ -15,28 +15,32 @@ HexWindow::HexWindow()
       _height(5),
       _width(10),
       _starty(0),
-      _startx(0)
+      _startx(0),
+      _border(true)
 {
-    _win = HexWindow::CreateWindow(_height, _width, _starty, _startx);
+    //_win = HexWindow::CreateWindow(_height, _width, _starty, _startx);
 }
 
-HexWindow::HexWindow ( int height, int width )
+HexWindow::HexWindow ( int height, int width, bool border )
     : _win(NULL),
       _height(height), 
       _width(width),
       _starty(0),
-      _startx(0)
+      _startx(0),
+      _border(border)
 {
     _win = HexWindow::CreateWindow(_height, _width, _starty, _startx);
 }
 
 HexWindow::HexWindow ( int height, int width,
-                       int starty, int startx )
+                       int starty, int startx,
+                       bool border )
     : _win(NULL),
       _height(height), 
       _width(width),
       _starty(starty), 
-      _startx(startx)
+      _startx(startx),
+      _border(border)
 {
     _win = HexWindow::CreateWindow(_height, _width, _starty, _startx);
 }
@@ -53,11 +57,6 @@ HexWindow::~HexWindow()
 }
 
 
-WINDOW* 
-HexWindow::getWindow()
-{
-    return _win;
-}
 
 // TODO: this should assert that the window ptr is not 
 // NULL or throw
@@ -70,6 +69,12 @@ HexWindow::CreateWindow ( int height, int width,
     win = newwin(height, width, starty, startx);
 
     return win;
+}
+
+void
+HexWindow::setBorder ( bool show )
+{
+    _border = show;
 }
 
 void
@@ -91,14 +96,26 @@ HexWindow::erase()
     ::werase(_win);
 }
 
+int
+HexWindow::width()
+{
+    return _win->_maxx;
+}
+
+int
+HexWindow::height()
+{
+    return _win->_maxy;
+}
+
 void
 HexWindow::print ( const std::string & str )
 {
-    //wmove(_win, 1, 1);
-    //wprintw(_win, "str: %s", str.c_str());
-    //wbkgd(_win, COLOR_PAIR(1));
-    //wrefresh(_win);
-    mvwaddstr(_win, 1, 1, str.c_str());
+    if ( _curP.row >= this->height() )
+        return;
+    // determine wrap
+    mvwaddstr(_win, _curP.row, _curP.col, str.c_str());
+    _curP.row++;
 }
 
 } // namespace

@@ -7,13 +7,16 @@
 
 namespace hexes {
 
-bool HexApp::NCURSES_LIBINIT = false;
+bool HexApp::_CURSESINIT = false;
 
 HexApp::HexApp()
-    : _echo(false)
+    : _curPanel(NULL),
+      _echo(false)
 {
     this->InitCurses(false, false);
-    _hasColors = ::has_colors();
+    _hasColor = ::has_colors();
+    _col      = LINES;
+    _row      = COLS;
 }
 
 
@@ -155,11 +158,40 @@ HexApp::destroyPanels()
     return;
 }
 
+int
+HexApp::getMaxWidth()
+{
+    return this->width();
+}
+
+int
+HexApp::width()
+{
+    return _col;
+}
+
+int
+HexApp::height()
+{
+    return _row;
+}
+
+int
+HexApp::getMaxHeight()
+{
+    return this->height();
+}
+
+bool
+HexApp::hasColor() const
+{
+    return _hasColor;
+}
 
 void
 HexApp::InitCurses ( bool termRaw, bool echo )
 {
-    if ( NCURSES_LIBINIT )
+    if ( HexApp::_CURSESINIT )
         return;
 
     initscr();
@@ -174,7 +206,8 @@ HexApp::InitCurses ( bool termRaw, bool echo )
 
     start_color();
     keypad(stdscr, TRUE);
-    HexApp::NCURSES_LIBINIT = true;
+
+    HexApp::_CURSESINIT = true;
 
     return;
 }
