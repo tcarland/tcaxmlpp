@@ -157,6 +157,13 @@ LFLAGS    += -L$(TCASNMP_HOME)/lib
 LIBS      += -ltcasnmp
 endif
 
+ifdef NEED_HEXES
+HEXESHOME = $(TOPDIR)/common/hexes
+INCLUDES += -I$(HEXESHOME)/include
+LFLAGS   += -L$(HEXESHOME)/lib
+LIBS     += -lhexes
+endif
+
 # Tnms libs
 
 ifdef NEED_TNMSAPI
