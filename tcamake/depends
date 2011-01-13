@@ -237,6 +237,14 @@ CFLAGS += $(PTHREAD_CFLAGS)
 MACROS += -D_THREAD_SAFE -D_REENTRANT -D_PTHREADS -D_GNU_SOURCE -DPTHREADS
 endif
 
+ifdef NEED_NCURSES
+LIBS += -lncurses -lpanel
+endif
+
+ifdef NEED_LIBPANEL
+LIBS += -lncurses -lpanel
+endif
+
 ifdef NEED_LIBDL
 LIB_DL ?= -ldl
 LIBS   += $(LIB_DL)
