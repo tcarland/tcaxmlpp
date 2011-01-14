@@ -43,6 +43,7 @@ extern "C" {
 # include <netinet/in.h>
 # include <errno.h>
 # include <sys/types.h>
+# include <sys/socket.h>
 #endif
 
 
