@@ -27,6 +27,7 @@ HexApp::~HexApp()
     endwin();
 }
 
+
 int
 HexApp::draw()
 {
@@ -85,6 +86,22 @@ HexApp::rescale()
 {
     return 1;
 }
+
+
+int
+HexApp::poll()
+{
+    int r;
+    
+    if ( _curPanel == NULL )
+        return 0;
+
+    r = _curPanel->poll();
+    
+    return r;
+}
+
+
 
 void
 HexApp::setTopPanel ( HexPanel * panel )

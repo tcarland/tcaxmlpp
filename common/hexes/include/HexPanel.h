@@ -32,7 +32,7 @@ class HexPanel {
 
 
     virtual int redraw();
-
+    virtual int poll();
 
     virtual int handleDisplay();
     virtual int handleInput ( int ch );
