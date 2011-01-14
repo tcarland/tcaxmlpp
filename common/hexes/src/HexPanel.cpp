@@ -23,7 +23,8 @@ HexPanel::HexPanel ( const std::string & title )
       _maxLines(0),
       _selected(0),
       _scrollable(false),
-      _drawBorder(true)
+      _drawBorder(true),
+      _drawTitle(true)
 {
     this->initPanel();
 }
@@ -44,7 +45,8 @@ HexPanel::HexPanel ( const std::string & title,
       _maxLines(0),
       _selected(0),
       _scrollable(false),
-      _drawBorder(true)
+      _drawBorder(true),
+      _drawTitle(true)
 {
     this->initPanel();
 }
@@ -84,8 +86,9 @@ HexPanel::redraw()
     if ( _drawBorder) 
         _hwin->drawBorder();
 
-    this->setTitle();
-    
+    if ( _drawTitle)
+        mvwaddstr(_hwin->_win, 0, 2, _title.c_str());
+
     r = this->handleDisplay();
 
     ::wrefresh(_hwin->_win);
@@ -147,70 +150,60 @@ HexPanel::hide()
 void
 HexPanel::erase()
 {
-    _hwin->erase();
+    this->_hwin->erase();
 }
 
 void
 HexPanel::refresh()
 {
-    ::wrefresh(_hwin->_win);
+    ::wrefresh(this->_hwin->_win);
 }
 
 //----------------------------------------------------------------//
 int
 HexPanel::width()
 {
-    return _hwin->width();
+    return this->_hwin->width();
 }
 
 int
 HexPanel::height()
 {
-    return _hwin->height();
+    return this->_hwin->height();
 }
 
 //----------------------------------------------------------------//
-void
-HexPanel::setTitle()
-{
-    if ( _hwin == NULL )
-        return;
-
-    mvwaddstr(_hwin->_win, 0, 2, _title.c_str());
-
-    return;
-}
 
 
 void
 HexPanel::setTopPanel()
 {
-    if ( _panel )
-        top_panel(_panel);
+    if ( this->_panel )
+        top_panel(this->_panel);
 }
 
 TextList&
 HexPanel::getTextList()
 {
-    return _textlist;
+    return this->_textlist;
 }
 
 void
 HexPanel::setTextList ( TextList & textlist )
 {
-    _textlist = textlist;
+    this->_textlist = textlist;
 }
 
 void
 HexPanel::addText ( const std::string & str )
 {
-    _textlist.push_back(str);
+    this->_textlist.push_back(str);
 }
 
 void
 HexPanel::setText ( const std::string & str )
 {
-    _textlist.clear();
+    this->_textlist.clear();
     this->addText(str);
 }
 
@@ -219,20 +212,27 @@ HexPanel::setText ( const std::string & str )
 void
 HexPanel::enableBorder ( bool border )
 {
-    _drawBorder = border;
+    this->_drawBorder = border;
+}
+
+
+void
+HexPanel::enableTitle ( bool title )
+{
+    this->_drawTitle = title;
 }
 
 
 void
 HexPanel::enableScroll ( bool scroll )
 {
-    _scrollable = scroll;
+    this->_scrollable = scroll;
 
-    if ( _hwin == NULL )
+    if ( this->_hwin == NULL )
         return;
 
-    if ( _scrollable )
-        ::scrollok(_hwin->_win, 1);
+    if ( this->_scrollable )
+        ::scrollok(this->_hwin->_win, 1);
 
     return;
 }
@@ -240,7 +240,7 @@ HexPanel::enableScroll ( bool scroll )
 bool
 HexPanel::scrollable() const
 {
-    return _scrollable;
+    return this->_scrollable;
 }
 
 //----------------------------------------------------------------//
@@ -248,13 +248,13 @@ HexPanel::scrollable() const
 void
 HexPanel::initPanel()
 {
-    if ( _hwin == NULL )
+    if ( this->_hwin == NULL )
         return;  // TODO: Throw!
 
-    _panel = new_panel(_hwin->_win);
-    nodelay(_hwin->_win, true);
-    keypad(_hwin->_win, true);
-    //top_panel(_panel);
+    this->_panel = new_panel(this->_hwin->_win);
+    nodelay(this->_hwin->_win, true);
+    keypad(this->_hwin->_win, true);
+    //top_panel(this->_panel);
 }
 
 //----------------------------------------------------------------//

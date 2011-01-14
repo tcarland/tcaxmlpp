@@ -63,10 +63,10 @@ class HexApp {
                                  int height, int width, 
                                  int starty, int startx );
 
-
     HexPanel*    getPanel      ( const std::string & title );
     HexPanel*    removePanel   ( const std::string & title );
     bool         destroyPanel  ( const std::string & title );
+
 
     void         setTopPanel   ( HexPanel * panel );
 
@@ -90,6 +90,7 @@ class HexApp {
     static bool         _CURSESINIT;
     
     PanelMap            _panels;
+    StringList          _panel_list;
     HexPanel *          _curPanel;
 
     int                 _row;

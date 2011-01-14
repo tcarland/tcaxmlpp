@@ -35,42 +35,43 @@ class HexPanel {
     virtual ~HexPanel();
 
 
-    virtual int redraw();
-    virtual int poll();
+    virtual int         redraw();
+    virtual int         poll();
 
-    virtual int handleDisplay();
-    virtual int handleInput ( int ch );
+    virtual int         handleDisplay();
+    virtual int         handleInput ( int ch );
 
+    void                setOutputHandler ( HexOutputInterface * output );
+    void                setInputHandler  ( HexInputInterface  * input  );
 
-    void        setOutputHandler ( HexOutputInterface * output );
-    void        setInputHandler  ( HexInputInterface  * input  );
+    void                print ( const std::string & str );
 
-    void        print ( const std::string & str );
+    void                show();
+    void                hide();
+    void                erase();
+    void                refresh();
 
-    void        show();
-    void        hide();
-    void        erase();
-    void        refresh();
+    const std::string&  getTitle() const;
 
-    void        setTitle();
-    void        setTopPanel();
+    void                setTopPanel();
 
-    TextList&   getTextList();
-    void        setTextList  ( TextList & textlist );
-    void        addText      ( const std::string & str ); //, bool wrap = false );
-    void        setText      ( const std::string & str );
+    TextList&           getTextList();
+    void                setTextList  ( TextList & textlist );
+    void                addText      ( const std::string & str ); //, bool wrap = false );
+    void                setText      ( const std::string & str );
 
-    int         width();
-    int         height();
+    int                 width();
+    int                 height();
 
-    void        enableBorder ( bool border );
-    void        enableScroll ( bool scroll );
-    bool        scrollable() const;
+    void                enableBorder ( bool border );
+    void                enableTitle  ( bool title );
+    void                enableScroll ( bool scroll );
+    bool                scrollable() const;
 
 
   protected:
 
-    void        initPanel();
+    void                initPanel();
 
 
   private:
@@ -90,6 +91,7 @@ class HexPanel {
     int                  _selected;
     bool                 _scrollable;
     bool                 _drawBorder;
+    bool                 _drawTitle;
 };
 
 
