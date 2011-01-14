@@ -61,6 +61,20 @@ HexPanel::~HexPanel()
 //----------------------------------------------------------------//
 
 int
+HexPanel::poll()
+{
+    int ch;
+
+    ch = wgetch(_hwin->_win);
+
+    if ( ch == ERR )
+        return 0;
+
+    return this->handleInput(ch);
+}
+
+
+int
 HexPanel::redraw()
 {
     int r = 0;
@@ -95,7 +109,7 @@ int
 HexPanel::handleInput( int ch )
 {
     if ( _input == NULL )
-        return 1;
+        return 0;
 
     return _input->handleInput(this, ch);
 }

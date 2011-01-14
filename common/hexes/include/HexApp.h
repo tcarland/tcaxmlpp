@@ -57,6 +57,7 @@ class HexApp {
     virtual int  draw();
     virtual int  rescale();
 
+    int          poll();
 
     HexPanel*    createPanel   ( const std::string & title, 
                                  int height, int width, 
