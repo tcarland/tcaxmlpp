@@ -189,6 +189,31 @@ HexPanel::setTopPanel()
         top_panel(_panel);
 }
 
+TextList&
+HexPanel::getTextList()
+{
+    return _textlist;
+}
+
+void
+HexPanel::setTextList ( TextList & textlist )
+{
+    _textlist = textlist;
+}
+
+void
+HexPanel::addText ( const std::string & str )
+{
+    _textlist.push_back(str);
+}
+
+void
+HexPanel::setText ( const std::string & str )
+{
+    _textlist.clear();
+    this->addText(str);
+}
+
 //----------------------------------------------------------------//
 
 void

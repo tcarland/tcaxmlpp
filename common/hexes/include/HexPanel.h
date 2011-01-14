@@ -1,10 +1,10 @@
 #ifndef _HEXES_HEXPANEL_H_
 #define _HEXES_HEXPANEL_H_
 
-#include <panel.h>
-
 #include <string>
+#include <list>
 
+#include <panel.h>
 
 namespace hexes {
 
@@ -12,6 +12,8 @@ namespace hexes {
 class HexWindow;
 class HexOutputInterface;
 class HexInputInterface;
+
+typedef std::list<std::string> TextList;
 
 
 class HexPanel {
@@ -53,6 +55,11 @@ class HexPanel {
     void        setTitle();
     void        setTopPanel();
 
+    TextList&   getTextList();
+    void        setTextList  ( TextList & textlist );
+    void        addText      ( const std::string & str ); //, bool wrap = false );
+    void        setText      ( const std::string & str );
+
     int         width();
     int         height();
 
@@ -75,6 +82,7 @@ class HexPanel {
     HexInputInterface  * _input;
 
     std::string          _title;
+    TextList             _textlist;
 
     int                  _height, _width;
     int                  _starty, _startx;
