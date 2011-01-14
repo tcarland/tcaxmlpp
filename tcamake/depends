@@ -245,11 +245,11 @@ MACROS += -D_THREAD_SAFE -D_REENTRANT -D_PTHREADS -D_GNU_SOURCE -DPTHREADS
 endif
 
 ifdef NEED_NCURSES
-LIBS += -lncurses -lpanel
+LIBS += -lpanel -lncurses
 endif
 
 ifdef NEED_LIBPANEL
-LIBS += -lncurses -lpanel
+LIBS += -lpanel -lncurses
 endif
 
 ifdef NEED_LIBDL

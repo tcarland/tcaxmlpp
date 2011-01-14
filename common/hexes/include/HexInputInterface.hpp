@@ -1,7 +1,6 @@
 #ifndef _HEXES_HEXINPUTINTERFACE_HPP_
 #define _HEXES_HEXINPUTINTERFACE_HPP_
 
-
 namespace hexes {
 
 class HexPanel;

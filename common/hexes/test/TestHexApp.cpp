@@ -34,7 +34,8 @@ TestHexApp::run()
 }
 
 #else
-
+void
+TestHexApp::timeout() {}
 void
 TestHexApp::run()
 {

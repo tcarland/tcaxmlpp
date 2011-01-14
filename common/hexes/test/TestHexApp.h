@@ -2,6 +2,9 @@
 #define _HEXES_TESTHEXAPP_H_
 
 #include "HexApp.h"
+#ifdef timeout
+#undef timeout
+#endif
 
 namespace hexes {
 
@@ -14,6 +17,7 @@ class TestHexApp : public HexApp {
 
     virtual void run();
 
+    virtual void timeout();
 };
 
 

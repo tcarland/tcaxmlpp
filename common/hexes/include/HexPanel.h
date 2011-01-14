@@ -1,11 +1,13 @@
 #ifndef _HEXES_HEXPANEL_H_
 #define _HEXES_HEXPANEL_H_
 
-#include <string>
 #include <panel.h>
+
+#include <string>
 
 
 namespace hexes {
+
 
 class HexWindow;
 class HexOutputInterface;

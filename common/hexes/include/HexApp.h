@@ -6,7 +6,15 @@
 #include <vector>
 #include <map>
 
+extern "C" {
 #include <ncurses.h>
+}
+// function timout is a macro to wtimeout 
+// the former causing namespace collision so we undef it.
+// use wtimeout & werase instead.
+#undef timeout
+#undef erase
+// clear?
 
 #include "HexWindow.h"
 #include "HexPanel.h"

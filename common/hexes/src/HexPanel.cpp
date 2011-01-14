@@ -5,8 +5,10 @@
 #include "HexOutputInterface.hpp"
 #include "HexInputInterface.hpp"
 
+
 namespace hexes {
 
+//----------------------------------------------------------------//
 
 HexPanel::HexPanel ( const std::string & title )
     : _hwin(new HexWindow()),
@@ -56,6 +58,7 @@ HexPanel::~HexPanel()
     del_panel(_panel);
 }
 
+//----------------------------------------------------------------//
 
 int
 HexPanel::redraw()
@@ -76,6 +79,7 @@ HexPanel::redraw()
     return r;
 }
 
+//----------------------------------------------------------------//
 
 
 int
@@ -96,6 +100,7 @@ HexPanel::handleInput( int ch )
     return _input->handleInput(this, ch);
 }
 
+//----------------------------------------------------------------//
 
 void
 HexPanel::setOutputHandler ( HexOutputInterface * output )
@@ -108,6 +113,8 @@ HexPanel::setInputHandler ( HexInputInterface * input )
 {
     this->_input = input;
 }
+
+//----------------------------------------------------------------//
 
 void
 HexPanel::show()
@@ -122,6 +129,7 @@ HexPanel::hide()
     ::hide_panel(this->_panel);
 }
 
+//----------------------------------------------------------------//
 void
 HexPanel::erase()
 {
@@ -134,6 +142,7 @@ HexPanel::refresh()
     ::wrefresh(_hwin->_win);
 }
 
+//----------------------------------------------------------------//
 int
 HexPanel::width()
 {
@@ -146,6 +155,7 @@ HexPanel::height()
     return _hwin->height();
 }
 
+//----------------------------------------------------------------//
 void
 HexPanel::setTitle()
 {
@@ -165,6 +175,7 @@ HexPanel::setTopPanel()
         top_panel(_panel);
 }
 
+//----------------------------------------------------------------//
 
 void
 HexPanel::enableBorder ( bool border )
@@ -193,6 +204,7 @@ HexPanel::scrollable() const
     return _scrollable;
 }
 
+//----------------------------------------------------------------//
 
 void
 HexPanel::initPanel()
@@ -206,6 +218,7 @@ HexPanel::initPanel()
     //top_panel(_panel);
 }
 
+//----------------------------------------------------------------//
 
 void
 HexPanel::print ( const std::string & str )
