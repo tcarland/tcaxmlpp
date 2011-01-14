@@ -39,8 +39,8 @@ class HexWindow {
 
 
     int            print ( const std::string & str );
-    void           print ( const char ch );
-    void           echo  ( const char ch );
+    int            print ( const char ch );
+    int            echo  ( const char ch );
 
     void           setBorder ( bool show );
     void           drawBorder();

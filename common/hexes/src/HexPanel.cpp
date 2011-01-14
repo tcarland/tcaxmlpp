@@ -265,16 +265,16 @@ HexPanel::print ( const std::string & str )
     return _hwin->print(str);
 }
 
-void
+int
 HexPanel::print ( const char ch )
 {
-    _hwin->print(ch);
+    return _hwin->print(ch);
 }
 
-void
+int
 HexPanel::echo ( const char ch )
 {
-    _hwin->echo(ch);
+    return _hwin->echo(ch);
 }
 
 

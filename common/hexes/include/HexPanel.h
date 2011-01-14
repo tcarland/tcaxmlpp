@@ -45,8 +45,8 @@ class HexPanel {
     void                setInputHandler  ( HexInputInterface  * input  );
 
     int                 print ( const std::string & str );
-    void                print ( const char ch );
-    void                echo  ( const char ch );
+    int                 print ( const char ch );
+    int                 echo  ( const char ch );
 
     void                show();
     void                hide();

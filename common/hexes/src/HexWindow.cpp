@@ -180,7 +180,7 @@ HexWindow::print ( const std::string & str )
                 idx  = HexWindow::LastIndexOf(s, " ", from);
             }
 
-            if ( idx >= 0 ) { // print to space
+            if ( idx >= 0 ) { 
                 sstr = s.substr(0, idx);
                 s.erase(0, idx);
             } else { // no spaces left
@@ -197,7 +197,7 @@ HexWindow::print ( const std::string & str )
         waddstr(_win, sstr.c_str());
         if ( ! this->wrap() )
             break;
-        left = COLS - _win->_curx;
+        left = _width - _win->_curx;
     }
 
     if ( this->curY() >= _height )
@@ -206,15 +206,35 @@ HexWindow::print ( const std::string & str )
     return(str.length() - s.length());
 }
 
+
 int
 HexWindow::wrap()
 {
     _win->_curx = _win->_begx;
-    if ( _win->_cury == _height )
+
+    if ( _win->_cury >= _height )
         return 0;
+
     _win->_cury++;
+
     return 1;
 }
+
+
+int
+HexWindow::print ( const char ch )
+{
+    if ( _win->_curx >= _width )
+        this->wrap();
+    return waddch(_win, ch);
+}
+
+int
+HexWindow::echo ( const char ch )
+{
+    return wechochar(_win, ch);
+}
+
 
 
 int
@@ -233,20 +253,6 @@ HexWindow::LastIndexOf ( const std::string & str, const std::string & match, siz
     return ( (int) indx );
 }
 
-
-void
-HexWindow::print ( const char ch )
-{
-    if ( _win->_curx >= this->width() )
-        _win->_cury++;
-    waddch(_win, ch);
-}
-
-void
-HexWindow::echo ( const char ch )
-{
-    wechochar(_win, ch);
-}
 
 
 } // namespace
