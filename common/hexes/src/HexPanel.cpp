@@ -259,10 +259,22 @@ HexPanel::initPanel()
 
 //----------------------------------------------------------------//
 
-void
+int
 HexPanel::print ( const std::string & str )
 {
-    _hwin->print(str);
+    return _hwin->print(str);
+}
+
+void
+HexPanel::print ( const char ch )
+{
+    _hwin->print(ch);
+}
+
+void
+HexPanel::echo ( const char ch )
+{
+    _hwin->echo(ch);
 }
 
 

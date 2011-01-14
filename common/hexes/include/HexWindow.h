@@ -38,7 +38,9 @@ class HexWindow {
     virtual ~HexWindow();
 
 
-    void           print ( const std::string & str );
+    int            print ( const std::string & str );
+    void           print ( const char ch );
+    void           echo  ( const char ch );
 
     void           setBorder ( bool show );
     void           drawBorder();
@@ -48,9 +50,20 @@ class HexWindow {
     int            width();
     int            height();
 
+    int            currentColumn();
+    int            currentRow();
+    int            curY();
+    int            curX();
+    Position       currentPosition();
+
 
   protected:
 
+    int            wrap();
+
+    static int     LastIndexOf  ( const std::string & str, 
+                                  const std::string & match,
+                                  size_t from );
 
     static WINDOW* CreateWindow ( int height, int width, 
                                   int starty, int startx);
@@ -63,8 +76,7 @@ class HexWindow {
     int         _height, _width;
     int         _starty, _startx;
     bool        _border;
-
-    Position    _curP;
+    bool        _wrap;
 
 };
 

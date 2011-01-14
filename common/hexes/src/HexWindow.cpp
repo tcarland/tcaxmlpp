@@ -16,7 +16,8 @@ HexWindow::HexWindow()
       _width(10),
       _starty(0),
       _startx(0),
-      _border(true)
+      _border(true),
+      _wrap(true)
 {
     //_win = HexWindow::CreateWindow(_height, _width, _starty, _startx);
 }
@@ -27,7 +28,8 @@ HexWindow::HexWindow ( int height, int width, bool border )
       _width(width),
       _starty(0),
       _startx(0),
-      _border(border)
+      _border(border),
+      _wrap(true)
 {
     _win = HexWindow::CreateWindow(_height, _width, _starty, _startx);
 }
@@ -40,7 +42,8 @@ HexWindow::HexWindow ( int height, int width,
       _width(width),
       _starty(starty), 
       _startx(startx),
-      _border(border)
+      _border(border),
+      _wrap(true)
 {
     _win = HexWindow::CreateWindow(_height, _width, _starty, _startx);
 }
@@ -99,24 +102,152 @@ HexWindow::erase()
 int
 HexWindow::width()
 {
-    return _win->_maxx;
+    return _width;
 }
 
 int
 HexWindow::height()
 {
-    return _win->_maxy;
+    return _height;
+}
+
+int
+HexWindow::curY()
+{
+    return _win->_cury;
+}
+
+int
+HexWindow::curX()
+{
+    return _win->_curx;
+}
+
+int
+HexWindow::currentColumn()
+{
+    return this->curX();
+}
+
+int
+HexWindow::currentRow()
+{
+    return this->curY();
+}
+
+HexWindow::Position
+HexWindow::currentPosition()
+{
+    Position p;
+    p.row = this->curY();
+    p.col = this->curX();
+    return p;
+}
+
+int
+HexWindow::print ( const std::string & str )
+{
+    if ( _win->_cury >= _height )
+        return 0;
+    
+    std::string s, sstr;
+    int    idx;
+    int    left = COLS - _win->_curx;
+    size_t from = 0;
+
+    s = str;
+
+    if ( left == 0 ) {
+        if ( ! this->wrap() )
+            return -1;
+        _win->_cury++;
+        _win->_curx = _win->_begx;
+        left = _width - _win->_curx;
+    }
+
+    // do wrap
+    while ( s.length() > (size_t) left )
+    {
+        if ( _wrap ) { // wrap style
+            from = left;
+            idx  = HexWindow::LastIndexOf(s, " ", from);
+
+            // find the last space
+            while ( (idx+1) > left ) {
+                if ( idx < 0 )
+                   break;
+                from = idx;
+                idx  = HexWindow::LastIndexOf(s, " ", from);
+            }
+
+            if ( idx >= 0 ) { // print to space
+                sstr = s.substr(0, idx);
+                s.erase(0, idx);
+            } else { // no spaces left
+                if ( ! this->wrap() )
+                    break;
+                sstr = s;
+                s.erase(0, s.length()-1);
+            }
+        } else {
+            sstr = s.substr(0, left);
+            s.erase(0, left);
+        }
+
+        waddstr(_win, sstr.c_str());
+        if ( ! this->wrap() )
+            break;
+        left = COLS - _win->_curx;
+    }
+
+    if ( this->curY() >= _height )
+        return 0;
+
+    return(str.length() - s.length());
+}
+
+int
+HexWindow::wrap()
+{
+    _win->_curx = _win->_begx;
+    if ( _win->_cury == _height )
+        return 0;
+    _win->_cury++;
+    return 1;
+}
+
+
+int
+HexWindow::LastIndexOf ( const std::string & str, const std::string & match, size_t from )
+{
+    std::string::size_type  indx;
+
+    if ( from > str.length() )
+	from = str.length();
+    else if ( from < 0 )
+	return -1;
+
+    if ( (indx = str.find_last_of(match, from)) == std::string::npos )
+	return -1;
+
+    return ( (int) indx );
+}
+
+
+void
+HexWindow::print ( const char ch )
+{
+    if ( _win->_curx >= this->width() )
+        _win->_cury++;
+    waddch(_win, ch);
 }
 
 void
-HexWindow::print ( const std::string & str )
+HexWindow::echo ( const char ch )
 {
-    if ( _curP.row >= this->height() )
-        return;
-    // determine wrap
-    mvwaddstr(_win, _curP.row, _curP.col, str.c_str());
-    _curP.row++;
+    wechochar(_win, ch);
 }
+
 
 } // namespace
 
