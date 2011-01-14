@@ -58,7 +58,9 @@ TestHexApp::run()
     mainPanel->refresh();
     statPanel->refresh();
     getch();
-    mainPanel->print("test 4 5 6");
+    std::string txt = " banana nana bo bana\n test 4 5 6 \n this is a long string";
+    mainPanel->print(txt);
+
     statPanel->redraw();
     mainPanel->refresh();
     getch();
