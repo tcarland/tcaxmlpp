@@ -257,8 +257,9 @@ HexPanel::initPanel()
     this->_panel = new_panel(this->_hwin->_win);
     nodelay(this->_hwin->_win, true);
     keypad(this->_hwin->_win, true);
+
     // set default input timeout?
-    ::wtimeout(this->_hwin->_win, -1); // blocking input
+    this->timeout(-1); // blocking input
 
     return;
 }
