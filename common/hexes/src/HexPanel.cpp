@@ -68,9 +68,10 @@ HexPanel::poll()
     int ch;
 
     ch = wgetch(_hwin->_win);
+    //ch = getch();
 
     if ( ch == ERR )
-        return 0;
+        return ch;
 
     return this->handleInput(ch);
 }
@@ -88,6 +89,8 @@ HexPanel::redraw()
 
     if ( _drawTitle)
         mvwaddstr(_hwin->_win, 0, 2, _title.c_str());
+
+    ::wmove(_hwin->_win, 1, 1);
 
     r = this->handleDisplay();
 
@@ -112,7 +115,7 @@ int
 HexPanel::handleInput( int ch )
 {
     if ( _input == NULL )
-        return 0;
+        return ch;
 
     return _input->handleInput(this, ch);
 }
@@ -254,7 +257,10 @@ HexPanel::initPanel()
     this->_panel = new_panel(this->_hwin->_win);
     nodelay(this->_hwin->_win, true);
     keypad(this->_hwin->_win, true);
-    //top_panel(this->_panel);
+    // set default input timeout?
+    ::wtimeout(this->_hwin->_win, -1); // blocking input
+
+    return;
 }
 
 //----------------------------------------------------------------//
@@ -283,6 +289,11 @@ HexPanel::wrap()
     return _hwin->wrap();
 }
 
+void
+HexPanel::timeout ( int delay_ms )
+{
+    ::wtimeout(_hwin->_win, delay_ms);
+}
 
 } // namespace
 

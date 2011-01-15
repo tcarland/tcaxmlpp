@@ -18,6 +18,8 @@ extern "C" {
 
 #include "HexWindow.h"
 #include "HexPanel.h"
+#include "HexInputInterface.hpp"
+#include "HexOutputInterface.hpp"
 
 
 namespace hexes {
@@ -50,7 +52,6 @@ class HexApp {
 
     HexApp();
     virtual ~HexApp();
-
 
     virtual void run() {}
 

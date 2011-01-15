@@ -17,7 +17,6 @@ class TestHexApp : public HexApp {
 
     virtual void run();
 
-    virtual void timeout();
 };
 
 

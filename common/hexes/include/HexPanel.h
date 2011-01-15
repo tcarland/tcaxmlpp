@@ -5,10 +5,12 @@
 #include <list>
 
 #include <panel.h>
+#include <HexApp.h>
+
 
 namespace hexes {
 
-
+class HexApp;
 class HexWindow;
 class HexOutputInterface;
 class HexInputInterface;
@@ -52,6 +54,7 @@ class HexPanel {
     void                hide();
     void                erase();
     void                refresh();
+    void                timeout ( int delay_ms );
     int                 wrap();
 
     const std::string&  getTitle() const;

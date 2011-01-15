@@ -13,7 +13,7 @@ HexApp::HexApp()
     : _curPanel(NULL),
       _echo(false)
 {
-    this->InitCurses(false, false);
+    this->InitCurses(false, _echo);
     _hasColor = ::has_colors();
     _col      = LINES;
     _row      = COLS;
@@ -91,12 +91,21 @@ HexApp::rescale()
 int
 HexApp::poll()
 {
-    int r;
+    int r = ERR;
     
-    if ( _curPanel == NULL )
-        return 0;
+    if ( _curPanel != NULL )
+        r = _curPanel->poll();
 
-    r = _curPanel->poll();
+    if ( r != ERR )
+        return r;
+
+    PanelMap::iterator pIter;
+    for ( pIter = _panels.begin(); pIter != _panels.end(); ++pIter )
+    {
+        r = pIter->second->poll();
+        if ( r != ERR )
+            break;
+    }
     
     return r;
 }

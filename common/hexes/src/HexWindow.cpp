@@ -200,6 +200,9 @@ HexWindow::print ( const std::string & str )
         left = _width - _win->_curx;
     }
 
+    if ( s.length() > 0 && s.length() < (size_t) left )
+        waddstr(_win, s.c_str());
+
     if ( this->curY() >= _height )
         return 0;
 
