@@ -280,7 +280,7 @@ HexPanel::echo ( const char ch )
 int
 HexPanel::wrap()
 {
-    _hwin->wrap();
+    return _hwin->wrap();
 }
 
 
