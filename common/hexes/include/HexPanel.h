@@ -52,6 +52,7 @@ class HexPanel {
     void                hide();
     void                erase();
     void                refresh();
+    int                 wrap();
 
     const std::string&  getTitle() const;
 

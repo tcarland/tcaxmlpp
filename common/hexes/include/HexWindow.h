@@ -37,7 +37,6 @@ class HexWindow {
 
     virtual ~HexWindow();
 
-
     int            print ( const std::string & str );
     int            print ( const char ch );
     int            echo  ( const char ch );

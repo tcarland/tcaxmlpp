@@ -107,6 +107,7 @@ void
 HexApp::setTopPanel ( HexPanel * panel )
 {
     panel->setTopPanel();
+    _curPanel = panel;
 }
 
 
@@ -125,6 +126,8 @@ HexApp::createPanel ( const std::string & title,
     p = new HexPanel(title, height, width, starty, startx);
 
     _panels[title] = p;
+    if ( _curPanel == NULL )
+        this->setTopPanel(p);
 
     return p;
 }
@@ -155,6 +158,7 @@ HexApp::destroyPanel ( const std::string & title )
     pIter = _panels.find(title);
     if ( pIter == _panels.end() )
         return false;
+
     delete pIter->second;
     _panels.erase(pIter);
 
@@ -172,6 +176,7 @@ HexApp::destroyPanels()
             delete pIter->second;
     }
     _panels.clear();
+
     return;
 }
 

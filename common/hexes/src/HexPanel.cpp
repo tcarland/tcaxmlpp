@@ -277,6 +277,12 @@ HexPanel::echo ( const char ch )
     return _hwin->echo(ch);
 }
 
+int
+HexPanel::wrap()
+{
+    _hwin->wrap();
+}
+
 
 } // namespace
 
