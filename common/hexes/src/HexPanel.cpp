@@ -1,4 +1,5 @@
 #define _HEXES_HEXPANEL_CPP_
+#include <sstream>
 
 #include "HexPanel.h"
 #include "HexWindow.h"
@@ -84,17 +85,15 @@ HexPanel::redraw()
     int r = 0;
 
     _hwin->erase();
+    
+    r = this->handleDisplay();
 
     if ( _drawBorder) 
         _hwin->drawBorder();
-
     if ( _drawTitle)
         mvwaddstr(_hwin->_win, 0, 2, _title.c_str());
 
     ::wmove(_hwin->_win, 1, 1);
-
-    r = this->handleDisplay();
-
     ::wrefresh(_hwin->_win);
 
     return r;
@@ -112,10 +111,25 @@ HexPanel::handleDisplay()
     TextList::iterator  tIter;
     TextList & tlist = this->getTextList();
 
-    for ( tIter = tlist.begin(); tIter != tlist.end(); ++tIter )
+    int ht = _height;
+    int ln = 1;
+
+    if ( _drawBorder ) {
+        ht -= 2;
+        this->move(1, 1);
+    }
+
+    for ( tIter = tlist.begin(); tIter != tlist.end(); ++tIter, ++ln )
     {
+        if ( ln > ht && _scrollable )
+            this->scrollLine();
+
         this->print(*tIter);
-        this->wrap();
+
+        if ( ln < ht )
+            this->wrap();
+        else
+            this->move(this->curY(), 1);
     }
 
     return 1;
@@ -185,6 +199,31 @@ HexPanel::height()
     return this->_hwin->height();
 }
 
+int
+HexPanel::curY()
+{
+    return this->_hwin->curY();
+}
+
+int
+HexPanel::curX()
+{
+    return this->_hwin->curX();
+}
+
+int
+HexPanel::maxY()
+{
+    return this->_hwin->maxY();
+}
+
+int
+HexPanel::maxX()
+{
+    return this->_hwin->maxX();
+}
+
+
 //----------------------------------------------------------------//
 
 
@@ -207,13 +246,23 @@ HexPanel::setTextList ( TextList & textlist )
     this->_textlist = textlist;
 }
 
+/** addText will add the provided string as the next 
+ *  line of text of the panel. Each string is considered 
+ *  a single line, and the cursor will automatically wrap
+ *  after each string.
+ **/
 void
 HexPanel::addText ( const std::string & str )
 {
-    size_t sz = this->_textlist.size();
-    if ( sz > 0 && sz >= (size_t) _height )
-        _textlist.pop_front();
-    this->_textlist.push_back(str);
+    _textlist.push_back(str);
+
+    if ( _textlist.size() >= ((size_t) _height - 1) )
+    {
+        if ( ! _scrollable )
+            _textlist.pop_front();
+    }
+
+    return;
 }
 
 void
@@ -253,6 +302,12 @@ HexPanel::enableScroll ( bool scroll )
     return;
 }
 
+void
+HexPanel::scrollLine()
+{
+    ::wscrl(_hwin->_win, 1);
+}
+
 bool
 HexPanel::scrollable() const
 {
@@ -262,9 +317,9 @@ HexPanel::scrollable() const
 //----------------------------------------------------------------//
 
 int
-HexPanel::print ( const std::string & str )
+HexPanel::print ( const std::string & str, bool wrap )
 {
-    return _hwin->print(str);
+    return _hwin->print(str, wrap);
 }
 
 int
@@ -289,6 +344,12 @@ void
 HexPanel::timeout ( int delay_ms )
 {
     ::wtimeout(_hwin->_win, delay_ms);
+}
+
+int
+HexPanel::move ( int y , int x )
+{
+    return(::wmove(_hwin->_win, y, x));
 }
 
 

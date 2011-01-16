@@ -17,7 +17,7 @@ HexWindow::HexWindow()
       _starty(0),
       _startx(0),
       _border(true),
-      _wrap(true)
+      _wordwrap(true)
 {
     //_win = HexWindow::CreateWindow(_height, _width, _starty, _startx);
 }
@@ -29,7 +29,7 @@ HexWindow::HexWindow ( int height, int width, bool border )
       _starty(0),
       _startx(0),
       _border(border),
-      _wrap(true)
+      _wordwrap(true)
 {
     _win = HexWindow::CreateWindow(_height, _width, _starty, _startx);
 }
@@ -43,7 +43,7 @@ HexWindow::HexWindow ( int height, int width,
       _starty(starty), 
       _startx(startx),
       _border(border),
-      _wrap(true)
+      _wordwrap(true)
 {
     _win = HexWindow::CreateWindow(_height, _width, _starty, _startx);
 }
@@ -60,24 +60,16 @@ HexWindow::~HexWindow()
 }
 
 
-
-// TODO: this should assert that the window ptr is not 
-// NULL or throw
-WINDOW* 
-HexWindow::CreateWindow ( int height, int width, 
-                          int starty, int startx )
+void
+HexWindow::setWordWrap ( bool wrap )
 {
-    WINDOW * win;
-    
-    win = newwin(height, width, starty, startx);
-
-    return win;
+    this->_wordwrap = wrap;
 }
 
 void
 HexWindow::setBorder ( bool show )
 {
-    _border = show;
+    this->_border = show;
 }
 
 void
@@ -102,25 +94,25 @@ HexWindow::erase()
 int
 HexWindow::width()
 {
-    return _width;
+    return this->_width;
 }
 
 int
 HexWindow::height()
 {
-    return _height;
+    return this->_height;
 }
 
 int
 HexWindow::curY()
 {
-    return _win->_cury;
+    return this->_win->_cury;
 }
 
 int
 HexWindow::curX()
 {
-    return _win->_curx;
+    return this->_win->_curx;
 }
 
 int
@@ -135,6 +127,30 @@ HexWindow::currentRow()
     return this->curY();
 }
 
+int
+HexWindow::maxY()
+{
+    return this->_win->_maxy;
+}
+
+int
+HexWindow::maxX()
+{
+    return this->_win->_maxx;
+}
+
+int
+HexWindow::maxRows()
+{
+    return this->maxY();
+}
+
+int
+HexWindow::maxColumns()
+{
+    return this->maxX();
+}
+
 HexWindow::Position
 HexWindow::currentPosition()
 {
@@ -145,10 +161,13 @@ HexWindow::currentPosition()
 }
 
 int
-HexWindow::print ( const std::string & str )
+HexWindow::print ( const std::string & str, bool wrap )
 {
     if ( _win->_cury >= _height )
         return 0;
+
+    if ( _win->_curx == 0 && _border )
+        ::wmove(_win, curY(), (curX() + 1));
     
     std::string s, sstr;
     int    idx;
@@ -163,10 +182,11 @@ HexWindow::print ( const std::string & str )
         left = _width - _win->_curx;
     }
 
-    // do wrap
+    // wrap logic needed to keep curses 
+    // from doing its own wrap and hammering a border
     while ( s.length() > (size_t) left )
     {
-        if ( _wrap ) { // wrap style
+        if ( _wordwrap ) { // wrap style
             from = left;
             idx  = HexWindow::LastIndexOf(s, " ", from);
 
@@ -178,7 +198,7 @@ HexWindow::print ( const std::string & str )
                 idx  = HexWindow::LastIndexOf(s, " ", from);
             }
 
-            if ( idx >= 0 ) { 
+            if ( idx > 0 ) { 
                 sstr = s.substr(0, idx);
                 s.erase(0, idx);
             } else { // no spaces left
@@ -201,6 +221,9 @@ HexWindow::print ( const std::string & str )
 
     if ( s.length() > 0 && s.length() < (size_t) left )
         ::waddstr(_win, s.c_str());
+
+    if ( wrap )
+        this->wrap();
 
     if ( this->curY() >= _height )
         return 0;
@@ -239,6 +262,19 @@ HexWindow::echo ( const char ch )
     return wechochar(_win, ch);
 }
 
+
+// TODO: this should assert that the window ptr is not 
+// NULL or throw
+WINDOW* 
+HexWindow::CreateWindow ( int height, int width, 
+                          int starty, int startx )
+{
+    WINDOW * win;
+    
+    win = newwin(height, width, starty, startx);
+
+    return win;
+}
 
 
 int

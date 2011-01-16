@@ -1,10 +1,12 @@
 
+#include <sstream>
+
+
 #include "TestHexApp.h"
 #include "HexPanel.h"
 
 
 namespace hexes {
-
 
 
 #ifdef TESTHEX_1
@@ -81,7 +83,8 @@ TestHexApp::run()
     statPanel = this->createPanel("status", statheight, COLS, LINES-statheight, 0);
     mainPanel = this->createPanel("main", LINES-statheight, COLS, 0, 0);
 
-    statPanel->setOutputHandler(new TestOutputHandler());
+    //statPanel->setOutputHandler(new TestOutputHandler());
+    statPanel->enableScroll(true);
 
     // we still cannot use draw() w/o display handlers, so call refresh directly
     this->setTopPanel(mainPanel);

@@ -9,11 +9,19 @@
 extern "C" {
 #include <ncurses.h>
 }
-// function timout is a macro to wtimeout 
-// the former causing namespace collision so we undef it.
-// use wtimeout & werase instead.
+// functions timout(erase/clear) are macros that cause namespace
+// collisions so we undef as needed.
+// use the equivelant wtimeout & werase versions instead.
+// 
+//#ifdef timeout
+//#define curs_timeout timeout
 #undef timeout
+//#endif
+//#ifdef erase
+//#define curs_erase erase
+//#undef erase
 #undef erase
+//#endif
 // clear?
 
 #include "HexWindow.h"

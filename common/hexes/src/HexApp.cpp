@@ -235,6 +235,7 @@ HexApp::InitCurses ( bool termRaw, bool echo )
     if ( ! echo )
         noecho();
 
+    nonl();
     start_color();
     keypad(stdscr, TRUE);
 

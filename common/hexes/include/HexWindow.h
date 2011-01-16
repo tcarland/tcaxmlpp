@@ -37,11 +37,12 @@ class HexWindow {
 
     virtual ~HexWindow();
 
-    int            print ( const std::string & str );
+    int            print ( const std::string & str, bool wrap = true );
     int            print ( const char ch );
     int            echo  ( const char ch );
 
-    void           setBorder ( bool show );
+    void           setWordWrap  ( bool wrap );
+    void           setBorder    ( bool show );
     void           drawBorder();
     void           clearBorder();
     void           erase();
@@ -49,11 +50,16 @@ class HexWindow {
     int            width();
     int            height();
 
-    int            currentColumn();
     int            currentRow();
+    int            currentColumn();
     int            curY();
     int            curX();
     Position       currentPosition();
+
+    int            maxColumns();
+    int            maxRows();
+    int            maxY();
+    int            maxX();
 
 
   protected:
@@ -75,7 +81,7 @@ class HexWindow {
     int         _height, _width;
     int         _starty, _startx;
     bool        _border;
-    bool        _wrap;
+    bool        _wordwrap;
 
 };
 

@@ -46,7 +46,7 @@ class HexPanel {
     void                setOutputHandler ( HexOutputInterface * output );
     void                setInputHandler  ( HexInputInterface  * input  );
 
-    int                 print ( const std::string & str );
+    int                 print ( const std::string & str, bool wrap = false );
     int                 print ( const char ch );
     int                 echo  ( const char ch );
 
@@ -54,7 +54,9 @@ class HexPanel {
     void                hide();
     void                erase();
     void                refresh();
-    void                timeout ( int delay_ms );
+    void                scrollLine();
+    void                timeout      ( int delay_ms );
+    int                 move         ( int y, int x );
     int                 wrap();
 
     const std::string&  getTitle() const;
@@ -63,11 +65,16 @@ class HexPanel {
 
     TextList&           getTextList();
     void                setTextList  ( TextList & textlist );
-    void                addText      ( const std::string & str ); //, bool wrap = false );
+    void                addText      ( const std::string & str );
+    //, bool wrap = false );
     void                setText      ( const std::string & str );
 
     int                 width();
     int                 height();
+    int                 curY();
+    int                 curX();
+    int                 maxY();
+    int                 maxX();
 
     void                enableBorder ( bool border );
     void                enableTitle  ( bool title );
