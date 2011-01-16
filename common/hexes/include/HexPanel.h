@@ -93,7 +93,6 @@ class HexPanel {
 
     int                  _height, _width;
     int                  _starty, _startx;
-    int                  _maxLines;
     int                  _selected;
     bool                 _scrollable;
     bool                 _drawBorder;

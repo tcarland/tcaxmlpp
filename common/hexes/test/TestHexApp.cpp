@@ -81,7 +81,7 @@ TestHexApp::run()
     statPanel = this->createPanel("status", statheight, COLS, LINES-statheight, 0);
     mainPanel = this->createPanel("main", LINES-statheight, COLS, 0, 0);
 
-    //statPanel->setOutputHandler(new TestOutputHandler());
+    statPanel->setOutputHandler(new TestOutputHandler());
 
     // we still cannot use draw() w/o display handlers, so call refresh directly
     this->setTopPanel(mainPanel);
@@ -96,15 +96,30 @@ TestHexApp::run()
     statPanel->addText("foobar");
     
     mainPanel->refresh();
-    statPanel->refresh();
+    statPanel->redraw();
 
     ch = this->poll();
     std::string txt = " banana nana bo bana  test 4 5 6  this is a moderately long string to test the wrap functionality of the print() function.";
     mainPanel->print(txt);
     mainPanel->print(ch);
 
-    statPanel->redraw();
     mainPanel->refresh();
+    ch = this->poll();
+
+    statPanel->addText("the status is gooder");
+    statPanel->addText("foobar");
+    statPanel->addText("more status");
+    statPanel->addText("the status is gooder2");
+    statPanel->addText("foobar2");
+    statPanel->addText("more status2");
+    statPanel->addText("the status is gooder3");
+    statPanel->addText("foobar3");
+    statPanel->addText("more status3");
+    statPanel->addText("the status is gooder4");
+    statPanel->addText("foobar4");
+    statPanel->addText("more status4");
+
+    this->draw();
     ch = this->poll();
 
     return;

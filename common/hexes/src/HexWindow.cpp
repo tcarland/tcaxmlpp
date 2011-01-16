@@ -192,14 +192,15 @@ HexWindow::print ( const std::string & str )
             s.erase(0, left);
         }
 
-        waddstr(_win, sstr.c_str());
+        ::waddstr(_win, sstr.c_str());
+
         if ( ! this->wrap() )
             break;
         left = _width - _win->_curx;
     }
 
     if ( s.length() > 0 && s.length() < (size_t) left )
-        waddstr(_win, s.c_str());
+        ::waddstr(_win, s.c_str());
 
     if ( this->curY() >= _height )
         return 0;

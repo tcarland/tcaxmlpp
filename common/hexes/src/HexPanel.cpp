@@ -20,7 +20,6 @@ HexPanel::HexPanel ( const std::string & title )
       _width(0),
       _starty(0),
       _startx(0),
-      _maxLines(0),
       _selected(0),
       _scrollable(false),
       _drawBorder(true),
@@ -38,11 +37,10 @@ HexPanel::HexPanel ( const std::string & title,
       _output(NULL),
       _input(NULL),
       _title(title),
-      _height(0),
-      _width(0),
-      _starty(0),
-      _startx(0),
-      _maxLines(0),
+      _height(height),
+      _width(width),
+      _starty(starty),
+      _startx(startx),
       _selected(0),
       _scrollable(false),
       _drawBorder(true),
@@ -58,6 +56,10 @@ HexPanel::~HexPanel()
         delete _hwin;
     this->hide();
     del_panel(_panel);
+    if ( _output )
+        delete _output;
+    if ( _input )
+        delete _input;
 }
 
 //----------------------------------------------------------------//
@@ -208,6 +210,9 @@ HexPanel::setTextList ( TextList & textlist )
 void
 HexPanel::addText ( const std::string & str )
 {
+    size_t sz = this->_textlist.size();
+    if ( sz > 0 && sz >= (size_t) _height )
+        _textlist.pop_front();
     this->_textlist.push_back(str);
 }
 
