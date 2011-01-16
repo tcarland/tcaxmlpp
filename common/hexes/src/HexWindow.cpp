@@ -160,8 +160,6 @@ HexWindow::print ( const std::string & str )
     if ( left == 0 ) {
         if ( ! this->wrap() )
             return -1;
-        _win->_cury++;
-        _win->_curx = _win->_begx;
         left = _width - _win->_curx;
     }
 
@@ -213,12 +211,14 @@ HexWindow::print ( const std::string & str )
 int
 HexWindow::wrap()
 {
-    _win->_curx = _win->_begx;
+    int curx = _win->_begx + 1;
+    int cury = _win->_cury;
 
-    if ( _win->_cury >= _height )
+    if ( cury >= _height )
         return 0;
 
-    _win->_cury++;
+    cury++;
+    ::wmove(_win, cury, curx);
 
     return 1;
 }

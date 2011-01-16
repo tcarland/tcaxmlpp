@@ -6,7 +6,6 @@
 namespace hexes {
 
 
-//draw()
 
 #ifdef TESTHEX_1
 
@@ -39,13 +38,33 @@ TestHexApp::run()
 
 class TestInputHandler : public HexInputInterface {
   public:
-    TestInputHandler();
+    TestInputHandler() {}
     virtual ~TestInputHandler() {}
 
     int handleInput ( HexPanel * p, int ch )
     {
         return ch;
     }
+};
+
+class TestOutputHandler : public HexOutputInterface {
+  public:
+    TestOutputHandler() {}
+    virtual ~TestOutputHandler() {}
+
+    int handleOutput ( HexPanel * panel )
+    {
+        TextList::iterator  tIter;
+        TextList & tlist = panel->getTextList();
+
+        for ( tIter = tlist.begin(); tIter != tlist.end(); ++tIter )
+        {
+            panel->print(*tIter);
+            panel->wrap();
+        }
+        return 1;
+    }
+
 };
 
 
@@ -62,6 +81,8 @@ TestHexApp::run()
     statPanel = this->createPanel("status", statheight, COLS, LINES-statheight, 0);
     mainPanel = this->createPanel("main", LINES-statheight, COLS, 0, 0);
 
+    //statPanel->setOutputHandler(new TestOutputHandler());
+
     // we still cannot use draw() w/o display handlers, so call refresh directly
     this->setTopPanel(mainPanel);
     mainPanel->show();
@@ -70,10 +91,13 @@ TestHexApp::run()
 
     mainPanel->print("test 1 2 3 : ");
     mainPanel->print(ch);
-    statPanel->print("the status is good");
-    //this->draw();
+
+    statPanel->addText("the status is good");
+    statPanel->addText("foobar");
+    
     mainPanel->refresh();
     statPanel->refresh();
+
     ch = this->poll();
     std::string txt = " banana nana bo bana  test 4 5 6  this is a moderately long string to test the wrap functionality of the print() function.";
     mainPanel->print(txt);

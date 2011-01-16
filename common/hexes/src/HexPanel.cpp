@@ -68,7 +68,6 @@ HexPanel::poll()
     int ch;
 
     ch = wgetch(_hwin->_win);
-    //ch = getch();
 
     if ( ch == ERR )
         return ch;
@@ -105,10 +104,19 @@ HexPanel::redraw()
 int
 HexPanel::handleDisplay()
 {
-    if ( _output == NULL )
-        return 1;
+    if ( _output != NULL )
+        return _output->handleOutput(this);
 
-    return _output->handleOutput(this);
+    TextList::iterator  tIter;
+    TextList & tlist = this->getTextList();
+
+    for ( tIter = tlist.begin(); tIter != tlist.end(); ++tIter )
+    {
+        this->print(*tIter);
+        this->wrap();
+    }
+
+    return 1;
 }
 
 int
@@ -248,24 +256,6 @@ HexPanel::scrollable() const
 
 //----------------------------------------------------------------//
 
-void
-HexPanel::initPanel()
-{
-    if ( this->_hwin == NULL )
-        return;  // TODO: Throw!
-
-    this->_panel = new_panel(this->_hwin->_win);
-    nodelay(this->_hwin->_win, true);
-    keypad(this->_hwin->_win, true);
-
-    // set default input timeout?
-    this->timeout(-1); // blocking input
-
-    return;
-}
-
-//----------------------------------------------------------------//
-
 int
 HexPanel::print ( const std::string & str )
 {
@@ -295,6 +285,27 @@ HexPanel::timeout ( int delay_ms )
 {
     ::wtimeout(_hwin->_win, delay_ms);
 }
+
+
+//----------------------------------------------------------------//
+
+void
+HexPanel::initPanel()
+{
+    if ( this->_hwin == NULL )
+        return;  // TODO: Throw!
+
+    this->_panel = new_panel(this->_hwin->_win);
+    nodelay(this->_hwin->_win, true);
+    keypad(this->_hwin->_win, true);
+
+    // set default input timeout?
+    this->timeout(-1); // blocking input
+
+    return;
+}
+
+//----------------------------------------------------------------//
 
 } // namespace
 
