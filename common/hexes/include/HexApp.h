@@ -32,6 +32,9 @@ extern "C" {
 
 namespace hexes {
 
+#define LIBHEXES_VERSION "v0.001a"
+
+
 class HexPanel;
 
 
@@ -71,7 +74,7 @@ class HexApp {
     HexPanel*    createPanel   ( const std::string & title, 
                                  int height, int width, 
                                  int starty, int startx );
-
+    bool         addPanel      ( HexPanel * panel );
     HexPanel*    getPanel      ( const std::string & title );
     HexPanel*    removePanel   ( const std::string & title );
     bool         destroyPanel  ( const std::string & title );
@@ -91,7 +94,8 @@ class HexApp {
   protected:
 
 
-    static void  InitCurses ( bool termRaw, bool echo );
+    static void         InitCurses ( bool termRaw, bool echo );
+    static std::string  Version();
 
 
   private:

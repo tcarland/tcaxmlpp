@@ -141,7 +141,34 @@ HexApp::createPanel ( const std::string & title,
     return p;
 }
 
+/**  Adds the HexPanel to this HexApp instance. By doing so, 
+  *  the HexApp instance will 'own' the panel, calling the 
+  *  proper I/O events on redraw and poll, and freeing the 
+  *  object on destruction.
+ **/
+bool
+HexApp::addPanel ( HexPanel * panel )
+{
+    if ( panel == NULL )
+        return false;
 
+    PanelMap::iterator pIter;
+
+    pIter = _panels.find(panel->getTitle());
+
+    if ( pIter != _panels.end() )
+        return false;
+    
+    _panels[panel->getTitle()] = panel;
+
+    return true;
+}
+
+/** Removes the panel identified by @param title and returns 
+  * the pointer to the corresponding HexPanel. HexApp will no 
+  * longer track the panel object and it will not be free'd by
+  * the HexApp instance. Returns NULL if no such panel exists.
+ **/
 HexPanel*
 HexApp::removePanel ( const std::string & title )
 {
@@ -158,7 +185,9 @@ HexApp::removePanel ( const std::string & title )
     return panel;
 }
 
-
+/**  Removes and destroys(free) the HexPanel instance identified 
+  *  by @param title. Return false if no such panel exists.
+ **/
 bool
 HexApp::destroyPanel ( const std::string & title )
 {
@@ -174,6 +203,7 @@ HexApp::destroyPanel ( const std::string & title )
     return true;
 }
 
+/** Destroys all panels tracked by this instance of HexApp */
 void
 HexApp::destroyPanels()
 {
@@ -188,6 +218,7 @@ HexApp::destroyPanels()
 
     return;
 }
+
 
 int
 HexApp::getMaxWidth()
@@ -213,11 +244,13 @@ HexApp::getMaxHeight()
     return this->height();
 }
 
+
 bool
 HexApp::hasColor() const
 {
     return _hasColor;
 }
+
 
 void
 HexApp::InitCurses ( bool termRaw, bool echo )
@@ -242,6 +275,13 @@ HexApp::InitCurses ( bool termRaw, bool echo )
     HexApp::_CURSESINIT = true;
 
     return;
+}
+
+std::string
+HexApp::Version()
+{
+    std::string ver = LIBHEXES_VERSION;
+    return ver;
 }
 
 

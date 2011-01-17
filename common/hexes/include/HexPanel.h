@@ -36,12 +36,11 @@ class HexPanel {
 
     virtual ~HexPanel();
 
+    virtual int         handleDisplay();
+    virtual int         handleInput ( int ch );
 
     virtual int         redraw();
     virtual int         poll();
-
-    virtual int         handleDisplay();
-    virtual int         handleInput ( int ch );
 
     void                setOutputHandler ( HexOutputInterface * output );
     void                setInputHandler  ( HexInputInterface  * input  );
@@ -59,16 +58,6 @@ class HexPanel {
     int                 move         ( int y, int x );
     int                 wrap();
 
-    const std::string&  getTitle() const;
-
-    void                setTopPanel();
-
-    TextList&           getTextList();
-    void                setTextList  ( TextList & textlist );
-    void                addText      ( const std::string & str );
-    //, bool wrap = false );
-    void                setText      ( const std::string & str );
-
     int                 width();
     int                 height();
     int                 curY();
@@ -76,11 +65,19 @@ class HexPanel {
     int                 maxY();
     int                 maxX();
 
+    TextList&           getTextList();
+    void                setTextList  ( TextList & textlist );
+    void                addText      ( const std::string & str );
+    //, bool wrap = false );
+    void                setText      ( const std::string & str );
+
+
+    void                setTopPanel();
     void                enableBorder ( bool border );
     void                enableTitle  ( bool title );
     void                enableScroll ( bool scroll );
     bool                scrollable() const;
-
+    const std::string&  getTitle() const;
 
   protected:
 
