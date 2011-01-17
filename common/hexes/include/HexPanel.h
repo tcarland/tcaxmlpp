@@ -79,6 +79,7 @@ class HexPanel {
     bool                scrollable() const;
     const std::string&  getTitle() const;
 
+
   protected:
 
     void                initPanel();
