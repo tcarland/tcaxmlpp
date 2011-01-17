@@ -80,13 +80,14 @@ TestHexApp::run()
 
     HexPanel *mainPanel, *statPanel; 
 
+    mainPanel = this->createPanel("main", LINES-statheight-1, COLS, 1, 0);
     statPanel = this->createPanel("status", statheight, COLS, LINES-statheight, 0);
-    mainPanel = this->createPanel("main", LINES-statheight, COLS, 0, 0);
 
+    std::string top = 
     //statPanel->setOutputHandler(new TestOutputHandler());
+    
     statPanel->enableScroll(true);
 
-    // we still cannot use draw() w/o display handlers, so call refresh directly
     this->setTopPanel(mainPanel);
     mainPanel->show();
     this->draw();
@@ -102,7 +103,7 @@ TestHexApp::run()
     statPanel->redraw();
 
     ch = this->poll();
-    std::string txt = " banana nana bo bana  test 4 5 6  this is a moderately long string to test the wrap functionality of the print() function.";
+    std::string txt = " banana nana bo bana  ...  test 4 5 6 ...  this is a moderately long string to test the wrap functionality of the print() function.";
     mainPanel->print(txt);
     mainPanel->print(ch);
 

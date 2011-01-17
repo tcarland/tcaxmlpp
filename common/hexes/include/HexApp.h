@@ -90,6 +90,8 @@ class HexApp {
     int          getMaxWidth();
     int          getMaxHeight();
 
+    int          print         ( int y, int x, 
+                                 const std::string & str );
 
   protected:
 

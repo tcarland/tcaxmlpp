@@ -251,6 +251,11 @@ HexApp::hasColor() const
     return _hasColor;
 }
 
+int
+HexApp::print ( int y, int x, const std::string & str )
+{
+    return(mvwaddstr(stdscr, y, x, str.c_str()));
+}
 
 void
 HexApp::InitCurses ( bool termRaw, bool echo )
