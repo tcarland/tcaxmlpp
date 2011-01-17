@@ -73,8 +73,8 @@ class HexPanel {
 
 
     void                setTopPanel();
-    void                enableBorder ( bool border );
-    void                enableTitle  ( bool title );
+    void                drawBorder   ( bool border );
+    void                drawTitle    ( bool title );
     void                enableScroll ( bool scroll );
     bool                scrollable() const;
     const std::string&  getTitle() const;

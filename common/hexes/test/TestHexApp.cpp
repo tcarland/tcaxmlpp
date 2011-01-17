@@ -73,17 +73,23 @@ class TestOutputHandler : public HexOutputInterface {
 void
 TestHexApp::run()
 {
-    int statheight = (LINES * .33);
+    int conheight  = 2;
+    int statheight = (LINES * .33) - conheight;
     int ch;
 
     init_pair(1, COLOR_WHITE, COLOR_BLACK);
 
-    HexPanel *mainPanel, *statPanel; 
+    HexPanel *mainPanel, *statPanel, *conPanel; 
 
-    mainPanel = this->createPanel("main", LINES-statheight-1, COLS, 1, 0);
-    statPanel = this->createPanel("status", statheight, COLS, LINES-statheight, 0);
+    mainPanel = this->createPanel("main", LINES-statheight-1-conheight, COLS, 1, 0);
+    statPanel = this->createPanel("status", statheight, COLS, LINES-statheight-conheight, 0);
+    conPanel  = this->createPanel("console", conheight, COLS, LINES-conheight, 0);
+    conPanel->drawBorder(false);
+    conPanel->drawTitle(false);
 
-    std::string top = 
+    std::string top = "  TestHexApp Version 0.1 ";
+    this->print(0, 1, top);
+
     //statPanel->setOutputHandler(new TestOutputHandler());
     
     statPanel->enableScroll(true);

@@ -226,7 +226,6 @@ HexPanel::maxX()
 
 //----------------------------------------------------------------//
 
-
 void
 HexPanel::setTopPanel()
 {
@@ -275,18 +274,22 @@ HexPanel::setText ( const std::string & str )
 //----------------------------------------------------------------//
 
 void
-HexPanel::enableBorder ( bool border )
+HexPanel::drawBorder ( bool border )
 {
     this->_drawBorder = border;
 }
 
-
 void
-HexPanel::enableTitle ( bool title )
+HexPanel::drawTitle ( bool title )
 {
     this->_drawTitle = title;
 }
 
+const std::string&
+HexPanel::getTitle() const
+{
+    return this->_title;
+}
 
 void
 HexPanel::enableScroll ( bool scroll )
