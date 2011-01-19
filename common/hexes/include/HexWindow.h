@@ -20,12 +20,6 @@ class HexWindow {
 
     friend class HexPanel;
 
-    typedef struct Position {
-        int row, col;
-        Position() : row(1), col(1) 
-        {}
-    } pos;
-
   public:
 
     HexWindow();
@@ -54,7 +48,7 @@ class HexWindow {
     int            currentColumn();
     int            curY();
     int            curX();
-    Position       currentPosition();
+    HexPosition    currentPosition();
 
     int            maxColumns();
     int            maxRows();

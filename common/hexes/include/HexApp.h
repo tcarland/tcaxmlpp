@@ -9,21 +9,22 @@
 extern "C" {
 #include <ncurses.h>
 }
+
 // functions timout(erase/clear) are macros that cause namespace
 // collisions so we undef as needed.
 // use the equivelant wtimeout & werase versions instead.
-// 
-//#ifdef timeout
-//#define curs_timeout timeout
+#ifdef timeout
+#define curs_timeout timeout
 #undef timeout
-//#endif
-//#ifdef erase
-//#define curs_erase erase
-//#undef erase
+#endif
+#ifdef erase
+#define curs_erase erase
 #undef erase
-//#endif
-// clear?
+#undef erase
+#endif
 
+
+#include "HexPosition.hpp"
 #include "HexWindow.h"
 #include "HexPanel.h"
 #include "HexInputInterface.hpp"
@@ -74,6 +75,7 @@ class HexApp {
     HexPanel*    createPanel   ( const std::string & title, 
                                  int height, int width, 
                                  int starty, int startx );
+
     bool         addPanel      ( HexPanel * panel );
     HexPanel*    getPanel      ( const std::string & title );
     HexPanel*    removePanel   ( const std::string & title );

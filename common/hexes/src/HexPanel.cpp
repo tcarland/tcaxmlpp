@@ -349,12 +349,19 @@ HexPanel::timeout ( int delay_ms )
     ::wtimeout(_hwin->_win, delay_ms);
 }
 
+//----------------------------------------------------------------//
+
 int
 HexPanel::move ( int y , int x )
 {
     return(::wmove(_hwin->_win, y, x));
 }
 
+int
+HexPanel::move ( HexPosition & p )
+{
+    return(::wmove(_hwin->_win, p.row, p.col));
+}
 
 //----------------------------------------------------------------//
 

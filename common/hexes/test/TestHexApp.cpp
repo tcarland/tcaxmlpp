@@ -73,7 +73,7 @@ class TestOutputHandler : public HexOutputInterface {
 void
 TestHexApp::run()
 {
-    int conheight  = 2;
+    int conheight  = 3;
     int statheight = (LINES * .33) - conheight;
     int ch;
 
@@ -93,14 +93,30 @@ TestHexApp::run()
     //statPanel->setOutputHandler(new TestOutputHandler());
     
     statPanel->enableScroll(true);
-
-    this->setTopPanel(mainPanel);
-    mainPanel->show();
+    this->setTopPanel(conPanel);
+    
     this->draw();
+
+    conPanel->print(" > ", false);
     ch = this->poll();
+    std::string cmd = "";
+    cmd.append(1, ch);
+
+    std::ostringstream ostr;
+
+    while ( ch != 13 || ch !=15 ) {
+        conPanel->print(ch);
+        cmd.append(1, ch);
+        ostr << " ch: " << ch;
+        mainPanel->print(ostr.str());
+        conPanel->refresh();
+        mainPanel->refresh();
+
+        ch = this->poll();
+    }
 
     mainPanel->print("test 1 2 3 : ");
-    mainPanel->print(ch);
+    mainPanel->print(cmd);
 
     statPanel->addText("the status is good");
     statPanel->addText("foobar");

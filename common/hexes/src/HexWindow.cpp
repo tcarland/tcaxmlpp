@@ -1,6 +1,8 @@
 #define _HEXES_HEXWINDOW_CPP_
 
 #include "HexWindow.h"
+#include "HexPosition.hpp"
+
 
 namespace hexes {
 
@@ -59,6 +61,7 @@ HexWindow::~HexWindow()
     }
 }
 
+//----------------------------------------------------------------//
 
 void
 HexWindow::setWordWrap ( bool wrap )
@@ -85,6 +88,8 @@ HexWindow::clearBorder()
     wrefresh(_win);
 }
 
+//----------------------------------------------------------------//
+
 void
 HexWindow::erase()
 {
@@ -102,6 +107,8 @@ HexWindow::height()
 {
     return this->_height;
 }
+
+//----------------------------------------------------------------//
 
 int
 HexWindow::curY()
@@ -127,6 +134,8 @@ HexWindow::currentRow()
     return this->curY();
 }
 
+//----------------------------------------------------------------//
+
 int
 HexWindow::maxY()
 {
@@ -151,14 +160,16 @@ HexWindow::maxColumns()
     return this->maxX();
 }
 
-HexWindow::Position
+HexPosition
 HexWindow::currentPosition()
 {
-    Position p;
+    HexPosition  p;
     p.row = this->curY();
     p.col = this->curX();
     return p;
 }
+
+//----------------------------------------------------------------//
 
 int
 HexWindow::print ( const std::string & str, bool wrap )
@@ -186,12 +197,13 @@ HexWindow::print ( const std::string & str, bool wrap )
     // from doing its own wrap and hammering a border
     while ( s.length() > (size_t) left )
     {
-        if ( _wordwrap ) { // wrap style
+        if ( _wordwrap )  // wrap style
+        {
             from = left;
             idx  = HexWindow::LastIndexOf(s, " ", from);
 
-            // find the last space
-            while ( (idx+1) > left ) {
+            while ( (idx+1) > left ) // find the last space
+            {
                 if ( idx < 0 )
                    break;
                 from = idx;
@@ -207,7 +219,9 @@ HexWindow::print ( const std::string & str, bool wrap )
                 sstr = s;
                 s.erase(0, s.length()-1);
             }
-        } else {
+        } 
+        else 
+        {
             sstr = s.substr(0, left);
             s.erase(0, left);
         }
@@ -233,6 +247,22 @@ HexWindow::print ( const std::string & str, bool wrap )
 
 
 int
+HexWindow::print ( const char ch )
+{
+    if ( _win->_curx >= _width )
+        this->wrap();
+    return waddch(_win, ch);
+}
+
+
+int
+HexWindow::echo ( const char ch )
+{
+    return wechochar(_win, ch);
+}
+
+
+int
 HexWindow::wrap()
 {
     int curx = _win->_begx + 1;
@@ -247,21 +277,7 @@ HexWindow::wrap()
     return 1;
 }
 
-
-int
-HexWindow::print ( const char ch )
-{
-    if ( _win->_curx >= _width )
-        this->wrap();
-    return waddch(_win, ch);
-}
-
-int
-HexWindow::echo ( const char ch )
-{
-    return wechochar(_win, ch);
-}
-
+//----------------------------------------------------------------//
 
 // TODO: this should assert that the window ptr is not 
 // NULL or throw
@@ -293,6 +309,7 @@ HexWindow::LastIndexOf ( const std::string & str, const std::string & match, siz
     return ( (int) indx );
 }
 
+//----------------------------------------------------------------//
 
 
 } // namespace

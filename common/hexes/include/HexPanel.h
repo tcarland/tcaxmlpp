@@ -55,8 +55,10 @@ class HexPanel {
     void                refresh();
     void                scrollLine();
     void                timeout      ( int delay_ms );
-    int                 move         ( int y, int x );
     int                 wrap();
+
+    int                 move         ( int y, int x );
+    int                 move         ( HexPosition & p );
 
     int                 width();
     int                 height();
@@ -68,7 +70,6 @@ class HexPanel {
     TextList&           getTextList();
     void                setTextList  ( TextList & textlist );
     void                addText      ( const std::string & str );
-    //, bool wrap = false );
     void                setText      ( const std::string & str );
 
 
