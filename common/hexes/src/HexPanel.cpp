@@ -126,7 +126,7 @@ HexPanel::handleDisplay()
 
         this->print(*tIter);
 
-        if ( ln < ht )
+        if ( ln < ht && ln != tlist.size() )
             this->wrap();
         else
             this->move(this->curY(), 1);

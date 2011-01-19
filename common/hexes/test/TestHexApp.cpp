@@ -1,6 +1,7 @@
+#define _HEXES_TESTHEXAPP_CPP_
 
+#include <unistd.h>
 #include <sstream>
-
 
 #include "TestHexApp.h"
 #include "HexPanel.h"
@@ -8,34 +9,6 @@
 
 namespace hexes {
 
-
-#ifdef TESTHEX_1
-
-void
-TestHexApp::run()
-{
-    int statheight = (LINES * .10);
-
-    init_pair(1, COLOR_WHITE, COLOR_BLACK);
-
-    HexPanel * mainPanel = new HexPanel("window 1", LINES-statheight, COLS, 0, 0);
-    mainPanel->redraw();
-    getch();
-
-    mainPanel->print("test 1 2 3");
-    mainPanel->refresh();
-    getch();
-
-    mainPanel->print("test 4 5 6");
-    mainPanel->refresh();
-    getch();
-
-    delete mainPanel;
-
-    return;
-}
-
-#else
 
 
 class TestInputHandler : public HexInputInterface {
@@ -73,9 +46,10 @@ class TestOutputHandler : public HexOutputInterface {
 void
 TestHexApp::run()
 {
-    int conheight  = 3;
-    int statheight = (LINES * .33) - conheight;
-    int ch;
+    bool alarm      = false;
+    int  conheight  = 3;
+    int  statheight = (LINES * .33) - conheight;
+    int  ch;
 
     init_pair(1, COLOR_WHITE, COLOR_BLACK);
 
@@ -84,10 +58,11 @@ TestHexApp::run()
     mainPanel = this->createPanel("main", LINES-statheight-1-conheight, COLS, 1, 0);
     statPanel = this->createPanel("status", statheight, COLS, LINES-statheight-conheight, 0);
     conPanel  = this->createPanel("console", conheight, COLS, LINES-conheight, 0);
+
     conPanel->drawBorder(false);
     conPanel->drawTitle(false);
 
-    std::string top = "  TestHexApp Version 0.1 ";
+    std::string top = "  TestHexApp Version 0.1a";
     this->print(0, 1, top);
 
     //statPanel->setOutputHandler(new TestOutputHandler());
@@ -95,25 +70,38 @@ TestHexApp::run()
     statPanel->enableScroll(true);
     this->setTopPanel(conPanel);
     
-    this->draw();
 
-    conPanel->print(" > ", false);
-    ch = this->poll();
-    std::string cmd = "";
-    cmd.append(1, ch);
+    std::string cmd;
 
-    std::ostringstream ostr;
+    while ( ! alarm ) 
+    {
+        this->draw();
 
-    while ( ch != 13 || ch !=15 ) {
-        conPanel->print(ch);
-        cmd.append(1, ch);
-        ostr << " ch: " << ch;
-        mainPanel->print(ostr.str());
-        conPanel->refresh();
-        mainPanel->refresh();
-
+        cmd = "";
+        conPanel->print(" > ", false);
         ch = this->poll();
+
+        while ( ch != 13 ) {
+            std::ostringstream  ostr;
+            ostr << "ch = " << ch << " ";
+            conPanel->print(ch);
+            cmd.append(1, ch);
+            mainPanel->print(ostr.str());
+            conPanel->refresh();
+            mainPanel->refresh();
+
+            ch = this->poll();
+        }
+
+        statPanel->print(cmd);
+        statPanel->refresh();
+
+        sleep(1);
+
+        if ( cmd.compare("quit") == 0 )
+            alarm = true;
     }
+
 
     mainPanel->print("test 1 2 3 : ");
     mainPanel->print(cmd);
@@ -150,7 +138,6 @@ TestHexApp::run()
 
     return;
 }
-#endif
 
 
 } // namespace
