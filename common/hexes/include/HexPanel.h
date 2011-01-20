@@ -15,6 +15,10 @@ class HexWindow;
 class HexOutputInterface;
 class HexInputInterface;
 
+#define DEFAULT_SCROLLBACK  25
+#define MAX_SCROLLBACK_SIZE 65535
+
+
 typedef std::list<std::string> TextList;
 
 
@@ -44,6 +48,8 @@ class HexPanel {
 
     void                setOutputHandler ( HexOutputInterface * output );
     void                setInputHandler  ( HexInputInterface  * input  );
+    HexOutputInterface* getOutputHandler();
+    HexInputInterface*  getInputHandler();
 
     int                 print ( const std::string & str, bool wrap = false );
     int                 print ( const char ch );
@@ -54,9 +60,10 @@ class HexPanel {
     void                erase();
     void                refresh();
     void                scrollLine();
-    void                timeout      ( int delay_ms );
-    int                 wrap();
 
+    void                timeout      ( int delay_ms );
+    
+    int                 wrap();
     int                 move         ( int y, int x );
     int                 move         ( HexPosition & p );
 
@@ -72,11 +79,15 @@ class HexPanel {
     void                addText      ( const std::string & str );
     void                setText      ( const std::string & str );
 
-
     void                setTopPanel();
+
     void                drawBorder   ( bool border );
     void                drawTitle    ( bool title );
-    void                enableScroll ( bool scroll );
+
+    void                enableScroll ( bool scroll, 
+                                       int  lines  = DEFAULT_SCROLLBACK );
+    void                setMaxLines  ( int  lines );
+
     bool                scrollable() const;
     const std::string&  getTitle() const;
 
@@ -99,7 +110,11 @@ class HexPanel {
 
     int                  _height, _width;
     int                  _starty, _startx;
+
     int                  _selected;
+    int                  _maxLines;
+    int                  _scrollTo;
+
     bool                 _scrollable;
     bool                 _drawBorder;
     bool                 _drawTitle;

@@ -22,6 +22,8 @@ HexPanel::HexPanel ( const std::string & title )
       _starty(0),
       _startx(0),
       _selected(0),
+      _maxLines(DEFAULT_SCROLLBACK),
+      _scrollTo(0),
       _scrollable(false),
       _drawBorder(true),
       _drawTitle(true)
@@ -43,6 +45,8 @@ HexPanel::HexPanel ( const std::string & title,
       _starty(starty),
       _startx(startx),
       _selected(0),
+      _maxLines(DEFAULT_SCROLLBACK),
+      _scrollTo(0),
       _scrollable(false),
       _drawBorder(true),
       _drawTitle(true)
@@ -119,6 +123,9 @@ HexPanel::handleDisplay()
         this->move(1, 1);
     }
 
+    if ( _scrollTo == 0 )
+        _scrollTo = tlist.size();
+
     for ( tIter = tlist.begin(); tIter != tlist.end(); ++tIter, ++ln )
     {
         if ( ln > ht && _scrollable )
@@ -126,7 +133,7 @@ HexPanel::handleDisplay()
 
         this->print(*tIter);
 
-        if ( ln < ht && ln != tlist.size() )
+        if ( ln < ht && (size_t) ln != tlist.size() )
             this->wrap();
         else
             this->move(this->curY(), 1);
@@ -149,13 +156,29 @@ HexPanel::handleInput( int ch )
 void
 HexPanel::setOutputHandler ( HexOutputInterface * output )
 {
+    if ( this->_output )
+        delete this->_output;
     this->_output = output;
+}
+
+HexOutputInterface*
+HexPanel::getOutputHandler()
+{
+    return this->_output;
 }
 
 void
 HexPanel::setInputHandler ( HexInputInterface * input )
 {
+    if ( this->_input )
+        delete this->_input;
     this->_input = input;
+}
+
+HexInputInterface*
+HexPanel::getInputHandler()
+{
+    return _input;
 }
 
 //----------------------------------------------------------------//
@@ -174,6 +197,7 @@ HexPanel::hide()
 }
 
 //----------------------------------------------------------------//
+
 void
 HexPanel::erase()
 {
@@ -187,6 +211,7 @@ HexPanel::refresh()
 }
 
 //----------------------------------------------------------------//
+//
 int
 HexPanel::width()
 {
@@ -257,7 +282,7 @@ HexPanel::addText ( const std::string & str )
 
     if ( _textlist.size() >= ((size_t) _height - 1) )
     {
-        if ( ! _scrollable )
+        if ( ! _scrollable || _textlist.size() > ((size_t) _height + _maxLines) )
             _textlist.pop_front();
     }
 
@@ -292,7 +317,7 @@ HexPanel::getTitle() const
 }
 
 void
-HexPanel::enableScroll ( bool scroll )
+HexPanel::enableScroll ( bool scroll, int lines )
 {
     this->_scrollable = scroll;
 
@@ -302,7 +327,20 @@ HexPanel::enableScroll ( bool scroll )
     if ( this->_scrollable )
         ::scrollok(this->_hwin->_win, 1);
 
+    if ( lines > MAX_SCROLLBACK_SIZE ) 
+        _maxLines = MAX_SCROLLBACK_SIZE;
+    else
+        _maxLines = lines;
+
     return;
+}
+
+void
+HexPanel::setMaxLines ( int lines )
+{
+    _maxLines = lines;
+    if ( lines > MAX_SCROLLBACK_SIZE ) 
+        _maxLines = MAX_SCROLLBACK_SIZE;
 }
 
 void

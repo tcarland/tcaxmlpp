@@ -13,14 +13,51 @@ namespace hexes {
 
 class TestInputHandler : public HexInputInterface {
   public:
-    TestInputHandler() {}
+    TestInputHandler() : _ready(false) {}
     virtual ~TestInputHandler() {}
 
     int handleInput ( HexPanel * p, int ch )
     {
+        if ( _ready ) {
+            _line.clear();
+            _ready = false;
+        }
+
+        if ( ch == KEY_BACKSPACE || ch == 127 ) {
+            int x = p->curX();
+            p->move(p->curY(), x-1);
+            p->print(' ');
+            p->move(p->curY(), x-1);
+            p->refresh();
+            _line.erase(_line.size() - 1);
+        } else if ( ch == KEY_UP ) {
+            ;
+        } else if ( ch == KEY_DOWN ) {
+            ;
+        } else if ( ch == KEY_RIGHT ) {
+            ;
+        } else if ( ch == KEY_LEFT ) {
+            ;
+        } else if ( ch == KEY_ENTER || ch == 13 ) {
+            _ready = true;
+        } else {
+            p->print(ch);
+            _line.append(1, ch);
+        }
+
         return ch;
     }
+
+    std::string getLine() { return _line; }
+    bool        isReady() { return _ready; }
+
+  protected:
+
+    bool         _ready;
+    std::string  _line;
 };
+
+
 
 class TestOutputHandler : public HexOutputInterface {
   public:
@@ -66,6 +103,9 @@ TestHexApp::run()
     this->print(0, 1, top);
 
     //statPanel->setOutputHandler(new TestOutputHandler());
+    TestInputHandler * cinput;
+    cinput = new TestInputHandler();
+    conPanel->setInputHandler(cinput);
     
     statPanel->enableScroll(true);
     this->setTopPanel(conPanel);
@@ -81,19 +121,21 @@ TestHexApp::run()
         conPanel->print(" > ", false);
         ch = this->poll();
 
-        while ( ch != 13 ) {
+        //while ( ch != 13 ) {
+        while ( ! cinput->isReady() ) {
             std::ostringstream  ostr;
             ostr << "ch = " << ch << " ";
-            conPanel->print(ch);
-            cmd.append(1, ch);
-            mainPanel->print(ostr.str());
+            //conPanel->print(ch);
+            //cmd.append(1, ch);
+            mainPanel->print(ostr.str(), true);
             conPanel->refresh();
             mainPanel->refresh();
 
             ch = this->poll();
         }
+        cmd = cinput->getLine();
 
-        statPanel->print(cmd);
+        statPanel->addText(cmd);
         statPanel->refresh();
 
         sleep(1);
@@ -112,13 +154,12 @@ TestHexApp::run()
     mainPanel->refresh();
     statPanel->redraw();
 
-    ch = this->poll();
+    //ch = this->poll();
     std::string txt = " banana nana bo bana  ...  test 4 5 6 ...  this is a moderately long string to test the wrap functionality of the print() function.";
     mainPanel->print(txt);
-    mainPanel->print(ch);
 
     mainPanel->refresh();
-    ch = this->poll();
+    //ch = this->poll();
 
     statPanel->addText("the status is gooder");
     statPanel->addText("foobar");
@@ -134,7 +175,8 @@ TestHexApp::run()
     statPanel->addText("more status4");
 
     this->draw();
-    ch = this->poll();
+    //ch = this->poll();
+    sleep(1);
 
     return;
 }
