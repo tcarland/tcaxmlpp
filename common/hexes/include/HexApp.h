@@ -52,7 +52,6 @@ class HexPanel;
   *   - HexWindow really needed? pull into HexPanel?
   *   - color schemes
   *   - window/text attributes
-  *   - rescale logic
  **/
 class HexApp {
 
@@ -103,10 +102,9 @@ class HexApp {
 
   private:
 
-    static bool         _CURSESINIT;
+    static bool         _NCURSES_INIT;
     
     PanelMap            _panels;
-    StringList          _panel_list;
     HexPanel *          _curPanel;
 
     int                 _row;

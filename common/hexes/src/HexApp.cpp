@@ -7,7 +7,7 @@
 
 namespace hexes {
 
-bool HexApp::_CURSESINIT = false;
+bool HexApp::_NCURSES_INIT = false;
 
 HexApp::HexApp()
     : _curPanel(NULL),
@@ -258,7 +258,7 @@ HexApp::print ( int y, int x, const std::string & str )
 void
 HexApp::InitCurses ( bool termRaw, bool echo )
 {
-    if ( HexApp::_CURSESINIT )
+    if ( HexApp::_NCURSES_INIT )
         return;
 
     initscr();
@@ -275,7 +275,7 @@ HexApp::InitCurses ( bool termRaw, bool echo )
     start_color();
     keypad(stdscr, TRUE);
 
-    HexApp::_CURSESINIT = true;
+    HexApp::_NCURSES_INIT = true;
 
     return;
 }
