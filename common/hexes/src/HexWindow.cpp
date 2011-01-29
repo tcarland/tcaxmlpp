@@ -56,8 +56,8 @@ HexWindow::~HexWindow()
     if ( _win ) 
     {
         this->erase();
-        wrefresh(_win);
-        delwin(_win);
+        ::wrefresh(_win);
+        ::delwin(_win);
     }
 }
 
@@ -78,14 +78,15 @@ HexWindow::setBorder ( bool show )
 void
 HexWindow::drawBorder()
 {
+    _border = true;
     ::box(_win, 0, 0);
 }
 
 void
 HexWindow::clearBorder()
 {
-    wborder(_win, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
-    wrefresh(_win);
+    ::wborder(_win, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
+    ::wrefresh(_win);
 }
 
 //----------------------------------------------------------------//
@@ -174,23 +175,33 @@ HexWindow::currentPosition()
 int
 HexWindow::print ( const std::string & str, bool wrap )
 {
-    if ( _win->_cury >= _height )
+
+    std::string  s, sstr;
+    int          wd, ht, idx, left;
+    size_t       from;
+    
+    s    = str;
+    wd   = _width;
+    ht   = _height;
+    left = _width - _win->_curx;
+    from = 0;
+
+    if ( _border ) {
+        ht   -= 2;
+        wd   -= 2;
+        left -= 2;
+    }
+
+    if ( _win->_cury > ht )
         return 0;
 
     if ( _win->_curx == 0 && _border )
-        ::wmove(_win, curY(), (curX() + 1));
-    
-    std::string s, sstr;
-    int    idx;
-    int    left = COLS - _win->_curx;
-    size_t from = 0;
+        ::wmove(_win, curY(), 1);
 
-    s = str;
-
-    if ( left == 0 ) {
+    if ( left <= 1 ) {
         if ( ! this->wrap() )
             return -1;
-        left = _width - _win->_curx;
+        left = wd - _win->_curx;
     }
 
     // wrap logic needed to keep curses 
@@ -202,7 +213,7 @@ HexWindow::print ( const std::string & str, bool wrap )
             from = left;
             idx  = HexWindow::LastIndexOf(s, " ", from);
 
-            while ( (idx+1) > left ) // find the last space
+            while ( idx > left ) // find the last space
             {
                 if ( idx < 0 )
                    break;
@@ -230,7 +241,7 @@ HexWindow::print ( const std::string & str, bool wrap )
 
         if ( ! this->wrap() )
             break;
-        left = _width - _win->_curx;
+        left = wd - _win->_curx;
     }
 
     if ( s.length() > 0 && s.length() < (size_t) left )
@@ -239,7 +250,7 @@ HexWindow::print ( const std::string & str, bool wrap )
     if ( wrap )
         this->wrap();
 
-    if ( this->curY() >= _height )
+    if ( this->curY() >= ht )
         return 0;
 
     return(str.length() - s.length());
@@ -251,14 +262,14 @@ HexWindow::print ( const char ch )
 {
     if ( _win->_curx >= _width )
         this->wrap();
-    return waddch(_win, ch);
+    return(::waddch(_win, ch));
 }
 
 
 int
 HexWindow::echo ( const char ch )
 {
-    return wechochar(_win, ch);
+    return(::wechochar(_win, ch));
 }
 
 
@@ -287,7 +298,7 @@ HexWindow::CreateWindow ( int height, int width,
 {
     WINDOW * win;
     
-    win = newwin(height, width, starty, startx);
+    win = ::newwin(height, width, starty, startx);
 
     return win;
 }

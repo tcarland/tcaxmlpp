@@ -2,6 +2,7 @@
 
 
 #include "LineInputHandler.h"
+#include "HexApp.h"
 
 
 namespace hexes {
@@ -19,9 +20,9 @@ LineInputHandler::~LineInputHandler()
 int 
 LineInputHandler::handleInput ( HexPanel * p, int ch )
 {
-    if ( _ready ) {
+    if ( _isReady ) {
         _line.clear();
-        _ready = false;
+        _isReady = false;
     }
 
     if ( ch == KEY_BACKSPACE || ch == 127 ) {
@@ -40,7 +41,7 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
     } else if ( ch == KEY_LEFT ) {
         ;
     } else if ( ch == KEY_ENTER || ch == 13 ) {
-        _ready = true;
+        _isReady = true;
     } else {
         p->print(ch);
         _line.append(1, ch);

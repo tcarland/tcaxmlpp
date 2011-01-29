@@ -15,8 +15,9 @@ class HexWindow;
 class HexOutputInterface;
 class HexInputInterface;
 
-#define DEFAULT_SCROLLBACK  25
-#define MAX_SCROLLBACK_SIZE 65535
+
+#define DEFAULT_SCRLBK_SIZE  25
+#define MAX_SCRLBK_SIZE      65535
 
 
 typedef std::list<std::string> TextList;
@@ -83,10 +84,12 @@ class HexPanel {
 
     void                drawBorder   ( bool border );
     void                drawTitle    ( bool title );
+    bool                drawBorder() const;
+    bool                drawTitle() const;
 
-    void                enableScroll ( bool scroll, 
-                                       int  lines  = DEFAULT_SCROLLBACK );
-    void                setMaxLines  ( int  lines );
+    bool                enableScroll ( bool scroll,
+                                       int  lines  = DEFAULT_SCRLBK_SIZE );
+    bool                setMaxLines  ( int  lines );
 
     bool                scrollable() const;
     const std::string&  getTitle() const;

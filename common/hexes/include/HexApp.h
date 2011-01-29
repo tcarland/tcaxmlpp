@@ -33,7 +33,7 @@ extern "C" {
 
 namespace hexes {
 
-#define LIBHEXES_VERSION "v0.001a"
+#define LIBHEXES_VERSION "v0.002a"
 
 
 class HexPanel;
@@ -69,8 +69,8 @@ class HexApp {
 
     virtual int  draw();
     virtual int  rescale();
+    virtual int  poll();
 
-    int          poll();
 
     HexPanel*    createPanel   ( const std::string & title, 
                                  int height, int width, 

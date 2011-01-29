@@ -22,7 +22,7 @@ HexPanel::HexPanel ( const std::string & title )
       _starty(0),
       _startx(0),
       _selected(0),
-      _maxLines(DEFAULT_SCROLLBACK),
+      _maxLines(DEFAULT_SCRLBK_SIZE),
       _scrollTo(0),
       _scrollable(false),
       _drawBorder(true),
@@ -35,7 +35,7 @@ HexPanel::HexPanel ( const std::string & title,
                      int   height, int   width,
                      int   starty, int   startx )
     :
-      _hwin(new HexWindow(height, width, starty, startx)),
+      _hwin(new HexWindow(height, width, starty, startx, true)),
       _panel(NULL),
       _output(NULL),
       _input(NULL),
@@ -45,7 +45,7 @@ HexPanel::HexPanel ( const std::string & title,
       _starty(starty),
       _startx(startx),
       _selected(0),
-      _maxLines(DEFAULT_SCROLLBACK),
+      _maxLines(DEFAULT_SCRLBK_SIZE),
       _scrollTo(0),
       _scrollable(false),
       _drawBorder(true),
@@ -60,7 +60,9 @@ HexPanel::~HexPanel()
     if ( _hwin )
         delete _hwin;
     this->hide();
-    del_panel(_panel);
+
+    ::del_panel(_panel);
+
     if ( _output )
         delete _output;
     if ( _input )
@@ -116,10 +118,12 @@ HexPanel::handleDisplay()
     TextList & tlist = this->getTextList();
 
     int ht = _height;
+    int wd = _width;
     int ln = 1;
 
     if ( _drawBorder ) {
         ht -= 2;
+        wd -= 2;
         this->move(1, 1);
     }
 
@@ -302,6 +306,7 @@ void
 HexPanel::drawBorder ( bool border )
 {
     this->_drawBorder = border;
+    this->_hwin->setBorder(border);
 }
 
 void
@@ -310,37 +315,54 @@ HexPanel::drawTitle ( bool title )
     this->_drawTitle = title;
 }
 
+bool
+HexPanel::drawBorder() const
+{
+    return this->_drawBorder;
+}
+
+bool
+HexPanel::drawTitle() const
+{
+    return this->_drawTitle;
+}
+
 const std::string&
 HexPanel::getTitle() const
 {
     return this->_title;
 }
 
-void
+bool
 HexPanel::enableScroll ( bool scroll, int lines )
 {
     this->_scrollable = scroll;
 
     if ( this->_hwin == NULL )
-        return;
+        return false;
 
     if ( this->_scrollable )
         ::scrollok(this->_hwin->_win, 1);
 
-    if ( lines > MAX_SCROLLBACK_SIZE ) 
-        _maxLines = MAX_SCROLLBACK_SIZE;
-    else
+    if ( lines > MAX_SCRLBK_SIZE ) {
+        _maxLines = MAX_SCRLBK_SIZE;
+        return false;
+    } else {
         _maxLines = lines;
+    }
 
-    return;
+    return true;
 }
 
-void
+bool
 HexPanel::setMaxLines ( int lines )
 {
     _maxLines = lines;
-    if ( lines > MAX_SCROLLBACK_SIZE ) 
-        _maxLines = MAX_SCROLLBACK_SIZE;
+    if ( lines > MAX_SCRLBK_SIZE ) {
+        _maxLines = MAX_SCRLBK_SIZE;
+        return false;
+    }
+    return true;
 }
 
 void

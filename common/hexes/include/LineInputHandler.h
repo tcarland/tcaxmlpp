@@ -16,10 +16,10 @@ class LineInputHandler : public HexInputInterface {
 
     virtual ~LineInputHandler();
 
-    virtual int handleInput ( HexPanel * p, int ch );
+    virtual int  handleInput ( HexPanel * p, int ch );
 
-    std::string getLine();
-    bool        isReady();
+    std::string& getLine();
+    bool         isReady();
 
   protected:
 

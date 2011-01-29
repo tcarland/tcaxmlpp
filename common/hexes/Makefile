@@ -12,7 +12,8 @@ INCLUDES=       -Iinclude
 
 BIN=		hextest
 
-OBJS=		src/HexApp.o src/HexPanel.o src/HexWindow.o 
+OBJS=		src/HexApp.o src/HexPanel.o src/HexWindow.o \
+		src/LineInputHandler.o src/LineOutputHandler.o
 
 ALL_OBJS=	$(OBJS)
 ALL_BINS=	$(BIN)
