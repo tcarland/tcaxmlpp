@@ -5,7 +5,7 @@
 #include "HexWindow.h"
 #include "HexOutputInterface.hpp"
 #include "HexInputInterface.hpp"
-
+#include "LineOutputHandler.h"
 
 namespace hexes {
 
@@ -37,7 +37,7 @@ HexPanel::HexPanel ( const std::string & title,
     :
       _hwin(new HexWindow(height, width, starty, startx, true)),
       _panel(NULL),
-      _output(NULL),
+      _output(new LineOutputHandler()),
       _input(NULL),
       _title(title),
       _height(height),
@@ -81,7 +81,10 @@ HexPanel::poll()
     if ( ch == ERR )
         return ch;
 
-    return this->handleInput(ch);
+    if ( _input == NULL )
+        return ch;
+
+    return _input->handleInput(this, ch);
 }
 
 
@@ -91,8 +94,9 @@ HexPanel::redraw()
     int r = 0;
 
     _hwin->erase();
-    
-    r = this->handleDisplay();
+
+    if ( _output != NULL )
+        r = _output->handleOutput(this);
 
     if ( _drawBorder) 
         _hwin->drawBorder();
@@ -103,56 +107,6 @@ HexPanel::redraw()
     ::wrefresh(_hwin->_win);
 
     return r;
-}
-
-//----------------------------------------------------------------//
-
-
-int
-HexPanel::handleDisplay()
-{
-    if ( _output != NULL )
-        return _output->handleOutput(this);
-
-    TextList::iterator  tIter;
-    TextList & tlist = this->getTextList();
-
-    int ht = _height;
-    int wd = _width;
-    int ln = 1;
-
-    if ( _drawBorder ) {
-        ht -= 2;
-        wd -= 2;
-        this->move(1, 1);
-    }
-
-    if ( _scrollTo == 0 )
-        _scrollTo = tlist.size();
-
-    for ( tIter = tlist.begin(); tIter != tlist.end(); ++tIter, ++ln )
-    {
-        if ( ln > ht && _scrollable )
-            this->scrollLine();
-
-        this->print(*tIter);
-
-        if ( ln < ht && (size_t) ln != tlist.size() )
-            this->wrap();
-        else
-            this->move(this->curY(), 1);
-    }
-
-    return 1;
-}
-
-int
-HexPanel::handleInput( int ch )
-{
-    if ( _input == NULL )
-        return ch;
-
-    return _input->handleInput(this, ch);
 }
 
 //----------------------------------------------------------------//
@@ -298,6 +252,18 @@ HexPanel::setText ( const std::string & str )
 {
     this->_textlist.clear();
     this->addText(str);
+}
+
+void
+HexPanel::clearText()
+{
+    this->_textlist.clear();
+}
+
+void
+HexPanel::clear()
+{
+    return this->clearText();
 }
 
 //----------------------------------------------------------------//

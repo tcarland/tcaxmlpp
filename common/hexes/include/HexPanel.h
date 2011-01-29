@@ -41,8 +41,6 @@ class HexPanel {
 
     virtual ~HexPanel();
 
-    virtual int         handleDisplay();
-    virtual int         handleInput ( int ch );
 
     virtual int         redraw();
     virtual int         poll();
@@ -79,6 +77,8 @@ class HexPanel {
     void                setTextList  ( TextList & textlist );
     void                addText      ( const std::string & str );
     void                setText      ( const std::string & str );
+    void                clearText();
+    void                clear();
 
     void                setTopPanel();
 
