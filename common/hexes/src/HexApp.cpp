@@ -31,12 +31,13 @@ HexApp::~HexApp()
 int
 HexApp::draw()
 {
-    int r = 0;
+    int  result   = 0;
+    bool rescaled = false;
 
     if ( _col != COLS || _row != LINES ) {
-        _col = COLS;
-        _row = LINES;
-        this->rescale();
+        _col     = COLS;
+        _row     = LINES;
+        rescaled = true;
     }
 
     StringList  removes;
@@ -51,9 +52,12 @@ HexApp::draw()
             continue;
         }
 
-        r = p->redraw();
+        if ( rescaled )
+            p->resize(_row, _col);
 
-        if ( r == 0 ) {
+        result = p->redraw();
+
+        if ( result == 0 ) {
             p->erase();
             removes.push_back(pIter->first);
         }
@@ -74,16 +78,10 @@ HexApp::draw()
     //set current panel
     //reset cursor pos.
     
-    update_panels();
-    doupdate();
-    refresh();
+    ::update_panels();
+    ::doupdate();
+    ::refresh();
 
-    return 1;
-}
-
-int
-HexApp::rescale() 
-{
     return 1;
 }
 

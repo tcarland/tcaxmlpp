@@ -44,6 +44,7 @@ class HexPanel {
 
     virtual int         redraw();
     virtual int         poll();
+    virtual void        resize ( int height, int width );
 
     void                setOutputHandler ( HexOutputInterface * output );
     void                setInputHandler  ( HexInputInterface  * input  );

@@ -109,6 +109,16 @@ HexPanel::redraw()
     return r;
 }
 
+void
+HexPanel::resize ( int height, int width )
+{
+    this->_height = height;
+    this->_width  = width;
+    if ( this->curY() > height || this->curX() > width )
+        this->move(height, width);
+    return;
+}
+
 //----------------------------------------------------------------//
 
 void
@@ -216,12 +226,16 @@ HexPanel::setTopPanel()
         top_panel(this->_panel);
 }
 
+//----------------------------------------------------------------//
+
+/**  Returns a reference to the internal TextList */
 TextList&
 HexPanel::getTextList()
 {
     return this->_textlist;
 }
 
+/**  Sets the internal TextList to be a copy of @param textlist */
 void
 HexPanel::setTextList ( TextList & textlist )
 {
@@ -247,6 +261,9 @@ HexPanel::addText ( const std::string & str )
     return;
 }
 
+/** setText clears the internal TextList and sets the
+  * given @param str as the first line of text.
+ **/
 void
 HexPanel::setText ( const std::string & str )
 {
@@ -254,6 +271,7 @@ HexPanel::setText ( const std::string & str )
     this->addText(str);
 }
 
+/**  Clears the internal TextList */
 void
 HexPanel::clearText()
 {
@@ -298,6 +316,8 @@ HexPanel::getTitle() const
 {
     return this->_title;
 }
+
+//----------------------------------------------------------------//
 
 bool
 HexPanel::enableScroll ( bool scroll, int lines )
@@ -363,12 +383,19 @@ HexPanel::echo ( const char ch )
     return _hwin->echo(ch);
 }
 
+//----------------------------------------------------------------//
+
 int
 HexPanel::wrap()
 {
     return _hwin->wrap();
 }
 
+//----------------------------------------------------------------//
+
+/** Sets a timeout delay for a given window when polling for
+  * input. Using a value of -1 will make poll() block.
+ **/
 void
 HexPanel::timeout ( int delay_ms )
 {
