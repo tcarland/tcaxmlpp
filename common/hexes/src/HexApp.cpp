@@ -261,19 +261,19 @@ HexApp::InitCurses ( bool termRaw, bool echo )
     if ( HexApp::_NCURSES_INIT )
         return;
 
-    initscr();
+    ::initscr();
 
     if ( termRaw )
-        raw();
+        ::raw();
     else
-        cbreak();
+        ::cbreak();
 
     if ( ! echo )
-        noecho();
+        ::noecho();
 
-    nonl();
-    start_color();
-    keypad(stdscr, TRUE);
+    ::nonl();
+    ::start_color();
+    ::keypad(stdscr, TRUE);
 
     HexApp::_NCURSES_INIT = true;
 
