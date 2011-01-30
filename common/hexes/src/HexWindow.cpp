@@ -53,8 +53,7 @@ HexWindow::HexWindow ( int height, int width,
 
 HexWindow::~HexWindow()
 {
-    if ( _win ) 
-    {
+    if ( _win ) {
         this->erase();
         ::wrefresh(_win);
         ::delwin(_win);

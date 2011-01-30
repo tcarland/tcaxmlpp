@@ -35,7 +35,7 @@ extern "C" {
 namespace hexes {
 
 
-#define LIBHEXES_VERSION "v0.003a"
+#define LIBHEXES_VERSION "v0.013a"
 
 
 class HexPanel;
@@ -80,6 +80,7 @@ class HexApp {
     bool         destroyPanel  ( const std::string & title );
     void         destroyPanels();
 
+    void         timeout       ( int delay_ms );
     bool         hasColor() const;
 
     int          width();

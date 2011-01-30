@@ -110,6 +110,13 @@ HexApp::poll()
     return r;
 }
 
+void
+HexApp::timeout ( int delay_ms )
+{
+    if ( _curPanel != NULL )
+        _curPanel->timeout(delay_ms);
+}
+
 //----------------------------------------------------------------//
 
 void
