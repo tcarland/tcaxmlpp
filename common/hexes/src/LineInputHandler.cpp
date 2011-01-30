@@ -8,8 +8,10 @@
 namespace hexes {
 
 
-LineInputHandler::LineInputHandler()
-    : _isReady(false)
+LineInputHandler::LineInputHandler ( int maxlength )
+    : _maxlen(maxlength),
+      _isReady(false),
+      _lines(HEXES_DEFBUFLEN)
 {}
 
 
@@ -21,19 +23,24 @@ int
 LineInputHandler::handleInput ( HexPanel * p, int ch )
 {
     if ( _isReady ) {
+        _history.push_back(_line);
+        while ( _history.size() > _lines )
+            _history.erase(_history.begin());
         _line.clear();
         _isReady = false;
     }
 
     if ( ch == KEY_BACKSPACE || ch == 127 ) {
-        int x = p->curX();
-        p->move(p->curY(), x-1);
-        p->print(' ');
-        p->move(p->curY(), x-1);
-        p->refresh();
-        _line.erase(_line.size() - 1);
+        if ( _line.size() > 0 ) {
+	        int x = p->curX();
+	        p->move(p->curY(), x-1);
+	        p->print(' ');
+	        p->move(p->curY(), x-1);
+	        p->refresh();
+	        _line.erase(_line.size() - 1);
+        }
     } else if ( ch == KEY_UP ) {
-        ;
+        ; // cmd history
     } else if ( ch == KEY_DOWN ) {
         ;
     } else if ( ch == KEY_RIGHT ) {
@@ -60,6 +67,12 @@ bool
 LineInputHandler::isReady()
 {
     return _isReady;
+}
+
+void
+LineInputHandler::keepHistory ( int lines )
+{
+    _lines = lines;
 }
 
 

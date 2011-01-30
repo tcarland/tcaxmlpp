@@ -15,8 +15,8 @@ HexApp::HexApp()
 {
     this->InitCurses(false, _echo);
     _hasColor = ::has_colors();
-    _col      = LINES;
-    _row      = COLS;
+    _col      = COLS;
+    _row      = LINES;
 }
 
 
@@ -27,6 +27,7 @@ HexApp::~HexApp()
     endwin();
 }
 
+//----------------------------------------------------------------//
 
 int
 HexApp::draw()
@@ -85,6 +86,7 @@ HexApp::draw()
     return 1;
 }
 
+//----------------------------------------------------------------//
 
 int
 HexApp::poll()
@@ -108,7 +110,7 @@ HexApp::poll()
     return r;
 }
 
-
+//----------------------------------------------------------------//
 
 void
 HexApp::setTopPanel ( HexPanel * panel )
@@ -117,6 +119,7 @@ HexApp::setTopPanel ( HexPanel * panel )
     _curPanel = panel;
 }
 
+//----------------------------------------------------------------//
 
 HexPanel*
 HexApp::createPanel ( const std::string & title, 
@@ -138,6 +141,8 @@ HexApp::createPanel ( const std::string & title,
 
     return p;
 }
+
+//----------------------------------------------------------------//
 
 /**  Adds the HexPanel to this HexApp instance. By doing so, 
   *  the HexApp instance will 'own' the panel, calling the 
@@ -217,6 +222,7 @@ HexApp::destroyPanels()
     return;
 }
 
+//----------------------------------------------------------------//
 
 int
 HexApp::getMaxWidth()
@@ -242,6 +248,7 @@ HexApp::getMaxHeight()
     return this->height();
 }
 
+//----------------------------------------------------------------//
 
 bool
 HexApp::hasColor() const
@@ -249,11 +256,15 @@ HexApp::hasColor() const
     return _hasColor;
 }
 
+//----------------------------------------------------------------//
+
 int
 HexApp::print ( int y, int x, const std::string & str )
 {
     return(mvwaddstr(stdscr, y, x, str.c_str()));
 }
+
+//----------------------------------------------------------------//
 
 void
 HexApp::InitCurses ( bool termRaw, bool echo )
@@ -279,6 +290,8 @@ HexApp::InitCurses ( bool termRaw, bool echo )
 
     return;
 }
+
+//----------------------------------------------------------------//
 
 std::string
 HexApp::Version()

@@ -2,17 +2,22 @@
 #define _HEXES_LINEINPUTHANDLER_H_
 
 #include <string>
+#include <vector>
 
 #include "HexInputInterface.hpp"
 
 namespace hexes {
 
 
+#define HEXES_MAXINPUTLEN 2048
+#define HEXES_MAXBUFLEN   1024
+#define HEXES_DEFBUFLEN   10
+
 class LineInputHandler : public HexInputInterface {
 
   public:
 
-    LineInputHandler();
+    LineInputHandler ( int maxlength = HEXES_MAXINPUTLEN );
 
     virtual ~LineInputHandler();
 
@@ -21,10 +26,18 @@ class LineInputHandler : public HexInputInterface {
     std::string& getLine();
     bool         isReady();
 
+    void         keepHistory ( int lines );
+
   protected:
 
+    typedef std::vector<std::string>  InputList;
+
     std::string  _line;
+    int          _maxlen;
     bool         _isReady;
+
+    InputList    _history;
+    size_t       _lines;
 };
 
     

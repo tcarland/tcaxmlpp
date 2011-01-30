@@ -29,9 +29,12 @@ extern "C" {
 #include "HexPanel.h"
 #include "HexInputInterface.hpp"
 #include "HexOutputInterface.hpp"
+#include "LineInputHandler.h"
+#include "LineOutputHandler.h"
 
 
 namespace hexes {
+
 
 #define LIBHEXES_VERSION "v0.003a"
 

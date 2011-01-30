@@ -57,12 +57,12 @@ HexPanel::HexPanel ( const std::string & title,
 
 HexPanel::~HexPanel()
 {
-    if ( _hwin )
-        delete _hwin;
     this->hide();
 
     ::del_panel(_panel);
 
+    if ( _hwin )
+        delete _hwin;
     if ( _output )
         delete _output;
     if ( _input )
