@@ -33,8 +33,4 @@ distclean: clean
 	$(RM) $(ALL_BINS)
 
 install:
-ifdef TNMS_PREFIX
-	$(CP) $(BIN) $(TNMS_PREFIX)/bin
-	@echo
-endif
 

@@ -1,27 +1,35 @@
-TOPDIR = ../..
+# Makefile for libhexes
+#
+ifdef TCAMAKE_PROJECT
+  TOPDIR = ../..
+else
+  TOPDIR = .
+endif 
 
 NEED_NCURSES = 1
+
 
 ifdef TNMS_DEBUG
 OPT_FLAGS= 	-g
 endif
+OPT_FLAGS +=	-fPIC -O2
+CCSHARED +=	-Wl,-soname,$@
 
-LFLAGS=		
-LIBS=		
 INCLUDES=       -Iinclude
-
-BIN=		hextest
+LIBS=		
+LFLAGS=		
 
 OBJS=		src/HexApp.o src/HexPanel.o src/HexWindow.o \
 		src/LineInputHandler.o src/LineOutputHandler.o
 
 ALL_OBJS=	$(OBJS)
-ALL_BINS=	$(BIN)
 
 
-all: lib
+all: lib test
+
 
 include $(TOPDIR)/tcamake/project_defs
+
 
 lib: arlib
 
@@ -58,7 +66,7 @@ test:
 	( cd test; $(MAKE) all )
 	@echo
 
-clean:
+clean: test-clean
 	$(RM) $(ALL_OBJS) \
 	*.d *.D *.o src/*.d src/*.D src/*.bd src/*.o
 	@echo
@@ -72,9 +80,20 @@ distclean: clean libclean test-clean
 	$(RM) $(ALL_BINS)
 	@echo
 
+dist:
+ifdef TNMS_DISTDIR
+	@echo "running sync to $(TNMS_DISTDIR)/libhexes"
+	( $(RDIST) ./ $(TNMS_DISTDIR)/libhexes/ )
+	@echo
+endif
+	
 install:
 ifdef TNMS_PREFIX
-	$(CP) $(BIN) $(TNMS_PREFIX)/bin
-	@echo
+	@echo "Installing libhexes to $(TNMS_PREFIX)/lib"
+	$(MKDIR) $(TNMS_PREFIX)/include/hexes
+	$(MKDIR) $(TNMS_PREFIX)/lib
+	$(RSYNC) --delete include/ $(TNMS_PREFIX)/include/hexes
+	$(RSYNC) lib/ $(TNMS_PREFIX)/lib/
+	@echo	
 endif
 

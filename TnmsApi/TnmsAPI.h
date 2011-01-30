@@ -2,7 +2,6 @@
 #define _TNMSCORE_TNMSAPI_H_
 
 #include <stdint.h>
-
 #include <string>
 
 

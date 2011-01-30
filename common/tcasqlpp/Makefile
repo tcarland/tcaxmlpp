@@ -23,12 +23,14 @@ $(warning 'Required environment variable not found, check the README for details
 $(error 'ERROR database type not found. eg. export USE_MYSQL=1')
 endif
 
-ifdef GK_DEBUG
+ifdef TNMS_DEBUG
 OPT_FLAGS =     -g
 endif
 
+
 OPT_FLAGS +=	-fPIC -O2
 CCSHARED += 	-Wl,-soname,$@
+
 
 INCLUDES =	-Iinclude -I$(TOPDIR)/common/tcanetpp/include
 LIBS = 

@@ -20,7 +20,6 @@ extern "C" {
 #ifdef erase
 #define curs_erase erase
 #undef erase
-#undef erase
 #endif
 
 
@@ -43,15 +42,12 @@ class HexPanel;
 
 
 /**
-  * Frontend to a 'Hex' application. HexApp provides the 
+  * Provides the frontend to a 'Hexes' application. HexApp is the
   * entrypoint to a ncurses/panel application and allows 
   * the spawning and control of windows/panels. 
   *
   * TODO: 
-  *   1/13/11: still everything at this point.
-  *   - add panel stack handling.
-  *   - we are managing the HexPanel ptr's; 
-  *     should we use boost::shared_ptr<>?  
+  *   1/13/11: still lots at this point.
   *   - HexWindow really needed? pull into HexPanel?
   *   - color schemes
   *   - window/text attributes
@@ -67,6 +63,7 @@ class HexApp {
     HexApp();
     virtual ~HexApp();
 
+
     virtual void run() {}
 
     virtual int  draw();
@@ -76,16 +73,13 @@ class HexApp {
     HexPanel*    createPanel   ( const std::string & title, 
                                  int height, int width, 
                                  int starty, int startx );
-
+    void         setTopPanel   ( HexPanel * panel );
     bool         addPanel      ( HexPanel * panel );
-    HexPanel*    getPanel      ( const std::string & title );
+    HexPanel*    getPanel      ( const std::string & title = "" );
     HexPanel*    removePanel   ( const std::string & title );
     bool         destroyPanel  ( const std::string & title );
-
-
-    void         setTopPanel   ( HexPanel * panel );
-
     void         destroyPanels();
+
     bool         hasColor() const;
 
     int          width();

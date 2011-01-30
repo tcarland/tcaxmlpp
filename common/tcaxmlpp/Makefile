@@ -1,3 +1,5 @@
+# Makefile for tcaxmlpp
+#
 ifdef TCAMAKE_PROJECT
 TOPDIR = ../..
 else
@@ -86,8 +88,11 @@ distclean: clean lib-clean test-distclean doc-clean
 	@echo
 
 install:
+ifdef TNMS_PREFIX
 	$(MKDIR) $(TNMS_PREFIX)/include/tcaxmlpp
 	$(MKDIR) $(TNMS_PREFIX)/lib
 	$(RSYNC) --delete include/ $(TNMS_PREFIX)/include/tcaxmlpp/
 	$(RSYNC) lib/ $(TNMS_PREFIX)/lib/
+	@echo
+endif
 

@@ -115,7 +115,11 @@ HexApp::poll()
 void
 HexApp::setTopPanel ( HexPanel * panel )
 {
+    if ( panel == NULL )
+        return;
+
     panel->setTopPanel();
+
     _curPanel = panel;
 }
 
@@ -166,6 +170,25 @@ HexApp::addPanel ( HexPanel * panel )
 
     return true;
 }
+
+
+HexPanel*
+HexApp::getPanel ( const std::string & title )
+{
+    HexPanel * panel = NULL;
+    PanelMap::iterator  pIter;
+
+    if ( title.empty() && _curPanel != NULL )
+        panel = _curPanel;
+
+    pIter = _panels.find(title);
+
+    if ( pIter != _panels.end() )
+        panel = pIter->second;
+
+    return panel;
+}
+
 
 /** Removes the panel identified by @param title and returns 
   * the pointer to the corresponding HexPanel. HexApp will no 
