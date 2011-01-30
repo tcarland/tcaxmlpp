@@ -12,8 +12,8 @@ int main ( int argc, char **argv )
 
     app->run();
 
-    //fflush(stdout);
-    //setlinebuf(stdout);
+    delete app;
+
     return 0;
 }
 
