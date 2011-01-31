@@ -3,8 +3,9 @@
 #include "TnmsWxClientMain.h"
 
 #include "ClientFrame.h"
-#include "TnmsClientIOThread.h"
+#include "ClientIOThread.h"
 #include "ClientSubscriber.h"
+#include "ClientTreeMutex.h"
 
 #include "LogFacility.h"
 using namespace tcanetpp;
@@ -27,24 +28,19 @@ TnmsWxClientMain::_Version = "0.3.41";
 // ----------------------------------------------------------------------
 
 TnmsWxClientMain::TnmsWxClientMain ( int msecs )
-    : _guiTimer(this, TGUITIMER_ID),
-      _mframe(NULL)
+    : _mtree(new ClientTreeMutex()),
+      _iomgr(new ClientIOThread(_mtree)),
+      _mframe(NULL),
+      _guiTimer(this, TGUITIMER_ID)
 {
-    _stree.tree     = new TnmsTree();
-    _stree.notifier = new ClientSubscriber();
-    _stree.mutex    = new ThreadLock();
-    _stree.iomgr    = new TnmsClientIOThread(_stree.tree, _stree.mutex);
-
     _guiTimer.Start(msecs);
 }
 
 
 TnmsWxClientMain::~TnmsWxClientMain()
 {
-    delete _stree.iomgr;
-    delete _stree.mutex;
-    delete _stree.notifier;
-    delete _stree.tree;
+    delete _mtree;
+    delete _iomgr;
 }
 
 
@@ -57,9 +53,9 @@ TnmsWxClientMain::OnInit()
     LogFacility::SetDebug(true);
     LogFacility::LogMessage("TnmsWxClient starting...");
 
-    _stree.iomgr->start();
+    _iomgr->start();
 
-    _mframe = new ClientFrame(wxT("TnmsWxClientMain"), &_stree);
+    _mframe = new ClientFrame(wxT("TnmsWxClientMain"), _mtree, _iomgr);
     _mframe->Show(true);
 
     return true;
@@ -81,9 +77,9 @@ TnmsWxClientMain::OnExit()
 
     _mframe->DropAllConnections();
 
-    _stree.iomgr->setAlarm();
-    _stree.mutex->wait();
-    _stree.iomgr->stop();
+    _iomgr->setAlarm();
+    _mtree->wait();
+    _iomgr->stop();
     
     LogFacility::RemoveLogStream("stdout");
     LogFacility::CloseLogFacility();

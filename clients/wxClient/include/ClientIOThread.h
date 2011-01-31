@@ -1,5 +1,5 @@
-#ifndef _TNMSCLIENTIOTHREAD_H_
-#define _TNMSCLIENTIOTHREAD_H_
+#ifndef _TNMSCLIENT_CLIENTIOTHREAD_H_
+#define _TNMSCLIENT_CLIENTIOTHREAD_H_
 
 #include <map>
 
@@ -13,16 +13,17 @@ using namespace tnmsCore;
 
 namespace tnmsclient {
 
-class TnmsClientIOHandler;
+class ClientIOHandler;
+class ClientTreeMutex;
 
 
-class TnmsClientIOThread : public Thread {
+class ClientIOThread : public Thread {
 
   public:
 
-    TnmsClientIOThread ( TnmsTree * tree, ThreadLock * rlock );
+    ClientIOThread ( ClientTreeMutex * tree );
     
-    virtual ~TnmsClientIOThread();
+    virtual ~ClientIOThread();
 
 
     virtual void  run();
@@ -42,7 +43,7 @@ class TnmsClientIOThread : public Thread {
 
     class ClientIOTimer : public EventTimerHandler  {
       public:
-        explicit ClientIOTimer ( TnmsClientIOThread * iothread_ )
+        explicit ClientIOTimer ( ClientIOThread * iothread_ )
             : iothread(iothread_)
         {}
 
@@ -53,23 +54,20 @@ class TnmsClientIOThread : public Thread {
 
       public:
 
-        TnmsClientIOThread *  iothread;
+        ClientIOThread *  iothread;
     };
 
 
   private:
 
     EventManager *          _evmgr;
-    TnmsTree *              _tree;
-    ThreadLock *            _mutex;
-
-    TnmsClientIOHandler *   _clientHandler;
-
+    ClientTreeMutex *       _mtree;
+    ClientIOHandler *       _clientHandler;
     ClientEventMap          _clients;
 
 };
 
 } // namespace
 
-#endif  // _TNMSCLIENTIOTHREAD_H_
+#endif  // _TNMSCLIENT_CLIENTIOTHREAD_H_
 

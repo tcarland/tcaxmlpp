@@ -4,15 +4,17 @@
 #include <wx/wx.h>
 #include <wx/timer.h>
 
-#include "TnmsTree_R.hpp"
 
+
+namespace tnmsclient {
 
 #define TGUITIMER_ID  6999
 #define TINTERVAL_MS  3000
 
-namespace tnmsclient {
-
 class ClientFrame;
+class ClientTreeMutex;
+class ClientIOThread;
+
 
 
 class TnmsWxClientMain : public wxApp {
@@ -35,10 +37,12 @@ class TnmsWxClientMain : public wxApp {
 
   private:
 
-    TnmsTree_R          _stree;
+    ClientTreeMutex *   _mtree;
+    ClientIOThread *    _iomgr;
+    ClientFrame *       _mframe;
+
     wxTimer             _guiTimer;
 
-    ClientFrame *       _mframe;
 
     static std::string  _Version;
 

@@ -1,11 +1,10 @@
-#ifndef _TNMSCLIENTIOHANDLER_H_
-#define _TNMSCLIENTIOHANDLER_H_
+#ifndef _TNMSCLIENT_CLIENTIOHANDLER_H_
+#define _TNMSCLIENT_CLIENTIOHANDLER_H_
 
 #include <set>
 
 #include "EventHandlers.hpp"
 #include "Exception.hpp"
-#include "ThreadLock.h"
 using namespace tcanetpp;
 
 #include "TnmsClient.h"
@@ -14,17 +13,19 @@ using namespace tnmsCore;
 
 namespace tnmsclient {
 
+class ClientTreeMutex;
+
 
 typedef std::set<TnmsClient*>   ClientSet;
 
 
-class TnmsClientIOHandler : public tcanetpp::EventIOHandler {
+class ClientIOHandler : public tcanetpp::EventIOHandler {
 
   public:
 
-    TnmsClientIOHandler ( ThreadLock * readLock = NULL );
+    ClientIOHandler ( ClientTreeMutex * tree );
 
-    virtual ~TnmsClientIOHandler();
+    virtual ~ClientIOHandler();
     
 
     /* EventIOHandler */
@@ -49,12 +50,12 @@ class TnmsClientIOHandler : public tcanetpp::EventIOHandler {
 
   protected:
 
-    ClientSet    _clients;
-    ThreadLock * _rlock;
+    ClientSet           _clients;
+    ClientTreeMutex *   _mtree;
 
 };
 
 } // namespace
 
-#endif  //  _TNMSCLIENTIOHANDLER_H_
+#endif  //  _TNMSCLIENT_CLIENTIOHANDLER_H_
 

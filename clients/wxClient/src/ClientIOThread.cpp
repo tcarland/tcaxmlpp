@@ -1,18 +1,21 @@
-#define _TNMSCLIENTIOTHREAD_CPP_
+#define _TNMSCLIENT_CLIENTIOTHREAD_CPP_
 
-#include "TnmsClientIOThread.h"
-#include "TnmsClientIOHandler.h"
+#include "ClientIOThread.h"
+#include "ClientIOHandler.h"
+#include "ClientTreeMutex.h"
 
 #include "LogFacility.h"
 using namespace tcanetpp;
 
+
 namespace tnmsclient {
+
 
 //------------------------------------------------------------------------------
 
 //  ClientIOTimer
 void
-TnmsClientIOThread::ClientIOTimer::timeout ( const EventTimer & timer )
+ClientIOThread::ClientIOTimer::timeout ( const EventTimer & timer )
 {
     if ( this->iothread == NULL )
         return;
@@ -22,16 +25,15 @@ TnmsClientIOThread::ClientIOTimer::timeout ( const EventTimer & timer )
 
 //------------------------------------------------------------------------------
 
-TnmsClientIOThread::TnmsClientIOThread ( TnmsTree * tree, ThreadLock * rlock )
+ClientIOThread::ClientIOThread ( ClientTreeMutex * tree )
     : _evmgr(new tcanetpp::EventManager()),
-      _tree(tree),
-      _mutex(rlock)
+      _mtree(tree),
+      _clientHandler(new ClientIOHandler(_mtree))
 {
-    _clientHandler = new TnmsClientIOHandler(_mutex);
 }
 
 
-TnmsClientIOThread::~TnmsClientIOThread()
+ClientIOThread::~ClientIOThread()
 {
     delete _clientHandler;
     delete _evmgr;
@@ -39,7 +41,7 @@ TnmsClientIOThread::~TnmsClientIOThread()
 
 
 void
-TnmsClientIOThread::run()
+ClientIOThread::run()
 {
     ClientIOTimer * timer = new ClientIOTimer(this);
 
@@ -51,33 +53,34 @@ TnmsClientIOThread::run()
 
 
 void
-TnmsClientIOThread::timeout ( const EventTimer & timer )
+ClientIOThread::timeout ( const EventTimer & timer )
 {
+    TnmsTree * tree = NULL;
+
     if ( this->_Alarm ) {
         _evmgr->setAlarm();
-        _mutex->notify();
+        _mtree->notify();
         return;
     }
 
-    if ( ! this->_mutex->lock() )
+    if ( (tree = _mtree->acquireTree()) == NULL )
         return;
 
-    _tree->updateSubscribers();
-    this->_clientHandler->timeout(timer);
-
-    this->_mutex->unlock();
+    tree->updateSubscribers();
+    _clientHandler->timeout(timer);
+    _mtree->releaseTree();
 
     return;
 }
 
 
 bool
-TnmsClientIOThread::addClient ( TnmsClient * client )
+ClientIOThread::addClient ( TnmsClient * client )
 {
     if ( client == NULL )
         return false;
 
-    if ( ! this->_mutex->lock() )
+    if ( ! this->_mtree->lock() )
         return false;
 
     evid_t  id = _evmgr->addIOEvent(_clientHandler, client->getDescriptor(), client);
@@ -85,18 +88,18 @@ TnmsClientIOThread::addClient ( TnmsClient * client )
     _clients[client] = id;
     _clientHandler->addClient(client);
 
-    this->_mutex->unlock();
+    this->_mtree->unlock();
 
     return true;
 }
 
 
 bool
-TnmsClientIOThread::removeClient ( TnmsClient * client )
+ClientIOThread::removeClient ( TnmsClient * client )
 {
     ClientEventMap::iterator  cIter;
 
-    if ( ! this->_mutex->lock() )
+    if ( ! this->_mtree->lock() )
         return false;
 
     cIter = _clients.find(client);
@@ -106,12 +109,12 @@ TnmsClientIOThread::removeClient ( TnmsClient * client )
         _clients.erase(cIter);
     }
 
-    this->_mutex->unlock();
+    this->_mtree->unlock();
 
     return true;
 }
 
 } // namespace
 
-// _TNMSCLIENTIOTHREAD_CPP_
+// _TNMSCLIENT_CLIENTIOTHREAD_CPP_
 

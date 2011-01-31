@@ -1,25 +1,25 @@
-#define _TNMSCLIENTIOHANDLER_CPP_
+#define _TNMSCLIENT_CLIENTIOHANDLER_CPP_
 
-#include "TnmsClientIOHandler.h"
+#include "ClientIOHandler.h"
+#include "ClientTreeMutex.h"
 
 #include "EventManager.h"
 #include "LogFacility.h"
-#include "ThreadAutoMutex.hpp"
 using namespace tcanetpp;
 
 
 namespace tnmsclient {
 
 
-TnmsClientIOHandler::TnmsClientIOHandler ( ThreadLock * readLock ) 
-    : _rlock(readLock)
+ClientIOHandler::ClientIOHandler ( ClientTreeMutex * tree )
+    : _mtree(tree)
 {}
 
-TnmsClientIOHandler::~TnmsClientIOHandler() {}
+ClientIOHandler::~ClientIOHandler() {}
 
 
 void
-TnmsClientIOHandler::timeout ( const EventTimer & timer )
+ClientIOHandler::timeout ( const EventTimer & timer )
 {
     int  rd  = 0;
     int  wt  = 0;
@@ -89,21 +89,21 @@ TnmsClientIOHandler::timeout ( const EventTimer & timer )
 }
 
 void
-TnmsClientIOHandler::addClient (TnmsClient * client )
+ClientIOHandler::addClient (TnmsClient * client )
 {
     _clients.insert(client);
 }
 
 
 void
-TnmsClientIOHandler::removeClient ( TnmsClient * client )
+ClientIOHandler::removeClient ( TnmsClient * client )
 {
     _clients.erase(client);
 }
 
 
 void
-TnmsClientIOHandler::handle_read ( const EventIO & io )
+ClientIOHandler::handle_read ( const EventIO & io )
 {
     int  rd   = 0;
 
@@ -112,12 +112,12 @@ TnmsClientIOHandler::handle_read ( const EventIO & io )
 
     TnmsClient * client = (TnmsClient*) io.rock;
 
-    if ( ! _rlock->lock() )
+    if ( ! _mtree->lock() )
         return;
 
     rd = client->receive(io.abstime.tv_sec);
 
-    _rlock->unlock();
+    _mtree->unlock();
 
     if ( rd < 0 ) {
         LogFacility::LogMessage("ClientIOHandler::handle_read() error: " 
@@ -132,7 +132,7 @@ TnmsClientIOHandler::handle_read ( const EventIO & io )
 }
 
 void
-TnmsClientIOHandler::handle_write ( const EventIO & io )
+ClientIOHandler::handle_write ( const EventIO & io )
 {
     int   wt  = 0;
 
@@ -141,12 +141,12 @@ TnmsClientIOHandler::handle_write ( const EventIO & io )
 
     TnmsClient * client = (TnmsClient*) io.rock;
 
-    if ( ! _rlock->lock() )
+    if ( ! _mtree->lock() )
         return;
     
     wt = client->send(io.abstime.tv_sec);
 
-    _rlock->unlock();
+    _mtree->unlock();
 
     if ( wt < 0 ) {
         LogFacility::LogMessage("ClientIOHandler::handle_write() error: " 
@@ -162,7 +162,7 @@ TnmsClientIOHandler::handle_write ( const EventIO & io )
 
 
 void
-TnmsClientIOHandler::handle_close ( const EventIO & io )
+ClientIOHandler::handle_close ( const EventIO & io )
 {
     if ( io.isServer )
         return;
@@ -175,21 +175,21 @@ TnmsClientIOHandler::handle_close ( const EventIO & io )
     LogFacility::LogMessage("ClientIOHandler::handle_close() " 
         + client->getHostStr());
 
-    if ( ! _rlock->lock() )
+    if ( ! _mtree->lock() )
         return;
 
     client->close();
     _clients.erase(client);
     io.evmgr->removeEvent(io.evid);
 
-    _rlock->unlock();
+    _mtree->unlock();
 
     return;
 }
 
 
 void
-TnmsClientIOHandler::handle_destroy ( const EventIO & io )
+ClientIOHandler::handle_destroy ( const EventIO & io )
 {    
     LogFacility::LogMessage("ClientIOHandler::handle_destroy()");
 
@@ -209,14 +209,14 @@ TnmsClientIOHandler::handle_destroy ( const EventIO & io )
 
 
 bool
-TnmsClientIOHandler::readable ( const EventIO & io )
+ClientIOHandler::readable ( const EventIO & io )
 {
     return true;
 }
 
 
 bool
-TnmsClientIOHandler::writeable ( const EventIO & io )
+ClientIOHandler::writeable ( const EventIO & io )
 {
     if ( io.isServer )
         return false;

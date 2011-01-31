@@ -32,9 +32,9 @@ CFLAGS=		`wx-config --cxxflags`
 
 BIN=		TnmsWxClient
 OBJS=		src/ClientFrame.o \
-		src/TnmsWxTree.o src/MetricListView.o \
-		src/ClientSubscriber.o \
-		src/TnmsClientIOHandler.o src/TnmsClientIOThread.o \
+		src/TnmsWxTreeCtl.o src/MetricListView.o \
+		src/ClientSubscriber.o src/ClientTreeMutex.o \
+		src/ClientIOHandler.o src/ClientIOThread.o \
 		src/ConnectDialog.o src/TnmsWxClientMain.o
 
 ALL_OBJS=	$(OBJS)

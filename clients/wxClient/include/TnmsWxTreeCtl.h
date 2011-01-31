@@ -1,13 +1,14 @@
-#ifndef _TNMSWXTREE_H_
-#define _TNMSWXTREE_H_
+#ifndef _TNMSCLIENT_TNMSWXTREECTL_H_
+#define _TNMSCLIENT_TNMSWXTREECTL_H_
 
 #include <list>
+#include <map>
 
 #include <wx/imaglist.h>
 #include <wx/treectrl.h>
 
-
-#include "TnmsTree_R.hpp"
+#include "TnmsTree.h"
+using namespace tnmsCore;
 
 
 namespace tnmsclient {
@@ -22,22 +23,21 @@ typedef std::map<std::string, TnmsTree::NotifySet>  SubscriberMap;
 #define TNMS_ID_DISCONN  7011
 #define TNMS_ID_VERSION  7050
 
+class ClientTreeMutex;
+
 
 
 class TreeItem : public wxTreeItemData {
-
   public:
-
     std::string   absoluteName;
 
     TreeItem ( const std::string & name )
         : absoluteName(name) {}
- 
 };
 
 
 
-class TnmsWxTree : public wxControl {
+class TnmsWxTreeCtl : public wxControl {
  
   public:
 
@@ -47,16 +47,16 @@ class TnmsWxTree : public wxControl {
 
   public:
 
-    TnmsWxTree();
+    TnmsWxTreeCtl();
 
-    TnmsWxTree ( wxWindow        * parent,
-                 const wxWindowID  id     = wxID_ANY,
-                 const wxString  & name   = wxT("TnmsWxTree"),
-                 const wxPoint   & pos    = wxDefaultPosition,
-                 const wxSize    & size   = wxDefaultSize,
-                 long              style  = wxSUNKEN_BORDER );
+    TnmsWxTreeCtl ( wxWindow        * parent,
+                    const wxWindowID  id     = wxID_ANY,
+                    const wxString  & name   = wxT("TnmsWxTree"),
+                    const wxPoint   & pos    = wxDefaultPosition,
+                    const wxSize    & size   = wxDefaultSize,
+                    long              style  = wxSUNKEN_BORDER );
 
-    virtual ~TnmsWxTree();
+    virtual ~TnmsWxTreeCtl();
 
 
     bool          Create ( wxWindow        * parent,
@@ -93,8 +93,8 @@ class TnmsWxTree : public wxControl {
 
   public:
 
-    void          SetTnmsTree     ( TnmsTree_R * stree );
-    TnmsTree_R*   GetTnmsTree();
+    void          SetTnmsTree     ( ClientTreeMutex * stree );
+    ClientTreeMutex* GetTnmsTree();
 
     wxTreeCtrl*   GetTreeCtrl()   { return _treeCtrl; }
 
@@ -107,7 +107,7 @@ class TnmsWxTree : public wxControl {
  
   private:
 
-    TnmsTree_R *        _stree;
+    ClientTreeMutex *   _mtree;
 
     wxTreeCtrl *        _treeCtrl;
     wxTreeItemId        _rootId;
@@ -121,5 +121,6 @@ class TnmsWxTree : public wxControl {
 
 } // namespace
 
-#endif  // _TNMSWXTREE_H_
+#endif // _TNMSCLIENT_TNMSWXTREECTL_H_
+
 

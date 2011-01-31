@@ -19,7 +19,7 @@ class ClientTreeMutex : public ThreadLock {
 
     ClientTreeMutex();
     ClientTreeMutex ( ClientSubscriber    * subscriber,
-                      tnmsCore::TnmsTree  * tree )
+                      tnmsCore::TnmsTree  * tree );
 
     virtual ~ClientTreeMutex();
 
@@ -32,7 +32,7 @@ class ClientTreeMutex : public ThreadLock {
 
   protected:
 
-    ClientSubsriber  * _subscriber;
+    ClientSubscriber * _subscriber;
     TnmsTree         * _tree;
     
 };

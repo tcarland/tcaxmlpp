@@ -1,7 +1,6 @@
 #define _CLIENTFRAME_CPP_
 
 #include "ClientFrame.h"
-#include "TnmsClientIOThread.h"
 
 #include <wx/treectrl.h>
 #include <wx/dirctrl.h>
@@ -9,32 +8,41 @@
 #include <wx/splitter.h>
 #include <wx/aboutdlg.h>
 
-#include "ConnectDialog.h"
-
 #include "StringUtils.h"
 #include "LogFacility.h"
 using namespace tcanetpp;
 
+#include "ClientIOThread.h"
+#include "TnmsWxTreeCtl.h"
+#include "MetricListView.h"
+#include "ClientTreeMutex.h"
+#include "ConnectDialog.h"
+
+
 namespace tnmsclient {
+
 
 // ----------------------------------------------------------------------
 
 wxString
-ClientFrame::_Version = _T("0.3.41");
+ClientFrame::_Version = _T("0.4.1");
 
 // ----------------------------------------------------------------------
 
-ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
+ClientFrame::ClientFrame ( const wxString  & title,
+                           ClientTreeMutex * tree,
+                           ClientIOThread  * iothread )
     : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(950,600)),
-      _stree(tree),
+      _mtree(tree),
+      _iomgr(iothread),
       _tree(NULL)
 {
     wxSplitterWindow * spl1 = new wxSplitterWindow(this, -1); 
     wxSplitterWindow * spl2 = new wxSplitterWindow(spl1, -1);
 
-    _tree   = new TnmsWxTree(spl1, TNMS_ID_TREE, wxT("tnms"), 
+    _tree   = new TnmsWxTreeCtl(spl1, TNMS_ID_TREE, wxT("tnms"),
                 wxPoint(-1, -1), spl1->GetSize());
-    _tree->SetTnmsTree(_stree);
+    _tree->SetTnmsTree(_mtree);
 
     spl1->SplitVertically(_tree, spl2);
     
@@ -51,21 +59,21 @@ ClientFrame::ClientFrame ( const wxString & title, TnmsTree_R * tree )
     //Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_EXPANDED, 
         //wxCommandEventHandler(ClientFrame::OnExpandItem));
     //Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_EXPANDED, 
-        //wxTreeEventHandler(TnmsWxTree::OnExpandItem));
+        //wxTreeEventHandler(TnmsWxTreeCtl::OnExpandItem));
 
     //Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_COLLAPSING,
-        //wxTreeEventHandler(TnmsWxTree::OnCollapseItem));
+        //wxTreeEventHandler(TnmsWxTreeCtl::OnCollapseItem));
 
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_SEL_CHANGED,
         wxTreeEventHandler(ClientFrame::OnTreeSelect));
     //Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_ACTIVATED,
-        //wxTreeEventHandler(TnmsWxTree::OnSelect));
+        //wxTreeEventHandler(TnmsWxTreeCtl::OnSelect));
 
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_ITEM_RIGHT_CLICK,
         wxTreeEventHandler(ClientFrame::OnTreeContext));
 
     Connect(TNMS_ID_WXTREE, wxEVT_COMMAND_TREE_DELETE_ITEM,
-        wxTreeEventHandler(TnmsWxTree::OnDelete));
+        wxTreeEventHandler(TnmsWxTreeCtl::OnDelete));
     
     //-------------------------------------------------------
     //  Metric List events
@@ -210,14 +218,15 @@ ClientFrame::OnConnect ( wxCommandEvent & event )
     cl.username    = StringUtils::wtocstr(username.c_str());
     cl.password    = StringUtils::wtocstr(password.c_str());
     cl.port        = StringUtils::fromString<uint16_t>(StringUtils::wtocstr(portname.c_str()));
-    cl.client      = new TnmsClient(_stree->tree);
     cl.enabled     = true;
+    cl.client      = new TnmsClient(_mtree->acquireTree());
+    _mtree->releaseTree();
 
     this->SetStatusText(wxT("Connecting to ") + username + wxT("@") + servname, 1);
 
     cl.client->openConnection(cl.servername, cl.port);
     cl.client->login(cl.username, cl.password);
-    _stree->iomgr->addClient(cl.client);
+    _iomgr->addClient(cl.client);
     
     username.append(_T("@")).append(servname).append(_T(":")).append(portname);
     _clientMap[username] = cl;
@@ -287,7 +296,11 @@ ClientFrame::OnTimer ( wxTimerEvent & event )
 
         if ( cw.client->isAuthorized() && ! cw.req ) 
         {
-            _stree->tree->request("*", _stree->notifier);
+            TnmsTree * tree = _mtree->acquireTree();
+            if ( tree == NULL )
+                return;
+            tree->request("*", _mtree->subscriber());
+            _mtree->releaseTree();
             cw.req = true;
             this->SetStatusText(wxT("Connection active"), 1);
         }
@@ -315,7 +328,7 @@ ClientFrame::DropAllConnections()
 
         if ( cw.client ) {
             cw.enabled = false;
-            if ( !  _stree->iomgr->removeClient(cw.client) )
+            if ( !  _iomgr->removeClient(cw.client) )
                 this->SetStatusText(wxT("Error Removing Client"), 1);
             cw.client->close();
         }
@@ -349,12 +362,12 @@ ClientFrame::sendSubscribe ( const std::string & name )
 {
     ClientMap::iterator  cIter;
 
-    _stree->mutex->lock();
+    _mtree->lock();
 
     for ( cIter = _clientMap.begin(); cIter != _clientMap.end(); ++cIter )
         cIter->second.client->subscribe(name);
 
-    _stree->mutex->unlock();
+    _mtree->unlock();
 }
 
 
@@ -363,12 +376,12 @@ ClientFrame::sendUnsubscribe ( const std::string & name )
 {
     ClientMap::iterator  cIter;
 
-    _stree->mutex->lock();
+    _mtree->lock();
 
     for ( cIter = _clientMap.begin(); cIter != _clientMap.end(); ++cIter )
         cIter->second.client->unsubscribe(name);
 
-    _stree->mutex->unlock();
+    _mtree->unlock();
 }
 
 } // namespace

@@ -19,9 +19,9 @@ ClientTreeMutex::ClientTreeMutex ( ClientSubscriber * subscriber_, TnmsTree * tr
 
 ClientTreeMutex::~ClientTreeMutex()
 {
-    if ( tree )
+    if ( _tree )
         delete _tree;
-    if ( notifier )
+    if ( _subscriber )
         delete _subscriber;
 }
 

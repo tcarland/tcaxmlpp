@@ -7,14 +7,12 @@
 #include <wx/wx.h>
 #include <wx/string.h>
 
-#include "TnmsWxTree.h"
-#include "MetricListView.h"
 
 #include "TnmsClient.h"
 using namespace tnmsCore;
 
-namespace tnmsclient {
 
+namespace tnmsclient {
 
 #define TNMS_ID_SUBSCRIBE_ITEM    7050
 #define TNMS_ID_UNSUBSCRIBE_ITEM  7051
@@ -22,12 +20,19 @@ namespace tnmsclient {
 #define TNMS_ID_UNSUBSCRIBE_LEVEL 7053
 
 
+class TnmsWxTreeCtl;
+class MetricListView;
+class ClientTreeMutex;
+class ClientIOThread;
+
+
 class ClientFrame : public wxFrame {
 
   public:
 
-    ClientFrame ( const wxString & title, 
-                  TnmsTree_R     * tree );
+    ClientFrame ( const wxString  & title,
+                  ClientTreeMutex * tree,
+                  ClientIOThread  * iothread );
 
     virtual ~ClientFrame();
 
@@ -89,8 +94,9 @@ class ClientFrame : public wxFrame {
 
   private:
 
-    TnmsTree_R *         _stree;
-    TnmsWxTree *         _tree;
+    ClientTreeMutex *    _mtree;
+    ClientIOThread *     _iomgr;
+    TnmsWxTreeCtl *      _tree;
     
     MetricListView *     _mlist;
 
