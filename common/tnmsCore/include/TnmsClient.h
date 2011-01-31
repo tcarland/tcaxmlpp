@@ -36,13 +36,13 @@ class TnmsClient : public TnmsSocket {
 
     bool            isAgent()  const;
     bool            isMirror() const;
-    bool            isMirrorClient() const { return this->isMirror(); }
+    bool            isMirrorClient() const;
     
     bool            inTreeSend() const;
     void            inTreeSend   ( bool insend );
 
     const
-    std::string&    getConfig() const { return _xmlConfig; }
+    std::string&    getConfig() const;
 
     void            setSubscriber ( TnmsSubscriber * subscriber );
     TnmsSubscriber* getSubscriber();

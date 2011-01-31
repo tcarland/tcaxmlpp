@@ -157,20 +157,31 @@ TnmsClient::close()
 bool
 TnmsClient::isAgent() const
 {
-    return _isAgent;
+    return this->_isAgent;
 }
 
 bool
 TnmsClient::isMirror() const
 {
-    return _isMirror;
+    return this->_isMirror;
 }
 
+bool
+TnmsClient::isMirrorClient() const
+{
+    return this->isMirror();
+}
+
+const std::string&
+TnmsClient::getConfig() const
+{
+    return this->_xmlConfig;
+}
 
 bool
 TnmsClient::inTreeSend() const
 {
-    return _inTreeSend;
+    return this->_inTreeSend;
 }
 
 
