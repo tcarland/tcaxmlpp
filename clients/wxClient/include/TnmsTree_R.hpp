@@ -30,6 +30,22 @@ struct TnmsTree_R
           tree(tree_), 
           mutex(lock_)
     {}
+
+
+    TnmsTree*  lockTree()
+    {
+        if ( mutex == NULL || tree == NULL )
+            return NULL;
+        mutex->lock();
+        return tree;
+    }
+
+    void unlockTree()
+    {
+        if ( mutex == NULL )
+            return;
+        mutex->unlock();
+    }
 };
 
 
