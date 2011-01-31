@@ -6,6 +6,7 @@
 #include "LogFacility.h"
 using namespace tcanetpp;
 
+namespace tnmsclient {
 
 //------------------------------------------------------------------------------
 
@@ -110,6 +111,7 @@ TnmsClientIOThread::removeClient ( TnmsClient * client )
     return true;
 }
 
+} // namespace
 
 // _TNMSCLIENTIOTHREAD_CPP_
 

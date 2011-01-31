@@ -5,6 +5,7 @@
 #include "LogFacility.h"
 using namespace tcanetpp;
 
+namespace tnmsclient {
 
 
 const char* vt_names[] = 
@@ -281,6 +282,7 @@ MetricListView::DisableSync()
     _syncEnabled = false;
 }
 
+} // namespace
 
 // _METRICLISTVIEW_CPP_
 

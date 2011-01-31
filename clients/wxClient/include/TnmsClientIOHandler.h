@@ -12,6 +12,9 @@ using namespace tcanetpp;
 using namespace tnmsCore;
 
 
+namespace tnmsclient {
+
+
 typedef std::set<TnmsClient*>   ClientSet;
 
 
@@ -51,6 +54,7 @@ class TnmsClientIOHandler : public tcanetpp::EventIOHandler {
 
 };
 
+} // namespace
 
 #endif  //  _TNMSCLIENTIOHANDLER_H_
 

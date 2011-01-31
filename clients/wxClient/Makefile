@@ -40,7 +40,9 @@ OBJS=		src/ClientFrame.o \
 ALL_OBJS=	$(OBJS)
 ALL_BINS=	$(BIN)
 
+
 all: TnmsWxClient
+
 
 include $(TOPDIR)/tcamake/project_defs
 
@@ -51,7 +53,6 @@ TnmsWxClient: $(OBJS)
 
 .PHONY: test
 test:
-
 
 clean:
 	$(RM) $(ALL_OBJS) \

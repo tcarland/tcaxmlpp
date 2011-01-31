@@ -13,10 +13,12 @@ using namespace tcanetpp;
 
 // ----------------------------------------------------------------------
 
-IMPLEMENT_APP(TnmsWxClientMain)
-BEGIN_EVENT_TABLE(TnmsWxClientMain, wxApp)
-    EVT_TIMER(TGUITIMER_ID, TnmsWxClientMain::OnTimer)
+IMPLEMENT_APP(tnmsclient::TnmsWxClientMain)
+BEGIN_EVENT_TABLE(tnmsclient::TnmsWxClientMain, wxApp)
+    EVT_TIMER(TGUITIMER_ID, tnmsclient::TnmsWxClientMain::OnTimer)
 END_EVENT_TABLE()
+
+namespace tnmsclient {
 
 
 std::string
@@ -106,4 +108,5 @@ TnmsWxClientMain::OnTimer ( wxTimerEvent & event )
 }
 
 
+} // namespace
 

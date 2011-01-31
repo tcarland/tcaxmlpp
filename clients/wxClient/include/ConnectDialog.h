@@ -1,8 +1,9 @@
 #ifndef _CONNECTDIALOG_H_
 #define _CONNECTDIALOG_H_
 
-
 #include <wx/wx.h>
+
+namespace tnmsclient {
 
 
 class ConnectDialog : public wxDialog {
@@ -20,6 +21,8 @@ class ConnectDialog : public wxDialog {
     wxTextCtrl *   tcUser;
     wxTextCtrl *   tcPass;
 };
+
+} // namespace
 
 #endif // _CONNECTDIALOG_H_
 

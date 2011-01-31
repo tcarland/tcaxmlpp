@@ -11,6 +11,7 @@ using namespace tcanetpp;
 #include "TnmsClient.h"
 using namespace tnmsCore;
 
+namespace tnmsclient {
 
 class TnmsClientIOHandler;
 
@@ -68,6 +69,7 @@ class TnmsClientIOThread : public Thread {
 
 };
 
+} // namespace
 
 #endif  // _TNMSCLIENTIOTHREAD_H_
 

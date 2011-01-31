@@ -10,6 +10,7 @@
 #define TGUITIMER_ID  6999
 #define TINTERVAL_MS  3000
 
+namespace tnmsclient {
 
 class ClientFrame;
 
@@ -44,6 +45,7 @@ class TnmsWxClientMain : public wxApp {
     DECLARE_EVENT_TABLE()
 };
 
+} // namespace
 
 #endif  // _TNMSWXCLIENT_MAIN_H_
 

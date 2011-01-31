@@ -15,7 +15,7 @@
 #include "LogFacility.h"
 using namespace tcanetpp;
 
-
+namespace tnmsclient {
 
 // ----------------------------------------------------------------------
 
@@ -371,5 +371,6 @@ ClientFrame::sendUnsubscribe ( const std::string & name )
     _stree->mutex->unlock();
 }
 
+} // namespace
 
 // _CLIENTFRAME_CPP_

@@ -1,13 +1,13 @@
 #ifndef _CLIENTSUBSCRIBER_H_
 #define _CLIENTSUBSCRIBER_H_
 
-
 #include "TnmsSubscriber.h"
 using namespace tnmsCore;
 
 #include "ThreadLock.h"
 using namespace tcanetpp;
 
+namespace tnmsclient {
 
 class ClientSubscriber : public TnmsSubscriber {
 
@@ -30,6 +30,7 @@ class ClientSubscriber : public TnmsSubscriber {
 
 };
 
+} // namespace
 
 #endif  //_CLIENTSUBSCRIBER_H_
 

@@ -10,6 +10,9 @@
 #include "TnmsTree_R.hpp"
 
 
+namespace tnmsclient {
+
+
 typedef std::map<std::string, TnmsTree::NotifySet>  SubscriberMap;
 
 
@@ -116,6 +119,7 @@ class TnmsWxTree : public wxControl {
 
 };
 
+} // namespace
 
 #endif  // _TNMSWXTREE_H_
 

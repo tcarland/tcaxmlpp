@@ -8,6 +8,8 @@
 using namespace tcanetpp;
 
 
+namespace tnmsclient {
+
 
 TnmsClientIOHandler::TnmsClientIOHandler ( ThreadLock * readLock ) 
     : _rlock(readLock)
@@ -227,4 +229,6 @@ TnmsClientIOHandler::writeable ( const EventIO & io )
     return false;
 }
 
+
+} // namespace
 

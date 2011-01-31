@@ -5,9 +5,10 @@
 
 #include "ClientSubscriber.h"
 
+namespace tnmsclient {
+
 
 #define TNMS_ID_MLIST  7005
-
 
 typedef std::map<std::string, long>  MetricListMap;
 
@@ -17,10 +18,11 @@ class MetricListView : public wxListCtrl {
 
   public:
 
-    MetricListView ( wxWindow * parent, const wxWindowID   id,
-                                        const wxPoint    & pos,
-                                        const wxSize     & size,
-                                        long               style);
+    MetricListView ( wxWindow         * parent,
+                     const wxWindowID   id,
+                     const wxPoint    & pos,
+                     const wxSize     & size,
+                     long               style);
 
     virtual ~MetricListView();
 
@@ -56,6 +58,7 @@ class MetricListView : public wxListCtrl {
     bool             _syncEnabled;
 };
 
+} // namespace
 
 #endif  // _METRICLISTVIEW_H_
 

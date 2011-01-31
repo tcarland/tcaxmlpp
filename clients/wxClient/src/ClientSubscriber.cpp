@@ -2,6 +2,7 @@
 
 #include "ClientSubscriber.h"
 
+namespace tnmsclient {
 
 
 bool
@@ -70,6 +71,7 @@ ClientSubscriber::unlock()
     return _mutex.unlock();
 }
 
+} // namespace
 
 // _CLIENTSUBSCRIBER_CPP_
 

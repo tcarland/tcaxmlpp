@@ -8,6 +8,7 @@ using namespace tnmsCore;
 #include "ThreadLock.h"
 using namespace tcanetpp;
 
+namespace tnmsclient {
 
 class TnmsClientIOThread;
 class ClientSubscriber;
@@ -48,6 +49,7 @@ struct TnmsTree_R
     }
 };
 
+} // namespace
 
 #endif  // _TNMSTREE_R_HPP_
 

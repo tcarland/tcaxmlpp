@@ -13,6 +13,8 @@
 #include "TnmsClient.h"
 using namespace tnmsCore;
 
+namespace tnmsclient {
+
 
 #define TNMS_ID_SUBSCRIBE_ITEM    7050
 #define TNMS_ID_UNSUBSCRIBE_ITEM  7051
@@ -107,6 +109,7 @@ class ClientFrame : public wxFrame {
 
 };
 
+} // namespace
 
 #endif //_CLIENTFRAME_H_
 
