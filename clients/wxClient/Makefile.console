@@ -16,6 +16,8 @@ INCLUDES=       -Iinclude
 
 BIN=		tconsole
 
+CL_OBJS=	src/ClientTreeMutex.o src/ClientIOThread.o src/ClientIOHandler.o
+
 OBJS=		src/TnmsConsoleApp.o  \
 		src/tconsole.o
 
@@ -28,7 +30,7 @@ all: tconsole
 include $(TOPDIR)/tcamake/project_defs
 
 
-tconsole: $(OBJS)
+tconsole: $(CL_OBJS) $(OBJS)
 	$(make-cxxbin-rule)
 
 clean:

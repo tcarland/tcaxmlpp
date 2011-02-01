@@ -4,8 +4,6 @@
 #include <sstream>
 
 #include "TnmsConsoleApp.h"
-#include "ClientTreeMutex.h"
-#include "ClientIOThread.h"
 
 #include "StringUtils.h"
 using namespace tcanetpp;
@@ -30,8 +28,8 @@ TnmsConsoleApp::TnmsConsoleApp()
 
 TnmsConsoleApp::~TnmsConsoleApp()
 {
-    delete _evmgr;
-    delete _tree;
+    delete _mtree;
+    delete _iomgr;
 }
 
 
@@ -402,8 +400,9 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
 void
 TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
 {
-    TnmsClient * client = NULL;
     std::string  cmd, tag, name, val;
+
+    ClientMap::iterator  cIter;
 
     if ( cmdlist.size() < 2 || cmdlist.at(0).compare("client") != 0 ) {
         _statPanel->addText("Error in client command");
@@ -450,19 +449,22 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
     {
         if ( cmdlist.size() > 3 && cmdlist.at(2).compare("subs") == 0 )
         {
-            tag = cmdlist.at(3);
-            client = _clientHandler->find(tag);
-            if ( client == NULL )
+
+            tag    = cmdlist.at(3);
+            cIter  = _clients.find(tag);
+
+            if ( cIter == _clients.end() )
                 return;
 
-            SubscriptionList  &  subs = client->getSubscriptionList();
+            SubscriptionList  &  subs = cIter->second->getSubscriptionList();
             SubscriptionList::iterator sIter;
 
-            _statPanel->addText("Subscription List for " + client->getHostStr());
+            _statPanel->addText("Subscription List for " + cIter->second->getHostStr());
             for ( sIter = subs.begin(); sIter != subs.end(); ++sIter )
                 _statPanel->addText("  Sub> " + sIter->getElementName());
-        } else
-            _clientHandler->listClients();
+        }
+       // else
+            //_clientHandler->listClients();
     }
     else if ( StringUtils::startsWith(cmd, "sub") )
     {
@@ -475,9 +477,9 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
 
         _statPanel->addText("client subscribe " + name);
 
-        client = _clientHandler->find(tag);
-        if ( client )
-            client->subscribe(name);
+        cIter = _clients.find(tag);
+        if ( cIter != _clients.end() )
+            cIter->second->subscribe(name);
     }
     else if ( StringUtils::startsWith(cmd, "unsub") )
     {
@@ -485,12 +487,14 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
             _statPanel->addText("Syntax error in client unsubscribe");
             return;
         }
+
         tag    = cmdlist.at(2);
         name   = cmdlist.at(3);
+        cIter  = _clients.find(tag);
+
         _statPanel->addText("client unsubscribe");
-        client = _clientHandler->find(tag);
-        if ( client )
-            client->unsubscribe(name);
+        if ( cIter != _clients.end() )
+            cIter->second->unsubscribe(name);
     }
     else if ( cmd.compare("browse") == 0 ) 
     {
@@ -498,16 +502,16 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
              return;
          
          name = cmdlist.at(2);
-         _tree->debugDump(name);
+         //tree->debugDump(name);
     }
     else if ( cmd.compare("dump") == 0 ) 
     {
         if ( cmdlist.size() < 3 )
-             name = "";
+            name = "";
         else
             name = cmdlist.at(2);
 
-        _tree->debugDump(name);
+        //_tree->debugDump(name);
         _statPanel->addText(" ");
     }
     else if ( cmd.compare("show") == 0 ) 
@@ -515,22 +519,27 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
         if ( cmdlist.size() < 3 )
             return;
 
-        TnmsMetric metric;
+        TnmsMetric  metric;
+        TnmsTree   * tree  = _mtree->acquireTree();
+
+        if ( tree == NULL )
+            return;
+
         name = cmdlist.at(2);
         
-        if ( ! _tree->request(name, metric) ) {
+        if ( ! tree->request(name, metric) ) {
             _statPanel->addText(" Metric not found for " + name);
-            return;
+        } else {
+            _statPanel->addText(" Node: " + metric.getElementName());
+            if ( metric.getValueType() == TNMS_STRING ) {
+                const std::string & valstr = metric.getValue();
+                _statPanel->addText("    Value = " + valstr);
+            } else {
+                uint64_t val = metric.getValue<uint64_t>();
+                _statPanel->addText("    Value = " + StringUtils::toString(val));
+            }
         }
-
-         _statPanel->addText(" Node: " + metric.getElementName());
-         if ( metric.getValueType() == TNMS_STRING ) {
-             const std::string & valstr = metric.getValue();
-             _statPanel->addText("    Value = " + valstr);
-         } else {
-             uint64_t val = metric.getValue<uint64_t>();
-             _statPanel->addText("    Value = " + StringUtils::toString(val));
-         }
+        _mtree->releaseTree();
     }
     else
     {

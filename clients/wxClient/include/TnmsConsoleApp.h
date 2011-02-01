@@ -24,8 +24,14 @@ using namespace hexes;
 
 #include "TnmsAPI.h"
 using namespace tnmsApi;
+
+#include "TnmsClient.h"
 #include "tnmsCore.h"
 using namespace tnmsCore;
+
+#include "ClientTreeMutex.h"
+#include "ClientIOThread.h"
+using namespace tnmsclient;
 
 
 
@@ -33,8 +39,6 @@ namespace tnmsconsole {
 
 #define MAX_SENDERR_CNT  5
 
-class ClientTreeMutex;
-class ClientIOThread;
 
 typedef std::map<std::string, TnmsAPI*>    ApiMap;
 typedef ApiMap::iterator                   ApiIter;
