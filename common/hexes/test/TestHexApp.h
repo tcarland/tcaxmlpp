@@ -13,10 +13,19 @@ class TestHexApp : public HexApp {
 
   public:
 
+    TestHexApp();
     virtual ~TestHexApp() {}
 
     virtual void run();
 
+    virtual void resize();
+
+
+  private:
+
+    HexPanel * mainPanel, *statPanel, *conPanel;
+
+    int _conheight, _titleheight, _statheight, _mainheight;
 };
 
 

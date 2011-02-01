@@ -11,6 +11,7 @@ namespace hexes {
 LineInputHandler::LineInputHandler ( int maxlength )
     : _maxlen(maxlength),
       _isReady(false),
+      _echo(true),
       _lines(HEXES_DEFBUFLEN)
 {}
 
@@ -50,7 +51,17 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
     } else if ( ch == KEY_ENTER || ch == 13 ) {
         _isReady = true;
     } else if ( ch >= 32 && ch < 128 ) {
-        p->print(ch);
+        if ( _echo ) {
+            TextList & txtlist = p->getTextList();
+            if (txtlist.size() == 0 ) {
+                std::string  f = "";
+                f.append(1, ch);
+                p->addText(f);
+            } else {
+	        std::string & curline = txtlist.front();
+	        curline.append(1, ch);
+            }
+        }
         _line.append(1, ch);
     }
 
@@ -67,6 +78,19 @@ bool
 LineInputHandler::isReady()
 {
     return _isReady;
+}
+
+bool
+LineInputHandler::echo()
+{
+    return _echo;
+}
+
+
+void
+LineInputHandler::setEcho ( bool echo )
+{
+    _echo = echo;
 }
 
 void

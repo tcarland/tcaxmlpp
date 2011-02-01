@@ -28,18 +28,33 @@ HexApp::~HexApp()
 }
 
 //----------------------------------------------------------------//
+bool
+HexApp::resized()
+{
+    bool resized = false;
+    if ( _row != LINES || _col != COLS )
+    {
+        _col    = COLS;
+        _row    = LINES;
+        resized = true;
+    }
+    return resized;
+}
+
+void
+HexApp::resize()
+{
+
+}
 
 int
 HexApp::draw()
 {
-    int  result   = 0;
-    bool rescaled = false;
+    int  result  = 0;
+    bool resized = false;
 
-    if ( _col != COLS || _row != LINES ) {
-        _col     = COLS;
-        _row     = LINES;
-        rescaled = true;
-    }
+    if ( (resized = this->resized()) == true )
+        this->resize();
 
     StringList  removes;
 
@@ -53,8 +68,8 @@ HexApp::draw()
             continue;
         }
 
-        if ( rescaled )
-            p->resize(_row, _col);
+        //if ( rescaled )
+            //p->resize(_row, _col);
 
         result = p->redraw();
 
@@ -96,6 +111,9 @@ HexApp::poll()
     if ( _curPanel != NULL )
         r = _curPanel->poll();
 
+    if ( r == KEY_RESIZE && this->resized() )
+        this->resize();
+
     if ( r != ERR )
         return r;
 
@@ -106,6 +124,9 @@ HexApp::poll()
         if ( r != ERR )
             break;
     }
+
+    if ( r == KEY_RESIZE && this->resized() )
+        this->resize();
     
     return r;
 }

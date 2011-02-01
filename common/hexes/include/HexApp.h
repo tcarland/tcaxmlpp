@@ -68,6 +68,7 @@ class HexApp {
 
     virtual int  draw();
     virtual int  poll();
+    virtual void resize();
 
 
     HexPanel*    createPanel   ( const std::string & title, 
@@ -82,6 +83,7 @@ class HexApp {
 
     void         timeout       ( int delay_ms );
     bool         hasColor() const;
+    bool         resized();
 
     int          width();
     int          height();

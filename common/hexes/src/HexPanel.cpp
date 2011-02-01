@@ -114,6 +114,7 @@ HexPanel::resize ( int height, int width )
 {
     this->_height = height;
     this->_width  = width;
+    ::wresize(_hwin->_win, height, width);
     if ( this->curY() > height || this->curX() > width )
         this->move(height, width);
     return;
@@ -414,6 +415,12 @@ int
 HexPanel::move ( HexPosition & p )
 {
     return(::wmove(_hwin->_win, p.row, p.col));
+}
+
+int
+HexPanel::moveWindow ( int starty, int startx )
+{
+    return(::mvwin(_hwin->_win, starty, startx));
 }
 
 //----------------------------------------------------------------//

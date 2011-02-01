@@ -11,7 +11,35 @@
 
 namespace hexes {
 
+TestHexApp::TestHexApp()
+    : mainPanel(NULL),
+      statPanel(NULL),
+      conPanel(NULL),
+      _conheight(3),
+      _titleheight(1),
+      _statheight(0),
+      _mainheight(0)
+{}
 
+void
+TestHexApp::resize()
+{
+    int  statstarty, constarty;
+    int  ht = this->height();
+
+    _statheight = (ht * .33) - _conheight;
+    _mainheight = ht - _statheight - _conheight - _titleheight;
+    statstarty  = ht - _statheight - _conheight;
+    constarty   = ht - _conheight;
+
+    mainPanel->resize(_mainheight, this->width());
+    statPanel->resize(_statheight, this->width());
+    conPanel->resize(_conheight, this->width());
+    statPanel->erase();
+    statPanel->moveWindow(statstarty, 0);
+    conPanel->erase();
+    conPanel->moveWindow(constarty, 0);
+}
 
 void
 TestHexApp::run()
@@ -23,7 +51,7 @@ TestHexApp::run()
 
     init_pair(1, COLOR_WHITE, COLOR_BLACK);
 
-    HexPanel *mainPanel, *statPanel, *conPanel; 
+    //HexPanel *mainPanel, *statPanel, *conPanel;
     LineInputHandler * cinput;
 
     mainPanel = this->createPanel("main", LINES-statheight-1-conheight, COLS, 1, 0);
@@ -49,30 +77,36 @@ TestHexApp::run()
 
     std::string cmd;
 
+    conPanel->addText(" > ");
+
     while ( ! alarm ) 
     {
         this->draw();
 
         cmd = "";
-        conPanel->print(" > ", false);
         ch = this->poll();
 
         while ( ! cinput->isReady() ) {
             std::ostringstream  ostr;
             ostr << "ch = " << ch << "   '" << (char) ch << "'";
-            mainPanel->addText(ostr.str());
-            //mainPanel->print(ostr.str(), true);
-            conPanel->refresh();
-            mainPanel->redraw();
+
+            if ( ch >= 32 && ch < 128 )
+                mainPanel->addText(ostr.str());
+
+            this->draw();
 
             ch = this->poll();
+            //if ( ch == KEY_RESIZE )
+                //mainPanel->addText("resized!");
         }
 
         cmd = cinput->getLine();
+        conPanel->setText(" > ");
 
         if ( cmd.size() > 0 )
             statPanel->addText(cmd);
-        statPanel->redraw();
+
+        //statPanel->redraw();
 
         if ( cmd.compare("/quit") == 0 )
             alarm = true;

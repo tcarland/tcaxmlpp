@@ -66,6 +66,7 @@ class HexPanel {
     int                 wrap();
     int                 move         ( int y, int x );
     int                 move         ( HexPosition & p );
+    int                 moveWindow   ( int starty, int startx );
 
     int                 width();
     int                 height();

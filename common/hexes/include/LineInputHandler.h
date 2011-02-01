@@ -24,8 +24,11 @@ class LineInputHandler : public HexInputInterface {
     virtual int  handleInput ( HexPanel * p, int ch );
 
     std::string& getLine();
-    bool         isReady();
 
+    bool         isReady();
+    bool         echo();
+
+    void         setEcho     ( bool echo );
     void         keepHistory ( int lines );
 
   protected:
@@ -35,6 +38,7 @@ class LineInputHandler : public HexInputInterface {
     std::string  _line;
     int          _maxlen;
     bool         _isReady;
+    bool         _echo;
 
     InputList    _history;
     size_t       _lines;
