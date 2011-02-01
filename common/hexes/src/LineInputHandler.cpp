@@ -49,7 +49,7 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
         ;
     } else if ( ch == KEY_ENTER || ch == 13 ) {
         _isReady = true;
-    } else {
+    } else if ( ch >= 32 && ch < 128 ) {
         p->print(ch);
         _line.append(1, ch);
     }
