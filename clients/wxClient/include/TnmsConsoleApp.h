@@ -31,15 +31,17 @@ using namespace tnmsCore;
 
 namespace tnmsconsole {
 
+#define MAX_SENDERR_CNT  5
 
+class ClientTreeMutex;
+class ClientIOThread;
 
 typedef std::map<std::string, TnmsAPI*>    ApiMap;
 typedef ApiMap::iterator                   ApiIter;
 typedef std::pair<ApiIter, bool>           ApiMapInsert;
 typedef std::vector<std::string>           CommandList;
+typedef std::map<std::string, TnmsClient*> ClientMap;
 
-
-#define MAX_SENDERR_CNT  5
 
 
 class TnmsConsoleApp : public hexes::HexApp {
@@ -84,10 +86,13 @@ class TnmsConsoleApp : public hexes::HexApp {
 
     HexPanel          * _mainPanel, *_statPanel, *_conPanel;
 
-    TnmsTree          * _tree;
+    ClientTreeMutex   * _mtree;
+    ClientIOThread    * _iomgr;
 
     ApiMap              _apis;
     ApiMap::iterator    _showI;
+
+    ClientMap           _clients;
 
     std::string         _title, _prompt;
     bool                _alarm, _stop;

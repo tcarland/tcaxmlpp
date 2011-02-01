@@ -3,8 +3,9 @@
 #include <time.h>
 #include <sstream>
 
-
 #include "TnmsConsoleApp.h"
+#include "ClientTreeMutex.h"
+#include "ClientIOThread.h"
 
 #include "StringUtils.h"
 using namespace tcanetpp;
@@ -18,11 +19,13 @@ TnmsConsoleApp::TnmsConsoleApp()
     : _mainPanel(NULL),
       _statPanel(NULL),
       _conPanel(NULL),
-      _tree(new TnmsTree()),
+      _mtree(new ClientTreeMutex()),
+      _iomgr(new ClientIOThread(_mtree)),
       _alarm(false),
       _stop(false)
 {
     _showI = _apis.end();
+    _iomgr->start();
 }
 
 TnmsConsoleApp::~TnmsConsoleApp()
@@ -324,8 +327,7 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
             msg << "no connection ";
             //continue;
         }
-        _prompt = "[tnms : " + _showI->first + "]";
-        _prompt.append("> ");
+        _prompt = "[tnms : " + _showI->first + "]> ";
     }
     else if ( (cmd.compare("help") == 0) || (cmd.compare("?") == 0) )
     {
@@ -414,8 +416,9 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
     //  New Client
     if ( cmd.compare("new") == 0 ) 
     {
-        if ( cmdlist.size() < 5 ) {
-            _statPanel->addText("Error in client command");
+        if ( cmdlist.size() < 5 )
+        {
+            _statPanel->addText("Syntax error in client command");
             return;
         }
 
@@ -540,15 +543,20 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
 bool
 TnmsConsoleApp::createClient ( const std::string & name, const std::string & host, uint16_t port )
 {
-    TnmsClient * client = new TnmsClient(this->_tree);
+    TnmsTree   * tree   = _mtree->acquireTree();
+
+    if ( tree == NULL )
+        return false;
+
+    TnmsClient * client = new TnmsClient(tree);
 
     if ( client->openConnection(host, port) < 0 )
         return false;
 
+    _mtree->releaseTree();
     client->setClientLogin("tnms-console", "tnmsconsole11b");
-    _clientHandler->insert(name, client);
-    _evmgr->addIOEvent(_clientHandler, client->getDescriptor(), client);
-
+    _clients[name] = client;
+    _iomgr->addClient(client);
     _statPanel->addText("Created new client: " + client->getHostStr());
 
     return true;
@@ -558,7 +566,15 @@ TnmsConsoleApp::createClient ( const std::string & name, const std::string & hos
 bool
 TnmsConsoleApp::removeClient ( const std::string & name )
 {
-    _clientHandler->erase(name);
+    ClientMap::iterator cIter;
+
+    cIter = _clients.find(name);
+    if ( cIter == _clients.end() )
+        return false;
+
+    _iomgr->removeClient(cIter->second);
+    _clients.erase(cIter);
+
     return true;
 }
 
