@@ -16,7 +16,8 @@ INCLUDES=       -Iinclude
 
 BIN=		tconsole
 
-CL_OBJS=	src/ClientTreeMutex.o src/ClientIOThread.o src/ClientIOHandler.o
+CL_OBJS=	src/ClientSubscriber.o src/ClientTreeMutex.o \
+		src/ClientIOThread.o src/ClientIOHandler.o
 
 OBJS=		src/TnmsConsoleApp.o  \
 		src/tconsole.o
