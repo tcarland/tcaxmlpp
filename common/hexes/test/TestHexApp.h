@@ -18,6 +18,8 @@ class TestHexApp : public HexApp {
 
     virtual void run();
 
+  protected:
+
     virtual void resize();
 
 

@@ -16,11 +16,15 @@ namespace tnmsconsole {
 TnmsConsoleApp::TnmsConsoleApp() 
     : _mainPanel(NULL),
       _statPanel(NULL),
-      _conPanel(NULL),
+      _consPanel(NULL),
       _mtree(new ClientTreeMutex()),
       _iomgr(new ClientIOThread(_mtree)),
       _alarm(false),
-      _stop(false)
+      _stop(false),
+      _tht(1),
+      _mainht(0),
+      _statht(0),
+      _consht(3)
 {
     _showI = _apis.end();
     _iomgr->start();
@@ -28,8 +32,32 @@ TnmsConsoleApp::TnmsConsoleApp()
 
 TnmsConsoleApp::~TnmsConsoleApp()
 {
-    delete _mtree;
     delete _iomgr;
+    delete _mtree;
+}
+
+void
+TnmsConsoleApp::resize()
+{
+    int staty, consy, ht;
+
+    ht      = this->height();
+    _statht = (ht * .33) - _consht;
+    _mainht = ht - _statht - _consht - _tht;
+    staty   = ht - _statht - _consht;
+    consy   = ht - _consht;
+
+    _mainPanel->resize(_mainht, this->width());
+
+    _statPanel->resize(_statht, this->width());
+    _statPanel->erase();
+    _statPanel->moveWindow(staty, 0);
+
+    _consPanel->resize(_consht, this->width());
+    _consPanel->erase();
+    _consPanel->moveWindow(consy, 0);
+
+    return;
 }
 
 
@@ -44,23 +72,25 @@ TnmsConsoleApp::run()
 
     _mainPanel = this->createPanel("main", (this->height() - statht - conht - 1), this->width(), 1, 0);
     _statPanel = this->createPanel("status", statht, this->width(), (this->height() - statht - conht), 0);
-    _conPanel  = this->createPanel("console", conht, this->width(), (this->height() - conht), 0);
+    _consPanel = this->createPanel("console", conht, this->width(), (this->height() - conht), 0);
 
     _mainPanel->enableScroll(true);
     _statPanel->enableScroll(true);
-    _conPanel->enableScroll(true);
+    _consPanel->enableScroll(true);
 
-    _conPanel->drawBorder(false);
-    _conPanel->drawTitle(false);
-    _conPanel->setInputHandler(new LineInputHandler());
+    _consPanel->drawBorder(false);
+    _consPanel->drawTitle(false);
+    _consPanel->setInputHandler(new LineInputHandler());
+    _consPanel->setOutputHandler(new LineOutputHandler());
 
-    this->setTopPanel(_conPanel);
+    this->setTopPanel(_consPanel);
 
     _prompt = "[tnms]> ";
     _title  = " TnmsConsole ";
     this->print(0, 1, _title);
+    _consPanel->addText(_prompt);
 
-    LineInputHandler * conin = (LineInputHandler*) _conPanel->getInputHandler();
+    LineInputHandler * conin = (LineInputHandler*) _consPanel->getInputHandler();
 
     std::string  cmd;
 
@@ -69,19 +99,21 @@ TnmsConsoleApp::run()
         this->draw();
 
         cmd = "";
-        _conPanel->print(_prompt, false);
-
-        ch = this->poll();
+        ch  = this->poll();
 
         while ( ! conin->isReady() ) {
+            this->draw();
             ch = this->poll();
         }
 
         cmd = conin->getLine();
+        _consPanel->setText(_prompt);
 
         if ( cmd.size() > 0 )
             this->processCmd(cmd);
     }
+
+    _iomgr->stop();
 
     return;
 }
@@ -602,6 +634,8 @@ void
 TnmsConsoleApp::setAlarm()
 {
     _alarm = true;
+    if ( _iomgr )
+        _iomgr->setAlarm();
 }
 
 

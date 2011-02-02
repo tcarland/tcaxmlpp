@@ -99,8 +99,6 @@ TestHexApp::run()
             this->draw();
 
             ch = this->poll();
-            //if ( ch == KEY_RESIZE )
-                //mainPanel->addText("resized!");
         }
 
         cmd = cinput->getLine();

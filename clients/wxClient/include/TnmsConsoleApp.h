@@ -63,6 +63,8 @@ class TnmsConsoleApp : public hexes::HexApp {
 
   protected:
 
+    virtual void  resize();
+
     bool          processCmd       ( const std::string & cmd );
     void          processClientCmd ( CommandList & cmdlist );
 
@@ -85,10 +87,9 @@ class TnmsConsoleApp : public hexes::HexApp {
     static bool   GetQuotedString  ( size_t indx, CommandList & cmdlist, 
                                      std::string & str );
 
-
   private:
 
-    HexPanel          * _mainPanel, *_statPanel, *_conPanel;
+    HexPanel          * _mainPanel, *_statPanel, *_consPanel;
 
     ClientTreeMutex   * _mtree;
     ClientIOThread    * _iomgr;
@@ -100,6 +101,7 @@ class TnmsConsoleApp : public hexes::HexApp {
 
     std::string         _title, _prompt;
     bool                _alarm, _stop;
+    int                 _tht, _mainht, _statht, _consht;
 
 };
 
