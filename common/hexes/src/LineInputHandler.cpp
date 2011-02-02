@@ -33,12 +33,17 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
 
     if ( ch == KEY_BACKSPACE || ch == 127 ) {
         if ( _line.size() > 0 ) {
-	        int x = p->curX();
-	        p->move(p->curY(), x-1);
-	        p->print(' ');
-	        p->move(p->curY(), x-1);
-	        p->refresh();
-	        _line.erase(_line.size() - 1);
+            TextList    & txtlist = p->getTextList();
+            std::string & curline = txtlist.front();
+            curline.erase(curline.size() - 1);
+	    _line.erase(_line.size() - 1);
+
+	    int x = p->curX();
+	    p->move(p->curY(), x-1);
+	   // p->print(' ');
+	    //p->move(p->curY(), x-1);
+	    //p->refresh();
+	    //p->redraw();
         }
     } else if ( ch == KEY_UP ) {
         ; // cmd history

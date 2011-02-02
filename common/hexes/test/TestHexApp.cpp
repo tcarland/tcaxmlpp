@@ -25,7 +25,9 @@ void
 TestHexApp::resize()
 {
     int  statstarty, constarty;
-    int  ht = this->height();
+    int  ht;
+
+    ht = this->height();
 
     _statheight = (ht * .33) - _conheight;
     _mainheight = ht - _statheight - _conheight - _titleheight;
@@ -51,7 +53,8 @@ TestHexApp::run()
 
     init_pair(1, COLOR_WHITE, COLOR_BLACK);
 
-    //HexPanel *mainPanel, *statPanel, *conPanel;
+    this->setCursor(1);
+
     LineInputHandler * cinput;
 
     mainPanel = this->createPanel("main", LINES-statheight-1-conheight, COLS, 1, 0);

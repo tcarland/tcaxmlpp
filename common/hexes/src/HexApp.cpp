@@ -50,10 +50,9 @@ HexApp::resize()
 int
 HexApp::draw()
 {
-    int  result  = 0;
-    bool resized = false;
+    int  result = 0;
 
-    if ( (resized = this->resized()) == true )
+    if ( this->resized() )
         this->resize();
 
     StringList  removes;
@@ -67,9 +66,6 @@ HexApp::draw()
             removes.push_back(pIter->first);
             continue;
         }
-
-        //if ( rescaled )
-            //p->resize(_row, _col);
 
         result = p->redraw();
 
@@ -93,6 +89,10 @@ HexApp::draw()
     
     //set current panel
     //reset cursor pos.
+    if ( _curPanel ) {
+        this->setTopPanel(_curPanel);
+        _curPanel->move(_curPanel->curY(), _curPanel->curX());
+    }
     
     ::update_panels();
     ::doupdate();
@@ -297,6 +297,12 @@ int
 HexApp::getMaxHeight()
 {
     return this->height();
+}
+
+int
+HexApp::setCursor ( int state )
+{
+    return ::curs_set(state);
 }
 
 //----------------------------------------------------------------//

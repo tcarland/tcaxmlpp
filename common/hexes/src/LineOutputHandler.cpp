@@ -7,6 +7,11 @@
 namespace hexes {
 
 
+LineOutputHandler::LineOutputHandler ( bool newline )
+    : _newline(newline)
+{}
+
+
 int
 LineOutputHandler::handleOutput ( HexPanel * panel )
 {
@@ -31,7 +36,7 @@ LineOutputHandler::handleOutput ( HexPanel * panel )
 
         panel->print(*tIter);
 
-        if ( ln < ht && (size_t) ln != tlist.size() )
+        if ( ln < ht && (size_t) ln != tlist.size() && _newline )
             panel->wrap();
         else
             panel->move(panel->curY(), 1);
@@ -41,6 +46,19 @@ LineOutputHandler::handleOutput ( HexPanel * panel )
     return 1;
 }
 
+
+bool
+LineOutputHandler::newline() const
+{
+    return this->_newline;
+}
+
+
+void
+LineOutputHandler::setNewline ( bool newline )
+{
+    _newline = newline;
+}
 
 } // namespace
 

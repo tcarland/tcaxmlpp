@@ -63,12 +63,16 @@ class HexApp {
     HexApp();
     virtual ~HexApp();
 
+  protected:
+
+    virtual void resize();
+
+  public:
 
     virtual void run() {}
 
     virtual int  draw();
     virtual int  poll();
-    virtual void resize();
 
 
     HexPanel*    createPanel   ( const std::string & title, 
@@ -89,6 +93,8 @@ class HexApp {
     int          height();
     int          getMaxWidth();
     int          getMaxHeight();
+
+    int          setCursor     ( int state );
 
     int          print         ( int y, int x, 
                                  const std::string & str );

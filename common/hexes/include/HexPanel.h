@@ -19,7 +19,11 @@ class HexInputInterface;
 #define DEFAULT_SCRLBK_SIZE  25
 #define MAX_SCRLBK_SIZE      65535
 
-
+enum TextLineAttribute {
+    HEX_LINE_NONEWLINE,
+    HEXLINE_NEWLINE,
+    HEXLINE_BOLD
+};
 typedef std::list<std::string> TextList;
 
 
