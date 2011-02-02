@@ -17,7 +17,8 @@ using namespace tnmsconsole;
 void sigHandler ( int signal )
 {
     if ( signal == SIGINT || signal == SIGTERM )
-        std::cout << "Interrupt caught. Use 'quit' to exit." << std::endl;
+        ;
+        //std::cout << "Interrupt caught. Use 'quit' to exit." << std::endl;
     return;
 }
 

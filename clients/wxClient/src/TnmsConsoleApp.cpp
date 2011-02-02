@@ -13,6 +13,8 @@ using namespace tcanetpp;
 namespace tnmsconsole {
 
 
+
+
 TnmsConsoleApp::TnmsConsoleApp() 
     : _mainPanel(NULL),
       _statPanel(NULL),
@@ -30,11 +32,13 @@ TnmsConsoleApp::TnmsConsoleApp()
     _iomgr->start();
 }
 
+
 TnmsConsoleApp::~TnmsConsoleApp()
 {
     delete _iomgr;
     delete _mtree;
 }
+
 
 void
 TnmsConsoleApp::resize()
@@ -205,9 +209,9 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
     }
     else if ( cmd.compare("list") == 0 )   // LIST
     {
-        _statPanel->addText("TnmsAPI List:");
+        _mainPanel->addText("TnmsAPI List:");
         for ( aIter = _apis.begin(); aIter != _apis.end(); ++aIter ) 
-            _statPanel->addText(aIter->first);
+            _mainPanel->addText(aIter->first);
     }
     else if ( cmd.compare("set") == 0 )  // SET
     {
@@ -491,12 +495,27 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
             SubscriptionList  &  subs = cIter->second->getSubscriptionList();
             SubscriptionList::iterator sIter;
 
-            _statPanel->addText("Subscription List for " + cIter->second->getHostStr());
+            _mainPanel->addText("Subscription List for " + cIter->second->getHostStr());
             for ( sIter = subs.begin(); sIter != subs.end(); ++sIter )
-                _statPanel->addText("  Sub> " + sIter->getElementName());
+                _mainPanel->addText("  Sub> " + sIter->getElementName());
         }
-       // else
-            //_clientHandler->listClients();
+        else
+        {
+            _mainPanel->addText("Current clients:");
+            for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
+            {
+                std::ostringstream  sstr;
+                TnmsClient * client = cIter->second;
+                sstr << "  '" << cIter->first << "' : " << client->getHostStr();
+                if ( client->isConnected() )
+                    sstr << " <connected>";
+                else
+                    sstr << " <not connected>";
+                _mainPanel->addText(sstr.str());
+            }
+            if ( _clients.size() == 0 )
+                _mainPanel->addText( " -- no clients --");
+        }
     }
     else if ( StringUtils::startsWith(cmd, "sub") )
     {
@@ -560,15 +579,15 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
         name = cmdlist.at(2);
         
         if ( ! tree->request(name, metric) ) {
-            _statPanel->addText(" Metric not found for " + name);
+            _mainPanel->addText(" Metric not found for " + name);
         } else {
-            _statPanel->addText(" Node: " + metric.getElementName());
+            _mainPanel->addText(" Node: " + metric.getElementName());
             if ( metric.getValueType() == TNMS_STRING ) {
                 const std::string & valstr = metric.getValue();
-                _statPanel->addText("    Value = " + valstr);
+                _mainPanel->addText("    Value = " + valstr);
             } else {
                 uint64_t val = metric.getValue<uint64_t>();
-                _statPanel->addText("    Value = " + StringUtils::toString(val));
+                _mainPanel->addText("    Value = " + StringUtils::toString(val));
             }
         }
         _mtree->releaseTree();
@@ -598,7 +617,7 @@ TnmsConsoleApp::createClient ( const std::string & name, const std::string & hos
     client->setClientLogin("tnms-console", "tnmsconsole11b");
     _clients[name] = client;
     _iomgr->addClient(client);
-    _statPanel->addText("Created new client: " + client->getHostStr());
+    _mainPanel->addText("Created new client: " + client->getHostStr());
 
     return true;
 }
@@ -624,6 +643,7 @@ void
 TnmsConsoleApp::startClientProcessing()
 {
 }
+
 
 void
 TnmsConsoleApp::stopClientProcessing()
@@ -701,7 +721,7 @@ TnmsConsoleApp::sendAPIUpdates ( TnmsAPI * api, const time_t & now )
         }
     } while ( (retval > 0 && errcnt < MAX_SENDERR_CNT) );
 
-    //LogFacility::LogToStream("console", logmsg.str());
+    _statPanel->addText(logmsg.str());
 
     return retval;
 }
