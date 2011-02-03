@@ -1,4 +1,4 @@
-TOPDIR = ../..
+TOPDIR = ../../..
 
 NEED_PTHREADS = 1
 NEED_ZLIB = 1
@@ -12,26 +12,25 @@ OPT_FLAGS= 	-g
 endif
 
 LIBS=
-INCLUDES=       -Iinclude
+INCLUDES=       -I../include -I.
 
-BIN=		tconsole
+BIN=		tnms-console
 
-CL_OBJS=	src/ClientSubscriber.o src/ClientTreeMutex.o \
-		src/ClientIOThread.o src/ClientIOHandler.o
+CL_OBJS=	../src/ClientSubscriber.o ../src/ClientTreeMutex.o \
+		../src/ClientIOThread.o ../src/ClientIOHandler.o
 
-OBJS=		src/TnmsConsoleApp.o  \
-		src/tconsole.o
+OBJS=		TnmsConsoleApp.o  tnmsconsole.o
 
 ALL_OBJS=	$(OBJS)
 ALL_BINS=	$(BIN)
 
 
-all: tconsole
+all: tnms-console
 
 include $(TOPDIR)/tcamake/project_defs
 
 
-tconsole: $(CL_OBJS) $(OBJS)
+tnms-console: $(CL_OBJS) $(OBJS)
 	$(make-cxxbin-rule)
 
 clean:

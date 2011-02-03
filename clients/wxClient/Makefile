@@ -2,13 +2,6 @@
 #
 #
 
-# TOPDIR is the relative path to our workspace root
-# where /tcamake should exist.
-#
-# The following ifdef is used for extracting the Makefile 
-# into a standalone project. See 'build.sh' for extracting
-# solo distributions.  In most cases this is not necessary, 
-# simply set TOPDIR to the relative root and compile.
 ifdef TCAMAKE_PROJECT
     TOPDIR = ../..
 else
@@ -41,7 +34,7 @@ ALL_OBJS=	$(OBJS)
 ALL_BINS=	$(BIN)
 
 
-all: TnmsWxClient
+all: TnmsWxClient tnmsconsole
 
 
 include $(TOPDIR)/tcamake/project_defs
@@ -49,6 +42,10 @@ include $(TOPDIR)/tcamake/project_defs
 
 TnmsWxClient: $(OBJS)
 	$(make-cxxbin-rule)
+	@echo
+
+tnmsconsole:
+	( cd tnms-console; make all )
 	@echo
 
 .PHONY: test
