@@ -48,15 +48,23 @@ tnmsconsole:
 	( cd tnms-console; make all )
 	@echo
 
+tnmsconsole-clean:
+	( cd tnms-console; make clean )
+	@echo
+
+tnmsconsole-distclean:
+	( cd tnms-console; make distclean )
+	@echo
+
 .PHONY: test
 test:
 
-clean:
+clean: tnmsconsole-clean
 	$(RM) $(ALL_OBJS) \
 	*.d *.D *.o src/*.d src/*.D src/*.bd src/*.o
 	@echo
 
-distclean: clean
+distclean: clean tnmsconsole-distclean
 	$(RM) $(ALL_BINS)
 	@echo
 
