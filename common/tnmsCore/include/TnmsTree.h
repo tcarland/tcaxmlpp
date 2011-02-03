@@ -40,6 +40,7 @@ class TnmsTree {
 
     typedef std::set<Node*>                         NodeSet;
     typedef std::set<std::string>                   StringSet;
+    typedef std::list<std::string>                  StringList;
     typedef std::map<std::string, Node*>            NameNodeMap;
 
 
@@ -84,6 +85,8 @@ class TnmsTree {
 
     void       debugDump() const;
     void       debugDump        ( const std::string  & name ) const;
+    void       debugDump        ( const std::string  & name,
+                                  StringList         & strlist) const;
 
     void       getRootNames     ( StringSet     & rootnames ) const;
 

@@ -673,6 +673,31 @@ TnmsTree::debugDump ( const std::string & name ) const
     return;
 }
 
+void
+TnmsTree::debugDump ( const std::string & name, StringList & strlist ) const
+{
+    Node * node = _tree->find(name);
+
+    if ( node == NULL )
+        return;
+
+    BreadthOrdering flattenedTree;
+    _tree->depthFirstTraversal(node, flattenedTree);
+
+    std::list<TnmsTree::Node*>::iterator  nIter;
+
+    for ( nIter = flattenedTree.nodes.begin(); nIter != flattenedTree.nodes.end(); ++nIter )
+    {
+        LogFacility::Message msg;
+        msg << "    Node: " << "  " << (*nIter)->getValue().metric.getElementName();
+        if ( (*nIter)->getValue().erase )
+            msg << " <ERASED>";
+        strlist.push_back(msg.str());
+    }
+
+    return;
+}
+
 
 } // namespace
 
