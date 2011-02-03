@@ -14,7 +14,7 @@ using namespace tcanetpp;
 namespace tnmsconsole {
 
 
-struct BreadthOrdering {
+struct NodeDumpPredicate {
     std::list<TnmsTree::Node*> nodes;
     void operator() ( TnmsTree::Node * node )
     {
@@ -569,8 +569,15 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
         else
             name = cmdlist.at(2);
 
-        //_tree->debugDump(name);
-        _statPanel->addText(" ");
+        TnmsTree::StringList  strlist;
+        TnmsTree::StringList::iterator sIter;
+        TnmsTree * tree = _mtree->acquireTree();
+
+        tree->debugDump(name, strlist);
+
+        _mainPanel->addText("dump " + name);
+        for ( sIter = strlist.begin(); sIter != strlist.end(); ++sIter )
+            _mainPanel->addText(*sIter);
     }
     else if ( cmd.compare("show") == 0 ) 
     {
