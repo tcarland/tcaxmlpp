@@ -19,23 +19,23 @@ INSERT INTO tnmsauthd.groups (name, description)
 
 
 INSERT INTO tnmsauthd.users ( gid, authtype_id, username, password, is_agent, internal )
-    VALUES (1, 1, "tcanms", "tcanms11b", 0, 1);
+    VALUES (1, 1, "tnms", "tnms11b", 0, 1);
 
 INSERT INTO tnmsauthd.users ( gid, authtype_id, username, password, is_agent, internal )
-    VALUES (1, 1, "tcanms/tnmsauth-master", "tnmsauth11b", 1, 1);
+    VALUES (1, 1, "tnms/tnmsauth-master", "tnmsauth11b", 1, 1);
 
 INSERT INTO tnmsauthd.users ( gid, authtype_id, username, password, is_agent, internal )
-    VALUES (2, 1, "tcanms/tnms-console", "tnmsconsole11b", 1, 1);
+    VALUES (2, 1, "tnms/tnms-console", "tnmsconsole11b", 1, 1);
 
 INSERT INTO tnmsauthd.users ( gid, authtype_id, username, password, is_agent, internal )
-    VALUES (1, 1, "tcanms/tnmsd/devserver_a", "tnmsd11b", 1, 1);
+    VALUES (1, 1, "tnms/tnmsd/devserver_a", "tnmsd11b", 1, 1);
 INSERT INTO tnmsauthd.users ( gid, authtype_id, username, password, is_agent, internal )
-    VALUES (1, 1, "tcanms/tnmsd/devserver_b", "tnmsd11b", 1, 1);
+    VALUES (1, 1, "tnms/tnmsd/devserver_b", "tnmsd11b", 1, 1);
 INSERT INTO tnmsauthd.users ( gid, authtype_id, username, password, is_agent, internal )
-    VALUES (1, 1, "tcanms/tnmsd/devserver_c", "tnmsd11b", 1, 1);
+    VALUES (1, 1, "tnms/tnmsd/devserver_c", "tnmsd11b", 1, 1);
 
 INSERT INTO tnmsauthd.users ( gid, authtype_id, username, password, is_agent, internal )
-    VALUES (1, 1, "tcanms/tnmsarchiver/tcanms", "tnmsarchive11b", 1, 1);
+    VALUES (1, 1, "tnms/tnmsarchiver/tcanms", "tnmsarchive11b", 1, 1);
 
 INSERT INTO tnmsauthd.mgr_usergroups ( mgr_uid, mgr_gid, is_superuser, grant_rights )
     VALUES (1, 1, 1, 1);

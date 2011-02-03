@@ -436,7 +436,7 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
     }
 
     if ( ! msg.str().empty() )
-        _statPanel->addText(msg.str());
+        _mainPanel->addText(msg.str());
             
     return true;
 }
