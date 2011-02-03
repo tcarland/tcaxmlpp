@@ -68,7 +68,7 @@ test:
 
 clean: test-clean
 	$(RM) $(ALL_OBJS) \
-	*.d *.D *.o src/*.d src/*.D src/*.bd src/*.o
+	*.d *.bd *.D *.o src/*.d src/*.D src/*.bd src/*.o lib/*.bd
 	@echo
 	
 test-clean:

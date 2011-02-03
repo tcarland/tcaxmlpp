@@ -37,22 +37,6 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `tnmsauthd`.`authorizations`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `tnmsauthd`.`authorizations` ;
-
-CREATE  TABLE IF NOT EXISTS `tnmsauthd`.`authorizations` (
-  `subtree_id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
-  `subtree_name` VARCHAR(255) NOT NULL ,
-  `isInclude` TINYINT NOT NULL ,
-  `description` VARCHAR(255) NULL DEFAULT NULL ,
-  PRIMARY KEY (`subtree_id`) ,
-  INDEX `subtree_idx` (`subtree_id` ASC, `subtree_name` ASC) )
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
-
-
--- -----------------------------------------------------
 -- Table `tnmsauthd`.`users`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `tnmsauthd`.`users` ;
@@ -154,6 +138,22 @@ CREATE  TABLE IF NOT EXISTS `tnmsauthd`.`mgr_usergroups` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `tnmsauthd`.`authorizations`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `tnmsauthd`.`authorizations` ;
+
+CREATE  TABLE IF NOT EXISTS `tnmsauthd`.`authorizations` (
+  `subtree_id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `subtree_name` VARCHAR(255) NOT NULL ,
+  `isInclude` TINYINT NOT NULL ,
+  `description` VARCHAR(255) NULL DEFAULT NULL ,
+  PRIMARY KEY (`subtree_id`) ,
+  INDEX `subtree_idx` (`subtree_id` ASC, `subtree_name` ASC) )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
