@@ -2,6 +2,7 @@
 
 #include <time.h>
 #include <sstream>
+#include <list>
 
 #include "TnmsConsoleApp.h"
 
@@ -13,6 +14,13 @@ using namespace tcanetpp;
 namespace tnmsconsole {
 
 
+struct BreadthOrdering {
+    std::list<TnmsTree::Node*> nodes;
+    void operator() ( TnmsTree::Node * node )
+    {
+        nodes.push_front(node);
+    }
+};
 
 
 TnmsConsoleApp::TnmsConsoleApp() 
@@ -43,9 +51,9 @@ TnmsConsoleApp::~TnmsConsoleApp()
 void
 TnmsConsoleApp::resize()
 {
-    int staty, consy, ht;
+    int staty, consy;
 
-    ht      = this->height();
+    int ht  = this->height();
     _statht = (ht * .33) - _consht;
     _mainht = ht - _statht - _consht - _tht;
     staty   = ht - _statht - _consht;
@@ -72,8 +80,12 @@ TnmsConsoleApp::run()
     int  statht = (this->height() * .33) - conht;
     int  ch;
 
+    LineInputHandler * conin;
+
     init_pair(1, COLOR_WHITE, COLOR_BLACK);
 
+    _prompt    = "[tnms]> ";
+    _title     = " tnms-console ";
     _mainPanel = this->createPanel("main", (this->height() - statht - conht - 1), this->width(), 1, 0);
     _statPanel = this->createPanel("status", statht, this->width(), (this->height() - statht - conht), 0);
     _consPanel = this->createPanel("console", conht, this->width(), (this->height() - conht), 0);
@@ -86,15 +98,12 @@ TnmsConsoleApp::run()
     _consPanel->drawTitle(false);
     _consPanel->setInputHandler(new LineInputHandler());
     _consPanel->setOutputHandler(new LineOutputHandler());
-
-    this->setTopPanel(_consPanel);
-
-    _prompt = "[tnms]> ";
-    _title  = " TnmsConsole ";
-    this->print(0, 1, _title);
     _consPanel->addText(_prompt);
 
-    LineInputHandler * conin = (LineInputHandler*) _consPanel->getInputHandler();
+    this->setTopPanel(_consPanel);
+    this->print(0, 1, _title);
+
+    conin   = (LineInputHandler*) _consPanel->getInputHandler();
 
     std::string  cmd;
 
@@ -149,8 +158,7 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
 
     // CREATE
     if ( cmd.compare("create") == 0 )
-    {
-        // create instance
+    {   // create instance
         if ( cmdlist.size() < 3 ) {
             msg << "Error: invalid syntax ";
             _statPanel->addText(msg.str());
@@ -167,7 +175,6 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
         }
 
         TnmsAPI * api = new TnmsAPI(agentname);
-        api->set_debug(true);
 
         if ( cmdlist.size() == 4 ) {
             cfgfile = cmdlist.at(3);
@@ -175,14 +182,15 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
         }
         
         ApiMapInsert  insertR = _apis.insert(ApiMap::value_type(name, api));
+
         if ( ! insertR.second ) {
             msg << "Error: Insert failed for '" << name << "' ";
             _statPanel->addText(msg.str());
             return false;
         }
-        _showI = insertR.first;
 
-        this->_prompt = "[tnms : " + _showI->first + "]> ";
+        _showI  = insertR.first;
+        _prompt = "[tnms : " + _showI->first + "]> ";
     } 
     else if ( cmd.compare("destroy") == 0 )  // DESTROY
     {
@@ -240,6 +248,7 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
             _statPanel->addText(msg.str());
             return false;
         }
+
         if ( _showI == _apis.end() ) {
             msg << "No valid instance in this context.";
             _statPanel->addText(msg.str());
@@ -267,6 +276,7 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
             _statPanel->addText(msg.str());
             return false;
         }
+
         if ( _showI == _apis.end() ) {
             msg << "No valid instance in this context ";
             _statPanel->addText(msg.str());
@@ -289,8 +299,8 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
             _statPanel->addText(msg.str());
             return false;
         }
-    } // UPDATE_S
-    else if ( cmd.compare("update_s") == 0 )
+    }
+    else if ( cmd.compare("update_s") == 0 )  // UPDATE_S
     {
         if ( cmdlist.size() < 3 ) {
             msg << "Error: invalid syntax ";
@@ -324,8 +334,8 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
             _statPanel->addText(msg.str());
             return false;
         }
-    } // REMOVE
-    else if ( cmd.compare("remove") == 0 )
+    }
+    else if ( cmd.compare("remove") == 0 )  // REMOVE
     {
         if ( cmdlist.size() < 2 ) {
             msg << "Error: invalid syntax for remove";
@@ -346,8 +356,8 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
             _statPanel->addText(msg.str());
             return false;
         }
-    } // SEND
-    else if ( cmd.compare("send") == 0 )
+    }
+    else if ( cmd.compare("send") == 0 ) // SEND
     {
         // send updates
         if ( _showI == _apis.end() ) {
@@ -374,7 +384,6 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
             _statPanel->addText(msg.str());
             return false;
         }
-        
         // dump tree
     } 
     else if ( cmd.compare("quit") == 0 ) 
@@ -383,8 +392,8 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
             this->startClientProcessing();
         this->setAlarm();
         return true;
-    } // CLIENT
-    else if ( cmd.compare("client") == 0 )
+    }
+    else if ( cmd.compare("client") == 0 )  // CLIENT subcommands
     {
         if ( cmdlist.size() < 2 ) {
             msg << "Error: invalid syntax ";
@@ -447,7 +456,6 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
 
     cmd = cmdlist.at(1);
 
-    // 
     //  New Client
     if ( cmd.compare("new") == 0 ) 
     {
@@ -466,8 +474,7 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
         if ( ! this->createClient(tag, name, port) )
             _statPanel->addText("Failed to create new client");
 
-    }
-    // Delete Client
+    } // Delete Client
     else if ( StringUtils::startsWith(cmd, "del") )
     {
          _statPanel->addText(" client delete");
@@ -614,7 +621,9 @@ TnmsConsoleApp::createClient ( const std::string & name, const std::string & hos
         return false;
 
     _mtree->releaseTree();
+
     client->setClientLogin("tnms-console", "tnmsconsole11b");
+
     _clients[name] = client;
     _iomgr->addClient(client);
     _mainPanel->addText("Created new client: " + client->getHostStr());
@@ -742,8 +751,7 @@ TnmsConsoleApp::sleeps ( int secs )
 void
 TnmsConsoleApp::DisplayHelp()
 {
-    _mainPanel->addText(" tnms_console - a command-line agent process ");
-    _mainPanel->addText("Usage: tnms-console [-noprompt] [script file]");
+    _mainPanel->addText(" tnms_console - a command-line tnms agent/client");
     _mainPanel->addText(" ");
     _mainPanel->addText("TnmsAPI Instance commands:");
     _mainPanel->addText(" create [tag] [agent-name] [cfg]    =  Creates a new instance.");
@@ -767,7 +775,7 @@ TnmsConsoleApp::DisplayHelp()
     _mainPanel->addText(" client browse [name]               =  list subtree by 'name' ");
     _mainPanel->addText(" client dump   [name]               =  dump subtree by 'name' ");
     _mainPanel->addText(" client show   [name]               =  display the current metric for 'name' ");
-    _mainPanel->redraw();
+    //_mainPanel->redraw();
 }
 
 bool

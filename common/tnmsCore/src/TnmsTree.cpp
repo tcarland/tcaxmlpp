@@ -188,6 +188,7 @@ TnmsTree::add ( const std::string & name )
     return true;
 }
 
+
 bool
 TnmsTree::exists ( const std::string & name )
 {

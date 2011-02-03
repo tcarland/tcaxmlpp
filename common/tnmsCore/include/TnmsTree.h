@@ -34,13 +34,13 @@ class TnmsTree {
         {}
     };
 
-    typedef HeirarchicalStringTree<TnmsTreeNode>        Tree;
-    typedef Tree::Node                                  Node;
-    typedef Tree::NodeMap                               NodeChildMap;
+    typedef HeirarchicalStringTree<TnmsTreeNode>    Tree;
+    typedef Tree::Node                              Node;
+    typedef Tree::NodeMap                           NodeChildMap;
 
-    typedef std::set<Node*>                             NodeSet;
-    typedef std::set<std::string>                       StringSet;
-    typedef std::map<std::string, Node*>                NameNodeMap;
+    typedef std::set<Node*>                         NodeSet;
+    typedef std::set<std::string>                   StringSet;
+    typedef std::map<std::string, Node*>            NameNodeMap;
 
 
   public:
