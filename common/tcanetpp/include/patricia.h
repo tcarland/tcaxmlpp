@@ -9,7 +9,7 @@
   *    If thread safety is needed, care should be exercised
   * to properly wrap function calls around a mutex.
   *
-  * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
+  * Copyright (c) 2002,2008 Timothy Charlton Arland 
   * @author tca@charltontechnology.net
   *
   * @section LICENSE

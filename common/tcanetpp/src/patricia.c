@@ -1,7 +1,7 @@
 /**
   * @file patricia.c
   *
-  * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
+  * Copyright (c) 2002,2008 Timothy Charlton Arland 
   * @author  tca@charltontechnology.net
   *
   * @section LICENSE
@@ -32,7 +32,7 @@
 
 
 static const
-char version[] = "$Id: patricia.c,v 1.9 2010/02/11 21:27:19 tca$";
+char version[] = "$Id: patricia.c,v 1.9 2011/02/04 12:27:19 tca$";
 
 
 static cidr_t searchCidr;

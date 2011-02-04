@@ -1,7 +1,7 @@
 /**
   * @file FileUtils.h
   *
-  * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
+  * Copyright (c) 2002,2008 Timothy Charlton Arland 
   * @author tca@charltontechnology.net
   *
   * @section LICENSE

@@ -4,7 +4,7 @@
   *   This header provides various defintions and typedefs that help to ensure 
   * cross-platform compilation, primarily between Unix and Win32.
   *   
-  * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
+  * Copyright (c) 2002,2008 Timothy Charlton Arland 
   * @author tca@charltontechnology.net
   *
   * @section LICENSE

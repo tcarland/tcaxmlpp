@@ -4,7 +4,7 @@
   *   The CidrUtils class is a collection of static utility functions for 
   * manipulating IP Address, Prefix, and Cidr's.
   *  
-  * Copyright (c) 2008, 2009 Timothy Charlton Arland 
+  * Copyright (c) 2008-2011 Timothy Charlton Arland 
   * @author tca@charltontechnology.net
   *
   * @section LICENSE

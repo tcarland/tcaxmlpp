@@ -4,7 +4,7 @@
   *    The base Socket class providing an object-oriented
   * interface to sockets for both Unix and Win32 platforms.
   * 
-  * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
+  * Copyright (c) 2002,2010 Timothy Charlton Arland 
   * @author tca@charltontechnology.net
   *
   * @section LICENSE

@@ -3,7 +3,7 @@
   *
   *    Library config.h which defines certain requirements.
   *   
-  * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
+  * Copyright (c) 2002,2008 Timothy Charlton Arland 
   * @author tca@charltontechnology.net
   *
   * @section LICENSE
@@ -28,7 +28,7 @@
 #define _TCANETPP_CONFIG_H_
  
 
-#define TCANETPP_VERSION  "09.23.2010"
+#define TCANETPP_VERSION  "02.04.2011"
 
 
 // for enabling widechar default

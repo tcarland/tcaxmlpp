@@ -5,7 +5,7 @@
   *  logging i/o streams in a thread-safe manner. Supports syslog(unix), 
   *  file logging, or stdc++ iostream*
   *
-  * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
+  * Copyright (c) 2004,2008 Timothy Charlton Arland 
   * @author tca@charltontechnology.net
   *
   * @section LICENSE
