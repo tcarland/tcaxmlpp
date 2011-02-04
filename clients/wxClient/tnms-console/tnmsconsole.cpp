@@ -11,7 +11,7 @@ extern "C" {
 #include <map>
 
 #include "TnmsConsoleApp.h"
-using namespace tnmsconsole;
+using namespace tnmsConsole;
 
 
 void sigHandler ( int signal )

@@ -3,7 +3,7 @@
 
 #include <wx/wx.h>
 
-namespace tnmsclient {
+namespace tnmsClient {
 
 
 class ConnectDialog : public wxDialog {

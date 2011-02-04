@@ -40,10 +40,6 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
 
 	    int x = p->curX();
 	    p->move(p->curY(), x-1);
-	   // p->print(' ');
-	    //p->move(p->curY(), x-1);
-	    //p->refresh();
-	    //p->redraw();
         }
     } else if ( ch == KEY_UP ) {
         ; // cmd history

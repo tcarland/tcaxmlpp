@@ -11,7 +11,7 @@
 using namespace tnmsCore;
 
 
-namespace tnmsclient {
+namespace tnmsClient {
 
 
 typedef std::map<std::string, TnmsTree::NotifySet>  SubscriberMap;

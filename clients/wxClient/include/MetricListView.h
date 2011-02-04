@@ -5,7 +5,7 @@
 
 #include "ClientSubscriber.h"
 
-namespace tnmsclient {
+namespace tnmsClient {
 
 
 #define TNMS_ID_MLIST  7005

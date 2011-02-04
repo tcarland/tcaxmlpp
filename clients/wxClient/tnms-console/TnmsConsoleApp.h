@@ -31,11 +31,11 @@ using namespace tnmsCore;
 
 #include "ClientTreeMutex.h"
 #include "ClientIOThread.h"
-using namespace tnmsclient;
+using namespace tnmsClient;
 
 
 
-namespace tnmsconsole {
+namespace tnmsConsole {
 
 #define MAX_SENDERR_CNT  5
 

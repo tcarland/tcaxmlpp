@@ -12,7 +12,7 @@
 using namespace tnmsCore;
 
 
-namespace tnmsclient {
+namespace tnmsClient {
 
 #define TNMS_ID_SUBSCRIBE_ITEM    7050
 #define TNMS_ID_UNSUBSCRIBE_ITEM  7051

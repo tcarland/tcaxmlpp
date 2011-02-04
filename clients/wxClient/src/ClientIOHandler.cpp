@@ -8,7 +8,7 @@
 using namespace tcanetpp;
 
 
-namespace tnmsclient {
+namespace tnmsClient {
 
 
 ClientIOHandler::ClientIOHandler ( ClientTreeMutex * tree )

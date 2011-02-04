@@ -5,7 +5,7 @@
 #include "LogFacility.h"
 using namespace tcanetpp;
 
-namespace tnmsclient {
+namespace tnmsClient {
 
 
 const char* vt_names[] = 

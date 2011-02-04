@@ -2,7 +2,7 @@
 
 #include "ClientSubscriber.h"
 
-namespace tnmsclient {
+namespace tnmsClient {
 
 
 bool

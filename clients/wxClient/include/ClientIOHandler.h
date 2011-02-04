@@ -11,7 +11,7 @@ using namespace tcanetpp;
 using namespace tnmsCore;
 
 
-namespace tnmsclient {
+namespace tnmsClient {
 
 class ClientTreeMutex;
 

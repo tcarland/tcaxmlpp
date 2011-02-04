@@ -11,7 +11,7 @@ using namespace tcanetpp;
 
 
 
-namespace tnmsconsole {
+namespace tnmsConsole {
 
 
 struct NodeDumpPredicate {
@@ -102,6 +102,7 @@ TnmsConsoleApp::run()
 
     this->setTopPanel(_consPanel);
     this->print(0, 1, _title);
+    this->setCursor(0);
 
     conin   = (LineInputHandler*) _consPanel->getInputHandler();
 
@@ -658,12 +659,14 @@ TnmsConsoleApp::removeClient ( const std::string & name )
 void
 TnmsConsoleApp::startClientProcessing()
 {
+    _mtree->notifyAll();
 }
 
 
 void
 TnmsConsoleApp::stopClientProcessing()
 {
+    _mtree->lock();
 }
 
 void

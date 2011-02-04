@@ -43,7 +43,7 @@ class FwLogEntry {
     std::string  absname;
     std::string  protom;
 
-
+  public:
 
     FwLogEntry() : count(0)  {}
     ~FwLogEntry() {}

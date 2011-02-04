@@ -19,7 +19,7 @@ using namespace tcanetpp;
 #include "ConnectDialog.h"
 
 
-namespace tnmsclient {
+namespace tnmsClient {
 
 
 // ----------------------------------------------------------------------

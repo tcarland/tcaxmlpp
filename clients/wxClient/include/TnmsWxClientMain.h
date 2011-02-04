@@ -6,7 +6,7 @@
 
 
 
-namespace tnmsclient {
+namespace tnmsClient {
 
 #define TGUITIMER_ID  6999
 #define TINTERVAL_MS  3000

@@ -170,31 +170,30 @@ int main ( int argc, char **argv )
         LogFacility::OpenSyslog("fwlr", 5);
     else
         LogFacility::OpenLogStream("stdout", "fwlr", &std::cout);
-
-    FwLogQueue * queue = NULL;
-
-    time_t now;
-    FwLogEntry  fwe;
+ 
+    time_t        now;
+    FwLogEntry    fwe;
+    FwLogQueue  * queue    = NULL;
     FwLogReport * fwrep    = NULL;
     FwLogReader * fwreader = new FwLogReader(logfile, tail);
+
     fwreader->start();
 
     queue = fwreader->getQueue();
 
     while ( ! Alarm )
     {
-
         now = ::time(NULL);
 
         if ( queue->pop(fwe) > 0 ) 
         {
             if ( fwrep == NULL ) {
             	if ( ! config.empty() ) {
-            		fwrep = new FwLogReport(config);
+            	    fwrep = new FwLogReport(config);
                 } else {
-	                std::string  agent = "fwlr/";
-	                agent.append(fwe.host);
-	                fwrep = new FwLogReport(agent, "localhost", 15605);
+	            std::string  agent = "fwlr/";
+	            agent.append(fwe.host);
+	            fwrep = new FwLogReport(agent, "localhost", 15605);
                 }
             }
 
@@ -208,7 +207,8 @@ int main ( int argc, char **argv )
         
         if ( fwrep )
             fwrep->FlushApi(now);        
-            
+        
+        // wtf is this??
         if ( ! tail && ! fwreader->isRunning() && queue->size() == 0 ) {
             fwreader->stop();
             delete fwreader;

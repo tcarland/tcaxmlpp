@@ -11,7 +11,7 @@ using namespace tcanetpp;
 #include "TnmsClient.h"
 using namespace tnmsCore;
 
-namespace tnmsclient {
+namespace tnmsClient {
 
 class ClientIOHandler;
 class ClientTreeMutex;

@@ -3,7 +3,7 @@
 
 #include "ConnectDialog.h"
 
-namespace tnmsclient {
+namespace tnmsClient {
 
 
 ConnectDialog::ConnectDialog ( const wxString & title )

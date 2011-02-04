@@ -18,10 +18,10 @@ HexWindow::HexWindow()
       _width(10),
       _starty(0),
       _startx(0),
-      _border(true),
+      _border(false),
       _wordwrap(true)
 {
-    //_win = HexWindow::CreateWindow(_height, _width, _starty, _startx);
+    _win = HexWindow::CreateWindow(_height, _width, _starty, _startx);
 }
 
 HexWindow::HexWindow ( int height, int width, bool border )

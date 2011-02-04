@@ -299,6 +299,9 @@ HexApp::getMaxHeight()
     return this->height();
 }
 
+/** Sets the cursor state to invisible, normal or very visible
+  * for state equal to 0, 1, or 2 respectively.
+ **/
 int
 HexApp::setCursor ( int state )
 {

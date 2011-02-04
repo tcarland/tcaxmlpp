@@ -8,7 +8,7 @@ using namespace tnmsCore;
 using namespace tcanetpp;
 
 
-namespace tnmsclient {
+namespace tnmsClient {
 
 
 class ClientSubscriber;

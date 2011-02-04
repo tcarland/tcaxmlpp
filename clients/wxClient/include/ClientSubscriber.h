@@ -7,7 +7,7 @@ using namespace tnmsCore;
 #include "ThreadLock.h"
 using namespace tcanetpp;
 
-namespace tnmsclient {
+namespace tnmsClient {
 
 class ClientSubscriber : public TnmsSubscriber {
 
