@@ -24,6 +24,7 @@ typedef std::vector<std::string>  StringFields;
 
 
 class FwLogEntry {
+
   public:
     std::string  host;
     std::string  date;
@@ -42,22 +43,33 @@ class FwLogEntry {
     // metric names 
     std::string  absname;
     std::string  protom;
+    std::string  matchstr;
 
   public:
 
-    FwLogEntry() : count(0)  {}
+    FwLogEntry();
+    FwLogEntry ( const std::string & match );
     ~FwLogEntry() {}
 
+    void          setMatch        ( const std::string & match );
+    std::string   getMatch() const;
 
-    static bool   ParseLogEntry ( const std::string & line,
-                                  FwLogEntry        & fwe,
-                                  bool                debug = false );
+    static bool   ParseLogEntry   ( const std::string & line,
+                                    FwLogEntry        & fwe,
+                                    bool                debug = false );
 
-    static void   SetHostname   ( FwLogEntry & fwe );
+    static void   SetHostname     ( FwLogEntry & fwe );
+
+    static void   SetDefaultMatch ( const std::string & match_ );
+
 
   private:
 
-    static void   SplitFields   ( StringFields      & fwv );
+    static void   SplitFields     ( StringFields      & fwv );
+
+  private:
+
+    static std::string DEFAULT_MATCH_STRING;
 
 };
 

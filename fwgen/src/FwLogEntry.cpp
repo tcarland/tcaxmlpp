@@ -14,6 +14,32 @@ using namespace tcanetpp;
 namespace fwgen {
 
 
+std::string
+FwLogEntry::DEFAULT_MATCH_STRING = FWLOG_KEYMATCH;
+
+
+FwLogEntry::FwLogEntry()
+    : count(0),
+      matchstr(DEFAULT_MATCH_STRING)
+{}
+
+FwLogEntry::FwLogEntry ( const std::string & match )
+    : count(0),
+      matchstr(match)
+{}
+
+void
+FwLogEntry::setMatch ( const std::string & match_ )
+{
+    matchstr = match_;
+}
+
+std::string
+FwLogEntry::getMatch() const
+{
+    return matchstr;
+}
+
 
 bool
 FwLogEntry::ParseLogEntry ( const std::string & line, FwLogEntry & fwe, bool debug )
@@ -24,7 +50,7 @@ FwLogEntry::ParseLogEntry ( const std::string & line, FwLogEntry & fwe, bool deb
     int           indx;
     uint32_t      nflds;
 
-    match = FWLOG_KEYMATCH;
+    match = fwe.getMatch();
     nflds = FWLOG_FIELD_COUNT;
     indx  = StringUtils::indexOf(line, match);
 
@@ -111,6 +137,11 @@ FwLogEntry::SetHostname ( FwLogEntry & fwe )
     }
 }
 
+void
+FwLogEntry::SetDefaultMatch ( const std::string & match_ )
+{
+    DEFAULT_MATCH_STRING = match_;
+}
 
 } // namespace
 

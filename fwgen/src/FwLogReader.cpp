@@ -38,6 +38,9 @@ FwLogReader::run()
 
     LogFacility::LogMessage("FwLogReader started for logfile: " + _logfile);
 
+    if ( ! _match.empty() )
+        FwLogEntry::SetDefaultMatch(_match);
+
     do 
     {
         while ( ifs.getline(line, BIGSTRLINE) )

@@ -44,6 +44,7 @@ void usage()
               << "   -d | --debug             : Enable debug output " << std::endl
               << "   -D | --daemon            : Run as daemon" << std::endl
               << "   -t | --tail              : Start reading of logfile at the tail" << std::endl
+              << "   -m | --match             : Set the log match string" << std::endl
               << "   -l | --logfile <logfile> : The name of the logfile to parse" << std::endl
               << "   -V | --version           : Print version info and exit" << std::endl;
      exit(0);
@@ -89,9 +90,10 @@ void sigHandler ( int signal )
 
 int main ( int argc, char **argv )
 {
-    std::string logfile, config;
+    std::string logfile, config, match;
     char        optChar;
     char      * logf    = NULL;
+    char      * matchc  = NULL;
     char      * cfg     = NULL;
     bool        debug   = false;
     bool        daemon  = false;
@@ -103,7 +105,8 @@ int main ( int argc, char **argv )
                                       {"config", required_argument, 0, 'c'},
                                       {"daemon", no_argument, 0, 'D'},
                                       {"help", no_argument, 0, 'h'},
-                                      {"logfile", required_argument, 0, 'm'},
+                                      {"logfile", required_argument, 0, 'l'},
+                                      {"match", required_argument, 0, 'm'},
                                       {"tail", no_argument, 0, 't'},
                                       {"version", no_argument, 0, 'V'},
                                       {0,0,0,0}
@@ -112,7 +115,7 @@ int main ( int argc, char **argv )
     if ( argc < 2 )
         usage();
 
-    while ( (optChar = getopt_long(argc, argv, "c:dDhl:tV", l_opts, &optindx)) != EOF ) {
+    while ( (optChar = getopt_long(argc, argv, "c:dDhl:m:tV", l_opts, &optindx)) != EOF ) {
         switch ( optChar ) {
             case 'c':
             	cfg = strdup(optarg);
@@ -128,6 +131,9 @@ int main ( int argc, char **argv )
                 break;
             case 'l':
                 logf = strdup(optarg);
+                break;
+            case 'm':
+                matchc = ::strdup(optarg);
                 break;
             case 't':
                 tail = true;
@@ -147,6 +153,11 @@ int main ( int argc, char **argv )
         ::free(logf);
     } else {
         //usage();
+    }
+
+    if ( matchc != NULL ) {
+        match = matchc;
+        ::free(matchc);
     }
 
     if ( cfg != NULL ) {
@@ -176,6 +187,9 @@ int main ( int argc, char **argv )
     FwLogQueue  * queue    = NULL;
     FwLogReport * fwrep    = NULL;
     FwLogReader * fwreader = new FwLogReader(logfile, tail);
+
+    if ( ! match.empty() )
+        fwreader->setMatch(match);
 
     fwreader->start();
 
