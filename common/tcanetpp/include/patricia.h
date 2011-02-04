@@ -35,10 +35,10 @@
 
 #include "tcanetpp_types.h"
 
-
 # ifdef __cplusplus
 extern "C" {
 # endif
+#include <stdlib.h>
 
 
 #define PT_GETBIT(v, bit)  ((v) & (0x80000000 >> (bit)))

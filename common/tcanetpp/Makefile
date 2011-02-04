@@ -26,6 +26,7 @@ CCSHARED += 	    -Wl,-soname,$@
 INCLUDES =	    -Iinclude
 LIBS =
 
+PT_OBJS =           src/patricia.o
 TH_OBJS = 	    src/Thread.o src/ThreadLock.o  src/ThreadMutexPool.o
 OBJS =		    src/SocketOption.o src/Socket.o src/BufferedSocket.o \
                     src/CircularBuffer.o src/Serializer.o \
@@ -34,13 +35,12 @@ OBJS =		    src/SocketOption.o src/Socket.o src/BufferedSocket.o \
 		    src/LogFacility.o src/random.o src/RandomPrefix.o \
 		    src/patricia.o src/DeviceMap.o \
 		    src/NetworkDevice.o src/NetworkInterface.o
+
 ifdef USE_PTHREADS
 OBJS +=		    $(TH_OBJS)
 endif
 
 CMDBUF_OBJS =       src/CmdBuf.o
-
-PT_OBJS =           src/patricia.o
 TEST_OBJS = 	    src/pttest.o
 PFX_OBJS =  	    src/pfxtest.o
 
@@ -64,6 +64,7 @@ solib: libtcanetpp.so.1.0.1
 
 libtcapt: lib/libtcapt.a
 
+cmdbuf: libcmdbuf
 libcmdbuf: lib/libcmdbuf.a
 
 lib/libtcapt.a: ${PT_OBJS}

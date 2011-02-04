@@ -27,9 +27,11 @@
 #ifndef _TCANETPP_PREFIXTREE_HPP_
 #define _TCANETPP_PREFIXTREE_HPP_
 
+#ifdef USE_PTHREADS
 extern "C" {
 # include <pthread.h>
 }
+#endif
 
 #include "patricia.h"
 #include "Prefix.hpp"
@@ -64,20 +66,22 @@ class PrefixTree {
   public:
 
     PrefixTree ( bool implicit_lock = false )
-        : _freeHandler(NULL),
+        : _pt(NULL),
+          _freeHandler(NULL),
           _lock(implicit_lock)
     {
         _pt   = pt_init();
-        if ( _lock )
-            pthread_mutex_init(&_mutex, NULL);
+        this->init();
     }
 
     virtual ~PrefixTree()
     {
         this->clear();
-        free(_pt);
+        ::free(_pt);
+#       ifdef USE_PTHREADS
         if ( _lock )
             pthread_mutex_destroy(&_mutex);
+#       endif
     }
 
 
@@ -85,13 +89,9 @@ class PrefixTree {
     {
         int result = 0;
 
-        if ( _lock )
-            pthread_mutex_lock(&_mutex);
-            
+        this->lock();
         result = pt_insert(_pt, p.getCidr(), (void*) obj);
-
-        if ( _lock )
-            pthread_mutex_unlock(&_mutex);
+        this->unlock();
 
         return result;
     }
@@ -99,13 +99,9 @@ class PrefixTree {
 
     T    remove  ( const Prefix & p )
     {
-        if ( _lock )
-            pthread_mutex_lock(&_mutex);
-
-        T object = (T) pt_remove(_pt, p.getCidr());
-
-        if ( _lock )
-            pthread_mutex_unlock(&_mutex);
+        this->lock();
+        T  object = (T) pt_remove(_pt, p.getCidr());
+        this->unlock();
 
         return object;
     }
@@ -113,13 +109,9 @@ class PrefixTree {
    
     T    exactMatch ( const Prefix & p )
     {
-        if ( _lock )
-            pthread_mutex_lock(&_mutex);
-
-        T object = (T) pt_match(_pt, p.getCidr());
-
-        if ( _lock )
-            pthread_mutex_unlock(&_mutex);
+        this->lock();
+        T   object = (T) pt_match(_pt, p.getCidr());
+        this->unlock();
             
         return object;
     }
@@ -127,13 +119,9 @@ class PrefixTree {
 
     T    longestMatch ( Prefix & p )
     {
-        if ( _lock )
-            pthread_mutex_lock(&_mutex);
-
-        T object = (T) pt_matchLongest(_pt, p.getCidr());
-
-        if ( _lock )
-            pthread_mutex_unlock(&_mutex);
+        this->lock();
+        T   object = (T) pt_matchLongest(_pt, p.getCidr());
+        this->unlock();
 
         return object;
     }
@@ -141,13 +129,11 @@ class PrefixTree {
 
     int  size()
     {
-        if ( _lock )
-            pthread_mutex_lock(&_mutex);
-
-        int sz = pt_size(_pt);
-
-        if ( _lock )
-            pthread_mutex_unlock(&_mutex);
+        int sz = 0;
+        
+        this->lock();
+        sz  = pt_size(_pt);
+        this->unlock();
 
         return sz;
     }
@@ -155,13 +141,11 @@ class PrefixTree {
     
     int  nodes()
     {
-        if ( _lock )
-            pthread_mutex_lock(&_mutex);
+        int cnt = 0;
         
-        int cnt = pt_nodes(_pt);
-        
-        if ( _lock )
-            pthread_mutex_unlock(&_mutex);
+        this->lock();
+        cnt  = pt_nodes(_pt);
+        this->unlock();
         
         return cnt;
     }
@@ -171,15 +155,10 @@ class PrefixTree {
         size_t sz    = 0;
         int    nodes = 0;
 
-        if ( _lock )
-            pthread_mutex_lock(&_mutex);
-
+        this->lock();
         nodes = pt_nodes(_pt);
-
-        if ( _lock )
-            pthread_mutex_unlock(&_mutex);
-
-        sz = (nodes * sizeof(ptNode_t));
+        sz    = (nodes * sizeof(ptNode_t));
+        this->unlock();
 
         return sz;
     }
@@ -193,16 +172,14 @@ class PrefixTree {
 
     void clear()
     {
-        if ( _lock )
-            pthread_mutex_lock(&_mutex);
+        this->lock();
 
         if ( _freeHandler )
             pt_free(_pt, _freeHandler);
         else
             pt_free(_pt, &PTClearHandler);
 
-        if ( _lock )
-            pthread_mutex_unlock(&_mutex);
+        this->unlock();
     }
 
 
@@ -211,8 +188,33 @@ class PrefixTree {
         _freeHandler = handler;
     }
 
+    void lock()
+    {
+#       ifdef USE_PTHREADS
+        if ( this->_lock )
+            pthread_mutex_lock(&_mutex);
+#       endif
+    }
+
+    void unlock()
+    {
+#       ifdef USE_PTHREADS
+        if ( this->_lock )
+            pthread_mutex_unlock(&_mutex);
+#       endif
+    }
+
+
 
   protected:
+
+    void init()
+    {
+#       ifdef USE_PTHREADS
+        if ( this->_lock )
+            pthread_mutex_init(&_mutex, NULL);
+#       endif
+    }
 
     static void PTClearHandler ( uint32_t addr, uint16_t mb, void * rock )
     {
@@ -229,7 +231,9 @@ class PrefixTree {
     nodeHandler_t                _freeHandler;
 
     bool                         _lock;
+#   ifdef USE_PTHREADS
     pthread_mutex_t              _mutex;
+#   endif
 
 };
 
