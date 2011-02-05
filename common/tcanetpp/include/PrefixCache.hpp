@@ -1,7 +1,7 @@
 /**
   * @file PrefixCache.hpp
   *
-  * Copyright (c) 2002,2008,2009 Timothy Charlton Arland
+  * Copyright (c) 2008,2009 Timothy Charlton Arland
   * @author  tca@charltontechnology.net
   *
   * @section LICENSE
@@ -94,6 +94,8 @@ class PrefixCache {
     typedef typename CacheItem::TimerSet      CacheTimerSet;
     typedef typename CacheTimerSet::iterator  TimerSetIter;
     typedef PrefixTree<CacheItem*>            CacheTree;
+
+    typedef std::list< ValueType >            ValueList;
 
   public:
 
@@ -211,7 +213,7 @@ class PrefixCache {
     /**  Expires any entries that are older than the given @param now. 
      *  The cache entries removed are provided in the @param  itemlist.
      **/
-    int  expireStale ( const time_t & now, std::list<ValueType> & itemlist )
+    int  expireStale ( const time_t & now, ValueList & itemlist )
     {
         CacheItem     *ci, *cr = NULL;
         TimerSetIter   tIter, rIter;
