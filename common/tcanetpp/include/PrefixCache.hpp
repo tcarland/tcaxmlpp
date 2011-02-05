@@ -79,8 +79,10 @@ class PrefixCacheItem {
 
 
 /**  The PrefixCache class provides an interface for tracking objects 
- *   by a given IPV4 Prefix. It uses an underlying Radix Tree to provide 
- *   a longest match lookup for the cache.
+ *   by a given IPV4 Prefix. It uses an underlying Radix Tree (patricia)
+ *   as the data structure, which is written in C and uses pointers to 
+ *   store the user data, so as a result the PrefixCache will only 
+ *   work with a 'ValueType' pointer.
  **/
 template <typename ValueType>
 class PrefixCache {
@@ -169,7 +171,7 @@ class PrefixCache {
     }
 
     /**  Performs a longest match lookup for the given Prefix
-     *   and retur the success of the lookup setting the 
+     *   and returns the success of the lookup setting the 
      *   target parameter accordingly.
      **/
     bool longestMatch ( const Prefix & p, ValueType & val )
