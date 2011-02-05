@@ -41,8 +41,9 @@ class FwLogEntry {
     uint64_t     count;
 
     // metric names 
-    std::string  absname;
-    std::string  protom;
+    std::string  absname;  // root metric name
+    std::string  protom;   // protocol level stats
+
     std::string  matchstr;
 
   public:
@@ -53,6 +54,9 @@ class FwLogEntry {
 
     void          setMatch        ( const std::string & match );
     std::string   getMatch() const;
+
+
+  public: // ---------- static methods ------------- //
 
     static bool   ParseLogEntry   ( const std::string & line,
                                     FwLogEntry        & fwe,
@@ -65,11 +69,11 @@ class FwLogEntry {
 
   private:
 
-    static void   SplitFields     ( StringFields      & fwv );
+    static void   SplitFieldValues ( StringFields      & fwv );
 
   private:
 
-    static std::string DEFAULT_MATCH_STRING;
+    static std::string   DEFAULT_MATCH_STRING;
 
 };
 

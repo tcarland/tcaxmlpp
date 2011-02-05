@@ -7,9 +7,11 @@
 #include "FwLogEntry.h"
 #include "FwService.h"
 
-
 #include "TnmsAPI.h"
 using namespace tnmsApi;
+
+#include "PrefixCache.hpp"
+using namespace tcanetpp;
 
 
 namespace fwgen {
@@ -18,13 +20,13 @@ namespace fwgen {
 typedef std::map<std::string, FwLogEntry>  FwMap;
 
 
-
 class FwLogReport {
+
   public:
 
     FwLogReport ( const std::string & agent,
-    		      const std::string & host,
-    		      uint16_t            port );
+                  const std::string & host,
+                  uint16_t            port );
 
     FwLogReport ( const std::string & config );
 
@@ -36,11 +38,13 @@ class FwLogReport {
 
   private:
 
-    FwMap     _fwMap;
-    FwSvcMap  _svcMap;
+    FwMap       _fwMap;
+    FwSvcMap    _svcMap;
 
-    TnmsAPI * _api;
-    bool      _connection;
+    TnmsAPI   * _api;
+
+    uint16_t    _masklen;
+    bool        _connection;
 
 };
 

@@ -14,18 +14,23 @@ using namespace tnmsCore;
 namespace fwgen {
 
 
+#define DEFAULT_MASKLEN 24
 
-FwLogReport::FwLogReport ( const std::string & agent, const std::string & host, uint16_t port )
-    : _connection(false)
+
+FwLogReport::FwLogReport ( const std::string & agent, 
+                           const std::string & host, uint16_t port )
+    : _api(new TnmsAPI(agent, host, port)),
+      _masklen(DEFAULT_MASKLEN),
+      _connection(false)
 {
-    _api = new TnmsAPI(agent, host, port);
     FwService::ParseServices(ETC_SERVICES, this->_svcMap);
 }
 
 FwLogReport::FwLogReport ( const std::string & config )
-    : _connection(false)
+    : _api(new TnmsAPI("fwlr")),
+      _masklen(DEFAULT_MASKLEN),
+      _connection(false)
 {
-    _api = new TnmsAPI("fwlr");
     _api->set_config(config);
     FwService::ParseServices(ETC_SERVICES, this->_svcMap);
 }

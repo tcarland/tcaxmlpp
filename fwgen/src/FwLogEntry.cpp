@@ -68,7 +68,7 @@ FwLogEntry::ParseLogEntry ( const std::string & line, FwLogEntry & fwe, bool deb
             << "  has " << fields.size() << " fields, need " << nflds
             << std::endl;
     } else if ( fields.size() > nflds ) { 
-        FwLogEntry::SplitFields(fields);
+        FwLogEntry::SplitFieldValues(fields);
 
         fwe.inf    = fields[0];
         fwe.outf   = fields[1];
@@ -107,7 +107,7 @@ FwLogEntry::ParseLogEntry ( const std::string & line, FwLogEntry & fwe, bool deb
 
 
 void
-FwLogEntry::SplitFields ( StringFields & fields )
+FwLogEntry::SplitFieldValues ( StringFields & fields )
 {
     StringFields::iterator  sIter;
 
