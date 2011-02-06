@@ -4,7 +4,10 @@
 #include <string>
 #include <vector>
 
+#include "Prefix.hpp"
 #include "tcanetpp_types.h"
+using namespace tcanetpp;
+
 
 
 namespace fwgen {
@@ -44,6 +47,7 @@ class FwLogEntry {
     std::string  absname;  // root metric name
     std::string  protom;   // protocol level stats
 
+    Prefix       pfxkey;
     std::string  matchstr;
 
   public:

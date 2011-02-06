@@ -176,7 +176,7 @@ class PrefixCache {
      *   and returns the success of the lookup setting the 
      *   target parameter accordingly.
      **/
-    bool longestMatch ( const Prefix & p, ValueType & val )
+    bool longestMatch ( Prefix & p, ValueType & val )
     {
         CacheItem * ci = this->_pt->longestMatch(p);
 

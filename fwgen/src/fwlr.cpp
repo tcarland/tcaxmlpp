@@ -222,12 +222,13 @@ int main ( int argc, char **argv )
         if ( fwrep )
             fwrep->FlushApi(now);        
         
-        // wtf is this??
-        if ( ! tail && ! fwreader->isRunning() && queue->size() == 0 ) {
+        // wtf is this?? clear this up
+        if ( ! tail && ! fwreader->isRunning() && queue->size() == 0 ) 
+        {
+            LogFacility::LogMessage("Full pass completed, switching to tail mode");
             fwreader->stop();
             delete fwreader;
             tail      = true;
-            LogFacility::LogMessage("Full pass completed, switching to tail mode");
             fwreader  = new FwLogReader(logfile, tail);
             fwreader->start();
             queue = fwreader->getQueue();

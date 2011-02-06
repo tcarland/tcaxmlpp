@@ -41,6 +41,8 @@ class FwLogReport {
     FwMap       _fwMap;
     FwSvcMap    _svcMap;
 
+    PrefixCache<FwLogEntry*>  _fwCache;
+
     TnmsAPI   * _api;
 
     uint16_t    _masklen;

@@ -4,6 +4,7 @@
 #include "FwLogReport.h"
 
 #include "StringUtils.h"
+#include "CidrUtils.h"
 #include "LogFacility.h"
 using namespace tcanetpp;
 
@@ -19,7 +20,8 @@ namespace fwgen {
 
 FwLogReport::FwLogReport ( const std::string & agent, 
                            const std::string & host, uint16_t port )
-    : _api(new TnmsAPI(agent, host, port)),
+    : _fwCache(300, false),
+      _api(new TnmsAPI(agent, host, port)),
       _masklen(DEFAULT_MASKLEN),
       _connection(false)
 {
@@ -27,7 +29,8 @@ FwLogReport::FwLogReport ( const std::string & agent,
 }
 
 FwLogReport::FwLogReport ( const std::string & config )
-    : _api(new TnmsAPI("fwlr")),
+    : _fwCache(300, false),
+      _api(new TnmsAPI("fwlr")),
       _masklen(DEFAULT_MASKLEN),
       _connection(false)
 {
@@ -84,12 +87,30 @@ FwLogReport::FlushApi ( const time_t & now )
 void
 FwLogReport::SendEntry ( FwLogEntry & fwe, const time_t & now )
 {
+    FwLogEntry * fwec = NULL;
     FwMap::iterator    fIter;
     FwSvcMap::iterator sIter;
 
     if ( fwe.inf.empty() )
         return;
+    
+    // first we aggregate to our default agg level
+    Prefix p = Prefix(CidrUtils::ToBasePrefix(CidrUtils::ToAddr(fwe.src), _masklen), _masklen);
 
+    if ( _fwCache.longestMatch(p, fwec) ) 
+    {
+        // aggregrate our record
+        //
+    }
+    else
+    {
+        // new record
+        //  - optional route lookup
+        fwec = new FwLogEntry(fwe.matchstr);
+        fwec->pfxkey = p;
+        _fwCache.insert(p, fwec, now);
+    }
+    
     //  src <=> dst  
     fwe.absname = fwe.inf;
     fwe.absname.append("/").append(fwe.src);
