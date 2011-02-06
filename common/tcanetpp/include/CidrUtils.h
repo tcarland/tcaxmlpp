@@ -54,6 +54,7 @@ public:
     static std::string  ToString        ( ipv4addr_t     addr );
     static std::string  ToString        ( const Prefix & pfx );
     static std::string  ToString        ( ipv4addr_t     addr, uint8_t mb );
+    static ipv4addr_t   ToAddr          ( const std::string & addrStr );
 
     static int          StringToAddr    ( const std::string & addrStr, 
                                           ipv4addr_t        & addr );

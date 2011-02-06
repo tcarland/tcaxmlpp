@@ -97,12 +97,12 @@ class PrefixCache {
 
     typedef std::list< ValueType >            ValueList;
 
+
   public:
 
     PrefixCache ( time_t refreshInterval, bool implicit_lock = false )
         : _pt(new CacheTree(implicit_lock)),
-          _cacheTimeout(refreshInterval),
-          _lock(implicit_lock)
+          _cacheTimeout(refreshInterval)
     {}
 
     virtual ~PrefixCache() {}
@@ -264,7 +264,6 @@ class PrefixCache {
     CacheTree*          _pt;
     CacheTimerSet       _timers;
     time_t              _cacheTimeout;
-    bool                _lock;
 };
 
 

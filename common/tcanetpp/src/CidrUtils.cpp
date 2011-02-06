@@ -120,6 +120,17 @@ CidrUtils::ToString ( ipv4addr_t addr, uint8_t mb )
 }
 /*@}*/
 
+ipv4addr_t
+CidrUtils::ToAddr ( const std::string & addrStr )
+{
+    ipv4addr_t addr = 0;
+
+    if ( CidrUtils::StringToAddr(addrStr, addr) == 0 )
+        return 0;
+
+    return addr;
+}
+
 //-------------------------------------------------------------------//
 
 /**  Converts the provided string to the provided 32bit unsigned 

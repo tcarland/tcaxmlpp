@@ -52,7 +52,8 @@ int main ( int argc, char **argv )
             item = new myitem(now);
             item->addrstr = CidrUtils::ToString(p);
             pc.insert(p, item, now);
-	    std::cout << "Inserted prefix = " << CidrUtils::ToString(p) << std::endl;
+	    std::cout << "Inserted prefix = " << CidrUtils::ToString(p) 
+                << std::endl;
         }
     }
 
