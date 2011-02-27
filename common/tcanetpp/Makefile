@@ -113,7 +113,7 @@ distclean: clean libclean doc-clean test-clean
 	$(RM) $(ALL_BINS)
 	@echo
 
-dist:
+dist: distclean
 ifdef TNMS_DISTDIR
 	@echo "sync'ing tcanetpp to $(TNMS_DISTDIR)/tcanetpp"
 	( $(RDIST) ./ $(TNMS_DISTDIR)/tcanetpp/ )
