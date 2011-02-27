@@ -1,0 +1,39 @@
+/** $Id: README,v 1.0 2009/04/07 13:42:00 tca Exp $
+  *
+  * Copyright (c) 2008, 2009 Timothy Charlton Arland 
+  * @author tca@charltontechnology.net
+  * 
+ **/
+
+/**
+  @mainpage  TnmsAPI
+
+@section overview Overview:
+
+  The primary API for Tnms Agents in C++ with language bindings for perl, 
+python, and Java. The API provides a simple interface for acting as an agent
+to a Tnms System. An agent is an application instance that can submit/send 
+data to the Tnms System for reporting metrics.  The API makes use of the
+TnmsCore API which further defines the Tnms system and is generally linked 
+into this API to provide a single library with all neccessary objects.
+
+  If an application wishes to be a client as well as an Agent, then some use 
+of the tnmsCore library would be needed. 
+
+@section docs Documentation:
+  The library is being documented in an API format via doxygen. 
+Run 'make documentation' to generate the docs (doxygen req.)
+
+@section build Build:
+
+*nix:
+  Uses tcamake build environment to set dependencies for simply running
+'make'. The library links only libpthread and libdl (+libsocket and libnsl
+with 'SunOS_sun4u'). 
+
+Win32/64:
+  Visual studio project files should be provided for win32 support
+(only the thread classes are iffy with windows and are not compiled 
+under win32 (the win32 pthread library may be compatible, but ymmv) 
+
+*/
