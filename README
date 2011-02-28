@@ -1,11 +1,13 @@
 
 External Requirements:
-
+----------------------
 libxml2
 wxWidgets (wxGTK)
+ - gentoo: eselect wxwidgets show|list
 
-Lib requirements included.
----- 
+
+Lib requirements included:
+--------------------------
 >=gsoap-2.7.14
 zlib
 net-snmp
@@ -13,39 +15,42 @@ net-snmp
 >=wxGTK-2.8.10.1-r5
 
 
-Install:
+Installation:
+-------------
 
-1. Install requires the source package is built AND cleaned, so
-   run 'make && make clean'.
+1. First build the source tree. The install requires the source 
+   package is first built AND cleaned, so run 
+    $ make && make clean 
+   as a user who has local write privileges.
+
 
 2. Create arch configurations in config/environment/$TNMS_ENV/`hostname`/
+   This assumes we have a desired server arch. in mind.
     
 
-3. Create a system account for the tnms environment:
+3. Create a system account for the tnms environment and install the 
+   binaries.
 
-    TNMS_ENV="dev"
-    ROLEUSER="tnms"
+    $ export TNMS_ENV="dev"
+    $ export ROLEUSER="tnms"
+    $ sudo useradd -d /opt/tnms -m -U -s /sbin/nologin $ROLEUSER
+    $ sudo -u $ROLEUSER -H /bin/bash 
+    $   #(from the root tnms src tree as $ROLEUSER)
+    $ source config/scripts/tnmsrc
+    $ source config/environment/$TNMS_ENV/bashrc
+    $ make install
 
-    useradd -d /opt/tcanms -m -U -s /sbin/nologin $ROLEUSER
-    sudo -u $ROLEUSER -H /bin/bash
-
-    source config/scripts/tnmsrc
-    source config/environment/$TNMS_ENV/bashrc
-
-    make install
 
 3. Initialize the database configurations.
 
-       
-    ./bin/tnms_dbinit.sh -D tnmsauthd -U tnmsauth -P tnmsauth11b -x tca -p
+    $ ./bin/tnms_dbinit.sh -D tnmsauthd -U tnmsauth -P tnmsauth11b -x tca -p
+    $ ./bin/ta_dbinit.sh fwlr
+    $ ./bin/ta_dbinit.sh tnms
 
-    ./bin/ta_dbinit.sh fwlr
-    ./bin/ta_dbinit.sh tnms
 
 4. Add agents to authdb.
 
-    tnms_useradd -A -u fwlr/nebula -g tnmsagents -m dbstatic
-
+    $ tnms_useradd -A -u fwlr/nebula -g tnmsagents -m dbstatic
 
 
 
