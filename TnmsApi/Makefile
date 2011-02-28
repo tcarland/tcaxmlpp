@@ -21,7 +21,7 @@ ALL_OBJS =              $(OBJS)
 ALL_BINS =              $(BIN)
 
 
-all: lib
+all: lib bindings docs
 
 
 include ${TOPDIR}/tcamake/project_defs
@@ -43,6 +43,15 @@ lib/libTnmsApi.so.0.0.1: ${OBJS}
 	( $(RM) $@ lib/libTnmsApi.so
 	$(make-so-rule)
 	( cd lib; ln -s $@ libTnmsApi.so )
+	@echo
+
+.PHONY:bindings
+bindings:
+	( cd bindings; make all )
+	@echo
+
+bindings-clean:
+	( cd bindings; make clean )
 	@echo
 
 documentation: docs
@@ -68,7 +77,7 @@ test-clean:
 	( cd test; $(MAKE) distclean )
 	@echo
 
-distclean: clean lib-clean doc-clean
+distclean: clean lib-clean doc-clean bindings-clean
 	$(RM) $(BIN)
 
 install:
