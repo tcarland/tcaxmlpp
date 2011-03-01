@@ -11,6 +11,7 @@ bool HexApp::_NCURSES_INIT = false;
 
 HexApp::HexApp()
     : _curPanel(NULL),
+      _colorIndex(0),
       _echo(false)
 {
     this->InitCurses(false, _echo);
@@ -316,6 +317,27 @@ HexApp::hasColor() const
     return _hasColor;
 }
 
+int
+HexApp::addColorPair ( int fgcolor, int bgcolor )
+{
+    if ( _colorIndex == 0 )
+        _colorIndex = HEX_WHITE_BLACK;
+
+    _colorIndex++;
+    ::init_pair(_colorIndex, fgcolor, bgcolor);
+
+    return _colorIndex;
+}
+
+void
+HexApp::setWindowColor ( HexPanel * panel, int colorIndex )
+{
+    if ( colorIndex > _colorIndex )
+        return;
+
+    panel->setColor(colorIndex);
+}
+
 //----------------------------------------------------------------//
 
 int
@@ -343,12 +365,25 @@ HexApp::InitCurses ( bool termRaw, bool echo )
         ::noecho();
 
     ::nonl();
-    ::start_color();
     ::keypad(stdscr, TRUE);
 
+    HexApp::InitColors();
     HexApp::_NCURSES_INIT = true;
 
     return;
+}
+
+void
+HexApp::InitColors()
+{
+    ::start_color();
+    ::init_pair(HEX_RED_BLACK, HEX_RED, HEX_BLACK);
+    ::init_pair(HEX_GREEN_BLACK, HEX_GREEN, HEX_BLACK);
+    ::init_pair(HEX_YELLOW_BLACK, HEX_YELLOW, HEX_BLACK);
+    ::init_pair(HEX_BLUE_BLACK, HEX_BLUE, HEX_BLACK);
+    ::init_pair(HEX_MAGENTA_BLACK, HEX_MAGENTA, HEX_BLACK);
+    ::init_pair(HEX_CYAN_BLACK, HEX_CYAN, HEX_BLACK);
+    ::init_pair(HEX_WHITE_BLACK, HEX_WHITE, HEX_BLACK);
 }
 
 //----------------------------------------------------------------//

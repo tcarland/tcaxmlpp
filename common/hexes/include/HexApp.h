@@ -40,6 +40,28 @@ namespace hexes {
 
 class HexPanel;
 
+enum HexColorPairs {
+    HEX_BLACK_BLACK   = 0,
+    HEX_RED_BLACK     = 1,
+    HEX_GREEN_BLACK   = 2,
+    HEX_YELLOW_BLACK  = 3,
+    HEX_BLUE_BLACK    = 4,
+    HEX_MAGENTA_BLACK = 5,
+    HEX_CYAN_BLACK    = 6,
+    HEX_WHITE_BLACK   = 7
+};
+
+enum HexColors {
+    HEX_BLACK,
+    HEX_RED,
+    HEX_GREEN,
+    HEX_YELLOW,
+    HEX_BLUE,
+    HEX_MAGENTA,
+    HEX_CYAN,
+    HEX_WHITE
+};
+
 
 /**
   * Provides the frontend to a 'Hexes' application. HexApp is the
@@ -75,17 +97,17 @@ class HexApp {
     virtual int  poll();
 
 
-    HexPanel*    createPanel   ( const std::string & title, 
-                                 int height, int width, 
-                                 int starty, int startx );
-    void         setTopPanel   ( HexPanel * panel );
-    bool         addPanel      ( HexPanel * panel );
-    HexPanel*    getPanel      ( const std::string & title = "" );
-    HexPanel*    removePanel   ( const std::string & title );
-    bool         destroyPanel  ( const std::string & title );
+    HexPanel*    createPanel    ( const std::string & title, 
+                                  int height, int width, 
+                                  int starty, int startx );
+    void         setTopPanel    ( HexPanel * panel );
+    bool         addPanel       ( HexPanel * panel );
+    HexPanel*    getPanel       ( const std::string & title = "" );
+    HexPanel*    removePanel    ( const std::string & title );
+    bool         destroyPanel   ( const std::string & title );
     void         destroyPanels();
 
-    void         timeout       ( int delay_ms );
+    void         timeout        ( int delay_ms );
     bool         hasColor() const;
     bool         resized();
 
@@ -94,15 +116,19 @@ class HexApp {
     int          getMaxWidth();
     int          getMaxHeight();
 
-    int          setCursor     ( int state );
+    int          setCursor      ( int state );
+    int          addColorPair   ( int fgcolor, int bgcolor );
+    void         setWindowColor ( HexPanel * panel, int colorIndex );
+    void         setWindowAttr  ( HexPanel * panel, int attr );
 
-    int          print         ( int y, int x, 
-                                 const std::string & str );
+    int          print          ( int y, int x, 
+                                  const std::string & str );
 
   protected:
 
 
     static void         InitCurses ( bool termRaw, bool echo );
+    static void         InitColors();
     static std::string  Version();
 
 
@@ -115,6 +141,7 @@ class HexApp {
 
     int                 _row;
     int                 _col;
+    int                 _colorIndex;
     bool                _echo;
     bool                _hasColor;
 

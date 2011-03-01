@@ -51,7 +51,7 @@ TestHexApp::run()
     int  statheight = (LINES * .33) - conheight;
     int  ch;
 
-    init_pair(1, COLOR_WHITE, COLOR_BLACK);
+    //init_pair(1, COLOR_WHITE, COLOR_BLACK);
 
     this->setCursor(1);
 
@@ -60,6 +60,8 @@ TestHexApp::run()
     mainPanel = this->createPanel("main", LINES-statheight-1-conheight, COLS, 1, 0);
     statPanel = this->createPanel("status", statheight, COLS, LINES-statheight-conheight, 0);
     conPanel  = this->createPanel("console", conheight, COLS, LINES-conheight, 0);
+
+    this->setWindowColor(statPanel, HEX_GREEN_BLACK);
 
     conPanel->drawBorder(false);
     conPanel->drawTitle(false);

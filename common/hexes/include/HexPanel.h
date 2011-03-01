@@ -86,6 +86,10 @@ class HexPanel {
     void                clearText();
     void                clear();
 
+    void                setColor     ( int colorIndex );
+    void                setAttr      ( int attr );
+    void                unsetAttr    ( int attr );
+
     void                setTopPanel();
 
     void                drawBorder   ( bool border );

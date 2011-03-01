@@ -285,6 +285,24 @@ HexPanel::clear()
     return this->clearText();
 }
 
+void
+HexPanel::setColor ( int colorIndex )
+{
+    wattrset(_hwin->_win, COLOR_PAIR(colorIndex));
+}
+
+void
+HexPanel::setAttr ( int attr )
+{
+    wattron(_hwin->_win, attr);
+}
+
+void
+HexPanel::unsetAttr ( int attr )
+{
+    wattroff(_hwin->_win, attr);
+}
+
 //----------------------------------------------------------------//
 
 void
