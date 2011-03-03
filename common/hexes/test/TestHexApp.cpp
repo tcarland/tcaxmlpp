@@ -68,7 +68,7 @@ TestHexApp::run()
 
     std::string top = "  TestHexApp Version 0.1a  -  libhexes ";
     top.append(LIBHEXES_VERSION);
-    this->print(0, 1, top);
+    this->print(0, 1, top, HEX_RED_BLACK, HEX_BOLD);
 
     mainPanel->setOutputHandler(new LineOutputHandler());
     statPanel->setOutputHandler(new LineOutputHandler());

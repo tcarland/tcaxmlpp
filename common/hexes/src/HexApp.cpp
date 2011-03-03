@@ -335,6 +335,17 @@ HexApp::print ( int y, int x, const std::string & str )
     return(mvwaddstr(stdscr, y, x, str.c_str()));
 }
 
+int
+HexApp::print ( int y, int x, const std::string & str, int color, int attr )
+{
+    int r = 0;
+    wattron(stdscr, COLOR_PAIR(color)|attr);
+    r = mvwaddstr(stdscr, y, x, str.c_str());
+    wattroff(stdscr, COLOR_PAIR(color)|attr);
+    return r;
+}
+
+
 //----------------------------------------------------------------//
 
 void
@@ -372,7 +383,6 @@ HexApp::InitColors()
     ::init_pair(HEX_BLUE_BLACK, HEX_BLUE, HEX_BLACK);
     ::init_pair(HEX_MAGENTA_BLACK, HEX_MAGENTA, HEX_BLACK);
     ::init_pair(HEX_CYAN_BLACK, HEX_CYAN, HEX_BLACK);
-    ::init_pair(HEX_WHITE_BLACK, HEX_WHITE, HEX_BLACK);
 }
 
 //----------------------------------------------------------------//

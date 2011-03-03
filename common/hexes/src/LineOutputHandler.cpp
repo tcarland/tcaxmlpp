@@ -36,8 +36,14 @@ LineOutputHandler::handleOutput ( HexPanel * panel )
             panel->scrollLine();
 
         panel->setAttribute(COLOR_PAIR(line.color));
+        if ( line.attributes > HEX_NORMAL )
+            panel->setAttribute(line.attributes);
+
         panel->print(line.str);
+
         panel->unsetAttribute(COLOR_PAIR(line.color));
+        if ( line.attributes > HEX_NORMAL )
+            panel->unsetAttribute(line.attributes);
 
         if ( ln < ht && (size_t) ln != tlist.size() && _newline )
             panel->wrap();

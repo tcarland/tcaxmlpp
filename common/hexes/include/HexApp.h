@@ -100,6 +100,9 @@ class HexApp {
 
     int          print          ( int y, int x, 
                                   const std::string & str );
+    int          print          ( int y, int x, 
+                                  const std::string & str,
+                                  int color, int attr );
 
   protected:
 
