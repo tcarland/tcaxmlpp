@@ -23,6 +23,7 @@ extern "C" {
 #endif
 
 
+#include "HexAttributes.hpp"
 #include "HexPosition.hpp"
 #include "HexString.hpp"
 #include "HexWindow.h"
