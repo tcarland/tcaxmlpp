@@ -7,7 +7,10 @@
 
 namespace hexes {
 
+
 bool HexApp::_NCURSES_INIT = false;
+
+//----------------------------------------------------------------//
 
 HexApp::HexApp()
     : _curPanel(NULL),
@@ -29,6 +32,7 @@ HexApp::~HexApp()
 }
 
 //----------------------------------------------------------------//
+
 bool
 HexApp::resized()
 {
@@ -40,12 +44,6 @@ HexApp::resized()
         resized = true;
     }
     return resized;
-}
-
-void
-HexApp::resize()
-{
-
 }
 
 int
@@ -327,15 +325,6 @@ HexApp::addColorPair ( int fgcolor, int bgcolor )
     ::init_pair(_colorIndex, fgcolor, bgcolor);
 
     return _colorIndex;
-}
-
-void
-HexApp::setWindowColor ( HexPanel * panel, int colorIndex )
-{
-    if ( colorIndex > _colorIndex )
-        return;
-
-    panel->setColor(colorIndex);
 }
 
 //----------------------------------------------------------------//

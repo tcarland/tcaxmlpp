@@ -12,6 +12,7 @@ namespace hexes {
 
 class HexApp;
 class HexWindow;
+class HexString;
 class HexOutputInterface;
 class HexInputInterface;
 
@@ -19,12 +20,8 @@ class HexInputInterface;
 #define DEFAULT_SCRLBK_SIZE  25
 #define MAX_SCRLBK_SIZE      65535
 
-enum TextLineAttribute {
-    HEX_LINE_NONEWLINE,
-    HEXLINE_NEWLINE,
-    HEXLINE_BOLD
-};
-typedef std::list<std::string> TextList;
+
+typedef std::list<HexString> TextList;
 
 
 class HexPanel {
@@ -79,16 +76,25 @@ class HexPanel {
     int                 maxY();
     int                 maxX();
 
-    TextList&           getTextList();
-    void                setTextList  ( TextList & textlist );
+    void                addText      ( HexString & hexstr );
     void                addText      ( const std::string & str );
+    void                addText      ( const std::string & str, 
+                                       int   color,
+                                       int   attr );
     void                setText      ( const std::string & str );
+    void                setText      ( const std::string & str,
+                                       int   color,
+                                       int   attr );
     void                clearText();
     void                clear();
 
-    void                setColor     ( int colorIndex );
-    void                setAttr      ( int attr );
-    void                unsetAttr    ( int attr );
+    TextList&           getTextList();
+    void                setTextList  ( TextList & textlist );
+
+    void                setTextColor   ( int colorIndex );
+    void                setBorderColor ( int colorIndex );
+    void                setAttribute   ( int attr );
+    void                unsetAttribute ( int attr );
 
     void                setTopPanel();
 
@@ -127,6 +133,8 @@ class HexPanel {
     int                  _selected;
     int                  _maxLines;
     int                  _scrollTo;
+
+    int                  _txtColor, _bdrColor;
 
     bool                 _scrollable;
     bool                 _drawBorder;

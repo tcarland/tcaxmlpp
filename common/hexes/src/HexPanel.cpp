@@ -47,6 +47,8 @@ HexPanel::HexPanel ( const std::string & title,
       _selected(0),
       _maxLines(DEFAULT_SCRLBK_SIZE),
       _scrollTo(0),
+      _txtColor(0),
+      _bdrColor(0),
       _scrollable(false),
       _drawBorder(true),
       _drawTitle(true)
@@ -251,7 +253,25 @@ HexPanel::setTextList ( TextList & textlist )
 void
 HexPanel::addText ( const std::string & str )
 {
-    _textlist.push_back(str);
+    HexString  line(str);
+    line.color = this->_txtColor;
+    
+    return this->addText(line);
+}
+
+void
+HexPanel::addText ( const std::string & str, int color, int attr )
+{
+    HexString  line(str);
+    line.color      = color;
+    line.attributes = attr;
+    return this->addText(line);
+}
+
+void
+HexPanel::addText ( HexString & hexstr )
+{
+    _textlist.push_back(hexstr);
 
     if ( _textlist.size() >= ((size_t) _height - 1) )
     {
@@ -262,14 +282,21 @@ HexPanel::addText ( const std::string & str )
     return;
 }
 
+
 /** setText clears the internal TextList and sets the
   * given @param str as the first line of text.
  **/
 void
 HexPanel::setText ( const std::string & str )
 {
+    return this->setText(str, _txtColor, HEX_NORMAL);
+}
+
+void
+HexPanel::setText ( const std::string & str, int color, int attr )
+{
     this->_textlist.clear();
-    this->addText(str);
+    this->addText(str, color, attr);
 }
 
 /**  Clears the internal TextList */
@@ -286,19 +313,28 @@ HexPanel::clear()
 }
 
 void
-HexPanel::setColor ( int colorIndex )
+HexPanel::setTextColor ( int colorIndex )
 {
-    wattrset(_hwin->_win, COLOR_PAIR(colorIndex));
+    //wattrset(_hwin->_win, COLOR_PAIR(colorIndex));
+    _txtColor = colorIndex;
 }
 
 void
-HexPanel::setAttr ( int attr )
+HexPanel::setBorderColor ( int colorIndex )
+{
+    _bdrColor = colorIndex;
+}
+
+//----------------------------------------------------------------//
+//
+void
+HexPanel::setAttribute ( int attr )
 {
     wattron(_hwin->_win, attr);
 }
 
 void
-HexPanel::unsetAttr ( int attr )
+HexPanel::unsetAttribute ( int attr )
 {
     wattroff(_hwin->_win, attr);
 }

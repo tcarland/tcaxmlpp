@@ -34,8 +34,8 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
     if ( ch == KEY_BACKSPACE || ch == 127 ) {
         if ( _line.size() > 0 ) {
             TextList    & txtlist = p->getTextList();
-            std::string & curline = txtlist.front();
-            curline.erase(curline.size() - 1);
+            HexString   & curline = txtlist.front();
+            curline.str.erase(curline.str.size() - 1);
 	    _line.erase(_line.size() - 1);
 
 	    int x = p->curX();
@@ -59,8 +59,8 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
                 f.append(1, ch);
                 p->addText(f);
             } else {
-	        std::string & curline = txtlist.front();
-	        curline.append(1, ch);
+                HexString & curline = txtlist.front();
+	        curline.str.append(1, ch);
             }
         }
         _line.append(1, ch);

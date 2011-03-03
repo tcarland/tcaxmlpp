@@ -31,10 +31,13 @@ LineOutputHandler::handleOutput ( HexPanel * panel )
 
     for ( tIter = tlist.begin(); tIter != tlist.end(); ++tIter, ++ln )
     {
+        HexString & line = *tIter;
         if ( ln > ht && panel->scrollable() )
             panel->scrollLine();
 
-        panel->print(*tIter);
+        panel->setAttribute(COLOR_PAIR(line.color));
+        panel->print(line.str);
+        panel->unsetAttribute(COLOR_PAIR(line.color));
 
         if ( ln < ht && (size_t) ln != tlist.size() && _newline )
             panel->wrap();
