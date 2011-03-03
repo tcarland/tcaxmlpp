@@ -117,7 +117,6 @@ TestHexApp::run()
             mainPanel->clear();
     }
 
-
     mainPanel->print("test 1 2 3 : ");
     mainPanel->print(cmd);
     mainPanel->refresh();

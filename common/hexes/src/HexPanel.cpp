@@ -24,6 +24,7 @@ HexPanel::HexPanel ( const std::string & title )
       _selected(0),
       _maxLines(DEFAULT_SCRLBK_SIZE),
       _scrollTo(0),
+      _txtColor(0),
       _scrollable(false),
       _drawBorder(true),
       _drawTitle(true)
@@ -48,7 +49,6 @@ HexPanel::HexPanel ( const std::string & title,
       _maxLines(DEFAULT_SCRLBK_SIZE),
       _scrollTo(0),
       _txtColor(0),
-      _bdrColor(0),
       _scrollable(false),
       _drawBorder(true),
       _drawTitle(true)
@@ -100,8 +100,9 @@ HexPanel::redraw()
     if ( _output != NULL )
         r = _output->handleOutput(this);
 
-    if ( _drawBorder) 
+    if ( _drawBorder)
         _hwin->drawBorder();
+
     if ( _drawTitle)
         mvwaddstr(_hwin->_win, 0, 2, _title.c_str());
 
@@ -317,12 +318,6 @@ HexPanel::setTextColor ( int colorIndex )
 {
     //wattrset(_hwin->_win, COLOR_PAIR(colorIndex));
     _txtColor = colorIndex;
-}
-
-void
-HexPanel::setBorderColor ( int colorIndex )
-{
-    _bdrColor = colorIndex;
 }
 
 //----------------------------------------------------------------//

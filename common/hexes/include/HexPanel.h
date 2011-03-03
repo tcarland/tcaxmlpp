@@ -92,7 +92,6 @@ class HexPanel {
     void                setTextList  ( TextList & textlist );
 
     void                setTextColor   ( int colorIndex );
-    void                setBorderColor ( int colorIndex );
     void                setAttribute   ( int attr );
     void                unsetAttribute ( int attr );
 
@@ -134,7 +133,7 @@ class HexPanel {
     int                  _maxLines;
     int                  _scrollTo;
 
-    int                  _txtColor, _bdrColor;
+    int                  _txtColor;
 
     bool                 _scrollable;
     bool                 _drawBorder;
