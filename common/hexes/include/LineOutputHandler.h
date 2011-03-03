@@ -21,6 +21,7 @@ class LineOutputHandler : public HexOutputInterface {
     void  setNewline ( bool newline );
 
   private:
+
     bool  _newline;
 };
 

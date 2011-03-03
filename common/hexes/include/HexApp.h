@@ -62,6 +62,18 @@ enum HexColors {
     HEX_WHITE
 };
 
+enum HexAttr {
+    HEX_NORMAL   = A_NORMAL,
+    HEX_STANDOUT = A_STANDOUT,
+    HEX_LINE     = A_UNDERLINE,
+    HEX_REVERSE  = A_REVERSE,
+    HEX_BLINK    = A_BLINK,
+    HEX_DIM      = A_DIM,
+    HEX_BOLD     = A_BOLD,
+    HEX_PROTECT  = A_PROTECT,
+    HEX_INVIS    = A_INVIS
+};
+
 
 /**
   * Provides the frontend to a 'Hexes' application. HexApp is the
