@@ -90,9 +90,9 @@ TnmsConsoleApp::run()
 
     _mainPanel->enableScroll(true);
     _statPanel->enableScroll(true);
-    _statPanel->setTextColor(HEX_GREEN_BLACK);
+    _statPanel->setTextColor(HEX_GREEN);
     _consPanel->enableScroll(true);
-    _statPanel->setTextColor(HEX_RED_BLACK);
+    _statPanel->setTextColor(HEX_RED);
 
     _consPanel->drawBorder(false);
     _consPanel->drawTitle(false);
@@ -101,7 +101,7 @@ TnmsConsoleApp::run()
     _consPanel->addText(_prompt);
 
     this->setTopPanel(_consPanel);
-    this->print(0, 1, _title, HEX_RED_BLACK, HEX_BOLD);
+    this->print(0, 1, _title, HEX_GREEN, HEX_BOLD);
     this->setCursor(0);
 
     conin   = (LineInputHandler*) _consPanel->getInputHandler();
@@ -221,7 +221,7 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
         _mainPanel->addText("TnmsAPI List:");
         for ( aIter = _apis.begin(); aIter != _apis.end(); ++aIter ) 
             _mainPanel->addText(aIter->first);
-        _mainPanel->addText(" --- ", HEX_GREEN_BLACK, HEX_DIM);
+        _mainPanel->addText(" --- ", HEX_GREEN, HEX_DIM);
     }
     else if ( cmd.compare("set") == 0 )  // SET
     {
@@ -247,13 +247,13 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
     {
         if ( cmdlist.size() < 2 ) {
             msg << "Error: invalid syntax.";
-            _statPanel->addText(msg.str(), HEX_YELLOW_BLACK, HEX_NORMAL);
+            _statPanel->addText(msg.str(), HEX_YELLOW);
             return false;
         }
 
         if ( _showI == _apis.end() ) {
             msg << "No valid instance in this context.";
-            _statPanel->addText(msg.str(), HEX_YELLOW_BLACK, HEX_NORMAL);
+            _statPanel->addText(msg.str(), HEX_YELLOW);
             return false;
         }
 
@@ -267,7 +267,7 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
         //  api->add
         if ( ! _showI->second->add(name, ts) ) {
             msg << "Error: add failed for '" << name << "'";
-            _statPanel->addText(msg.str(), HEX_RED_BLACK, 0);
+            _statPanel->addText(msg.str(), HEX_RED);
             return false;
         }
     }
@@ -275,13 +275,13 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
     {
         if ( cmdlist.size() < 3 ) {
             msg << "Error: invalid syntax ";
-            _statPanel->addText(msg.str(), HEX_YELLOW_BLACK, 0);
+            _statPanel->addText(msg.str(), HEX_YELLOW);
             return false;
         }
 
         if ( _showI == _apis.end() ) {
             msg << "No valid instance in this context ";
-            _statPanel->addText(msg.str(), HEX_YELLOW_BLACK, 0);
+            _statPanel->addText(msg.str(), HEX_YELLOW);
             return false;
         }
 
@@ -298,7 +298,7 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
         // api->update
         if ( ! _showI->second->update(name, ts, val, TNMS_UINT64) ) {
             msg << "Error: update failed";
-            _statPanel->addText(msg.str(), HEX_RED_BLACK, 0);
+            _statPanel->addText(msg.str(), HEX_RED);
             return false;
         }
     }
@@ -769,7 +769,7 @@ TnmsConsoleApp::sleeps ( int secs )
 void
 TnmsConsoleApp::DisplayHelp()
 {
-    _mainPanel->addText(" tnms_console - a command-line tnms agent/client", HEX_GREEN_BLACK);
+    _mainPanel->addText(" tnms_console - a command-line tnms agent/client", HEX_GREEN);
     _mainPanel->addText(" ");
     _mainPanel->addText("TnmsAPI Instance commands:", 0, HEX_BOLD);
     _mainPanel->addText(" create [tag] [agent-name] [cfg]    =  Creates a new instance.");
