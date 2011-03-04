@@ -21,7 +21,7 @@ ALL_OBJS =              $(OBJS)
 ALL_BINS =              $(BIN)
 
 
-all: lib bindings docs
+all: lib
 
 
 include ${TOPDIR}/tcamake/project_defs
