@@ -61,6 +61,8 @@ TestHexApp::run()
     statPanel = this->createPanel("status", statheight, COLS, LINES-statheight-conheight, 0);
     conPanel  = this->createPanel("console", conheight, COLS, LINES-conheight, 0);
 
+    mainPanel->setBorderColor(HEX_MAGENTA);
+    statPanel->setWindowTitle("Main", HEX_GREEN);
     statPanel->setBorderColor(HEX_MAGENTA);
     statPanel->setTextColor(HEX_GREEN);
     statPanel->setWindowTitle("Status", HEX_GREEN);
