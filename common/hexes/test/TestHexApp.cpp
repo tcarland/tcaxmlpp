@@ -61,14 +61,15 @@ TestHexApp::run()
     statPanel = this->createPanel("status", statheight, COLS, LINES-statheight-conheight, 0);
     conPanel  = this->createPanel("console", conheight, COLS, LINES-conheight, 0);
 
-    statPanel->setTextColor(HEX_GREEN_BLACK);
+    statPanel->setBorderColor(HEX_MAGENTA);
+    statPanel->setTextColor(HEX_GREEN);
 
     conPanel->drawBorder(false);
     conPanel->drawTitle(false);
 
     std::string top = "  TestHexApp Version 0.1a  -  libhexes ";
     top.append(LIBHEXES_VERSION);
-    this->print(0, 1, top, HEX_RED_BLACK, HEX_BOLD);
+    this->print(0, 1, top, HEX_RED, HEX_BOLD);
 
     mainPanel->setOutputHandler(new LineOutputHandler());
     statPanel->setOutputHandler(new LineOutputHandler());

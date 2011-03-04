@@ -80,11 +80,11 @@ class HexPanel {
     void                addText      ( const std::string & str );
     void                addText      ( const std::string & str, 
                                        int   color,
-                                       int   attr );
+                                       int   attr = HEX_NORMAL );
     void                setText      ( const std::string & str );
     void                setText      ( const std::string & str,
                                        int   color,
-                                       int   attr );
+                                       int   attr = HEX_NORMAL );
     void                clearText();
     void                clear();
 
@@ -92,6 +92,7 @@ class HexPanel {
     void                setTextList  ( TextList & textlist );
 
     void                setTextColor   ( int colorIndex );
+    void                setBorderColor ( int colorIndex );
     void                setAttribute   ( int attr );
     void                unsetAttribute ( int attr );
 
@@ -134,6 +135,7 @@ class HexPanel {
     int                  _scrollTo;
 
     int                  _txtColor;
+    int                  _bdrColor;
 
     bool                 _scrollable;
     bool                 _drawBorder;

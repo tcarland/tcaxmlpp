@@ -100,8 +100,10 @@ HexPanel::redraw()
     if ( _output != NULL )
         r = _output->handleOutput(this);
 
-    if ( _drawBorder)
+    if ( _drawBorder) {
+        wattrset(_hwin->_win, COLOR_PAIR(_bdrColor));
         _hwin->drawBorder();
+    }
 
     if ( _drawTitle)
         mvwaddstr(_hwin->_win, 0, 2, _title.c_str());
@@ -256,6 +258,7 @@ HexPanel::addText ( const std::string & str )
 {
     HexString  line(str);
     line.color = this->_txtColor;
+    line.attributes = HEX_NORMAL;
     
     return this->addText(line);
 }
@@ -314,9 +317,15 @@ HexPanel::clear()
 }
 
 void
+HexPanel::setBorderColor ( int colorIndex )
+{
+    _bdrColor = colorIndex;
+    //wattrset(_hwin->_win, COLOR_PAIR(colorIndex));
+}
+
+void
 HexPanel::setTextColor ( int colorIndex )
 {
-    //wattrset(_hwin->_win, COLOR_PAIR(colorIndex));
     _txtColor = colorIndex;
 }
 
