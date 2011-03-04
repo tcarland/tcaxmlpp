@@ -82,17 +82,17 @@ TnmsConsoleApp::run()
 
     LineInputHandler * conin;
 
-    init_pair(1, COLOR_WHITE, COLOR_BLACK);
-
     _prompt    = "[tnms]> ";
     _title     = " tnms-console ";
-    _mainPanel = this->createPanel("main", (this->height() - statht - conht - 1), this->width(), 1, 0);
-    _statPanel = this->createPanel("status", statht, this->width(), (this->height() - statht - conht), 0);
+    _mainPanel = this->createPanel(" main ", (this->height() - statht - conht - 1), this->width(), 1, 0);
+    _statPanel = this->createPanel(" status ", statht, this->width(), (this->height() - statht - conht), 0);
     _consPanel = this->createPanel("console", conht, this->width(), (this->height() - conht), 0);
 
     _mainPanel->enableScroll(true);
     _statPanel->enableScroll(true);
+    _statPanel->setTextColor(HEX_GREEN_BLACK);
     _consPanel->enableScroll(true);
+    _statPanel->setTextColor(HEX_RED_BLACK);
 
     _consPanel->drawBorder(false);
     _consPanel->drawTitle(false);
@@ -101,7 +101,7 @@ TnmsConsoleApp::run()
     _consPanel->addText(_prompt);
 
     this->setTopPanel(_consPanel);
-    this->print(0, 1, _title);
+    this->print(0, 1, _title, HEX_RED_BLACK, HEX_BOLD);
     this->setCursor(0);
 
     conin   = (LineInputHandler*) _consPanel->getInputHandler();
@@ -145,7 +145,7 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
     ApiMap::iterator          aIter;
 
     StringUtils::split(cmdstr, ' ', std::back_inserter(cmdlist));
-    _statPanel->addText(cmdstr);
+    //_statPanel->addText(cmdstr);
 
     if ( cmdlist.size() > 0 )
         cmd = cmdlist.at(0);
@@ -430,6 +430,13 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
     else if ( cmd.compare("clear") == 0 )
     {
         _mainPanel->clear();
+    }
+    else if ( cmd.compare("version") == 0 )
+    {
+        std::string  hexv = "libhexes version: ";
+        hexv.append(LIBHEXES_VERSION);
+        _mainPanel->addText("tnms-console version: 0.12");
+        _mainPanel->addText(hexv);
     }
     else 
     {
@@ -763,20 +770,20 @@ TnmsConsoleApp::DisplayHelp()
 {
     _mainPanel->addText(" tnms_console - a command-line tnms agent/client");
     _mainPanel->addText(" ");
-    _mainPanel->addText("TnmsAPI Instance commands:");
+    _mainPanel->addText("TnmsAPI Instance commands:", 0, HEX_BOLD);
     _mainPanel->addText(" create [tag] [agent-name] [cfg]    =  Creates a new instance.");
     _mainPanel->addText(" destroy [tag]                      =  Destroys an instance.");
     _mainPanel->addText(" list                               =  Lists available instances.");
     _mainPanel->addText(" set [tag]                          =  Switches the current instance.");
     _mainPanel->addText(" ");
-    _mainPanel->addText("Agent source commands");
+    _mainPanel->addText("Agent source commands:", 0, HEX_BOLD);
     _mainPanel->addText(" add [name] <epoch>                 =  adds a new metric of 'name'.");
     _mainPanel->addText(" remove   [name]                    =  removes a metric of 'name'.");
     _mainPanel->addText(" update   [name] [value] <epoch>    =  Updates a metric.");
     _mainPanel->addText(" update_s [name] [value] <epoch>    =  Updates a metric with a string value.");
     _mainPanel->addText(" send                               =  Give time to the API instance.");
     _mainPanel->addText(" ");
-    _mainPanel->addText("Client commands");
+    _mainPanel->addText("Client commands:", 0, HEX_BOLD);
     _mainPanel->addText(" client new [tag] [server] [port]   =  creates a new client connection ");
     _mainPanel->addText(" client del [tag]                   =  removes a client connection  ");
     _mainPanel->addText(" client list                        =  lists current clients  ");
