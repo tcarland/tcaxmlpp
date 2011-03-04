@@ -63,6 +63,7 @@ TestHexApp::run()
 
     statPanel->setBorderColor(HEX_MAGENTA);
     statPanel->setTextColor(HEX_GREEN);
+    statPanel->setWindowTitle("Status", HEX_GREEN);
 
     conPanel->drawBorder(false);
     conPanel->drawTitle(false);

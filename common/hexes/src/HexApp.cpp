@@ -188,12 +188,12 @@ HexApp::addPanel ( HexPanel * panel )
 
     PanelMap::iterator pIter;
 
-    pIter = _panels.find(panel->getTitle());
+    pIter = _panels.find(panel->getPanelName());
 
     if ( pIter != _panels.end() )
         return false;
     
-    _panels[panel->getTitle()] = panel;
+    _panels[panel->getPanelName()] = panel;
 
     return true;
 }

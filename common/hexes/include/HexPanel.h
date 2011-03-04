@@ -91,6 +91,12 @@ class HexPanel {
     TextList&           getTextList();
     void                setTextList  ( TextList & textlist );
 
+    void                setWindowTitle ( const std::string & title, 
+                                         int color, int attr = HEX_NORMAL );
+    HexString&          getWindowTitle();
+    const std::string&  getPanelName() const;
+    const std::string&  getName() const { return this->getPanelName(); }
+
     void                setTextColor   ( int colorIndex );
     void                setBorderColor ( int colorIndex );
     void                setAttribute   ( int attr );
@@ -125,6 +131,7 @@ class HexPanel {
     HexInputInterface  * _input;
 
     std::string          _title;
+    HexString            _winTitle;
     TextList             _textlist;
 
     int                  _height, _width;
