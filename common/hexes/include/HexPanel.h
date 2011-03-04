@@ -12,6 +12,7 @@ namespace hexes {
 
 class HexApp;
 class HexWindow;
+class HexString;
 class HexOutputInterface;
 class HexInputInterface;
 
