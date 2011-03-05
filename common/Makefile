@@ -26,10 +26,12 @@ tcasnmp:
 	( cd tcasnmp; make all )
 	@echo
 
+ifdef USE_MYSQL
 .PHONY: tcasqlpp
 tcasqlpp:
 	( cd tcasqlpp; make all )
 	@echo
+endif
 
 .PHONY: tnmsCore
 tnmsCore:
