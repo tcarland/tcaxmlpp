@@ -26,16 +26,14 @@
 
 
 extern "C" {
-#ifdef WIN32
-#  include <windows.h>
-#else
+#ifndef WIN32
 #  include <dirent.h>
 #  include <unistd.h>
 #endif
-# include <time.h>
-# include <sys/types.h>
-# include <sys/stat.h>
+#include <time.h>
+#include <sys/types.h>
 }
+
 #include <fstream>
 
 #include "FileUtils.h"
@@ -43,6 +41,134 @@ extern "C" {
 
 
 namespace tcanetpp {
+
+
+FileUtils::FileUtils ( const std::string & file ) throw ( Exception )
+  : _file(file)
+{
+    if ( ! FileUtils::InitFileStat(&_statb, _file) )
+        throw Exception("Failure performing stat()");
+}
+
+FileUtils::~FileUtils() {}
+
+bool
+FileUtils::isReadable() const
+{
+    std::ifstream ifs(_file.c_str());
+
+    if ( ! ifs )
+        return false;
+    ifs.close();
+
+    return true;
+}
+
+bool
+FileUtils::isSymlink() const
+{
+#   ifndef WIN32
+    if ( S_ISLNK(_statb.st_mode) )
+        return true;
+#   endif
+    return false;
+}
+
+bool
+FileUtils::isDirectory()  const
+{
+#   ifdef WIN32
+    if ( S_IFDIR & _statb.st_mode )
+        return true;
+#   else
+    if ( S_ISDIR(_statb.st_mode) )
+        return true;
+# endif
+    return false;
+}
+
+bool
+FileUtils::isBlockDevice() const
+{
+#   ifndef WIN32
+    if ( S_ISBLK(_statb.st_mode) )
+        return true;
+#   endif
+    return false;
+}
+
+bool
+FileUtils::isCharDevice() const
+{
+#   ifndef WIN32
+    if ( S_ISCHR(_statb.st_mode) )
+        return true;
+#   endif
+    return false;
+}
+
+bool
+FileUtils::isPipe() const
+{
+#   ifndef WIN32
+    if ( S_ISFIFO(_statb.st_mode) )
+        return true;
+#   endif
+    return false;
+}
+
+
+bool
+FileUtils::isSocket() const
+{
+#   ifndef WIN32
+    if ( S_ISFIFO(_statb.st_mode) )
+        return true;
+#   endif
+    return false;
+}
+
+
+time_t
+FileUtils::lastTouched() const
+{
+    return _statb.st_mtime;
+}
+
+uid_t
+FileUtils::uidOwner() const
+{
+    return _statb.st_uid;
+}
+
+gid_t
+FileUtils::gidOwner() const
+{
+    return _statb.st_gid;
+}
+
+size_t 
+FileUtils::size() const 
+{
+    return((size_t)_statb.st_size);
+}
+
+
+bool
+FileUtils::InitFileStat ( FileStat * fsb, const std::string & file )
+{
+    bool result = true;
+
+#   ifdef WIN32
+    if ( ::_stat(file.c_str(), fsb) != 0 )
+        result = false;
+#   else
+    if ( ::stat(file.c_str(), fsb) != 0 )
+        result = false;
+#   endif
+
+    return result;
+}
 
 
 bool
@@ -59,58 +185,65 @@ FileUtils::IsReadable ( const std::string & filename )
 time_t
 FileUtils::LastTouched ( const std::string & filename )
 {
-# ifdef WIN32
-    struct _stat  sb;
+    FileStat  sb;
     
-    if ( ::_stat(filename.c_str(), &sb) != 0 )
+    if ( ! FileUtils::InitFileStat(&sb, filename) )
         return 0;
-# else
-    struct stat  sb;
-    ::stat(filename.c_str(), &sb);
-# endif
 
     return sb.st_mtime;
 }
 
 bool
-FileUtils::IsDirectory ( const std::string & dname )
+FileUtils::IsDirectory ( const std::string & dirname )
 {
-# ifdef WIN32
-    struct _stat sb;
+    FileStat  sb;
 
-    if ( ::_stat(dname.c_str(), &sb) == 0 )
-        if ( S_IFDIR & sb.st_mode )
-            return true;
-# else
-    struct stat  sb;
-
-    if ( ::stat(dname.c_str(), &sb) < 0 )
+    if ( ! FileUtils::InitFileStat(&sb, dirname) )
         return false;
-
+    
+#   ifdef WIN32
+    if ( S_IFDIR & sb.st_mode )
+        return true;
+#   else
     if ( S_ISDIR(sb.st_mode) )
         return true;
-# endif
+#   endif
 
     return false;
 }
 
 
 bool
-FileUtils::IsSymlink ( const std::string & dname )
+FileUtils::IsSymlink ( const std::string & filename )
 {
-# ifndef WIN32
-    struct stat  sb;
+    FileStat  sb;
 
-    if ( ::stat(dname.c_str(), &sb) < 0 )
+    if ( ! FileUtils::InitFileStat(&sb, filename) )
         return false;
-
+    
+#   ifndef WIN32
     if ( S_ISLNK(sb.st_mode) )
         return true;
-# endif
+#   endif
 
     return false;
 }
 
+bool
+FileUtils::IsBlockDevice ( const std::string & filename )
+{
+    FileStat  sb;
+
+    if ( ! FileUtils::InitFileStat(&sb, filename) )
+        return false;
+    
+#   ifndef WIN32
+    if ( S_ISBLK(sb.st_mode) )
+        return true;
+#   endif
+
+    return false;
+}
 
 
 bool 
@@ -178,7 +311,6 @@ FileUtils::GetFilenames ( const std::string & path, FileNameList & files, bool r
     }
 
     ::closedir(dirp);
-
 #endif 
 
     return true;
