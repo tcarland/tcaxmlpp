@@ -97,8 +97,8 @@ class XmlNode {
                                        const std::string & attrval = "" );
 
     void           setDebug          ( bool d );
-    std::string    getErrorStr() const { return _errStr; }
     void           printNode         ( bool recursive = false );
+    std::string&   getErrorStr();
 
     // nodelist iterators
     iterator       begin()           { return _kids.begin(); }
@@ -118,9 +118,13 @@ class XmlNode {
     inline size_t  attrCount()     const { return this->attributes(); }
 
 
+    const
+    XmlAttribute*  findAttr         ( const std::string & name ) const;
     XmlAttribute*  findAttr         ( const std::string & name );
-    bool           hasAttr          ( const std::string & name );
-    std::string    getAttr          ( const std::string & name );
+
+    bool           hasAttr          ( const std::string & name ) const;
+    std::string    getAttr          ( const std::string & name ) const;
+
     bool           removeAttr       ( const std::string & name );
     bool           addAttr          ( const std::string & key, 
                                       const std::string & val );
@@ -132,13 +136,13 @@ class XmlNode {
     XmlAttribute*  findAttribute    ( const std::string & key )
                                     { return this->findAttr(key); }
     inline 
-    bool           hasAttribute     ( const std::string & key )
+    bool           hasAttribute     ( const std::string & key ) const
                                     { return this->hasAttr(key); }
     inline 
-    bool           haveAttribute    ( const std::string & key )
+    bool           haveAttribute    ( const std::string & key ) const
                                     { return this->hasAttr(key); }
     inline 
-    bool           haveAttr         ( const std::string & key )
+    bool           haveAttr         ( const std::string & key ) const
                                     { return this->hasAttr(key); }
     inline 
     bool           addAttribute     ( const std::string & key,
@@ -148,7 +152,7 @@ class XmlNode {
     bool           removeAttribute  ( const std::string & key )
                                     { return this->removeAttr(key); }
     inline 
-    std::string    getAttribute     ( const std::string & key )
+    std::string    getAttribute     ( const std::string & key ) const
                                     { return this->getAttr(key); }
     inline 
     void           setAttribute     ( const std::string & key, 
@@ -166,15 +170,10 @@ class XmlNode {
     class FindXmlNode {
       public:
         XmlNode * node;
-        
-        explicit FindXmlNode ( XmlNode * n ) 
-            : node(n) 
-        {}
-        
-        bool operator() ( const XmlNode* n )
-        {
-            return(node == n);
-        }
+
+        explicit FindXmlNode ( XmlNode * n ) : node(n) {}
+
+        bool operator() ( const XmlNode * n );
     };
 
     class FindXmlNodeName {
@@ -189,13 +188,7 @@ class XmlNode {
            : name(name_), key(key_), val(val_) 
         {}
 
-        bool operator() ( XmlNode * node )
-        {
-            if ( node->getNodeName().compare(name) == 0 )
-                return(node->getAttr(key).compare(val) == 0);
-
-            return false;
-        }
+        bool operator() ( const XmlNode * node );
     };
 
 

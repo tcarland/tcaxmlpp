@@ -274,8 +274,21 @@ XmlNode::findAttr ( const std::string & key )
     return((XmlAttribute*) aIter->second);
 }
 
+const XmlAttribute*
+XmlNode::findAttr ( const std::string & key ) const
+{
+    XmlAttrMap::const_iterator  cIter;
+
+    cIter = _attrs.find(key);
+
+    if ( cIter == _attrs.end() )
+        return NULL;
+
+    return cIter->second;
+}
+
 bool
-XmlNode::hasAttr ( const std::string & key )
+XmlNode::hasAttr ( const std::string & key ) const
 {
     if ( this->findAttr(key) == NULL )
 	return false;
@@ -317,9 +330,9 @@ XmlNode::addAttr ( const std::string & key, const std::string & val )
 }
 
 std::string
-XmlNode::getAttr ( const std::string & key )
+XmlNode::getAttr ( const std::string & key ) const
 {
-    XmlAttribute* attr = this->findAttr(key);
+    const XmlAttribute* attr = this->findAttr(key);
 
     if ( attr == NULL )
 	return std::string("");
@@ -417,6 +430,21 @@ XmlNode::RecursiveFindNode ( XmlNode * root,
 
     return node;
 }
+
+bool
+XmlNode::FindXmlNode::operator() ( const XmlNode * n )
+{
+    return this->node == n;
+}
+
+bool
+XmlNode::FindXmlNodeName::operator() ( const XmlNode * node )
+{
+    if ( node->getNodeName().compare(name) == 0 )
+        return(node->getAttr(key).compare(val) == 0);
+    return false;
+}
+
 
 }  // namespace
 

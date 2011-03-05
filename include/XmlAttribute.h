@@ -50,17 +50,17 @@ class XmlAttribute {
 
     XmlAttribute ( XmlNode * parent, xmlAttrPtr node );
 
-    XmlAttribute ( XmlNode           * parent, 
+    XmlAttribute ( XmlNode * parent, 
 	           const std::string & key, 
 	           const std::string & val );
 
     virtual ~XmlAttribute();
 
-    xmlAttrPtr          getNode()  { return _node; }
-    const std::string&  getKey()   { return _key; }
-    const std::string&  getValue() { return _val; }
+    xmlAttrPtr          getNode()        { return _node; }
+    const std::string&  getKey() const   { return _key; }
+    const std::string&  getValue() const { return _val; }
 
-    virtual void        setValue   ( const std::string & val );
+    virtual void        setValue ( const std::string & val );
 
 
   protected:
