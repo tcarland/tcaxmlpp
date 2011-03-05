@@ -179,6 +179,11 @@ XmlNode::isRootElement() const
     return(_parent != NULL);
 }
 
+std::string&
+XmlNode::getErrorStr()
+{
+    return _errStr;
+}
 
 XmlNode*
 XmlNode::findNode ( const std::string & nodename,
@@ -408,8 +413,10 @@ XmlNode::RecursiveFindNode ( XmlNode * root,
                              const std::string & val )
 {
     if ( root->getNodeName().compare(name) == 0 
-            && root->getAttr(key).compare(val) == 0 )
+        && root->getAttr(key).compare(val) == 0 )
+    {
         return root;
+    }
 
     XmlNodeIter    nIter;
     XmlNodeList  & kids  = root->getNodeList();
@@ -434,7 +441,7 @@ XmlNode::RecursiveFindNode ( XmlNode * root,
 bool
 XmlNode::FindXmlNode::operator() ( const XmlNode * n )
 {
-    return this->node == n;
+    return(this->node == n);
 }
 
 bool
