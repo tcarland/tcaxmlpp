@@ -1,7 +1,7 @@
 /**
   * @file FileUtils.h
   *
-  * Copyright (c) 2002,2008 Timothy Charlton Arland 
+  * Copyright (c) 2002,2008,2011 Timothy Charlton Arland 
   * @author tca@charltontechnology.net
   *
   * @section LICENSE
@@ -41,13 +41,13 @@ extern "C" {
 
 namespace tcanetpp {
 
-
-typedef std::list< std::string >   FileNameList;
 #ifdef WIN32
 typedef struct _stat  FileStat;
 #else
 typedef struct stat   FileStat;
 #endif
+
+typedef std::list< std::string >   FileNameList;
 
 
 class FileUtils {
@@ -57,38 +57,38 @@ class FileUtils {
     FileUtils ( const std::string & file ) throw ( Exception );
     ~FileUtils();
 
-    bool   isReadable() const;
-    bool   isDirectory() const;
-    bool   isBlockDevice() const;
-    bool   isCharDevice() const;
-    bool   isPipe() const;
-    bool   isSocket() const;
-    bool   isSymlink() const;
+    bool           isReadable() const;
+    bool           isDirectory() const;
+    bool           isBlockDevice() const;
+    bool           isCharDevice() const;
+    bool           isPipe() const;
+    bool           isSocket() const;
+    bool           isSymlink() const;
 
-    time_t lastTouched() const;
-    time_t lastAccessed() const;
-    uid_t  uidOwner() const;
-    gid_t  gidOwner() const;
+    time_t         lastTouched() const;
+    time_t         lastAccessed() const;
+    uid_t          uidOwner() const;
+    gid_t          gidOwner() const;
 
-    size_t size() const;
-    size_t bytes() const { return this->size(); }
+    size_t         size() const;
+    size_t         bytes() const { return this->size(); }
 
   public:
 
-    static time_t    LastTouched    ( const std::string & filename );
-    static bool      IsReadable     ( const std::string & filename );
-    static bool      IsBlockDevice  ( const std::string & filename );
-    static bool      IsPipe         ( const std::string & filename );
-    static bool      IsDirectory    ( const std::string & dirname  );
-    static bool      IsSymlink      ( const std::string & filename );
+    static time_t  LastTouched    ( const std::string & filename );
+    static bool    IsReadable     ( const std::string & filename );
+    static bool    IsBlockDevice  ( const std::string & filename );
+    static bool    IsPipe         ( const std::string & filename );
+    static bool    IsDirectory    ( const std::string & dirname  );
+    static bool    IsSymlink      ( const std::string & filename );
 
-    static bool      GetFilenames   ( const std::string & path,
-                                      FileNameList      & files,
-                                      bool  recursive   = true );
-
+    static bool    GetFilenames   ( const std::string & path,
+                                    FileNameList      & files,
+                                    bool  recursive   = true );
   protected:
 
-    static bool      InitFileStat   ( FileStat * fsb, const std::string & file );
+    static bool    InitFileStat   ( FileStat          * fsb, 
+                                    const std::string & file );
 
   private:
 
