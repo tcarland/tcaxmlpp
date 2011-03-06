@@ -14,11 +14,15 @@ XmlDocNodeFactory::operator() ( XmlNode * parent, xmlNodePtr node, bool r )
 
 
 
-/** XmlDocNode
+/**  XmlDocNode
  *    The XmlDocNode class provides a convenient XmlNode heirarchy
- *    that keeps a pointer to the parent XmlDocument container object
- *    for a given node. This also serves as a simple example of using
- *    the XmlNodeFactory class for creating specialized XmlNode objects.
+ *  that keeps a pointer to the parent XmlDocument container object
+ *  for a given node. This also serves as a simple example of using
+ *  the XmlNodeFactory class for creating specialized XmlNode objects.
+ *
+ *    Note that XmlNodeFactory only provides a factory class for
+ *  customizing the root level node. Further node customization is
+ *  accomplished by overriding XmlNode::recursiveWalk().
  */
 XmlDocNode::XmlDocNode ( XmlDocument * doc, 
                          XmlNode     * parent,

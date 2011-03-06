@@ -67,9 +67,9 @@ class XmlNodeFactory {
   public:
     virtual ~XmlNodeFactory() {}
 
-    virtual XmlNode*  operator() ( XmlNode     * parent, 
-                                   xmlNodePtr    node,
-                                   bool          recursive_walk = true ) = 0;
+    virtual XmlNode*  operator() ( XmlNode    * parent,
+                                   xmlNodePtr   node,
+                                   bool         recursive_walk = true ) = 0;
 };
 
 
@@ -84,9 +84,9 @@ class XmlDocument {
     class DefNodeFactory : public XmlNodeFactory {
       public:
         virtual ~DefNodeFactory() {}
-        virtual XmlNode*  operator() ( XmlNode     * parent, 
-                                       xmlNodePtr    node,
-                                       bool          recursive_walk = true );
+        virtual XmlNode*  operator() ( XmlNode    * parent,
+                                       xmlNodePtr   node,
+                                       bool         recursive_walk = true );
     };
 
   public:

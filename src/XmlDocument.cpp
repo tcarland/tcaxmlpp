@@ -38,7 +38,7 @@ bool
 XmlDocument::_Libinit = false;
 
 const char*
-XmlDocument::_Version = "1.3.6";
+XmlDocument::_Version = "1.3.7";
 
 //-------------------------------------------------------------//
 
@@ -60,7 +60,7 @@ XmlDocument::XmlDocument()
       _debug(false)
 {
     if ( ! XmlDocument::_Libinit )
-	XmlDocument::LibInit();
+        XmlDocument::LibInit();
 }
 
 
@@ -85,7 +85,7 @@ XmlDocument::XmlDocument ( const std::string & filename, bool create )
       _debug(false)
 {
     if ( ! XmlDocument::_Libinit )
-	XmlDocument::LibInit();
+        XmlDocument::LibInit();
     
     this->initDocument(filename, create);
 }
@@ -111,24 +111,24 @@ XmlDocument::initDocument ( const std::string & filename, bool create )
 
     if ( XmlDocument::IsReadable(filename) ) 
     {
-	if ( create ) {
-	    _errStr = "File already exists, remove first to create";
-	    result  = false;
-	} else {
-	    result = this->readFile(filename);
-	}
+        if ( create ) {
+            _errStr = "File already exists, remove first to create";
+            result  = false;
+        } else {
+            result = this->readFile(filename);
+        }
     } 
     else if ( create ) 
     {
-	_xmlfile = filename;
+        _xmlfile = filename;
 
 	if ( _doc != NULL )
-	    this->clearDocument();
+            this->clearDocument();
 
 	// create new xml document
-	_doc = xmlNewDoc((const xmlChar*) "1.0");
-	node = xmlNewNode(NULL, (const xmlChar*) _roottag.c_str());
-	xmlDocSetRootElement(_doc, node);
+	_doc = ::xmlNewDoc((const xmlChar*) "1.0");
+	node = ::xmlNewNode(NULL, (const xmlChar*) _roottag.c_str());
+	::xmlDocSetRootElement(_doc, node);
 
 	_root = new XmlNode(NULL, node); // pass false too??
 	_root->setAttr("Version", std::string(DEFAULT_ROOT_VERSION));
@@ -188,16 +188,16 @@ XmlDocument::readFile ( const std::string & filename )
     bool result = false;
 
     if ( _root )
-	this->clearDocument();
+        this->clearDocument();
 
     if ( XmlDocument::IsReadable(filename) ) {
-	_xmlfile = filename;
-	result = this->initParser(filename);
+        _xmlfile = filename;
+        result = this->initParser(filename);
     }
 
     if ( result && _doc ) {
         _root = (*this->_nodeFactory)(NULL, xmlDocGetRootElement(_doc));
-	_root->setDebug(this->_debug);
+        _root->setDebug(this->_debug);
     } else {
         this->clearDocument();
     }
@@ -214,13 +214,13 @@ XmlDocument::writeFile ( const std::string & filename )
     int r = -1;
 
     if ( _encoding.length() == 0 ) {
-	r = xmlSaveFormatFile(filename.c_str(), _doc, 1);
+        r = ::xmlSaveFormatFile(filename.c_str(), _doc, 1);
     } else {
-	r = xmlSaveFormatFileEnc(filename.c_str(), _doc, _encoding.c_str(), 1);
+        r = ::xmlSaveFormatFileEnc(filename.c_str(), _doc, _encoding.c_str(), 1);
     }
     
     if ( r < 0 )
-	return false;
+        return false;
 
     return true;
 }
@@ -310,29 +310,29 @@ XmlDocument::setRootNode ( XmlNode * node, bool erase )
     xmlNodePtr  n;
 
     if ( node == NULL || node->getNode() == NULL )
-	return NULL;
+        return NULL;
 
     if ( _root ) 
     {
-	n = _root->getNode();
-	if ( n->parent )
-	    xmlUnlinkNode(n);
-	tmp = _root;
+        n = _root->getNode();
+        if ( n->parent )
+            ::xmlUnlinkNode(n);
+        tmp = _root;
     }
 
     n = node->getNode();
 
     if ( node->getParent() ) 
     {
-	node->getParent()->removeNode(node);
-	node->setParent(NULL);
+        node->getParent()->removeNode(node);
+        node->setParent(NULL);
 
-	if ( n->parent )
-	    xmlUnlinkNode(n);
+        if ( n->parent )
+            ::xmlUnlinkNode(n);
     }
 	
-    xmlDocSetRootElement(_doc, n);
-    xmlSetTreeDoc(n, _doc);
+    ::xmlDocSetRootElement(_doc, n);
+    ::xmlSetTreeDoc(n, _doc);
     _root = node;
 
     if ( erase && tmp != NULL ) {
@@ -353,10 +353,10 @@ XmlDocument::setRootTagName ( const std::string & tagname )
     _roottag = tagname;
 
     if ( _root == NULL )
-	return;
+        return;
 
     n = _root->getNode();
-    xmlNodeSetName(n, (const xmlChar*) _roottag.c_str());
+    ::xmlNodeSetName(n, (const xmlChar*) _roottag.c_str());
 
     return;
 }
@@ -374,22 +374,22 @@ bool
 XmlDocument::initParser ( const std::string & filename )
 {
     if ( filename.length() > 0 )
-	_doc = xmlParseFile(filename.c_str());
+	_doc = ::xmlParseFile(filename.c_str());
 
     if ( _doc == NULL ) {
-	_errStr = "Error: parse error in XML document: ";
+        _errStr = "Error: parse error in XML document: ";
         _errStr.append(filename);
-	return false;
+        return false;
     }
 
     if ( ! this->validate() ) {
         _errStr = "Error: XML failed DTD validation";
-	this->clearDocument();
+        this->clearDocument();
         return false;  // hello _doc??
     }
 
     if ( _doc->encoding )
-	_encoding = (const char*) _doc->encoding;
+        _encoding = (const char*) _doc->encoding;
 
     return true;
 }
@@ -401,7 +401,7 @@ XmlDocument::initParser ( const std::string & filename )
 bool
 XmlDocument::initParser ( const char * xmlblob, size_t len )
 {
-    _doc = xmlParseMemory(xmlblob, len);
+    _doc = ::xmlParseMemory(xmlblob, len);
 
     if ( _doc == NULL ) {
         _errStr = "Error in parse: xml malformed";
@@ -414,7 +414,7 @@ XmlDocument::initParser ( const char * xmlblob, size_t len )
     }
     
     if ( _doc->encoding )
-	_encoding = (const char*) _doc->encoding;
+        _encoding = (const char*) _doc->encoding;
 
     return true;
 }
@@ -434,15 +434,15 @@ XmlDocument::validate()
     if ( _dtdfile.length() > 0 ) 
     {
         xmlDtdPtr    dtd;
-	xmlValidCtxt cvp;
+        xmlValidCtxt cvp;
 
-	dtd = xmlParseDTD(NULL, (const xmlChar*) _dtdfile.c_str());
+        dtd = ::xmlParseDTD(NULL, (const xmlChar*) _dtdfile.c_str());
 
         if ( ! xmlValidateDtd(&cvp, _doc, dtd) ) {
-	    xmlFreeDtd(dtd);
+            ::xmlFreeDtd(dtd);
             return false;
-	} else {
-            xmlFreeDtd(dtd);
+        } else {
+            ::xmlFreeDtd(dtd);
         }
     }
 
@@ -461,18 +461,18 @@ XmlDocument::attachNode ( XmlNode * parent, XmlNode * node )
     xmlNodePtr  p, n;
 
     if ( parent == NULL || node == NULL )
-	return false;
+        return false;
 
     p = parent->getNode();
     n = node->getNode();
 
 
     if ( p == NULL || n == NULL )
-	return false;
+        return false;
 
-    xmlUnlinkNode(n);
-    xmlAddChild(p, n);
-    xmlSetTreeDoc(n, _doc);
+    ::xmlUnlinkNode(n);
+    ::xmlAddChild(p, n);
+    ::xmlSetTreeDoc(n, _doc);
     
     node->setParent(parent);
     parent->addNode(node);
@@ -504,7 +504,7 @@ XmlDocument::IsReadable ( const std::string & filename )
     std::ifstream ifn(filename.c_str());
 
     if ( !ifn )
-	return false;
+        return false;
 
     ifn.close();
     return true;

@@ -55,7 +55,7 @@ int main ( int argc, char ** argv )
         return -1;
     }
 
-    std::string xmlblob = doc.NodeToString(root);
+    std::string xmlblob = docptr->NodeToString(root);
     printf("doc: \n%s\n", xmlblob.c_str());
 
 
