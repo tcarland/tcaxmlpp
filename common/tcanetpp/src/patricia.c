@@ -22,7 +22,7 @@
   * License along with tcanetpp.  
   * If not, see <http://www.gnu.org/licenses/>.
 **/
-#define _TCANETPP_PATRICIA_C
+#define _TCANETPP_PATRICIA_C_
 
 
 #include <stdlib.h>
@@ -32,7 +32,7 @@
 
 
 static const
-char version[] = "$Id: patricia.c,v 1.9 2011/02/04 12:27:19 tca$";
+char version[] = "$Id: patricia.c,v 1.91 2011/03/06 12:27:19 tca$";
 
 
 static cidr_t searchCidr;
@@ -268,7 +268,7 @@ PT_countRocksHandler ( ipv4addr_t addr, uint16_t mb, void * rock )
 //--------------------------------------------------------------------
 
 
-//  initialize a new trie
+/**  Initialize a new trie */
 ptNode_t*
 pt_init()
 {
@@ -292,8 +292,7 @@ pt_init()
 }
 
 
-//  inserts a node into the trie.
-//  Returns 1 on success, 0 on error.
+/**  Inserts a node into the trie. Returns 1 on success, 0 on error. */
 int
 pt_insert ( ptNode_t * head, cidr_t cidr, void * rock )
 {
@@ -319,7 +318,10 @@ pt_insert ( ptNode_t * head, cidr_t cidr, void * rock )
 }
 
 
-//  returns 1 if the provided key has an exact match in the trie.
+/**  Searches the trie for the @param cidr. Returns 1 if the
+  *  provided key has an exact match in the trie or 0 if it
+  *  does not exist. (pt_match is usually a better usage choice)
+ **/
 int
 pt_exists ( ptNode_t * head, cidr_t cidr )
 {
@@ -334,8 +336,10 @@ pt_exists ( ptNode_t * head, cidr_t cidr )
 }
 
 
-//  function to provide an exact match to the provided key
-//  and return the associated void*, or NULL if there was no match
+/**  Function to provide an exact match to the provided key
+  *  @param cidr.
+  *  Returns the associated void*, or NULL if there is no match.
+ **/
 void*
 pt_match ( ptNode_t * head, cidr_t cidr )
 {
@@ -350,7 +354,9 @@ pt_match ( ptNode_t * head, cidr_t cidr )
     return rock;
 }
 
-
+/**  Searches the trie, for the longest (bit mask) ip addr
+  *  that encompasses the provided network address.
+ **/
 void*
 pt_matchLongest ( ptNode_t * head, cidr_t cidr )
 {
@@ -369,7 +375,9 @@ pt_matchLongest ( ptNode_t * head, cidr_t cidr )
     return rock;
 }
 
-
+/**  Removes the provided @param cidr from the trie
+  *  returning the associated user data as void*.
+ **/
 void*
 pt_remove ( ptNode_t * head, cidr_t cidr )
 {
@@ -381,7 +389,7 @@ pt_remove ( ptNode_t * head, cidr_t cidr )
 }
 
 
-//  Visits nodes of the trie in order 
+/**  Visits nodes of the trie in order. */
 void
 pt_visit ( ptNode_t * head, nodeHandler_t handler )
 {
@@ -389,7 +397,7 @@ pt_visit ( ptNode_t * head, nodeHandler_t handler )
 	PT_visitR(head->llink, -1, handler);
 }
 
-//  Visits nodes of the trie in order 
+/**  Visits nodes of the trie in order */
 void
 pt_visit_node ( ptNode_t * head, pvtNodeHandler_t handler )
 {
@@ -397,6 +405,9 @@ pt_visit_node ( ptNode_t * head, pvtNodeHandler_t handler )
         PT_visitR_node(head->llink, -1, handler);
 }
 
+/**  Returns the number of nodes in the trie.
+  *  Each node can have multiple entries.
+ **/
 int
 pt_nodes ( ptNode_t * head )
 {
@@ -412,6 +423,9 @@ pt_nodes ( ptNode_t * head )
 }
 
 
+/**  Returns the total number of entries in the trie.
+  *  Note this differs from the actual number of nodes in the trie.
+ **/
 int
 pt_size ( ptNode_t * head )
 {
@@ -423,7 +437,7 @@ pt_size ( ptNode_t * head )
 }
 
 
-//  Frees the nodes of a patricia trie
+/**  Free nodes of a patricia trie */
 int
 pt_free ( ptNode_t * head, nodeHandler_t handler )
 {
@@ -436,5 +450,5 @@ pt_free ( ptNode_t * head, nodeHandler_t handler )
 }
 
 
-//  _TCANETPP_PATRICIA_C
+//  _TCANETPP_PATRICIA_C_
 
