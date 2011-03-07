@@ -1,5 +1,5 @@
-#ifndef _TNMSCORE_HEIRARCHICALSTRINGTREE_HPP_
-#define _TNMSCORE_HEIRARCHICALSTRINGTREE_HPP_
+#ifndef _TCANETPP_HEIRARCHICALSTRINGTREE_HPP_
+#define _TCANETPP_HEIRARCHICALSTRINGTREE_HPP_
 
 #include <string>
 #include <map>
@@ -8,7 +8,7 @@
 #include <stdexcept>
 
 
-namespace tnmsCore {
+namespace tcanetpp {
 
 
 template < typename ValueType >
@@ -141,5 +141,5 @@ class HeirarchicalStringTree {
 #include "../src/HeirarchicalStringTree.cpp"
 
 
-#endif // _TNMSCORE_HEIRARCHICALSTRINGTREE_HPP_
+#endif // _TCANETPP_HEIRARCHICALSTRINGTREE_HPP_
 

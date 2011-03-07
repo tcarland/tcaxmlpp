@@ -1,12 +1,10 @@
-#ifndef _HEIRARCHICALSTRINGTREE_CPP_
-#define _HEIRARCHICALSTRINGTREE_CPP_
-
+#ifndef _TCANETPP_HEIRARCHICALSTRINGTREE_CPP_
+#define _TCANETPP_HEIRARCHICALSTRINGTREE_CPP_
 
 #include "StringUtils.h"
-using namespace tcanetpp;
 
 
-namespace tnmsCore {
+namespace tcanetpp {
 
 
 //-------------------------------------------------------------//
@@ -352,5 +350,5 @@ HeirarchicalStringTree<ValueType>::depthFirstTraversal ( Node * node, Predicate_
 
 } // namespace
 
-#endif
+#endif // _TCANETPP_HEIRARCHICALSTRINGTREE_CPP_
 
