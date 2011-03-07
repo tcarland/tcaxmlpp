@@ -6,7 +6,9 @@
 #include <map>
 
 #include "TnmsMetric.h"
+
 #include "HeirarchicalStringTree.hpp"
+using namespace tcanetpp;
 
 
 namespace tnmsCore {
