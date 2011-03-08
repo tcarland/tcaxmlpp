@@ -14,7 +14,6 @@ namespace tnmsCore {
 namespace TnmsTreeInternal {
 
     struct AddForwarder {
-
         TreeSubscriber * sub;
         bool             abort;
 

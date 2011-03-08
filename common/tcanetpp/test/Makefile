@@ -12,7 +12,7 @@ ifdef USE_PTHREADS
 NEED_PTHREADS = 1
 endif
 
-ifdef GK_DEBUG
+ifdef TNMS_DEBUG
 OPT_FLAGS =	-g -DASWHO_MAIN
 endif
 
@@ -30,7 +30,7 @@ PT_OBJS=
 PTT_OBJS=	pt_test.o
 
 BIN=		pingt asnwho ipconvert client server cachetest pttest \
-		strtest bufftest cidrtest packtest gktrace
+		strtest bufftest cidrtest packtest gktrace filetest
 
 ALL_OBJS=	$(OBJS) $(ASOBJ) $(STROBJ) $(CBUFF_OBJS) $(CIDR_OBJS)
 ALL_BINS= 	$(BIN)
@@ -38,7 +38,7 @@ ALL_BINS= 	$(BIN)
 
 
 all: pingt ipconvert client server cidrtest strtest bufftest pttest \
-	gktrace packtest
+	gktrace packtest filetest
 
 
 include ${TOPDIR}/tcamake/project_defs
@@ -86,6 +86,10 @@ pttest: $(PT_OBJS) $(PTT_OBJS)
 	@echo
 
 strtest: str_test.o
+	$(make-cxxbin-rule)
+	@echo
+
+filetest: fileutil_test.o
 	$(make-cxxbin-rule)
 	@echo
 

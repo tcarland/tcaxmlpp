@@ -31,7 +31,8 @@ TH_OBJS = 	    src/Thread.o src/ThreadLock.o  src/ThreadMutexPool.o
 OBJS =		    src/SocketOption.o src/Socket.o src/BufferedSocket.o \
                     src/CircularBuffer.o src/Serializer.o \
 		    src/Whois.o src/EventManager.o \
-		    src/CidrUtils.o src/StringUtils.o src/FileUtils.o \
+		    src/CidrUtils.o src/StringUtils.o \
+		    src/FileStat.o src/FileUtils.o \
 		    src/LogFacility.o src/random.o src/RandomPrefix.o \
 		    src/patricia.o src/DeviceMap.o \
 		    src/NetworkDevice.o src/NetworkInterface.o
