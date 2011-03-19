@@ -30,7 +30,6 @@ struct HexString {
         color(0),
         wrap(wrap_)
     {}
-
 };
 
 } // namespace

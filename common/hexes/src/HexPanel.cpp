@@ -343,13 +343,13 @@ HexPanel::setTextColor ( int colorIndex )
 void
 HexPanel::setAttribute ( int attr )
 {
-    wattron(_hwin->_win, attr);
+    ::wattron(_hwin->_win, attr);
 }
 
 void
 HexPanel::unsetAttribute ( int attr )
 {
-    wattroff(_hwin->_win, attr);
+    ::wattroff(_hwin->_win, attr);
 }
 
 //----------------------------------------------------------------//

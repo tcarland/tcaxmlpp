@@ -235,6 +235,9 @@ HexApp::removePanel ( const std::string & title )
     panel = pIter->second;
     _panels.erase(pIter);
 
+    if ( _curPanel == panel )
+        _curPanel = NULL;
+
     return panel;
 }
 
@@ -249,6 +252,9 @@ HexApp::destroyPanel ( const std::string & title )
     pIter = _panels.find(title);
     if ( pIter == _panels.end() )
         return false;
+
+    if ( _curPanel == pIter->second )
+        _curPanel = NULL;
 
     delete pIter->second;
     _panels.erase(pIter);
@@ -268,6 +274,7 @@ HexApp::destroyPanels()
             delete pIter->second;
     }
     _panels.clear();
+    _curPanel = NULL;
 
     return;
 }
@@ -339,9 +346,9 @@ int
 HexApp::print ( int y, int x, const std::string & str, int color, int attr )
 {
     int r = 0;
-    wattron(stdscr, COLOR_PAIR(color)|attr);
+    ::wattron(stdscr, COLOR_PAIR(color)|attr);
     r = mvwaddstr(stdscr, y, x, str.c_str());
-    wattroff(stdscr, COLOR_PAIR(color)|attr);
+    ::wattroff(stdscr, COLOR_PAIR(color)|attr);
     return r;
 }
 
