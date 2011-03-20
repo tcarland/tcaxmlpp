@@ -146,7 +146,7 @@ LineInputHandler::setPrefix ( const std::string & prefix )
 
 /** By default, input is parsed for special manipulation such as
   * backspace or arrow keys, etc. The default behavior can be
-  * by passed by setting the parse flag to false which returns
+  * bypassed by setting the parse flag to false which returns
   * all characters directly without parsing (or echo'ing).
   * This can be useful for capturing special ctrl sequences.
  **/

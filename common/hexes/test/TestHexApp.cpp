@@ -126,8 +126,6 @@ TestHexApp::run()
         if ( cmd.size() > 0 )
             statPanel->addText(cmd);
 
-        //statPanel->redraw();
-
         if ( cmd.compare("/quit") == 0 )
             alarm = true;
         else if ( cmd.compare("/clear") == 0 )
