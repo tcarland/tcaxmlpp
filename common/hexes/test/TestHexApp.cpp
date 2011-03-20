@@ -82,21 +82,35 @@ TestHexApp::run()
     
     cinput = (LineInputHandler*) conPanel->getInputHandler();
 
-    std::string cmd;
+    std::string  cmd, prompt;
 
-    conPanel->addText(" > ");
-    cinput->setPrefix(" > ");
+    prompt = " > ";
+
+    conPanel->addText(prompt);
+    cinput->setPrefix(prompt);
 
     while ( ! alarm ) 
     {
+        bool wcmd = false;
         this->draw();
 
         cmd = "";
-        ch = this->poll();
+        ch  = this->poll();
 
         while ( ! cinput->isReady() ) {
             std::ostringstream  ostr;
             ostr << "ch = " << ch << "   '" << (char) ch << "'";
+
+            if ( wcmd ) {
+                wcmd = false;
+                cinput->setParse(true);
+                ostr << " <window command>";
+            }
+
+            if ( ch == 23 ) {
+                wcmd = true;
+                cinput->setParse(false);
+            }
 
             //if ( ch >= 32 && ch < 128 )
                 mainPanel->addText(ostr.str());
@@ -107,7 +121,7 @@ TestHexApp::run()
         }
 
         cmd = cinput->getLine();
-        conPanel->setText(" > ");
+        conPanel->setText(prompt);
 
         if ( cmd.size() > 0 )
             statPanel->addText(cmd);

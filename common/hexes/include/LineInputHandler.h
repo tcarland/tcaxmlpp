@@ -31,6 +31,7 @@ class LineInputHandler : public HexInputInterface {
     void         setEcho     ( bool echo );
     void         keepHistory ( int lines );
     void         setPrefix   ( const std::string & prompt );
+    void         setParse    ( bool parse );
 
   protected:
 
@@ -41,6 +42,7 @@ class LineInputHandler : public HexInputInterface {
     int          _maxlen;
     bool         _isReady;
     bool         _echo;
+    bool         _parse;
 
     InputList    _history;
     size_t       _lines;

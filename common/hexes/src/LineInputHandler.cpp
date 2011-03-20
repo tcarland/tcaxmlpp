@@ -12,6 +12,7 @@ LineInputHandler::LineInputHandler ( int maxlength )
     : _maxlen(maxlength),
       _isReady(false),
       _echo(true),
+      _parse(true),
       _lines(HEXES_DEFBUFLEN),
       _hindx(0)
 {}
@@ -24,6 +25,9 @@ LineInputHandler::~LineInputHandler()
 int 
 LineInputHandler::handleInput ( HexPanel * p, int ch )
 {
+    if ( ! _parse )
+        return ch;
+
     if ( _isReady ) {
         if ( ! _line.empty() )
             _history.push_back(_line);
@@ -138,6 +142,18 @@ void
 LineInputHandler::setPrefix ( const std::string & prefix )
 {
     _prompt = prefix;
+}
+
+/** By default, input is parsed for special manipulation such as
+  * backspace or arrow keys, etc. The default behavior can be
+  * by passed by setting the parse flag to false which returns
+  * all characters directly without parsing (or echo'ing).
+  * This can be useful for capturing special ctrl sequences.
+ **/
+void
+LineInputHandler::setParse ( bool parse )
+{
+    _parse = parse;
 }
 
 void
