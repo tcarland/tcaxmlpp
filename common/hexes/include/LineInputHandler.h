@@ -30,18 +30,21 @@ class LineInputHandler : public HexInputInterface {
 
     void         setEcho     ( bool echo );
     void         keepHistory ( int lines );
+    void         setPrefix   ( const std::string & prompt );
 
   protected:
 
     typedef std::vector<std::string>  InputList;
 
     std::string  _line;
+    std::string  _prompt;
     int          _maxlen;
     bool         _isReady;
     bool         _echo;
 
     InputList    _history;
     size_t       _lines;
+    size_t       _hindx;
 };
 
     

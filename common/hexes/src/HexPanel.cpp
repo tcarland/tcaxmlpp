@@ -329,7 +329,6 @@ void
 HexPanel::setBorderColor ( int colorIndex )
 {
     _bdrColor = colorIndex;
-    //wattrset(_hwin->_win, COLOR_PAIR(colorIndex));
 }
 
 void

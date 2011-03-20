@@ -51,8 +51,6 @@ TestHexApp::run()
     int  statheight = (LINES * .33) - conheight;
     int  ch;
 
-    //init_pair(1, COLOR_WHITE, COLOR_BLACK);
-
     this->setCursor(1);
 
     LineInputHandler * cinput;
@@ -87,6 +85,7 @@ TestHexApp::run()
     std::string cmd;
 
     conPanel->addText(" > ");
+    cinput->setPrefix(" > ");
 
     while ( ! alarm ) 
     {
@@ -99,7 +98,7 @@ TestHexApp::run()
             std::ostringstream  ostr;
             ostr << "ch = " << ch << "   '" << (char) ch << "'";
 
-            if ( ch >= 32 && ch < 128 )
+            //if ( ch >= 32 && ch < 128 )
                 mainPanel->addText(ostr.str());
 
             this->draw();
