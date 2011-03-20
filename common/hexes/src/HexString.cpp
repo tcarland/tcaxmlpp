@@ -14,7 +14,7 @@ HexString::HexString()
 {}
 
 HexString::HexString ( const std::string & str_, 
-                       bool  wrap_ = true )
+                       bool  wrap_ )
     : str(str_),
       color(0),
       attributes(0),
@@ -26,7 +26,7 @@ HexString::HexString ( const std::string & str_,
 HexString::HexString ( const std::string & str_, 
                        int   color_,
                        int   attributes_,
-                       bool  wrap_ = true )
+                       bool  wrap_ )
     : str(str_),
       color(color_),
       attributes(attributes_),
@@ -55,7 +55,14 @@ HexString::operator= ( const HexString & hexstr )
     alignment  = hexstr.alignment;
     wrap       = hexstr.wrap;
 }
-    
+
+bool
+HexString::operator== ( const HexString & hexstr )
+{
+    if ( str.compare(hexstr.str) == 0 )
+        return true;
+    return false;
+}
 
 }  // namespace
 

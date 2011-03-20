@@ -25,7 +25,7 @@ extern "C" {
 
 #include "HexAttributes.hpp"
 #include "HexPosition.hpp"
-#include "HexString.hpp"
+#include "HexString.h"
 #include "HexWindow.h"
 #include "HexPanel.h"
 #include "HexInputInterface.hpp"
@@ -37,7 +37,7 @@ extern "C" {
 namespace hexes {
 
 
-#define LIBHEXES_VERSION "v0.017"
+#define LIBHEXES_VERSION "v0.021"
 
 
 class HexPanel;
