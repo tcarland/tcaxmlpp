@@ -89,11 +89,14 @@ TnmsConsoleApp::run()
     _consPanel = this->createPanel("console", conht, this->width(), (this->height() - conht), 0);
 
     _mainPanel->enableScroll(true);
-    _statPanel->enableScroll(true);
-    _statPanel->setTextColor(HEX_GREEN);
-    _consPanel->enableScroll(true);
-    _statPanel->setTextColor(HEX_RED);
+    _mainPanel->setBorderColor(HEX_MAGENTA);
 
+    _statPanel->enableScroll(true);
+    _statPanel->setBorderColor(HEX_MAGENTA);
+    _statPanel->setTextColor(HEX_GREEN);
+    //_statPanel->setTextColor(HEX_RED);
+    
+    _consPanel->enableScroll(true);
     _consPanel->drawBorder(false);
     _consPanel->drawTitle(false);
     _consPanel->setInputHandler(new LineInputHandler());
@@ -769,13 +772,15 @@ TnmsConsoleApp::sleeps ( int secs )
 void
 TnmsConsoleApp::DisplayHelp()
 {
-    _mainPanel->addText(" tnms_console - a command-line tnms agent/client", HEX_GREEN);
+    _mainPanel->addText(" ");
+    _mainPanel->addText(" tnms_console - a command-line tnms agent/client", HEX_GREEN, HEX_BOLD);
     _mainPanel->addText(" ");
     _mainPanel->addText("TnmsAPI Instance commands:", 0, HEX_BOLD);
     _mainPanel->addText(" create [tag] [agent-name] [cfg]    =  Creates a new instance.");
     _mainPanel->addText(" destroy [tag]                      =  Destroys an instance.");
     _mainPanel->addText(" list                               =  Lists available instances.");
     _mainPanel->addText(" set [tag]                          =  Switches the current instance.");
+    _mainPanel->addText(" quit                               =  Terminate all instances and exit.");
     _mainPanel->addText(" ");
     _mainPanel->addText("Agent source commands:", 0, HEX_BOLD);
     _mainPanel->addText(" add [name] <epoch>                 =  adds a new metric of 'name'.");

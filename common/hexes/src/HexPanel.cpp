@@ -448,6 +448,26 @@ HexPanel::scrollable() const
 //----------------------------------------------------------------//
 
 int
+HexPanel::print ( const std::string & str, HexPosition & pos,
+                  int color, int attr, bool wrap )
+{
+    int r = 0;
+
+    this->move(pos);
+    this->setAttribute(COLOR_PAIR(color));
+    if ( attr > HEX_NORMAL )
+        this->setAttribute(attr);
+
+    r = _hwin->print(str, wrap);
+
+    this->unsetAttribute(COLOR_PAIR(color));
+    if ( attr > HEX_NORMAL )
+        this->unsetAttribute(attr);
+
+    return r;
+}
+
+int
 HexPanel::print ( const std::string & str, bool wrap )
 {
     return _hwin->print(str, wrap);
