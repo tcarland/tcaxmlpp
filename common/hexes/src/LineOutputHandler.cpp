@@ -23,7 +23,7 @@ LineOutputHandler::handleOutput ( HexPanel * panel )
     int ln = 1;
     int bw = 2;  //border width
 
-    if ( panel->drawBorder() ) {
+    if ( panel->getDrawBorder() ) {
         ht -= bw;
         wd -= bw;
         panel->move(1, 1);

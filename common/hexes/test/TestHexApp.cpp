@@ -65,8 +65,8 @@ TestHexApp::run()
     statPanel->setTextColor(HEX_GREEN);
     statPanel->setWindowTitle("Status", HEX_GREEN);
 
-    conPanel->drawBorder(false);
-    conPanel->drawTitle(false);
+    conPanel->setDrawBorder(false);
+    conPanel->setDrawTitle(false);
 
     std::string top = "  TestHexApp Version 0.1a  -  libhexes ";
     top.append(LIBHEXES_VERSION);
@@ -78,7 +78,7 @@ TestHexApp::run()
     mainPanel->enableScroll(true);
     statPanel->enableScroll(true);
 
-    this->setTopPanel(conPanel);
+    this->setFocus(conPanel);
     
     cinput = (LineInputHandler*) conPanel->getInputHandler();
 

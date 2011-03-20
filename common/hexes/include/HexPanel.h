@@ -78,11 +78,15 @@ class HexPanel {
     int                 maxY();
     int                 maxX();
 
+    void                addTextLine  ( HexString & hexstr )      { return this->addText(hexstr); }
+    void                addTextLine  ( const std::string & str ) { return this->addText(str); }
+
     void                addText      ( HexString & hexstr );
     void                addText      ( const std::string & str );
     void                addText      ( const std::string & str, 
                                        int   color,
                                        int   attr = HEX_NORMAL );
+    void                setText      ( HexString & hexstr );
     void                setText      ( const std::string & str );
     void                setText      ( const std::string & str,
                                        int   color,
@@ -90,33 +94,39 @@ class HexPanel {
     void                clearText();
     void                clear();
 
-    TextList&           getTextList();
     void                setTextList  ( TextList & textlist );
+    TextList&           getTextList();
 
+    const std::string&  getPanelName() const;
+    const std::string&  getName()      const { return this->getPanelName(); }
+
+    void                setPanelId     ( int panelId );
+    int                 getPanelId()   const;
+
+    void                setWindowTitle ( HexString & hexstr );
     void                setWindowTitle ( const std::string & title, 
                                          int color, int attr = HEX_NORMAL );
     HexString&          getWindowTitle();
-    const std::string&  getPanelName() const;
-    const std::string&  getName() const { return this->getPanelName(); }
-
-    void                setTextColor   ( int colorIndex );
-    void                setBorderColor ( int colorIndex );
-    void                setAttribute   ( int attr );
-    void                unsetAttribute ( int attr );
 
     void                setTopPanel();
 
-    void                drawBorder   ( bool border );
-    void                drawTitle    ( bool title );
-    bool                drawBorder() const;
-    bool                drawTitle() const;
+    void                setTextColor   ( int colorIndex );
+    void                setBorderColor ( int colorIndex );
 
-    bool                enableScroll ( bool scroll,
-                                       int  lines  = DEFAULT_SCRLBK_SIZE );
-    bool                setMaxLines  ( int  lines );
+    void                setAttribute   ( int attr );
+    void                unsetAttribute ( int attr );
 
-    bool                scrollable() const;
-    const std::string&  getTitle() const;
+    void                setDrawBorder  ( bool border );
+    bool                getDrawBorder() const;
+
+    void                setDrawTitle   ( bool title );
+    bool                getDrawTitle() const;
+
+    bool                enableScroll   ( bool scroll,
+                                         int  lines  = DEFAULT_SCRLBK_SIZE );
+    bool                setMaxLines    ( int  lines );
+
+    bool                scrollable()   const;
 
 
   protected:
@@ -136,6 +146,7 @@ class HexPanel {
     HexString            _winTitle;
     TextList             _textlist;
 
+    int                  _panelId;
     int                  _height, _width;
     int                  _starty, _startx;
 

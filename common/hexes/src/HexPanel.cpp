@@ -17,6 +17,7 @@ HexPanel::HexPanel ( const std::string & title )
       _output(NULL),
       _input(NULL),
       _title(title),
+      _panelId(0),
       _height(0),
       _width(0),
       _starty(0),
@@ -41,6 +42,7 @@ HexPanel::HexPanel ( const std::string & title,
       _output(new LineOutputHandler()),
       _input(NULL),
       _title(title),
+      _panelId(0),
       _height(height),
       _width(width),
       _starty(starty),
@@ -238,7 +240,7 @@ void
 HexPanel::setTopPanel()
 {
     if ( this->_panel )
-        top_panel(this->_panel);
+        ::top_panel(this->_panel);
 }
 
 //----------------------------------------------------------------//
@@ -265,19 +267,14 @@ HexPanel::setTextList ( TextList & textlist )
 void
 HexPanel::addText ( const std::string & str )
 {
-    HexString  line(str);
-    line.color = this->_txtColor;
-    line.attributes = HEX_NORMAL;
-    
+    HexString  line(str, _txtColor, HEX_NORMAL);
     return this->addText(line);
 }
 
 void
 HexPanel::addText ( const std::string & str, int color, int attr )
 {
-    HexString  line(str);
-    line.color      = color;
-    line.attributes = attr;
+    HexString  line(str, color, attr);
     return this->addText(line);
 }
 
@@ -310,6 +307,13 @@ HexPanel::setText ( const std::string & str, int color, int attr )
 {
     this->_textlist.clear();
     this->addText(str, color, attr);
+}
+
+void
+HexPanel::setText ( HexString & hexstr )
+{
+    this->_textlist.clear();
+    this->addText(hexstr);
 }
 
 /**  Clears the internal TextList */
@@ -354,36 +358,40 @@ HexPanel::unsetAttribute ( int attr )
 //----------------------------------------------------------------//
 
 void
-HexPanel::drawBorder ( bool border )
+HexPanel::setDrawBorder ( bool border )
 {
     this->_drawBorder = border;
     this->_hwin->setBorder(border);
 }
 
 void
-HexPanel::drawTitle ( bool title )
+HexPanel::setDrawTitle ( bool title )
 {
     this->_drawTitle = title;
 }
 
 bool
-HexPanel::drawBorder() const
+HexPanel::getDrawBorder() const
 {
     return this->_drawBorder;
 }
 
 bool
-HexPanel::drawTitle() const
+HexPanel::getDrawTitle() const
 {
     return this->_drawTitle;
 }
 
 void
+HexPanel::setWindowTitle ( HexString & hexstr )
+{
+    _winTitle = hexstr;
+}
+
+void
 HexPanel::setWindowTitle ( const std::string & str, int color, int attr )
 {
-    HexString  title(str);
-    title.color      = color;
-    title.attributes = attr;
+    _winTitle = HexString(str, color, attr);
 }
 
 HexString&
@@ -396,6 +404,18 @@ const std::string&
 HexPanel::getPanelName() const
 {
     return this->_title;
+}
+
+void
+HexPanel::setPanelId ( int panelId )
+{
+    _panelId = panelId;
+}
+
+int
+HexPanel::getPanelId() const
+{
+    return this->_panelId;
 }
 
 //----------------------------------------------------------------//

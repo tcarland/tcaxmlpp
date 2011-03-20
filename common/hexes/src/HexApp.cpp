@@ -89,7 +89,7 @@ HexApp::draw()
     //set current panel
     //reset cursor pos.
     if ( _curPanel ) {
-        this->setTopPanel(_curPanel);
+        this->setFocus(_curPanel);
         _curPanel->move(_curPanel->curY(), _curPanel->curX());
     }
     
@@ -140,7 +140,7 @@ HexApp::timeout ( int delay_ms )
 //----------------------------------------------------------------//
 
 void
-HexApp::setTopPanel ( HexPanel * panel )
+HexApp::setFocus ( HexPanel * panel )
 {
     if ( panel == NULL )
         return;
@@ -148,6 +148,46 @@ HexApp::setTopPanel ( HexPanel * panel )
     panel->setTopPanel();
 
     _curPanel = panel;
+}
+
+void
+HexApp::setFocusNext()
+{
+    if ( _curPanel == NULL )
+    {
+        if ( _pstack.empty() )
+            return;
+        _curPanel = _pstack.front();
+    }
+
+    if ( _curPanel && _pstack.size() > 1 )
+    {
+        int id = _curPanel->getPanelId() + 1;
+        if ( (size_t) id >= _pstack.size() )
+            id = 0;
+        this->setFocus(_pstack.at(id));
+    }
+    return;
+}
+
+void
+HexApp::setFocusPrev()
+{
+    if ( _curPanel == NULL )
+    {
+        if ( _pstack.empty() )
+            return;
+        _curPanel = _pstack.front();
+    }
+
+    if ( _curPanel && _pstack.size() > 1 )
+    {
+        int id = _curPanel->getPanelId() - 1;
+        if ( id < 0 )
+            id = 0;
+        this->setFocus(_pstack.at(id));
+    }
+    return;
 }
 
 //----------------------------------------------------------------//
@@ -161,14 +201,18 @@ HexApp::createPanel ( const std::string & title,
     PanelMap::iterator pIter;
 
     pIter = _panels.find(title);
-    if ( pIter != _panels.end() )
+    if ( pIter != _panels.end() ) {
         return p;
+    }
 
     p = new HexPanel(title, height, width, starty, startx);
+    p->setPanelId(_pstack.size());
 
     _panels[title] = p;
+    _pstack.push_back(p);
+
     if ( _curPanel == NULL )
-        this->setTopPanel(p);
+        this->setFocus(p);
 
     return p;
 }
@@ -193,7 +237,12 @@ HexApp::addPanel ( HexPanel * panel )
     if ( pIter != _panels.end() )
         return false;
     
+    panel->setPanelId(_pstack.size());
     _panels[panel->getPanelName()] = panel;
+    _pstack.push_back(panel);
+
+    if ( _curPanel == NULL )
+        this->setFocus(panel);
 
     return true;
 }
@@ -227,16 +276,27 @@ HexApp::removePanel ( const std::string & title )
 {
     HexPanel * panel = NULL;
     PanelMap::iterator pIter;
+    int id;
 
     pIter = _panels.find(title);
     if ( pIter == _panels.end() )
         return panel;
 
     panel = pIter->second;
+    id    = panel->getPanelId();
+
     _panels.erase(pIter);
+    _pstack.erase(_pstack.begin() + id);
+
+    if ( id > 0 )
+        id--;
+
+    PanelStack::iterator sIter;
+    for ( sIter = _pstack.begin()+id; sIter != _pstack.end(); ++sIter, ++id )
+        (*sIter)->setPanelId(id);
 
     if ( _curPanel == panel )
-        _curPanel = NULL;
+        _curPanel = _pstack.front();
 
     return panel;
 }
@@ -247,17 +307,31 @@ HexApp::removePanel ( const std::string & title )
 bool
 HexApp::destroyPanel ( const std::string & title )
 {
+    HexPanel * panel = NULL;
     PanelMap::iterator pIter;
+    int id;
 
     pIter = _panels.find(title);
     if ( pIter == _panels.end() )
         return false;
 
-    if ( _curPanel == pIter->second )
-        _curPanel = NULL;
+    panel = pIter->second;
+    id    = panel->getPanelId();
 
-    delete pIter->second;
     _panels.erase(pIter);
+    _pstack.erase(_pstack.begin() + id);
+
+    if ( id > 0 )
+        id--;
+
+    PanelStack::iterator sIter;
+    for ( sIter = _pstack.begin()+id; sIter != _pstack.end(); ++sIter, ++id )
+        (*sIter)->setPanelId(id);
+
+    if ( _curPanel == panel )
+        _curPanel = _pstack.front();
+
+    delete panel;
 
     return true;
 }
@@ -274,6 +348,7 @@ HexApp::destroyPanels()
             delete pIter->second;
     }
     _panels.clear();
+    _pstack.clear();
     _curPanel = NULL;
 
     return;

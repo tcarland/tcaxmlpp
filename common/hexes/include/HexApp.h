@@ -79,12 +79,15 @@ class HexApp {
                                   int height, int width, 
                                   int starty, int startx );
 
-    void         setTopPanel    ( HexPanel * panel );
     bool         addPanel       ( HexPanel * panel );
     HexPanel*    getPanel       ( const std::string & title = "" );
     HexPanel*    removePanel    ( const std::string & title );
     bool         destroyPanel   ( const std::string & title );
     void         destroyPanels();
+
+    void         setFocus       ( HexPanel * panel );
+    void         setFocusNext();
+    void         setFocusPrev();
 
     void         timeout        ( int delay_ms );
     bool         hasColor() const;
@@ -117,6 +120,7 @@ class HexApp {
     static bool         _NCURSES_INIT;
     
     PanelMap            _panels;
+    PanelStack          _pstack;
     HexPanel *          _curPanel;
 
     int                 _row;
