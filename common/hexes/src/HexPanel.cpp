@@ -105,19 +105,18 @@ HexPanel::redraw()
     if ( _drawBorder) {
         wattrset(_hwin->_win, COLOR_PAIR(_bdrColor));
         _hwin->drawBorder();
-        wattrset(_hwin->_win, COLOR_PAIR(_txtColor));
     }
 
     if ( _drawTitle) {
-        std::string title = " ";
         if ( _winTitle.str.empty() )
             _winTitle.str = _title;
-        title.append(_winTitle.str);
-        title.append(" ");
-        this->setAttribute(_winTitle.color|_winTitle.attributes);
-        mvwaddstr(_hwin->_win, 0, 2, title.c_str());
-        this->unsetAttribute(_winTitle.color|_winTitle.attributes);
+        wattrset(_hwin->_win, COLOR_PAIR(_winTitle.color));
+        this->setAttribute(_winTitle.attributes);
+        mvwaddstr(_hwin->_win, 0, 2, _winTitle.str.c_str());
+        this->unsetAttribute(_winTitle.attributes);
     }
+
+    wattrset(_hwin->_win, COLOR_PAIR(_txtColor));
 
     ::wmove(_hwin->_win, 1, 1);
     ::wrefresh(_hwin->_win);
@@ -391,7 +390,9 @@ HexPanel::setWindowTitle ( HexString & hexstr )
 void
 HexPanel::setWindowTitle ( const std::string & str, int color, int attr )
 {
-    _winTitle = HexString(str, color, attr);
+    _winTitle.str        = str;
+    _winTitle.color      = color;
+    _winTitle.attributes = attr;
 }
 
 HexString&

@@ -2,8 +2,8 @@
 
 #include "HexString.h"
 
-namespace hexes {
 
+namespace hexes {
 
 
 HexString::HexString()     
@@ -64,7 +64,7 @@ HexString::operator== ( const HexString & hexstr )
     return false;
 }
 
-}  // namespace
 
+}  // namespace
 
 // _HEXES_HEXSTRING_CPP_

@@ -97,13 +97,13 @@ TnmsConsoleApp::run()
     //_statPanel->setTextColor(HEX_RED);
     
     _consPanel->enableScroll(true);
-    _consPanel->drawBorder(false);
-    _consPanel->drawTitle(false);
+    _consPanel->setDrawBorder(false);
+    _consPanel->setDrawTitle(false);
     _consPanel->setInputHandler(new LineInputHandler());
     _consPanel->setOutputHandler(new LineOutputHandler());
     _consPanel->addText(_prompt);
 
-    this->setTopPanel(_consPanel);
+    this->setFocus(_consPanel);
     this->print(0, 1, _title, HEX_GREEN, HEX_BOLD);
     this->setCursor(0);
 
@@ -544,12 +544,11 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
         }
         tag    = cmdlist.at(2);
         name   = cmdlist.at(3);
-
-        _statPanel->addText("client subscribe " + name);
-
-        cIter = _clients.find(tag);
-        if ( cIter != _clients.end() )
+        cIter  = _clients.find(tag);
+        if ( cIter != _clients.end() ) {
             cIter->second->subscribe(name);
+            _statPanel->addText("client subscribe " + name);
+        }
     }
     else if ( StringUtils::startsWith(cmd, "unsub") )
     {
@@ -645,7 +644,7 @@ TnmsConsoleApp::createClient ( const std::string & name, const std::string & hos
 
     _clients[name] = client;
     _iomgr->addClient(client);
-    _mainPanel->addText("Created new client: " + client->getHostStr());
+    _statPanel->addText("Created new client: " + client->getHostStr());
 
     return true;
 }
