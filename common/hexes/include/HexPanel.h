@@ -54,6 +54,8 @@ class HexPanel {
     HexInputInterface*  getInputHandler();
 
 
+    int                 print       ( HexString   & hexstr,
+                                      HexPosition & pos );
     int                 print       ( const std::string & str,
                                       HexPosition       & pos,
                                       int  color,

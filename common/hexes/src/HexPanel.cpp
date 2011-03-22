@@ -513,6 +513,13 @@ HexPanel::scrollable() const
 
 //----------------------------------------------------------------//
 
+/**  Prints a given string and attributes to the panel.
+  * @param str   is the string to print to this panel.
+  * @param pos   is the window location to start printing.
+  * @param color is the color pair index for the string.
+  * @param attr  is the text attributes for the string.
+  * @param wrap  determines whether the string should wrap.
+ */
 int
 HexPanel::print ( const std::string & str, HexPosition & pos,
                   int color, int attr, bool wrap )
@@ -531,6 +538,12 @@ HexPanel::print ( const std::string & str, HexPosition & pos,
         this->unsetAttribute(attr);
 
     return r;
+}
+
+int
+HexPanel::print ( HexString & str, HexPosition & pos )
+{
+    return this->print(str.str, pos, str.color, str.attributes, str.wrap);
 }
 
 int
