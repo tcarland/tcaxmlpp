@@ -18,17 +18,16 @@ HexPanel::HexPanel ( const std::string & title )
       _input(NULL),
       _title(title),
       _panelId(0),
-      _height(0),
-      _width(0),
-      _starty(0),
-      _startx(0),
+      _height(0), _width(0),
+      _starty(0), _startx(0),
       _selected(0),
       _maxLines(DEFAULT_SCRLBK_SIZE),
       _scrollTo(0),
-      _txtColor(0),
+      _txtColor(0), _bdrColor(0), _bfgColor(0),
+      _bdrAttr(0),
       _scrollable(false),
-      _drawBorder(true),
-      _drawTitle(true)
+      _drawBorder(true), _drawTitle(true),
+      _focus(false)
 {
     this->initPanel();
 }
@@ -43,17 +42,16 @@ HexPanel::HexPanel ( const std::string & title,
       _input(NULL),
       _title(title),
       _panelId(0),
-      _height(height),
-      _width(width),
-      _starty(starty),
-      _startx(startx),
+      _height(height), _width(width),
+      _starty(starty), _startx(startx),
       _selected(0),
       _maxLines(DEFAULT_SCRLBK_SIZE),
       _scrollTo(0),
-      _txtColor(0),
+      _txtColor(0), _bdrColor(0), _bfgColor(0),
+      _bdrAttr(0),
       _scrollable(false),
-      _drawBorder(true),
-      _drawTitle(true)
+      _drawBorder(true), _drawTitle(true),
+      _focus(false)
 {
     this->initPanel();
 }
@@ -103,8 +101,13 @@ HexPanel::redraw()
         r = _output->handleOutput(this);
 
     if ( _drawBorder) {
-        wattrset(_hwin->_win, COLOR_PAIR(_bdrColor));
+        if ( _bfgColor > 0 && _focus )
+	    wattrset(_hwin->_win, COLOR_PAIR(_bfgColor));
+        else
+	    wattrset(_hwin->_win, COLOR_PAIR(_bdrColor));
+        this->setAttribute(_bdrAttr);
         _hwin->drawBorder();
+        this->unsetAttribute(_bdrAttr);
     }
 
     if ( _drawTitle) {
@@ -236,10 +239,17 @@ HexPanel::maxX()
 //----------------------------------------------------------------//
 
 void
-HexPanel::setTopPanel()
+HexPanel::setFocus()
 {
     if ( this->_panel )
         ::top_panel(this->_panel);
+    _focus = true;
+}
+
+void
+HexPanel::unsetFocus()
+{
+    _focus = false;
 }
 
 //----------------------------------------------------------------//
@@ -328,10 +338,46 @@ HexPanel::clear()
     return this->clearText();
 }
 
+int
+HexPanel::getBorderColor()
+{
+    return _bdrColor;
+}
+
 void
 HexPanel::setBorderColor ( int colorIndex )
 {
     _bdrColor = colorIndex;
+}
+
+int
+HexPanel::getBorderActiveColor()
+{
+    return _bfgColor;
+}
+
+void
+HexPanel::setBorderActiveColor ( int colorIndex )
+{
+    _bfgColor = colorIndex;
+}
+
+int
+HexPanel::getBorderAttributes()
+{
+    return _bdrAttr;
+}
+
+void
+HexPanel::setBorderAttributes ( int attr )
+{
+    _bdrAttr = attr;
+}
+
+int
+HexPanel::getTextColor()
+{
+    return _txtColor;
 }
 
 void

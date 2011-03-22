@@ -144,8 +144,10 @@ HexApp::setFocus ( HexPanel * panel )
 {
     if ( panel == NULL )
         return;
+    if ( _curPanel )
+        _curPanel->unsetFocus();
 
-    panel->setTopPanel();
+    panel->setFocus();
 
     _curPanel = panel;
 }

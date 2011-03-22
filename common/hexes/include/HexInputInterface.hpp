@@ -5,12 +5,16 @@ namespace hexes {
 
 class HexPanel;
 
+
 class HexInputInterface {
   public:
     virtual ~HexInputInterface() {}
 
+
     virtual int handleInput ( HexPanel * panel, int ch ) = 0;
+
 };
+
 
 } // namespace
 

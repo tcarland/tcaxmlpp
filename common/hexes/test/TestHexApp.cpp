@@ -60,8 +60,11 @@ TestHexApp::run()
     conPanel  = this->createPanel("console", conheight, COLS, LINES-conheight, 0);
 
     mainPanel->setBorderColor(HEX_MAGENTA);
+    mainPanel->setBorderActiveColor(HEX_GREEN);
     mainPanel->setWindowTitle(" Main ", HEX_GREEN);
+
     statPanel->setBorderColor(HEX_MAGENTA);
+    statPanel->setBorderActiveColor(HEX_GREEN);
     statPanel->setTextColor(HEX_GREEN);
     statPanel->setWindowTitle(" Status ", HEX_GREEN);
 
@@ -105,6 +108,10 @@ TestHexApp::run()
                 wcmd = false;
                 cinput->setParse(true);
                 ostr << " <window command>";
+                if ( ch == 'n' )
+                    this->setFocusNext();
+                else if ( ch == 'p' )
+                    this->setFocusPrev();
             }
 
             if ( ch == 23 ) {

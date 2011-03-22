@@ -108,10 +108,17 @@ class HexPanel {
                                          int color, int attr = HEX_NORMAL );
     HexString&          getWindowTitle();
 
-    void                setTopPanel();
+    void                setFocus();
+    void                unsetFocus();
 
+    int                 getTextColor();
     void                setTextColor   ( int colorIndex );
+    int                 getBorderColor();
     void                setBorderColor ( int colorIndex );
+    int                 getBorderActiveColor();
+    void                setBorderActiveColor ( int colorIndex );
+    int                 getBorderAttributes();
+    void                setBorderAttributes  ( int attr );
 
     void                setAttribute   ( int attr );
     void                unsetAttribute ( int attr );
@@ -154,12 +161,12 @@ class HexPanel {
     int                  _maxLines;
     int                  _scrollTo;
 
-    int                  _txtColor;
-    int                  _bdrColor;
+    int                  _txtColor, _bdrColor, _bfgColor;
+    int                  _bdrAttr;
 
     bool                 _scrollable;
-    bool                 _drawBorder;
-    bool                 _drawTitle;
+    bool                 _drawBorder, _drawTitle;
+    bool                 _focus;
 };
 
 
