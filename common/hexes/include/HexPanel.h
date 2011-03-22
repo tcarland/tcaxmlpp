@@ -47,16 +47,22 @@ class HexPanel {
     virtual int         poll();
     virtual void        resize ( int height, int width );
 
+
     void                setOutputHandler ( HexOutputInterface * output );
     void                setInputHandler  ( HexInputInterface  * input  );
     HexOutputInterface* getOutputHandler();
     HexInputInterface*  getInputHandler();
 
-    int                 print ( const std::string & str, HexPosition & pos,
-                                int color, int attr, bool wrap = false );
-    int                 print ( const std::string & str, bool wrap = false );
-    int                 print ( const char ch );
-    int                 echo  ( const char ch );
+
+    int                 print       ( const std::string & str,
+                                      HexPosition       & pos,
+                                      int  color,
+                                      int  attr,
+                                      bool wrap = false );
+    int                 print       ( const std::string & str,
+                                      bool wrap = false );
+    int                 print       ( const char ch );
+    int                 echo        ( const char ch );
 
     void                show();
     void                hide();
@@ -100,7 +106,7 @@ class HexPanel {
     const std::string&  getPanelName() const;
     const std::string&  getName()      const { return this->getPanelName(); }
 
-    void                setPanelId     ( int panelId );
+    void                setPanelId   ( int panelId );
     int                 getPanelId()   const;
 
     void                setWindowTitle ( HexString & hexstr );
@@ -113,10 +119,12 @@ class HexPanel {
 
     int                 getTextColor();
     void                setTextColor   ( int colorIndex );
+
     int                 getBorderColor();
     void                setBorderColor ( int colorIndex );
     int                 getBorderActiveColor();
     void                setBorderActiveColor ( int colorIndex );
+
     int                 getBorderAttributes();
     void                setBorderAttributes  ( int attr );
 
@@ -125,7 +133,6 @@ class HexPanel {
 
     void                setDrawBorder  ( bool border );
     bool                getDrawBorder() const;
-
     void                setDrawTitle   ( bool title );
     bool                getDrawTitle() const;
 
