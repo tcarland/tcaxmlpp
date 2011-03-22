@@ -19,7 +19,8 @@ INCLUDES=       -Iinclude
 LIBS=		
 LFLAGS=		
 
-OBJS=		src/HexApp.o src/HexPanel.o src/HexWindow.o src/HexString.o \
+OBJS=		src/HexApp.o src/HexPanel.o src/HexWindow.o \
+		src/HexString.o src/HexDialog.o \
 		src/LineInputHandler.o src/LineOutputHandler.o
 
 ALL_OBJS=	$(OBJS)

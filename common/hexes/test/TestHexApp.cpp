@@ -6,6 +6,7 @@
 #include "TestHexApp.h"
 
 #include "HexPanel.h"
+#include "HexDialog.h"
 #include "LineInputHandler.h"
 #include "LineOutputHandler.h"
 
@@ -91,6 +92,13 @@ TestHexApp::run()
 
     conPanel->addText(prompt);
     cinput->setPrefix(prompt);
+
+    this->draw();
+
+    HexDialog d("intro", " Welcome to the hexes test app", 4, 32, 10, 10);
+    d.setDrawTitle(false);
+    d.setBorderColor(HEX_MAGENTA);
+    d.showDialog();
 
     while ( ! alarm ) 
     {
