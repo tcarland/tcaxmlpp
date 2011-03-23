@@ -95,9 +95,10 @@ TestHexApp::run()
 
     this->draw();
 
-    HexDialog d("intro", " Welcome to the hexes test app", 4, 32, 10, 10);
+    HexDialog d("intro", "Welcome to the hexes test app", 5, 42, 10, 10);
     d.setDrawTitle(false);
     d.setBorderColor(HEX_MAGENTA);
+    d.addText(" <OK>  ");
     d.showDialog();
 
     while ( ! alarm ) 

@@ -22,7 +22,6 @@ HexDialog::~HexDialog() {}
 int
 HexDialog::showDialog()
 {
-    this->addText(_dialog);
     this->setFocus();
     this->redraw();
 
@@ -54,6 +53,8 @@ HexDialog::initDialog()
             h++;
         }
     }
+
+    this->addText(_dialog);
 
     this->resize(h, w);
 
