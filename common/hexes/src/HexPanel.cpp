@@ -268,6 +268,14 @@ HexPanel::setTextList ( TextList & textlist )
     this->_textlist = textlist;
 }
 
+int
+HexPanel::getLineCount()
+{
+    return this->_textlist.size();
+}
+
+//----------------------------------------------------------------//
+
 /** addText will add the provided string as the next 
  *  line of text of the panel. Each string is considered 
  *  a single line, and the cursor will automatically wrap
@@ -301,6 +309,7 @@ HexPanel::addText ( HexString & hexstr )
     return;
 }
 
+//----------------------------------------------------------------//
 
 /** setText clears the internal TextList and sets the
   * given @param str as the first line of text.
@@ -337,6 +346,8 @@ HexPanel::clear()
 {
     return this->clearText();
 }
+
+//----------------------------------------------------------------//
 
 int
 HexPanel::getBorderColor()

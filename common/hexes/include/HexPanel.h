@@ -104,6 +104,7 @@ class HexPanel {
 
     void                setTextList  ( TextList & textlist );
     TextList&           getTextList();
+    int                 getLineCount();
 
     const std::string&  getPanelName() const;
     const std::string&  getName()      const { return this->getPanelName(); }

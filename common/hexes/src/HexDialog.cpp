@@ -13,7 +13,7 @@ HexDialog::HexDialog ( const std::string & title,
     : HexPanel(title, height, width, starty, startx),
       _dialog(txt)
 {
-    this->initDialog();
+    this->addText(txt);
 }
 
 HexDialog::~HexDialog() {}
@@ -37,8 +37,8 @@ HexDialog::showDialog()
 void
 HexDialog::initDialog()
 {
-    int rows = LINES - 4;
-    int cols = COLS - 4;
+    int rows = this->height();
+    int cols = this->width();
     int h, w, y, x;
             
     w = _dialog.length() + 2;

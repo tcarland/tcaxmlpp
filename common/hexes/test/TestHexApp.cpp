@@ -72,7 +72,7 @@ TestHexApp::run()
     conPanel->setDrawBorder(false);
     conPanel->setDrawTitle(false);
 
-    std::string top = "  TestHexApp Version 0.1a  -  libhexes ";
+    std::string top = "  TestHexApp Version 0.11  -  libhexes ";
     top.append(LIBHEXES_VERSION);
     this->print(0, 1, top, HEX_RED, HEX_BOLD);
 
@@ -95,10 +95,12 @@ TestHexApp::run()
 
     this->draw();
 
-    HexDialog d("intro", "Welcome to the hexes test app", 5, 42, 10, 10);
-    d.setDrawTitle(false);
-    d.setBorderColor(HEX_MAGENTA);
+    HexDialog d("intro", "Welcome to the hexes test app", 6, 42, 10, 10);
+    d.addText(" use /help or /? for assistance ");
     d.addText(" <OK>  ");
+    d.setDrawTitle(false);
+    d.setTextColor(HEX_CYAN);
+    d.setBorderColor(HEX_MAGENTA);
     d.showDialog();
 
     while ( ! alarm ) 
