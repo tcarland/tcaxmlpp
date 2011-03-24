@@ -198,25 +198,29 @@ HexPanel::refresh()
 }
 
 //----------------------------------------------------------------//
-//
+
+/** Returns the current width of the window (including border) */
 int
 HexPanel::width()
 {
     return this->_hwin->width();
 }
 
+/** Returns the current height of the window (including border) */
 int
 HexPanel::height()
 {
     return this->_hwin->height();
 }
 
+/** Returns the current Y starting coordinate of the window */
 int
 HexPanel::curY()
 {
     return this->_hwin->curY();
 }
 
+/** Returns the current X starting coordinate of the window */
 int
 HexPanel::curX()
 {
@@ -238,6 +242,7 @@ HexPanel::maxX()
 
 //----------------------------------------------------------------//
 
+/** Sets the current panel instance as the top panel */
 void
 HexPanel::setFocus()
 {
@@ -246,6 +251,7 @@ HexPanel::setFocus()
     _focus = true;
 }
 
+/** Tells this panel that it no longer has focus */
 void
 HexPanel::unsetFocus()
 {
@@ -268,6 +274,7 @@ HexPanel::setTextList ( TextList & textlist )
     this->_textlist = textlist;
 }
 
+/**  Return the number of lines stored by the internal TextList */
 int
 HexPanel::getLineCount()
 {
@@ -276,10 +283,11 @@ HexPanel::getLineCount()
 
 //----------------------------------------------------------------//
 
-/** addText will add the provided string as the next 
- *  line of text of the panel. Each string is considered 
- *  a single line, and the cursor will automatically wrap
- *  after each string.
+/**@{
+  *  addText will add the provided string as the next
+  *  line of text of the panel. Each string is considered
+  *  a single line, and the cursor will automatically wrap
+  *  after each string.
  **/
 void
 HexPanel::addText ( const std::string & str )
@@ -308,10 +316,12 @@ HexPanel::addText ( HexString & hexstr )
 
     return;
 }
+/*@}*/
 
 //----------------------------------------------------------------//
 
-/** setText clears the internal TextList and sets the
+/**@{
+  *  setText clears the internal TextList and sets the
   * given @param str as the first line of text.
  **/
 void
@@ -333,6 +343,7 @@ HexPanel::setText ( HexString & hexstr )
     this->_textlist.clear();
     this->addText(hexstr);
 }
+/*@}*/
 
 /**  Clears the internal TextList */
 void
@@ -349,36 +360,42 @@ HexPanel::clear()
 
 //----------------------------------------------------------------//
 
+/** Returns the current border color pair value */
 int
 HexPanel::getBorderColor()
 {
     return _bdrColor;
 }
 
+/** Sets the border's color pair index value */
 void
 HexPanel::setBorderColor ( int colorIndex )
 {
     _bdrColor = colorIndex;
 }
 
+/** Returns the border's active color pair index value */
 int
 HexPanel::getBorderActiveColor()
 {
     return _bfgColor;
 }
 
+/** Sets the border's active color (when focused) */
 void
 HexPanel::setBorderActiveColor ( int colorIndex )
 {
     _bfgColor = colorIndex;
 }
 
+/** Return the current border's attributes value */
 int
 HexPanel::getBorderAttributes()
 {
     return _bdrAttr;
 }
 
+/** Set the attributes for this panel's border */
 void
 HexPanel::setBorderAttributes ( int attr )
 {
@@ -391,6 +408,7 @@ HexPanel::getTextColor()
     return _txtColor;
 }
 
+/** Set the default color for this panel's text */
 void
 HexPanel::setTextColor ( int colorIndex )
 {
@@ -413,6 +431,7 @@ HexPanel::unsetAttribute ( int attr )
 
 //----------------------------------------------------------------//
 
+/** Enables or disables the drawing of the window border */
 void
 HexPanel::setDrawBorder ( bool border )
 {
@@ -420,6 +439,7 @@ HexPanel::setDrawBorder ( bool border )
     this->_hwin->setBorder(border);
 }
 
+/** Enables or disables the drawing of the window title */
 void
 HexPanel::setDrawTitle ( bool title )
 {
