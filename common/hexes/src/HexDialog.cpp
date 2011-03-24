@@ -7,13 +7,23 @@ namespace hexes {
 
 
 HexDialog::HexDialog ( const std::string & title,
-                       const std::string & txt,
+                       const std::string & dialog )
+    : HexPanel(title, 0, 0, 0, 0),
+      _dialog(dialog),
+      _dynsz(true)
+{
+    //if ( ! _dialog.empty() )
+        //this->addText(_dialog);
+}
+
+HexDialog::HexDialog ( const std::string & title,
+                       const std::string & dialog,
                        int   height, int   width,
                        int   starty, int   startx )
     : HexPanel(title, height, width, starty, startx),
-      _dialog(txt)
+      _dialog(dialog),
+      _dynsz(false)
 {
-    this->addText(txt);
 }
 
 HexDialog::~HexDialog() {}
@@ -22,6 +32,7 @@ HexDialog::~HexDialog() {}
 int
 HexDialog::showDialog()
 {
+    //this->initDialog();
     this->setFocus();
     this->redraw();
 
@@ -41,27 +52,45 @@ HexDialog::initDialog()
     int cols = this->width();
     int h, w, y, x;
             
-    w = _dialog.length() + 2;
-    h = 4;
+    h = this->getLineCount();
+    w = this->getLongestLine();
 
-    if ( this->width() == 0 ) {
-        if ( _dialog.length() > (size_t) cols )
-            w = COLS * .6;
-        int tmpw = w - 2;
-        while ( (size_t) tmpw > _dialog.length() ) {
-            tmpw -= (w - 2);
-            h++;
-        }
+    if ( ! _dynsz ) {
+        if ( w > cols )
+            h = (w / cols);
+        h += rows;
+        w  = cols;
     }
 
-    this->addText(_dialog);
+    if ( _dynsz && this->getDrawBorder() ) {
+        h += 2;
+        w += 2;
+    }
+
+    y = ((COLS - (w+1)) / 2);
+    x = ((LINES - (h+1)) / 2);
 
     this->resize(h, w);
 
-    y = cols - (w + 1);
-    x = rows - (h + 1);
+    return;
+}
 
-    this->moveWindow(y, x);
+size_t
+HexDialog::getLongestLine()
+{
+    TextList & tlist = this->getTextList();
+    TextList::iterator  tIter;
+    size_t len = 0;
+
+    for ( tIter = tlist.begin(); tIter != tlist.end(); ++tIter )
+    {
+        HexString & line = *tIter;
+        if ( line.str.length() < len )
+            continue;
+        len = line.str.length() + 2;
+    }
+
+    return len;
 }
 
 } // namespace

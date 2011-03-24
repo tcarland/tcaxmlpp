@@ -13,7 +13,10 @@ class HexDialog : public HexPanel {
   public:
 
     HexDialog ( const std::string & title,
-                const std::string & txt,
+                const std::string & dialog = "" );
+
+    HexDialog ( const std::string & title,
+                const std::string & dialog,
                 int   height, int   width,
                 int   starty, int   startx );
 
@@ -24,12 +27,13 @@ class HexDialog : public HexPanel {
 
   protected:
 
-    void  initDialog();
-
+    void    initDialog();
+    size_t  getLongestLine();
 
   private:
 
     std::string  _dialog;
+    bool         _dynsz;
 
 };
 

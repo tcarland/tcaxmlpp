@@ -110,6 +110,20 @@ HexWindow::height()
 
 //----------------------------------------------------------------//
 
+/** Returns the current Y starting coordinate of the window */
+int
+HexWindow::startY()
+{
+    return(this->_starty);
+}
+
+/** Returns the current X starting coordinate of the window */
+int
+HexWindow::startX()
+{
+    return(this->_startx);
+}
+
 int
 HexWindow::curY()
 {
@@ -167,6 +181,31 @@ HexWindow::currentPosition()
     p.row = this->curY();
     p.col = this->curX();
     return p;
+}
+
+int
+HexWindow::move ( int y, int x )
+{
+    return(::wmove(_win, y, x));
+}
+
+int
+HexWindow::moveWindow ( int starty, int startx )
+{
+    this->_starty = starty;
+    this->_startx = startx;
+    return(::mvwin(_win, starty, startx));
+}
+
+void
+HexWindow::resize ( int height, int width )
+{
+    this->_height = height;
+    this->_width  = width;
+    ::wresize(_win, height, width);
+    if ( this->curY() > height || this->curX() > width )
+        this->move(height, width);
+    return;
 }
 
 //----------------------------------------------------------------//
@@ -275,7 +314,7 @@ HexWindow::echo ( const char ch )
 int
 HexWindow::wrap()
 {
-    int curx = _win->_begx + 1;
+    int curx = 0;
     int cury = _win->_cury;
 
     if ( cury >= _height )

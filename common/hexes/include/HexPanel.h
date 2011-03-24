@@ -53,19 +53,6 @@ class HexPanel {
     HexOutputInterface* getOutputHandler();
     HexInputInterface*  getInputHandler();
 
-
-    int                 print       ( HexString   & hexstr,
-                                      HexPosition & pos );
-    int                 print       ( const std::string & str,
-                                      HexPosition       & pos,
-                                      int  color,
-                                      int  attr,
-                                      bool wrap = false );
-    int                 print       ( const std::string & str,
-                                      bool wrap = false );
-    int                 print       ( const char ch );
-    int                 echo        ( const char ch );
-
     void                show();
     void                hide();
     void                erase();
@@ -85,6 +72,8 @@ class HexPanel {
     int                 curX();
     int                 maxY();
     int                 maxX();
+    int                 startY();
+    int                 startX();
 
     void                addTextLine  ( HexString & hexstr )      { return this->addText(hexstr); }
     void                addTextLine  ( const std::string & str ) { return this->addText(str); }
@@ -105,6 +94,18 @@ class HexPanel {
     void                setTextList  ( TextList & textlist );
     TextList&           getTextList();
     int                 getLineCount();
+
+    int                 print       ( HexString   & hexstr,
+                                      HexPosition & pos );
+    int                 print       ( const std::string & str,
+                                      HexPosition       & pos,
+                                      int  color,
+                                      int  attr,
+                                      bool wrap = false );
+    int                 print       ( const std::string & str,
+                                      bool wrap = false );
+    int                 print       ( const char ch );
+    int                 echo        ( const char ch );
 
     const std::string&  getPanelName() const;
     const std::string&  getName()      const { return this->getPanelName(); }
@@ -164,8 +165,6 @@ class HexPanel {
     TextList             _textlist;
 
     int                  _panelId;
-    int                  _height, _width;
-    int                  _starty, _startx;
 
     int                  _selected;
     int                  _maxLines;

@@ -23,13 +23,16 @@ class HexWindow {
   public:
 
     HexWindow();
-    HexWindow ( int height, int width,
+
+    HexWindow ( int  height,  int  width,
                 bool border = true );
-    HexWindow ( int height, int width,
-                int starty, int startx,
+
+    HexWindow ( int  height,  int  width,
+                int  starty,  int  startx,
                 bool border = true );
 
     virtual ~HexWindow();
+
 
     int            print ( const std::string & str, bool wrap = true );
     int            print ( const char ch );
@@ -44,6 +47,8 @@ class HexWindow {
     int            width();
     int            height();
 
+    int            startY();
+    int            startX();
     int            currentRow();
     int            currentColumn();
     int            curY();
@@ -55,6 +60,9 @@ class HexWindow {
     int            maxY();
     int            maxX();
 
+    int            move       ( int y,      int x );
+    int            moveWindow ( int starty, int startx );
+    void           resize     ( int height, int width );
 
   protected:
 

@@ -14,12 +14,10 @@ namespace hexes {
 HexPanel::HexPanel ( const std::string & title )
     : _hwin(new HexWindow()),
       _panel(NULL),
-      _output(NULL),
+      _output(new LineOutputHandler()),
       _input(NULL),
       _title(title),
       _panelId(0),
-      _height(0), _width(0),
-      _starty(0), _startx(0),
       _selected(0),
       _maxLines(DEFAULT_SCRLBK_SIZE),
       _scrollTo(0),
@@ -42,8 +40,6 @@ HexPanel::HexPanel ( const std::string & title,
       _input(NULL),
       _title(title),
       _panelId(0),
-      _height(height), _width(width),
-      _starty(starty), _startx(startx),
       _selected(0),
       _maxLines(DEFAULT_SCRLBK_SIZE),
       _scrollTo(0),
@@ -121,7 +117,7 @@ HexPanel::redraw()
 
     wattrset(_hwin->_win, COLOR_PAIR(_txtColor));
 
-    //::wmove(_hwin->_win, 1, 1);
+    ::wmove(_hwin->_win, 1, 1);
     ::wrefresh(_hwin->_win);
 
     return r;
@@ -130,12 +126,7 @@ HexPanel::redraw()
 void
 HexPanel::resize ( int height, int width )
 {
-    this->_height = height;
-    this->_width  = width;
-    ::wresize(_hwin->_win, height, width);
-    if ( this->curY() > height || this->curX() > width )
-        this->move(height, width);
-    return;
+    return(_hwin->resize(height, width));
 }
 
 //----------------------------------------------------------------//
@@ -215,12 +206,26 @@ HexPanel::height()
 
 /** Returns the current Y starting coordinate of the window */
 int
+HexPanel::startY()
+{
+    return this->_hwin->startY();
+}
+
+/** Returns the current X starting coordinate of the window */
+int
+HexPanel::startX()
+{
+    return this->_hwin->startX();
+}
+
+/** Returns the current Y coordinate of the window */
+int
 HexPanel::curY()
 {
     return this->_hwin->curY();
 }
 
-/** Returns the current X starting coordinate of the window */
+/** Returns the current X coordinate of the window */
 int
 HexPanel::curX()
 {
@@ -308,9 +313,9 @@ HexPanel::addText ( HexString & hexstr )
 {
     _textlist.push_back(hexstr);
 
-    if ( _textlist.size() >= ((size_t) _height - 1) )
+    if ( _textlist.size() >= ((size_t)this->height()-1) )
     {
-        if ( ! _scrollable || _textlist.size() > ((size_t) _height + _maxLines) )
+        if ( ! _scrollable || _textlist.size() > ((size_t)this->height()+_maxLines) )
             _textlist.pop_front();
     }
 
@@ -619,19 +624,19 @@ HexPanel::timeout ( int delay_ms )
 int
 HexPanel::move ( int y , int x )
 {
-    return(::wmove(_hwin->_win, y, x));
+    return(_hwin->move(y, x));
 }
 
 int
 HexPanel::move ( HexPosition & p )
 {
-    return(::wmove(_hwin->_win, p.row, p.col));
+    return(_hwin->move(p.row, p.col));
 }
 
 int
 HexPanel::moveWindow ( int starty, int startx )
 {
-    return(::mvwin(_hwin->_win, starty, startx));
+    return(_hwin->moveWindow(starty, startx));
 }
 
 //----------------------------------------------------------------//
