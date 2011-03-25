@@ -45,6 +45,19 @@ TestHexApp::resize()
 }
 
 void
+TestHexApp::help()
+{
+    mainPanel->addText("The test app demonstrates a few basic features of a HexPanel");
+    mainPanel->addText("/help  - displays this help");
+    mainPanel->addText("/clear - clears the main window");
+    mainPanel->addText("/quit  - exits the app.");
+    mainPanel->addText(" <CTRL>-W performs a window command");
+    mainPanel->addText("     + 'n' = switch focus to the next window");
+    mainPanel->addText("     + 'p' = switch focus to the previous window");
+    mainPanel->addText(" UP/DOWN Arrows = cycle command history");
+}
+
+void
 TestHexApp::run()
 {
     bool alarm      = false;
@@ -156,6 +169,8 @@ TestHexApp::run()
             alarm = true;
         else if ( cmd.compare("/clear") == 0 )
             mainPanel->clear();
+        else if ( cmd.compare("/help") == 0 )
+            this->help();
     }
 
     mainPanel->print("test 1 2 3 : ");
