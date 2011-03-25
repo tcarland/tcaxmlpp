@@ -60,8 +60,10 @@ HexDialog::initDialog()
     y = ((LINES - h) / 2);
     x = ((COLS  - w) / 2);
 
-    this->resize(h, w);
-    this->moveWindow(y, x);
+    if ( _dynsz ) {
+        this->resize(h, w);
+    	this->moveWindow(y, x);
+    }
 
     return;
 }

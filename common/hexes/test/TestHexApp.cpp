@@ -151,7 +151,7 @@ TestHexApp::run()
                 cinput->setParse(false);
             }
 
-            //if ( ch >= 32 && ch < 128 )
+            // todo: switch for ascii? - if ( ch >= 32 && ch < 128 )
             if ( echo )
                 mainPanel->addText(ostr.str());
 
@@ -205,7 +205,7 @@ TestHexApp::run()
     statPanel->addText("more status4");
 
     this->draw();
-    sleep(1);
+    sleep(2);
 
     return;
 }
