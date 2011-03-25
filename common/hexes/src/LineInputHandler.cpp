@@ -28,14 +28,13 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
     if ( ! _parse )
         return ch;
 
-    if ( _isReady ) {
-        if ( ! _line.empty() )
-            _history.push_back(_line);
+    if ( _isReady && ! _line.empty() ) {
+        _history.push_back(_line);
         while ( _history.size() > _lines )
             _history.erase(_history.begin());
         _line.clear();
         _isReady = false;
-        _hindx   = 0;
+        _hindx   = _history.size();
     }
 
     if ( ch == KEY_BACKSPACE || ch == 127 )
@@ -43,7 +42,7 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
         if ( _line.size() > 0 ) {
             TextList    & txtlist = p->getTextList();
             HexString   & curline = txtlist.back();
-            curline.str.erase(curline.str.size() - 1);
+            curline.str().erase(curline.str().size() - 1);
 	    _line.erase(_line.size() - 1);
 
 	    int x = p->curX();
@@ -52,24 +51,23 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
     }
     else if ( ch == KEY_UP )
     {
-        if ( _history.size() == 0 )
+        if ( _history.empty() || _hindx == 0 )
             return ch;
-        if ( _hindx == 0 ) {
-            _hindx = _history.size() - 1;
-	    if ( ! _line.empty() )
-                _history.push_back(_line);
-        } else {
-            _hindx--;
+
+        if ( _hindx == _history.size() && ! _line.empty() ) {
+            _history.push_back(_line);
         }
+
+        _hindx--;
 
         TextList  & txtlist = p->getTextList();
         HexString & curline = txtlist.back();
         if ( ! _prompt.empty() ) {
-            curline.str.assign(_prompt);
+            curline.str().assign(_prompt);
         } else {
-            curline.str = "";
+            curline.str() = "";
         }
-        curline.str.append(_history.at(_hindx));
+        curline.str().append(_history.at(_hindx));
         _line.assign(_history.at(_hindx));
     }
     else if ( ch == KEY_DOWN )
@@ -79,17 +77,17 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
         TextList  & txtlist = p->getTextList();
         HexString & curline = txtlist.back();
         if ( ! _prompt.empty() ) {
-            curline.str.assign(_prompt);
+            curline.str().assign(_prompt);
         } else {
-            curline.str = "";
+            curline.str() = "";
         }
 
         if ( _hindx < _history.size() ) {
-            curline.str.append(_history.at(_hindx));
+            curline.str().append(_history.at(_hindx));
             _line.assign(_history.at(_hindx));
         } else {
             _line.clear();
-            _hindx = 0;
+            _hindx = _history.size();
         }
     }
     else if ( ch == KEY_RIGHT )
@@ -114,7 +112,7 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
                 p->addText(f);
             } else {
                 HexString & curline = txtlist.front();
-	        curline.str.append(1, ch);
+	        curline.str().append(1, ch);
             }
         }
         _line.append(1, ch);

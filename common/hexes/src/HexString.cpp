@@ -15,7 +15,7 @@ HexString::HexString()
 
 HexString::HexString ( const std::string & str_, 
                        bool  wrap_ )
-    : str(str_),
+    : _str(str_),
       color(0),
       attributes(0),
       alignment(0),
@@ -27,7 +27,7 @@ HexString::HexString ( const std::string & str_,
                        int   color_,
                        int   attributes_,
                        bool  wrap_ )
-    : str(str_),
+    : _str(str_),
       color(color_),
       attributes(attributes_),
       alignment(0),
@@ -36,7 +36,7 @@ HexString::HexString ( const std::string & str_,
 
 HexString::HexString ( const HexString & hexstr )
 {
-    str        = hexstr.str;
+    _str       = hexstr._str;
     color      = hexstr.color;
     attributes = hexstr.attributes;
     alignment  = hexstr.alignment;
@@ -49,21 +49,50 @@ HexString::~HexString() {}
 void 
 HexString::operator= ( const HexString & hexstr )
 {
-    str        = hexstr.str;
+    _str       = hexstr._str;
     color      = hexstr.color;
     attributes = hexstr.attributes;
     alignment  = hexstr.alignment;
     wrap       = hexstr.wrap;
 }
 
+void
+HexString::operator= ( const std::string & str )
+{
+    _str       = str;
+}
+
 bool
 HexString::operator== ( const HexString & hexstr )
 {
-    if ( str.compare(hexstr.str) == 0 )
+    if ( _str.compare(hexstr._str) == 0 )
         return true;
     return false;
 }
 
+const std::string&
+HexString::str() const
+{
+    return _str;
+}
+
+std::string&
+HexString::str()
+{
+    return _str;
+}
+
+size_t
+HexString::length() const
+{
+    return((size_t)_str.length());
+}
+
+bool
+HexString::empty() const
+{
+    return(_str.empty());
+}
 
 }  // namespace
 

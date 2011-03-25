@@ -12,8 +12,8 @@ HexDialog::HexDialog ( const std::string & title,
       _dialog(dialog),
       _dynsz(true)
 {
-    //if ( ! _dialog.empty() )
-        //this->addText(_dialog);
+    if ( ! _dialog.empty() )
+        this->addText(_dialog);
 }
 
 HexDialog::HexDialog ( const std::string & title,
@@ -24,6 +24,8 @@ HexDialog::HexDialog ( const std::string & title,
       _dialog(dialog),
       _dynsz(false)
 {
+    if ( ! _dialog.empty() )
+        this->addText(_dialog);
 }
 
 HexDialog::~HexDialog() {}
@@ -32,14 +34,13 @@ HexDialog::~HexDialog() {}
 int
 HexDialog::showDialog()
 {
-    //this->initDialog();
+    this->initDialog();
     this->setFocus();
     this->redraw();
 
     int ch = this->poll();
 
     this->hide();
-    this->refresh();
 
     return ch;
 }
@@ -48,29 +49,21 @@ HexDialog::showDialog()
 void
 HexDialog::initDialog()
 {
-    int rows = this->height();
-    int cols = this->width();
     int h, w, y, x;
             
     h = this->getLineCount();
     w = this->getLongestLine();
 
-    if ( ! _dynsz ) {
-        if ( w > cols )
-            h = (w / cols);
-        h += rows;
-        w  = cols;
-    }
-
-    if ( _dynsz && this->getDrawBorder() ) {
+    if ( this->getDrawBorder() ) {
         h += 2;
         w += 2;
     }
 
-    y = ((COLS - (w+1)) / 2);
-    x = ((LINES - (h+1)) / 2);
+    y = ((LINES - (h+1)) / 2);
+    x = ((COLS  - (w+1)) / 2);
 
     this->resize(h, w);
+    this->moveWindow(y, x);
 
     return;
 }
@@ -85,9 +78,9 @@ HexDialog::getLongestLine()
     for ( tIter = tlist.begin(); tIter != tlist.end(); ++tIter )
     {
         HexString & line = *tIter;
-        if ( line.str.length() < len )
+        if ( line.length() < len )
             continue;
-        len = line.str.length() + 2;
+        len = line.length() + 2;
     }
 
     return len;

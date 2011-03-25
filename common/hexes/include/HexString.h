@@ -26,12 +26,19 @@ class HexString {
     virtual ~HexString();
 
 
-    void operator=  ( const HexString & hexstr );
-    bool operator== ( const HexString & hexstr );
+    void operator=  ( const HexString   & hexstr );
+    void operator=  ( const std::string & str );
+    bool operator== ( const HexString   & hexstr );
+
+    const
+    std::string&  str() const;
+    std::string&  str();
+    size_t        length() const;
+    bool          empty() const;
 
   public:
 
-    std::string  str;
+    std::string  _str;
     int          color;
     int          attributes;
     int          alignment;

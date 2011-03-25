@@ -208,6 +208,7 @@ HexWindow::resize ( int height, int width )
     return;
 }
 
+
 //----------------------------------------------------------------//
 
 int

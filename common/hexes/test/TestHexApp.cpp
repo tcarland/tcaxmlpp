@@ -95,18 +95,19 @@ TestHexApp::run()
 
     this->draw();
 
-    int y = ((this->width() - 35) / 2);
-    int x = ((this->height() - 6) / 2);
+    //int y = ((this->width() - 35) / 2);
+    //int x = ((this->height() - 6) / 2);
 
 
-    HexDialog d("intro", "", 6, 36, 10, 10);
+    HexDialog d("intro", "Welcome");
+    //HexDialog d("intro", "Welcome", 6, 36, 10, 10);
     //HexDialog d("intro");
     d.setDrawTitle(false);
     d.setTextColor(HEX_CYAN);
     d.setBorderColor(HEX_MAGENTA);
     //d.moveWindow(y, x);
-    d.addText("Welcome to the libhexes Test app");
-    d.addText("use /help or /? for assistance");
+    d.addText("   to the libhexes Test app");
+    d.addText("   use /help or /? for assistance");
     d.addText("         <OK>", 0, HEX_BOLD);
     d.showDialog();
 
