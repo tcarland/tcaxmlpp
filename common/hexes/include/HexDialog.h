@@ -13,10 +13,10 @@ class HexDialog : public HexPanel {
   public:
 
     HexDialog ( const std::string & title,
-                const std::string & dialog = "" );
+                const HexString   & dialog = HexString() );
 
     HexDialog ( const std::string & title,
-                const std::string & dialog,
+                const HexString   & dialog,
                 int   height, int   width,
                 int   starty, int   startx );
 
@@ -32,7 +32,6 @@ class HexDialog : public HexPanel {
 
   private:
 
-    std::string  _dialog;
     bool         _dynsz;
 
 };

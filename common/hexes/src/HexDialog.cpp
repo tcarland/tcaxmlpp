@@ -7,25 +7,23 @@ namespace hexes {
 
 
 HexDialog::HexDialog ( const std::string & title,
-                       const std::string & dialog )
+                       const HexString   & dialog )
     : HexPanel(title, 0, 0, 0, 0),
-      _dialog(dialog),
       _dynsz(true)
 {
-    if ( ! _dialog.empty() )
-        this->addText(_dialog);
+    if ( ! dialog.empty() )
+        this->addText(dialog);
 }
 
 HexDialog::HexDialog ( const std::string & title,
-                       const std::string & dialog,
+                       const HexString   & dialog,
                        int   height, int   width,
                        int   starty, int   startx )
     : HexPanel(title, height, width, starty, startx),
-      _dialog(dialog),
       _dynsz(false)
 {
-    if ( ! _dialog.empty() )
-        this->addText(_dialog);
+    if ( ! dialog.empty() )
+        this->addText(dialog);
 }
 
 HexDialog::~HexDialog() {}
@@ -59,8 +57,8 @@ HexDialog::initDialog()
         w += 2;
     }
 
-    y = ((LINES - (h+1)) / 2);
-    x = ((COLS  - (w+1)) / 2);
+    y = ((LINES - h) / 2);
+    x = ((COLS  - w) / 2);
 
     this->resize(h, w);
     this->moveWindow(y, x);
@@ -80,7 +78,7 @@ HexDialog::getLongestLine()
         HexString & line = *tIter;
         if ( line.length() < len )
             continue;
-        len = line.length() + 2;
+        len = line.length() + 1;
     }
 
     return len;

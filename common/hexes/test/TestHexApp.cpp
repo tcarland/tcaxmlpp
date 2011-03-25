@@ -47,14 +47,18 @@ TestHexApp::resize()
 void
 TestHexApp::help()
 {
-    mainPanel->addText("The test app demonstrates a few basic features of a HexPanel");
-    mainPanel->addText("/help  - displays this help");
-    mainPanel->addText("/clear - clears the main window");
-    mainPanel->addText("/quit  - exits the app.");
+    mainPanel->addText(" ");
+    mainPanel->addText("The test app tests a few basic features of a HexPanel");
+    mainPanel->addText("  /help  - displays this help");
+    mainPanel->addText("  /clear - clears the main window");
+    mainPanel->addText("  /echo  - toggle the display of character input");
+    mainPanel->addText("  /quit  - exits the app.");
+    mainPanel->addText(" ");
     mainPanel->addText(" <CTRL>-W performs a window command");
     mainPanel->addText("     + 'n' = switch focus to the next window");
     mainPanel->addText("     + 'p' = switch focus to the previous window");
     mainPanel->addText(" UP/DOWN Arrows = cycle command history");
+    mainPanel->addText(" ");
 }
 
 void
@@ -63,6 +67,7 @@ TestHexApp::run()
     bool alarm      = false;
     int  conheight  = 3;
     int  statheight = (LINES * .33) - conheight;
+    bool echo       = false;
     int  ch;
 
     this->setCursor(1);
@@ -85,7 +90,7 @@ TestHexApp::run()
     conPanel->setDrawBorder(false);
     conPanel->setDrawTitle(false);
 
-    std::string top = "  TestHexApp Version 0.11  -  libhexes ";
+    std::string top = "  TestHexApp Version 0.13  -  libhexes ";
     top.append(LIBHEXES_VERSION);
     this->print(0, 1, top, HEX_RED, HEX_BOLD);
 
@@ -108,20 +113,15 @@ TestHexApp::run()
 
     this->draw();
 
-    //int y = ((this->width() - 35) / 2);
-    //int x = ((this->height() - 6) / 2);
 
-
-    HexDialog d("intro", "Welcome");
+    HexDialog d("intro", HexString("     Welcome to libhexes", HEX_CYAN, HEX_BOLD));
     //HexDialog d("intro", "Welcome", 6, 36, 10, 10);
-    //HexDialog d("intro");
     d.setDrawTitle(false);
     d.setTextColor(HEX_CYAN);
     d.setBorderColor(HEX_MAGENTA);
-    //d.moveWindow(y, x);
-    d.addText("   to the libhexes Test app");
-    d.addText("   use /help or /? for assistance");
-    d.addText("         <OK>", 0, HEX_BOLD);
+    d.addText("");
+    d.addText("use /help (/?) for assistance");
+    d.addText("            <OK>", 0, HEX_BOLD);
     d.showDialog();
 
     while ( ! alarm ) 
@@ -152,6 +152,7 @@ TestHexApp::run()
             }
 
             //if ( ch >= 32 && ch < 128 )
+            if ( echo )
                 mainPanel->addText(ostr.str());
 
             this->draw();
@@ -169,7 +170,12 @@ TestHexApp::run()
             alarm = true;
         else if ( cmd.compare("/clear") == 0 )
             mainPanel->clear();
-        else if ( cmd.compare("/help") == 0 )
+        else if ( cmd.compare("/echo") == 0 )
+            if ( echo )
+                echo = false;
+            else
+                echo = true;
+        else if ( cmd.compare("/help") == 0 || cmd.compare("/?") == 0 )
             this->help();
     }
 

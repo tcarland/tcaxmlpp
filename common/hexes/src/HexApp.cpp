@@ -467,6 +467,7 @@ HexApp::InitColors()
     ::init_pair(HEX_BLUE_BLACK, HEX_BLUE, HEX_BLACK);
     ::init_pair(HEX_MAGENTA_BLACK, HEX_MAGENTA, HEX_BLACK);
     ::init_pair(HEX_CYAN_BLACK, HEX_CYAN, HEX_BLACK);
+    ::init_pair(HEX_WHITE_BLACK, HEX_WHITE, HEX_BLACK);
 }
 
 //----------------------------------------------------------------//

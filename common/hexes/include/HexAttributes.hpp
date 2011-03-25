@@ -6,24 +6,25 @@ namespace hexes {
 
 
 enum HexColorPair {
-    HEX_WHITE_BLACK   = 0,
+    HEX_DEFAULT_PAIR  = 0,
     HEX_RED_BLACK     = 1,
     HEX_GREEN_BLACK   = 2,
     HEX_YELLOW_BLACK  = 3,
     HEX_BLUE_BLACK    = 4,
     HEX_MAGENTA_BLACK = 5,
     HEX_CYAN_BLACK    = 6,
+    HEX_WHITE_BLACK   = 7
 };
 
 enum HexColor {
-    HEX_BLACK,
-    HEX_RED,
-    HEX_GREEN,
-    HEX_YELLOW,
-    HEX_BLUE,
-    HEX_MAGENTA,
-    HEX_CYAN,
-    HEX_WHITE
+    HEX_BLACK   = 0,
+    HEX_RED     = 1,
+    HEX_GREEN   = 2,
+    HEX_YELLOW  = 3,
+    HEX_BLUE    = 4,
+    HEX_MAGENTA = 5,
+    HEX_CYAN    = 6,
+    HEX_WHITE   = 7
 };
 
 enum HexAttribute {

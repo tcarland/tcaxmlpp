@@ -75,15 +75,15 @@ class HexPanel {
     int                 startY();
     int                 startX();
 
-    void                addTextLine  ( HexString & hexstr )      { return this->addText(hexstr); }
-    void                addTextLine  ( const std::string & str ) { return this->addText(str); }
+    void                addTextLine  ( const HexString   & hexstr ) { return this->addText(hexstr); }
+    void                addTextLine  ( const std::string & str )    { return this->addText(str); }
 
-    void                addText      ( HexString & hexstr );
+    void                addText      ( const HexString   & hexstr );
     void                addText      ( const std::string & str );
     void                addText      ( const std::string & str, 
                                        int   color,
                                        int   attr = HEX_NORMAL );
-    void                setText      ( HexString & hexstr );
+    void                setText      ( const HexString   & hexstr );
     void                setText      ( const std::string & str );
     void                setText      ( const std::string & str,
                                        int   color,

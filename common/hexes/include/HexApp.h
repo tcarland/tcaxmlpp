@@ -37,20 +37,19 @@ extern "C" {
 namespace hexes {
 
 
-#define LIBHEXES_VERSION "v0.101"
+#define LIBHEXES_VERSION "v0.103"
 
 
 class HexPanel;
 
 
-/**
-  * Provides the frontend to a 'Hexes' application. HexApp is the
+/**  Provides the frontend to a 'Hexes' application. HexApp is the
   * entry point to wrapping the libncurses/libpanel libraries for
-  * the spawning and control of windows/panels. 
+  * the spawning and control of windows/panels. While the base
+  * HexWindow and HexPanel objects can be used directly, if
+  * desired, the HexApp class provides a convenient mechanism
+  * for tracking and managing panels.
   *
-  * TODO: 
-  *   - HexWindow really needed? pull into HexPanel?
-  *   - window/text attributes
  **/
 class HexApp {
 

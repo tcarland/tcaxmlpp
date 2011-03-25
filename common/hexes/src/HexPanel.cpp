@@ -309,7 +309,7 @@ HexPanel::addText ( const std::string & str, int color, int attr )
 }
 
 void
-HexPanel::addText ( HexString & hexstr )
+HexPanel::addText ( const HexString & hexstr )
 {
     _textlist.push_back(hexstr);
 
@@ -343,7 +343,7 @@ HexPanel::setText ( const std::string & str, int color, int attr )
 }
 
 void
-HexPanel::setText ( HexString & hexstr )
+HexPanel::setText ( const HexString & hexstr )
 {
     this->_textlist.clear();
     this->addText(hexstr);
