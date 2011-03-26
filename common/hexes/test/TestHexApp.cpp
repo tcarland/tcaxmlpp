@@ -48,7 +48,7 @@ void
 TestHexApp::help()
 {
     mainPanel->addText(" ");
-    mainPanel->addText("This app tests a few basic features of a HexApp and its HexPanels");
+    mainPanel->addText("This app tests a few basic features of libhexes.");
     mainPanel->addText("  /help  - displays this help");
     mainPanel->addText("  /clear - clears the main window");
     mainPanel->addText("  /echo  - toggle the display of character input");
@@ -71,43 +71,37 @@ TestHexApp::run()
     bool echo       = false;
     int  ch;
 
-    this->setCursor(1);
-
     LineInputHandler * cinput;
+
+    this->setCursor(1);
+    this->setBorderColor(HEX_MAGENTA);
+    this->setBorderActiveColor(HEX_GREEN);
 
     mainPanel = this->createPanel("main", LINES-statheight-1-conheight, COLS, 1, 0);
     statPanel = this->createPanel("status", statheight, COLS, LINES-statheight-conheight, 0);
     conPanel  = this->createPanel("console", conheight, COLS, LINES-conheight, 0);
 
-    mainPanel->setBorderColor(HEX_MAGENTA);
-    mainPanel->setBorderActiveColor(HEX_GREEN);
     mainPanel->setWindowTitle(" Main ", HEX_GREEN);
+    mainPanel->enableScroll(true);
 
-    statPanel->enableScroll(true);
-    statPanel->setBorderColor(HEX_MAGENTA);
-    statPanel->setBorderActiveColor(HEX_GREEN);
     statPanel->setTextColor(HEX_GREEN);
     statPanel->setWindowTitle(" Status ", HEX_GREEN);
+    statPanel->enableScroll(true);
 
     conPanel->setDrawBorder(false);
     conPanel->setDrawTitle(false);
+    conPanel->setInputHandler(new LineInputHandler());
 
     std::string top = "  TestHexApp Version 0.13  -  libhexes ";
     top.append(LIBHEXES_VERSION);
     this->print(0, 1, top, HEX_RED, HEX_BOLD);
 
-    mainPanel->setOutputHandler(new LineOutputHandler());
-    statPanel->setOutputHandler(new LineOutputHandler());
-    conPanel->setInputHandler(new LineInputHandler());
-    mainPanel->enableScroll(true);
-    statPanel->enableScroll(true);
-
     this->setFocus(conPanel);
     
     cinput = (LineInputHandler*) conPanel->getInputHandler();
 
-    std::string  cmd, prompt;
 
+    std::string  cmd, prompt;
     prompt = " > ";
 
     conPanel->addText(prompt);
@@ -115,12 +109,13 @@ TestHexApp::run()
 
     this->draw();
 
-    std::string intro = "     Welcome to libhexes\n \nuse /help (/?) for assistance";
+    std::string intro = "     Welcome to libhexes";
 
     HexDialog d("intro", HexString(intro, HEX_CYAN, HEX_BOLD));
     d.setDrawTitle(false);
     d.setTextColor(HEX_CYAN);
-    d.setBorderColor(HEX_MAGENTA);
+    d.setBorderColor(HEX_GREEN);
+    d.addText("use /help (/?) for assistance\n \n", HEX_WHITE, HEX_NORMAL);
     d.addText("            <OK>", 0, HEX_BOLD);
     d.showDialog();
 

@@ -37,7 +37,7 @@ extern "C" {
 namespace hexes {
 
 
-#define LIBHEXES_VERSION "v0.107"
+#define LIBHEXES_VERSION "v0.108"
 
 
 class HexPanel;
@@ -106,6 +106,10 @@ class HexApp {
                                   const std::string & str,
                                   int color, int attr );
 
+    void         setTextColor   ( int color );
+    void         setBorderColor ( int color );
+    void         setBorderActiveColor ( int color );
+
   protected:
 
 
@@ -125,6 +129,9 @@ class HexApp {
     int                 _row;
     int                 _col;
     int                 _colorIndex;
+    int                 _txtColor;
+    int                 _bdrColor;
+    int                 _bfgColor;
     bool                _echo;
     bool                _hasColor;
 

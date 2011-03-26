@@ -15,6 +15,9 @@ bool HexApp::_NCURSES_INIT = false;
 HexApp::HexApp()
     : _curPanel(NULL),
       _colorIndex(0),
+      _txtColor(0),
+      _bdrColor(0),
+      _bfgColor(0),
       _echo(false)
 {
     this->InitCurses(false, _echo);
@@ -211,6 +214,9 @@ HexApp::createPanel ( const std::string & title,
 
     p = new HexPanel(title, height, width, starty, startx);
     p->setPanelId(_pstack.size());
+    p->setTextColor(_txtColor);
+    p->setBorderColor(_bdrColor);
+    p->setBorderActiveColor(_bfgColor);
 
     _panels[title] = p;
     _pstack.push_back(p);
@@ -431,6 +437,32 @@ HexApp::print ( int y, int x, const std::string & str, int color, int attr )
     return r;
 }
 
+//----------------------------------------------------------------//
+
+/** Sets the default colors for window text and borders */
+void
+HexApp::setTextColor ( int color )
+{
+    if ( _colorIndex > 0 && color > _colorIndex )
+        return;
+    _txtColor = color;
+}
+
+void
+HexApp::setBorderColor ( int color )
+{
+    if ( _colorIndex > 0 && color > _colorIndex )
+        return;
+    _bdrColor = color;
+}
+
+void
+HexApp::setBorderActiveColor ( int color )
+{
+    if ( _colorIndex > 0 && color > _colorIndex )
+        return;
+    _bfgColor = color;
+}
 
 //----------------------------------------------------------------//
 
