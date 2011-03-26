@@ -37,7 +37,7 @@ extern "C" {
 namespace hexes {
 
 
-#define LIBHEXES_VERSION "v0.106"
+#define LIBHEXES_VERSION "v0.107"
 
 
 class HexPanel;
@@ -85,8 +85,8 @@ class HexApp {
     void         destroyPanels();
 
     void         setFocus       ( HexPanel * panel );
-    void         setFocusNext();
-    void         setFocusPrev();
+    HexPanel*    setFocusNext();
+    HexPanel*    setFocusPrev();
 
     void         timeout        ( int delay_ms );
     bool         hasColor() const;

@@ -152,13 +152,13 @@ HexApp::setFocus ( HexPanel * panel )
     _curPanel = panel;
 }
 
-void
+HexPanel*
 HexApp::setFocusNext()
 {
     if ( _curPanel == NULL )
     {
         if ( _pstack.empty() )
-            return;
+            return NULL;
         _curPanel = _pstack.front();
     }
 
@@ -169,16 +169,17 @@ HexApp::setFocusNext()
             id = 0;
         this->setFocus(_pstack.at(id));
     }
-    return;
+
+    return _curPanel;
 }
 
-void
+HexPanel*
 HexApp::setFocusPrev()
 {
     if ( _curPanel == NULL )
     {
         if ( _pstack.empty() )
-            return;
+            return NULL;
         _curPanel = _pstack.front();
     }
 
@@ -189,7 +190,8 @@ HexApp::setFocusPrev()
             id = 0;
         this->setFocus(_pstack.at(id));
     }
-    return;
+
+    return _curPanel;
 }
 
 //----------------------------------------------------------------//
@@ -257,7 +259,7 @@ HexApp::getPanel ( const std::string & title )
     PanelMap::iterator  pIter;
 
     if ( title.empty() && _curPanel != NULL )
-        panel = _curPanel;
+        return _curPanel;
 
     pIter = _panels.find(title);
 

@@ -124,6 +124,8 @@ TestHexApp::run()
     d.addText("            <OK>", 0, HEX_BOLD);
     d.showDialog();
 
+    HexPanel * cur = this->getPanel();
+
     while ( ! alarm ) 
     {
         bool wcmd = false;
@@ -141,9 +143,9 @@ TestHexApp::run()
                 cinput->setParse(true);
                 ostr << " <window command>";
                 if ( ch == 'n' )
-                    this->setFocusNext();
+                    cur = this->setFocusNext();
                 else if ( ch == 'p' )
-                    this->setFocusPrev();
+                    cur = this->setFocusPrev();
             }
 
             if ( ch == 23 ) {
@@ -151,9 +153,16 @@ TestHexApp::run()
                 cinput->setParse(false);
             }
 
-            // todo: switch for ascii? - if ( ch >= 32 && ch < 128 )
-            if ( echo )
+            if ( cur != conPanel ) {  // alt input?
+                if ( ch == KEY_UP ) {
+                    cur->scrollUp();
+                } else if ( ch == KEY_DOWN ) {
+                    cur->scrollDown();
+                }
+            } else if ( echo ) {
+                // todo: switch for ascii? - if ( ch >= 32 && ch < 128 )
                 mainPanel->addText(ostr.str());
+            }
 
             this->draw();
 

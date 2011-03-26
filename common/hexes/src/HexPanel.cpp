@@ -377,6 +377,7 @@ HexPanel::addText ( const HexString & hexstr )
     {
         if ( ! _scrollable || _textlist.size() > ((size_t)ht + _maxLines) )
             _textlist.pop_front();
+        _scrollTo = 0; // if scrollto on output
     }
 
     return;
@@ -603,6 +604,36 @@ bool
 HexPanel::scrollable() const
 {
     return this->_scrollable;
+}
+
+int
+HexPanel::scrollTo()
+{
+    return this->_scrollTo;
+}
+
+void
+HexPanel::scrollUp()
+{
+    size_t sz = _scrollTo + 1;
+    int    ht = this->height();
+    if ( _textlist.size() < sz )
+        return;
+    if ( this->getDrawBorder() )
+        ht -= 2;
+    if ( (_textlist.size() - sz) < (size_t) ht )
+        return;
+    _scrollTo++;
+}
+
+void
+HexPanel::scrollDown()
+{
+    if ( _scrollTo <= 0 ) {
+        _scrollTo = 0;
+        return;
+    }
+    _scrollTo--;
 }
 
 //----------------------------------------------------------------//

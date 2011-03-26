@@ -57,7 +57,7 @@ HexDialog::initDialog()
         w += 2;
     }
 
-    y = ((LINES - h) / 2);
+    y = ((LINES - h) / 2) - 1;
     x = ((COLS  - w) / 2);
 
     if ( _dynsz ) {

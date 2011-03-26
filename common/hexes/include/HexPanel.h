@@ -48,16 +48,22 @@ class HexPanel {
     virtual void        resize ( int height, int width );
 
 
+    const std::string&  getPanelName() const;
+    const std::string&  getName()      const { return this->getPanelName(); }
+    void                setPanelId   ( int panelId );
+    int                 getPanelId()   const;
+
+
     void                setOutputHandler ( HexOutputInterface * output );
     void                setInputHandler  ( HexInputInterface  * input  );
     HexOutputInterface* getOutputHandler();
     HexInputInterface*  getInputHandler();
 
+
     void                show();
     void                hide();
     void                erase();
     void                refresh();
-    void                scrollLine();
 
     void                timeout      ( int delay_ms );
     
@@ -107,12 +113,6 @@ class HexPanel {
     int                 print       ( const char ch );
     int                 echo        ( const char ch );
 
-    const std::string&  getPanelName() const;
-    const std::string&  getName()      const { return this->getPanelName(); }
-
-    void                setPanelId   ( int panelId );
-    int                 getPanelId()   const;
-
     void                setWindowTitle ( HexString & hexstr );
     void                setWindowTitle ( const std::string & title, 
                                          int color, int attr = HEX_NORMAL );
@@ -143,6 +143,11 @@ class HexPanel {
     bool                enableScroll   ( bool scroll,
                                          int  lines  = DEFAULT_SCRLBK_SIZE );
     bool                setMaxLines    ( int  lines );
+    void                scrollLine();
+
+    int                 scrollTo();
+    void                scrollUp();
+    void                scrollDown();
 
     bool                scrollable()   const;
 
