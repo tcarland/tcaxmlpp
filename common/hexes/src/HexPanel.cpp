@@ -9,6 +9,8 @@
 
 namespace hexes {
 
+//----------------------------------------------------------------//
+
 namespace hexinternal {
 
 template< typename OutputIterator_ >
@@ -114,7 +116,7 @@ HexPanel::poll()
 {
     int ch;
 
-    ch = wgetch(_hwin->_win);
+    ch = ::wgetch(_hwin->_win);
 
     if ( ch == ERR )
         return ch;
@@ -710,6 +712,9 @@ HexPanel::timeout ( int delay_ms )
 
 //----------------------------------------------------------------//
 
+/** Moves the cursor position to the provided coordinates for this
+  * panel. 
+ **/
 int
 HexPanel::move ( int y , int x )
 {
@@ -722,6 +727,7 @@ HexPanel::move ( HexPosition & p )
     return(_hwin->move(p.row, p.col));
 }
 
+/** Moves the window to given coordinates, if possible. */
 int
 HexPanel::moveWindow ( int starty, int startx )
 {
