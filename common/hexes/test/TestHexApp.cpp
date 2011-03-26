@@ -113,14 +113,12 @@ TestHexApp::run()
 
     this->draw();
 
+    std::string intro = "     Welcome to libhexes\n \nuse /help (/?) for assistance";
 
-    HexDialog d("intro", HexString("     Welcome to libhexes", HEX_CYAN, HEX_BOLD));
-    //HexDialog d("intro", "Welcome", 6, 36, 10, 10);
+    HexDialog d("intro", HexString(intro, HEX_CYAN, HEX_BOLD));
     d.setDrawTitle(false);
     d.setTextColor(HEX_CYAN);
     d.setBorderColor(HEX_MAGENTA);
-    d.addText("");
-    d.addText("use /help (/?) for assistance");
     d.addText("            <OK>", 0, HEX_BOLD);
     d.showDialog();
 

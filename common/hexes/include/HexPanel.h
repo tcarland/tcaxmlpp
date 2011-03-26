@@ -17,7 +17,7 @@ class HexOutputInterface;
 class HexInputInterface;
 
 
-#define DEFAULT_SCRLBK_SIZE  25
+#define DEFAULT_SCRLBK_SIZE  50
 #define MAX_SCRLBK_SIZE      65535
 
 

@@ -9,6 +9,40 @@
 
 namespace hexes {
 
+namespace hexinternal {
+
+template< typename OutputIterator_ >
+static inline void   
+split ( const std::string  & str, 
+        const char           delimiter,
+        OutputIterator_      outI )
+{
+    std::string::size_type  begin = 0, end = 0;
+
+    while ( (begin = str.find_first_not_of(delimiter, begin)) != std::string::npos )
+    {
+        end     = str.find_first_of(delimiter, begin);
+        *outI++ = str.substr(begin, end - begin);
+        begin   = end;
+    }
+}
+
+static int
+indexOf ( const std::string & str, const std::string & match, size_t from )
+{
+    std::string::size_type  indx;
+
+    if ( from > str.length() || from < 0 )
+	return -1;
+
+    if ( (indx = str.find(match, from)) == std::string::npos )
+	return -1;
+
+    return( (int) indx );
+}
+
+} // namespace hexinternal
+
 //----------------------------------------------------------------//
 
 HexPanel::HexPanel ( const std::string & title )
@@ -21,10 +55,13 @@ HexPanel::HexPanel ( const std::string & title )
       _selected(0),
       _maxLines(DEFAULT_SCRLBK_SIZE),
       _scrollTo(0),
-      _txtColor(0), _bdrColor(0), _bfgColor(0),
+      _txtColor(0), 
+      _bdrColor(0), 
+      _bfgColor(0),
       _bdrAttr(0),
       _scrollable(false),
-      _drawBorder(true), _drawTitle(true),
+      _drawBorder(true), 
+      _drawTitle(true),
       _focus(false)
 {
     this->initPanel();
@@ -43,10 +80,13 @@ HexPanel::HexPanel ( const std::string & title,
       _selected(0),
       _maxLines(DEFAULT_SCRLBK_SIZE),
       _scrollTo(0),
-      _txtColor(0), _bdrColor(0), _bfgColor(0),
+      _txtColor(0), 
+      _bdrColor(0), 
+      _bfgColor(0),
       _bdrAttr(0),
       _scrollable(false),
-      _drawBorder(true), _drawTitle(true),
+      _drawBorder(true), 
+      _drawTitle(true),
       _focus(false)
 {
     this->initPanel();
@@ -292,7 +332,8 @@ HexPanel::getLineCount()
   *  addText will add the provided string as the next
   *  line of text of the panel. Each string is considered
   *  a single line, and the cursor will automatically wrap
-  *  after each string.
+  *  after each string. Strings provided with RETURN('\n')
+  *  characters are also split into separate lines accordingly.
  **/
 void
 HexPanel::addText ( const std::string & str )
@@ -311,7 +352,22 @@ HexPanel::addText ( const std::string & str, int color, int attr )
 void
 HexPanel::addText ( const HexString & hexstr )
 {
-    _textlist.push_back(hexstr);
+    if ( hexinternal::indexOf(hexstr.str(), "\n", 0) >= 0 )
+    {
+        std::vector<std::string> slist;
+        std::vector<std::string>::iterator  sIter;
+
+        hexinternal::split(hexstr.str(), '\n', std::back_inserter(slist));
+
+        for ( sIter = slist.begin(); sIter != slist.end(); ++sIter ) {
+            HexString line(*sIter, hexstr.color, hexstr.attributes);
+            _textlist.push_back(line);
+        }
+    }
+    else
+    {
+        _textlist.push_back(hexstr);
+    }
 
     if ( _textlist.size() >= ((size_t)this->height()-1) )
     {
