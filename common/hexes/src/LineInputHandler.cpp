@@ -28,11 +28,13 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
     if ( ! _parse )
         return ch;
 
-    if ( _isReady && ! _line.empty() ) {
-        _history.push_back(_line);
-        while ( _history.size() > _lines )
-            _history.erase(_history.begin());
-        _line.clear();
+    if ( _isReady ) {
+        if ( ! _line.empty() ) {
+            _history.push_back(_line);
+            while ( _history.size() > _lines )
+                _history.erase(_history.begin());
+            _line.clear();
+        }
         _isReady = false;
         _hindx   = _history.size();
     }

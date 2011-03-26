@@ -83,6 +83,7 @@ TestHexApp::run()
     mainPanel->setBorderActiveColor(HEX_GREEN);
     mainPanel->setWindowTitle(" Main ", HEX_GREEN);
 
+    statPanel->enableScroll(true);
     statPanel->setBorderColor(HEX_MAGENTA);
     statPanel->setBorderActiveColor(HEX_GREEN);
     statPanel->setTextColor(HEX_GREEN);

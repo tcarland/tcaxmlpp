@@ -12,10 +12,10 @@ namespace hexes {
 namespace hexinternal {
 
 template< typename OutputIterator_ >
-static inline void   
-split ( const std::string  & str, 
-        const char           delimiter,
-        OutputIterator_      outI )
+static inline
+void  split ( const std::string  & str, 
+              const char           delimiter,
+              OutputIterator_      outI )
 {
     std::string::size_type  begin = 0, end = 0;
 
@@ -27,8 +27,8 @@ split ( const std::string  & str,
     }
 }
 
-static int
-indexOf ( const std::string & str, const std::string & match, size_t from )
+static 
+int indexOf ( const std::string & str, const std::string & match, size_t from )
 {
     std::string::size_type  indx;
 
@@ -369,9 +369,13 @@ HexPanel::addText ( const HexString & hexstr )
         _textlist.push_back(hexstr);
     }
 
-    if ( _textlist.size() >= ((size_t)this->height()-1) )
+    int ht = this->height();
+    if ( _drawBorder )
+        ht -= 2;
+
+    if ( _textlist.size() >= (size_t) ht )
     {
-        if ( ! _scrollable || _textlist.size() > ((size_t)this->height()+_maxLines) )
+        if ( ! _scrollable || _textlist.size() > ((size_t)ht + _maxLines) )
             _textlist.pop_front();
     }
 
