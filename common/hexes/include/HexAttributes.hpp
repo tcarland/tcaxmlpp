@@ -40,9 +40,15 @@ enum HexAttribute {
 };
 
 enum HexJustify {
-    HEX_LEFT,
-    HEX_RIGHT,
-    HEX_CENTER
+    HEX_LEFT   = 0,
+    HEX_RIGHT  = 1,
+    HEX_CENTER = 2
+};
+
+enum HexCursor {
+    HEX_CURSOR_INVIS  = 0,
+    HEX_CURSOR_NORMAL = 1,
+    HEX_CURSOR_BOLD   = 2
 };
 
 

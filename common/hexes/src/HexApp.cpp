@@ -27,8 +27,8 @@ HexApp::HexApp()
 HexApp::~HexApp()
 {
     this->destroyPanels();
-    nocbreak();
-    endwin();
+    ::nocbreak();
+    ::endwin();
 }
 
 //----------------------------------------------------------------//

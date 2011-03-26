@@ -53,8 +53,8 @@ class HexPanel;
  **/
 class HexApp {
 
-    typedef std::vector<HexPanel*>              PanelStack;
     typedef std::map<std::string, HexPanel*>    PanelMap;
+    typedef std::vector<HexPanel*>              PanelStack;
     typedef std::list<std::string>              StringList;
 
   public:

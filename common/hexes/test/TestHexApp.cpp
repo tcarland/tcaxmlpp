@@ -48,15 +48,16 @@ void
 TestHexApp::help()
 {
     mainPanel->addText(" ");
-    mainPanel->addText("The test app tests a few basic features of a HexPanel");
+    mainPanel->addText("This app tests a few basic features of a HexApp and its HexPanels");
     mainPanel->addText("  /help  - displays this help");
     mainPanel->addText("  /clear - clears the main window");
     mainPanel->addText("  /echo  - toggle the display of character input");
     mainPanel->addText("  /quit  - exits the app.");
     mainPanel->addText(" ");
-    mainPanel->addText(" <CTRL>-W performs a window command");
+    mainPanel->addText(" <CTRL>-w : performs a window command");
     mainPanel->addText("     + 'n' = switch focus to the next window");
     mainPanel->addText("     + 'p' = switch focus to the previous window");
+    mainPanel->addText(" ");
     mainPanel->addText(" UP/DOWN Arrows = cycle command history");
     mainPanel->addText(" ");
 }
@@ -161,20 +162,25 @@ TestHexApp::run()
         cmd = cinput->getLine();
         conPanel->setText(prompt);
 
-        if ( cmd.size() > 0 )
+        if ( ! cmd.empty() )
             statPanel->addText(cmd);
 
-        if ( cmd.compare("/quit") == 0 )
+        if ( cmd.compare("/quit") == 0 ) {
             alarm = true;
-        else if ( cmd.compare("/clear") == 0 )
+        } else if ( cmd.compare("/clear") == 0 ) {
             mainPanel->clear();
-        else if ( cmd.compare("/echo") == 0 )
-            if ( echo )
+        } else if ( cmd.compare("/echo") == 0 ) {
+            if ( echo ) {
                 echo = false;
-            else
+                mainPanel->addText(" -- character echo disabled --");
+            } else {
                 echo = true;
-        else if ( cmd.compare("/help") == 0 || cmd.compare("/?") == 0 )
+                mainPanel->addText(" -- character echo enabled --");
+            }
+        } else if ( cmd.compare("/help") == 0 || cmd.compare("/?") == 0 ) {
             this->help();
+        }
+
     }
 
     mainPanel->print("test 1 2 3 : ");
