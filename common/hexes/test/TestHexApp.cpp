@@ -58,7 +58,7 @@ TestHexApp::help()
     mainPanel->addText("     + 'n' = switch focus to the next window");
     mainPanel->addText("     + 'p' = switch focus to the previous window");
     mainPanel->addText(" ");
-    mainPanel->addText(" UP/DOWN Arrows = cycle command history");
+    mainPanel->addText(" UP/DOWN Arrows = cycle command history or scrolls the window depending on the window focus");
     mainPanel->addText(" ");
 }
 
