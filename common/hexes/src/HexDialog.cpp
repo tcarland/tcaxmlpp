@@ -6,6 +6,10 @@
 namespace hexes {
 
 
+/** Constructs a dialog panel with no default dimensions.
+  * The dialog will dynamically size itself based on the 
+  * contents.
+ **/
 HexDialog::HexDialog ( const std::string & title,
                        const HexString   & dialog )
     : HexPanel(title, 0, 0, 0, 0),
@@ -18,6 +22,10 @@ HexDialog::HexDialog ( const std::string & title,
         this->addText(dialog);
 }
 
+/** Constructs a dialog panel with fixed dimensions and 
+  * starting location. The dialog will NOT be dynamically 
+  * sized.
+ **/
 HexDialog::HexDialog ( const std::string & title,
                        const HexString   & dialog,
                        int   height, int   width,
@@ -32,9 +40,11 @@ HexDialog::HexDialog ( const std::string & title,
         this->addText(dialog);
 }
 
+
 HexDialog::~HexDialog() {}
 
 
+/**  Displays the modal dialog window. */
 int
 HexDialog::showDialog()
 {
@@ -81,24 +91,35 @@ HexDialog::showDialog()
 }
 
 
+/** Returns any string results related to dialog input */
 std::string
 HexDialog::getResult()
 {
     return _result;
 }
 
+/** By default, the dialog will exit on the first character
+  * input. By setting this option to false, the dialog will
+  * persist for string input until a carriage return <CR> 
+  * is encountered.
+ **/
 void
 HexDialog::setCharOnly ( bool chin )
 {
     _char = chin;
 }
 
+/**  Allows multi-character input to be echo'ed to the dialog.
+  *  Note that this will add a line of height to the dialog 
+  *  if the dialog is dynamically sized.
+ **/
 void
 HexDialog::echoResults ( bool echo )
 {
-    _echo = true;
+    _echo = echo;
 }
 
+/**  Sets a maximum number of characters to be accepted as input. */
 void
 HexDialog::setMaxInput ( int count )
 {
@@ -107,6 +128,10 @@ HexDialog::setMaxInput ( int count )
     _rescnt = count;
 }
 
+
+/**  Internal function to initiate the dialog dimensions and 
+  *  location if the dialog is dynamically sized.
+ **/
 void
 HexDialog::initDialog()
 {
