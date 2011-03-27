@@ -159,7 +159,7 @@ HexPanel::redraw()
 
     wattrset(_hwin->_win, COLOR_PAIR(_txtColor));
 
-    ::wmove(_hwin->_win, 1, 1);
+    //::wmove(_hwin->_win, 1, 1);
     ::wrefresh(_hwin->_win);
 
     return r;

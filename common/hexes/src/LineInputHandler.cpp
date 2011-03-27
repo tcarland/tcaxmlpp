@@ -106,6 +106,8 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
     }
     else if ( ch >= 32 && ch < 127 )
     {
+        if ( _line.length() >= (size_t) _maxlen )
+            return ch;
         if ( _echo ) {
             TextList & txtlist = p->getTextList();
             if ( txtlist.size() == 0 ) {
@@ -113,7 +115,7 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
                 f.append(1, ch);
                 p->addText(f);
             } else {
-                HexString & curline = txtlist.front();
+                HexString & curline = txtlist.back();
 	        curline.str().append(1, ch);
             }
         }

@@ -138,9 +138,13 @@ TestHexApp::run()
     d.setDrawTitle(false);
     d.setTextColor(HEX_CYAN);
     d.setBorderColor(HEX_GREEN);
+    //d.echoResults(true);
+    //d.setMaxInput(6);
     d.addText("use /help (/?) for assistance\n \n", HEX_WHITE, HEX_NORMAL);
     d.addText("            <OK>", 0, HEX_BOLD);
     d.showDialog();
+    std::string res = d.getResult();
+    statPanel->addText(res);
 
     HexPanel * cur = this->getPanel();
 
@@ -152,7 +156,8 @@ TestHexApp::run()
         cmd = "";
         ch  = this->poll();
 
-        while ( ! cinput->isReady() ) {
+        while ( ! cinput->isReady() ) 
+        {
             std::ostringstream  ostr;
             ostr << "ch = " << ch << "   '" << (char) ch << "'";
 
@@ -212,8 +217,6 @@ TestHexApp::run()
         }
 
     }
-
-    sleep(1);
 
     return;
 }
