@@ -9,7 +9,8 @@ namespace hexes {
 HexDialog::HexDialog ( const std::string & title,
                        const HexString   & dialog )
     : HexPanel(title, 0, 0, 0, 0),
-      _dynsz(true)
+      _dynsz(true),
+      _char(false)
 {
     if ( ! dialog.empty() )
         this->addText(dialog);
@@ -20,7 +21,8 @@ HexDialog::HexDialog ( const std::string & title,
                        int   height, int   width,
                        int   starty, int   startx )
     : HexPanel(title, height, width, starty, startx),
-      _dynsz(false)
+      _dynsz(false),
+      _char(false)
 {
     if ( ! dialog.empty() )
         this->addText(dialog);
@@ -32,15 +34,35 @@ HexDialog::~HexDialog() {}
 int
 HexDialog::showDialog()
 {
+    int  ch;
+
     this->initDialog();
     this->setFocus();
     this->redraw();
 
-    int ch = this->poll();
+    while ( (ch = this->poll()) != KEY_ENTER && ch != 13 )
+    {
+        _result.append(1, ch);
+        if ( _char )
+            break;
+    }
 
     this->hide();
 
     return ch;
+}
+
+
+std::string
+HexDialog::getResult()
+{
+    return _result;
+}
+
+void
+HexDialog::getCharOnly()
+{
+    _char = true;
 }
 
 

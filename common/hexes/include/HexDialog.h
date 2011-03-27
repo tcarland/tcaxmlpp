@@ -22,7 +22,12 @@ class HexDialog : public HexPanel {
 
     virtual ~HexDialog();
 
+
     virtual int  showDialog();
+
+
+    std::string  getResult();
+    void         getCharOnly();
 
 
   protected:
@@ -30,9 +35,12 @@ class HexDialog : public HexPanel {
     void    initDialog();
     size_t  getLongestLine();
 
+
   private:
 
+    std::string  _result;
     bool         _dynsz;
+    bool         _char;
 
 };
 

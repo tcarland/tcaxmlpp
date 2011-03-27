@@ -66,7 +66,7 @@ TestHexApp::help()
 void
 TestHexApp::bomb()
 {
-    mainPanel->setTextColor(HEX_MAGENTA);
+    mainPanel->setTextColor(HEX_BLUE);
     mainPanel->addText(" ");
     mainPanel->addText(" ");
     mainPanel->addText("                     _-^--^=-_");
@@ -98,7 +98,7 @@ TestHexApp::run()
 
     LineInputHandler * cinput;
 
-    this->setCursor(1);
+    this->setCursor(0);
     this->setBorderColor(HEX_MAGENTA);
     this->setBorderActiveColor(HEX_GREEN);
 
@@ -109,22 +109,20 @@ TestHexApp::run()
     mainPanel->setWindowTitle(" Main ", HEX_GREEN);
     mainPanel->enableScroll(true);
 
-    statPanel->setTextColor(HEX_GREEN);
     statPanel->setWindowTitle(" Status ", HEX_GREEN);
     statPanel->enableScroll(true);
+    statPanel->setTextColor(HEX_GREEN);
 
-    conPanel->setDrawBorder(false);
     conPanel->setDrawTitle(false);
+    conPanel->setDrawBorder(false);
     conPanel->setInputHandler(new LineInputHandler());
 
-    std::string top = "  TestHexApp Version 0.13  -  libhexes ";
+    std::string top = "  TestHexApp  -  libhexes ";
     top.append(LIBHEXES_VERSION);
     this->print(0, 1, top, HEX_RED, HEX_BOLD);
-
     this->setFocus(conPanel);
     
     cinput = (LineInputHandler*) conPanel->getInputHandler();
-
 
     std::string  cmd, prompt;
     prompt = " > ";
@@ -215,11 +213,7 @@ TestHexApp::run()
 
     }
 
-    mainPanel->print(cmd);
-    mainPanel->print("terminating...");
-    statPanel->redraw();
-
-    sleep(2);
+    sleep(1);
 
     return;
 }
