@@ -21,6 +21,7 @@ class TestHexApp : public HexApp {
   protected:
 
     virtual void resize();
+    void bomb();
     void help();
 
 

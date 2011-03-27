@@ -50,6 +50,7 @@ TestHexApp::help()
     mainPanel->addText(" ");
     mainPanel->addText("This app tests a few basic features of libhexes.");
     mainPanel->addText("  /help  - displays this help");
+    mainPanel->addText("  /bomb  - blow stuff up");
     mainPanel->addText("  /clear - clears the main window");
     mainPanel->addText("  /echo  - toggle the display of character input");
     mainPanel->addText("  /quit  - exits the app.");
@@ -61,6 +62,30 @@ TestHexApp::help()
     mainPanel->addText(" UP/DOWN Arrows = cycle command history or scrolls the window depending on the window focus");
     mainPanel->addText(" ");
 }
+
+void
+TestHexApp::bomb()
+{
+    mainPanel->setTextColor(HEX_MAGENTA);
+    mainPanel->addText(" ");
+    mainPanel->addText(" ");
+    mainPanel->addText("                     _-^--^=-_");
+    mainPanel->addText("                _.-^^          -~_");
+    mainPanel->addText("             _--                  --_");
+    mainPanel->addText("            <                        >)");
+    mainPanel->addText("            |                         |");
+    mainPanel->addText("             \\._                   _./");
+    mainPanel->addText("                ```--. . , ; .--'''");
+    mainPanel->addText("                      | |   |");
+    mainPanel->addText("                   .-=||  | |=-.");
+    mainPanel->addText("                   `-=#$%&%$#=-'");
+    mainPanel->addText("                      | ;  :|");
+    mainPanel->addText("             _____.,-#%&$@%#&#~,._____");
+    mainPanel->addText(" ");
+    mainPanel->setTextColor(HEX_WHITE);
+}
+
+
 
 void
 TestHexApp::run()
@@ -155,7 +180,7 @@ TestHexApp::run()
                     cur->scrollDown();
                 }
             } else if ( echo ) {
-                // todo: switch for ascii? - if ( ch >= 32 && ch < 128 )
+                // switch for asciionly? - if ( ch >= 32 && ch < 128 )
                 mainPanel->addText(ostr.str());
             }
 
@@ -174,6 +199,8 @@ TestHexApp::run()
             alarm = true;
         } else if ( cmd.compare("/clear") == 0 ) {
             mainPanel->clear();
+        } else if ( cmd.compare("/bomb") == 0 ) {
+            this->bomb();
         } else if ( cmd.compare("/echo") == 0 ) {
             if ( echo ) {
                 echo = false;
@@ -188,32 +215,10 @@ TestHexApp::run()
 
     }
 
-    mainPanel->print("test 1 2 3 : ");
     mainPanel->print(cmd);
-    mainPanel->refresh();
-
-    statPanel->addText("the status is good");
-    statPanel->addText("foobar");
+    mainPanel->print("terminating...");
     statPanel->redraw();
 
-    std::string txt = " banana nana bo bana  ...  test 4 5 6 ...  this is a moderately long string to test the wrap functionality of the print() function.";
-    mainPanel->print(txt);
-    mainPanel->refresh();
-
-    statPanel->addText("the status is gooder");
-    statPanel->addText("foobar");
-    statPanel->addText("more status");
-    statPanel->addText("the status is gooder2");
-    statPanel->addText("foobar2");
-    statPanel->addText("more status2");
-    statPanel->addText("the status is gooder3");
-    statPanel->addText("foobar3");
-    statPanel->addText("more status3");
-    statPanel->addText("the status is gooder4");
-    statPanel->addText("foobar4");
-    statPanel->addText("more status4");
-
-    this->draw();
     sleep(2);
 
     return;

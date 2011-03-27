@@ -231,8 +231,8 @@ HexApp::createPanel ( const std::string & title,
 
 /**  Adds the HexPanel to this HexApp instance. By doing so, 
   *  the HexApp instance will 'own' the panel, calling the 
-  *  proper I/O events on redraw and poll, and freeing the 
-  *  object on destruction.
+  *  proper I/O events on draw() and poll(), and free the 
+  *  object accordingly on destruction.
  **/
 bool
 HexApp::addPanel ( HexPanel * panel )
