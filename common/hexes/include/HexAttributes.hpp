@@ -51,6 +51,11 @@ enum HexCursor {
     HEX_CURSOR_BOLD   = 2
 };
 
+// some input values for convenience
+enum HexInputKey {
+    HEX_KEY_NONE = 0,
+    HEX_KEY_WINDOW = 23
+};
 
 } // namespace
 

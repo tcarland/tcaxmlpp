@@ -171,7 +171,7 @@ TestHexApp::run()
                     cur = this->setFocusPrev();
             }
 
-            if ( ch == 23 ) {
+            if ( ch == HEX_KEY_WINDOW ) {
                 wcmd = true;
                 cinput->setParse(false);
             }

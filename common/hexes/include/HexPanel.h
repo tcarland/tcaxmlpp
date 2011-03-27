@@ -17,8 +17,8 @@ class HexOutputInterface;
 class HexInputInterface;
 
 
-#define DEFAULT_SCRLBK_SIZE  50
-#define MAX_SCRLBK_SIZE      65535
+#define DEF_SCRLBK_SIZE  50
+#define MAX_SCRLBK_SIZE  65535
 
 
 typedef std::list<HexString> TextList;
@@ -141,7 +141,7 @@ class HexPanel {
     bool                getDrawTitle() const;
 
     bool                enableScroll   ( bool scroll,
-                                         int  lines  = DEFAULT_SCRLBK_SIZE );
+                                         int  lines  = DEF_SCRLBK_SIZE );
     bool                setMaxLines    ( int  lines );
     void                scrollLine();
 
