@@ -15,11 +15,11 @@ HexString::HexString()
 
 HexString::HexString ( const std::string & str_, 
                        bool  wrap_ )
-    : _str(str_),
-      color(0),
+    : color(0),
       attributes(0),
       alignment(0),
-      wrap(wrap_)
+      wrap(wrap_),
+      _str(str_)
 {}
 
 
@@ -27,11 +27,11 @@ HexString::HexString ( const std::string & str_,
                        int   color_,
                        int   attributes_,
                        bool  wrap_ )
-    : _str(str_),
-      color(color_),
+    : color(color_),
       attributes(attributes_),
       alignment(0),
-      wrap(wrap_)
+      wrap(wrap_),
+      _str(str_)
 {}  
 
 HexString::HexString ( const HexString & hexstr )
@@ -134,6 +134,18 @@ HexString::assign ( size_t count, char ch )
 {
     this->_str.assign(count, ch);
     return *this;
+}
+
+HexString::iterator
+HexString::erase ( HexString::iterator index )
+{
+    return this->_str.erase(index);
+}
+
+HexString::iterator
+HexString::erase ( HexString::iterator start, HexString::iterator end )
+{
+    return this->_str.erase(start, end);
 }
 
 

@@ -6,8 +6,17 @@
 
 namespace hexes {
 
-
+/**  The HexString class simply wraps a stdc++ string object
+  *  associating some of our needed HexApp attributes such as
+  *  color and attributes from curses, alignment and wrap
+  *  functionality used by HexPanel and others.
+  *
+  *  We allow this class to be extended to allow for making
+  *  custom string behavior (eg. a TextField for use in forms)
+ */
 class HexString {
+  public:
+    typedef std::string::iterator  iterator;
 
   public:
 
@@ -26,34 +35,47 @@ class HexString {
     virtual ~HexString();
 
 
-    void operator=  ( const HexString   & hexstr );
-    void operator=  ( const std::string & str );
-    bool operator== ( const HexString   & hexstr );
+    virtual void  operator=   ( const HexString   & hexstr );
+    virtual void  operator=   ( const std::string & str );
+    virtual bool  operator==  ( const HexString   & hexstr );
 
-    const
-    std::string&  str() const;
-    std::string&  str();
-    size_t        length() const;
-    bool          empty() const;
 
     virtual HexString& append ( const std::string & str );
     virtual HexString& append ( const HexString & hexstr );
     virtual HexString& append ( size_t count, char ch );
-
     virtual HexString& assign ( const std::string & str );
     virtual HexString& assign ( const HexString   & str );
     virtual HexString& assign ( size_t count, char ch );
+    virtual iterator   erase  ( iterator index );
+    virtual iterator   erase  ( iterator start, iterator end );
+    virtual size_t     length() const;
+    virtual bool       empty()  const;
 
 
-    static bool CharIsVisible ( char ch );
+    std::string&       str();
+    const std::string& str()    const;
+
+    /* some other obvious accessor's despite our attributes being public */
+    int                getColor()      const { return color; }
+    int                getAttributes() const { return attributes; }
+    int                getAlignment()  const { return alignment; }
+    int                getWrap()       const { return wrap; }
 
   public:
 
-    std::string  _str;
+    static bool        CharIsVisible ( char ch );
+
+
+  public:
+
     int          color;
     int          attributes;
     int          alignment;
     bool         wrap;
+
+  //protected:
+
+    std::string  _str;
 };
 
 } // namespace
