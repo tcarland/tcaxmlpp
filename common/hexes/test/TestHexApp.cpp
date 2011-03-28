@@ -113,12 +113,13 @@ TestHexApp::showIntro()
     d.setDrawTitle(false);
     d.setTextColor(HEX_CYAN);
     d.setBorderColor(HEX_GREEN);
-    //d.echoResults(true);
+    //d.echoResults(true);  // example if we wanted to request info
     //d.setMaxInput(6);
     d.addText("use /help (/?) for assistance\n \n", HEX_WHITE, HEX_NORMAL);
     d.addText("            <OK>", 0, HEX_BOLD);
     d.showDialog();
-    //statPanel->addText(d.getResult());
+    if ( ! d.getResult().empty() )
+        statPanel->addText(d.getResult());
 }
 
 void

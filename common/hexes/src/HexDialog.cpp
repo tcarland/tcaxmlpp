@@ -6,7 +6,7 @@
 namespace hexes {
 
 
-/** Constructs a dialog panel with no default dimensions.
+/**  Constructs a dialog panel with no default dimensions.
   * The dialog will dynamically size itself based on the 
   * contents.
  **/
@@ -22,7 +22,7 @@ HexDialog::HexDialog ( const std::string & title,
         this->addText(dialog);
 }
 
-/** Constructs a dialog panel with fixed dimensions and 
+/**  Constructs a dialog panel with fixed dimensions and 
   * starting location. The dialog will NOT be dynamically 
   * sized.
  **/
@@ -49,6 +49,7 @@ int
 HexDialog::showDialog()
 {
     int  ch;
+    bool echo = _echo;
 
     this->initDialog();
     this->enableScroll(false);
@@ -66,17 +67,28 @@ HexDialog::showDialog()
         if ( _char )
             break;
 
-        if ( _echo ) {
+        if ( ch == 127 && ! echo )
+            echo = _echo;
+
+        if ( echo ) {
             TextList    & tlist = this->getTextList();
             HexString   & inl   = tlist.back();
             std::string & ln    = cinput->getLine();
             int  indx           = ln.length() - 1;
 
-            if ( ln.length() < (size_t) _rescnt ) {
-                inl.str().replace(indx, 1, 1, ch);
-            } else if ( _echo ) { 
-                inl.str().replace(indx, 1, 1, ch);
-                _echo = false;
+            if ( indx < 0 )
+                indx = 0;
+            if ( HexString::CharIsVisible(ch) ) {
+                if ( ln.length() < (size_t) _rescnt ) {
+                    inl.str().replace(indx, 1, 1, ch);
+                } else if ( echo ) {  // catch = length and stop echo
+                    inl.str().replace(indx, 1, 1, ch);
+                    echo = false;
+                }
+            } else if ( ch == 127 ) {
+                inl.str().assign(ln);
+                int cnt = _rescnt - ln.length();
+                inl.str().append(cnt, '_');
             }
         }
 
@@ -141,14 +153,16 @@ HexDialog::initDialog()
     w = this->getLongestLine();
 
     if ( _echo ) {
-        std::string tline;
+        HexString   hexstr;
+        std::string & line = hexstr.str();
         if ( _rescnt == 0 )
-            _rescnt = w + 1;
-        tline.append(_rescnt, '_');
-        this->addText(tline);
+            _rescnt = w;
+        line.append(_rescnt, '_');
+        hexstr.alignment = HEX_ALIGN_CENTER;
+        this->addText(hexstr);
         h += 1;
     }
-
+    
     if ( this->getDrawBorder() ) {
         h += 2;
         w += 2;

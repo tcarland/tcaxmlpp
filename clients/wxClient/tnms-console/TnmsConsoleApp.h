@@ -100,7 +100,7 @@ class TnmsConsoleApp : public hexes::HexApp {
     ClientMap           _clients;
 
     std::string         _title, _prompt;
-    bool                _alarm, _stop;
+    bool                _alarm, _stop, _wincmd;
     int                 _tht, _mainht, _statht, _consht;
 
 };

@@ -81,22 +81,25 @@ TnmsConsoleApp::run()
     int  ch;
 
     LineInputHandler * conin;
+    HexPanel         * curp;
+
+    this->setBorderColor(HEX_MAGENTA);
+    this->setBorderActiveColor(HEX_GREEN);
 
     _prompt    = "[tnms]> ";
     _title     = " tnms-console ";
-    _mainPanel = this->createPanel(" main ", (this->height() - statht - conht - 1), this->width(), 1, 0);
-    _statPanel = this->createPanel(" status ", statht, this->width(), (this->height() - statht - conht), 0);
+    _mainPanel = this->createPanel("main", (this->height() - statht - conht - 1), this->width(), 1, 0);
+    _statPanel = this->createPanel("status", statht, this->width(), (this->height() - statht - conht), 0);
     _consPanel = this->createPanel("console", conht, this->width(), (this->height() - conht), 0);
 
+    _mainPanel->setWindowTitle(" Main ", HEX_GREEN, 0);
     _mainPanel->enableScroll(true);
-    _mainPanel->setBorderColor(HEX_MAGENTA);
 
+    _statPanel->setWindowTitle(" Status ", HEX_GREEN, 0);
     _statPanel->enableScroll(true);
-    _statPanel->setBorderColor(HEX_MAGENTA);
     _statPanel->setTextColor(HEX_GREEN);
-    //_statPanel->setTextColor(HEX_RED);
     
-    _consPanel->enableScroll(true);
+    _consPanel->enableScroll(false);
     _consPanel->setDrawBorder(false);
     _consPanel->setDrawTitle(false);
     _consPanel->setInputHandler(new LineInputHandler());
@@ -107,9 +110,12 @@ TnmsConsoleApp::run()
     this->print(0, 1, _title, HEX_GREEN, HEX_BOLD);
     this->setCursor(0);
 
+    curp    = this->getPanel();
     conin   = (LineInputHandler*) _consPanel->getInputHandler();
+    conin->setPrefix(_prompt);
 
     std::string  cmd;
+    bool wincmd = false;
 
     while ( ! _alarm )
     {
@@ -121,6 +127,27 @@ TnmsConsoleApp::run()
         while ( ! conin->isReady() ) {
             this->draw();
             ch = this->poll();
+
+            if ( wincmd ) {
+                wincmd = false;
+                conin->setParse(true);
+                if ( ch == 'n' )
+                    curp = this->setFocusNext();
+                else if ( ch == 'p' )
+                    curp = this->setFocusPrev();
+            }
+
+            if ( ch == HEX_KEY_WINDOW ) {
+                wincmd = true;
+                conin->setParse(false);
+            }
+
+            if ( curp != _consPanel ) {
+                if ( ch == KEY_UP )
+                    curp->scrollUp();
+                else if ( ch == KEY_DOWN )
+                    curp->scrollDown();
+            }
         }
 
         cmd = conin->getLine();
@@ -778,6 +805,7 @@ TnmsConsoleApp::DisplayHelp()
     _mainPanel->addText(" create [tag] [agent-name] [cfg]    =  Creates a new instance.");
     _mainPanel->addText(" destroy [tag]                      =  Destroys an instance.");
     _mainPanel->addText(" list                               =  Lists available instances.");
+    _mainPanel->addText(" clear                              =  Clears the main window.");
     _mainPanel->addText(" set [tag]                          =  Switches the current instance.");
     _mainPanel->addText(" quit                               =  Terminate all instances and exit.");
     _mainPanel->addText(" ");
@@ -797,7 +825,6 @@ TnmsConsoleApp::DisplayHelp()
     _mainPanel->addText(" client browse [name]               =  list subtree by 'name' ");
     _mainPanel->addText(" client dump   [name]               =  dump subtree by 'name' ");
     _mainPanel->addText(" client show   [name]               =  display the current metric for 'name' ");
-    //_mainPanel->redraw();
 }
 
 bool
@@ -813,9 +840,8 @@ TnmsConsoleApp::GetQuotedString ( size_t indx, CommandList & cmdlist, std::strin
     word = cmdlist[indx];
 
     if ( StringUtils::startsWith(word, "\"") )
-    {
         word = word.substr(1);
-    } else
+    else
         return valid;
 
     do {

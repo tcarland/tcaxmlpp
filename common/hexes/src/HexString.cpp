@@ -94,6 +94,58 @@ HexString::empty() const
     return(_str.empty());
 }
 
+HexString&
+HexString::append ( const std::string & str )
+{
+    this->_str.append(str);
+    return *this;
+}
+
+HexString&
+HexString::append ( const HexString & str )
+{
+    this->_str.append(str.str());
+    return *this;
+}
+
+HexString&
+HexString::append ( size_t count, char ch )
+{
+    this->_str.append(count, ch);
+    return *this;
+}
+
+HexString&
+HexString::assign ( const std::string & str )
+{
+    this->_str.assign(str);
+    return *this;
+}
+
+HexString&
+HexString::assign ( const HexString & str )
+{
+    this->_str.assign(str.str());
+    return *this;
+}
+
+HexString&
+HexString::assign ( size_t count, char ch )
+{
+    this->_str.assign(count, ch);
+    return *this;
+}
+
+
+bool
+HexString::CharIsVisible ( char ch )
+{
+    if ( ch > 31 && ch < 127 )
+        return true;
+    return false;
+}
+
+
 }  // namespace
 
 // _HEXES_HEXSTRING_CPP_

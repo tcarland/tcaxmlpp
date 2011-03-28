@@ -36,6 +36,17 @@ class HexString {
     size_t        length() const;
     bool          empty() const;
 
+    virtual HexString& append ( const std::string & str );
+    virtual HexString& append ( const HexString & hexstr );
+    virtual HexString& append ( size_t count, char ch );
+
+    virtual HexString& assign ( const std::string & str );
+    virtual HexString& assign ( const HexString   & str );
+    virtual HexString& assign ( size_t count, char ch );
+
+
+    static bool CharIsVisible ( char ch );
+
   public:
 
     std::string  _str;

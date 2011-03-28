@@ -46,6 +46,14 @@ LineOutputHandler::handleOutput ( HexPanel * panel )
         if ( line.attributes > HEX_NORMAL )
             panel->setAttribute(line.attributes);
 
+        if ( line.alignment == HEX_ALIGN_CENTER ) {
+            int stfrom = (wd - line.length()) / 2;
+            panel->move(panel->curY(), stfrom);
+        } else if ( line.alignment == HEX_ALIGN_RIGHT ) {
+            int stfrom = wd - line.length() - 1;
+            panel->move(panel->curY(), stfrom);
+        }
+
         panel->print(line.str());
 
         panel->unsetAttribute(COLOR_PAIR(line.color));

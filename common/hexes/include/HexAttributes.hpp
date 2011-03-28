@@ -39,10 +39,10 @@ enum HexAttribute {
     HEX_INVIS    = A_INVIS
 };
 
-enum HexJustify {
-    HEX_LEFT   = 0,
-    HEX_RIGHT  = 1,
-    HEX_CENTER = 2
+enum HexAlignment {
+    HEX_ALIGN_LEFT   = 0,
+    HEX_ALIGN_RIGHT  = 1,
+    HEX_ALIGN_CENTER = 2
 };
 
 enum HexCursor {
