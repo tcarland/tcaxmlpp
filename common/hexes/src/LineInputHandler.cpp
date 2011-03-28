@@ -39,7 +39,7 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
         _hindx   = _history.size();
     }
 
-    if ( ch == KEY_BACKSPACE ) // ch == 127 )
+    if ( ch == KEY_BACKSPACE || ch == 127 )
     {
         if ( _line.size() > 0 ) {
             TextList    & txtlist = p->getTextList();
