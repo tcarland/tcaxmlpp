@@ -17,6 +17,7 @@ namespace hexes {
 class HexString {
   public:
     typedef std::string::iterator  iterator;
+    typedef std::string::size_type size_type;
 
   public:
 
@@ -42,11 +43,11 @@ class HexString {
 
     virtual HexString& append ( const std::string & str );
     virtual HexString& append ( const HexString & hexstr );
-    virtual HexString& append ( size_t count, char ch );
+    virtual HexString& append ( size_type count, char ch );
     virtual HexString& assign ( const std::string & str );
     virtual HexString& assign ( const HexString   & str );
-    virtual HexString& assign ( size_t count, char ch );
-    virtual iterator   erase  ( iterator index );
+    virtual HexString& assign ( size_type count, char ch );
+    virtual HexString& erase  ( size_type from, size_type to = std::string::npos );
     virtual iterator   erase  ( iterator start, iterator end );
     virtual size_t     length() const;
     virtual bool       empty()  const;

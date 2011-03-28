@@ -11,18 +11,36 @@ HexStringField::HexStringField ( size_t max_len )
     : _maxLen(max_len),
       _curLen(0)
 {
-    this->initStringField();
+    _str.append(max_len, '_');
 }
 
+HexStringField::HexStringField ( const HexString & str, size_t max_len )
+    : HexString(str)
+{
+    size_t   fill = 0;
+    if ( str.length() > max_len )
+        _str.erase(max_len);
+    else
+        fill = max_len - str.length();
+
+    _str.append(fill, '_');
+}
+
+HexStringField::HexStringField ( const std::string & str, size_t max_len )
+    : HexString(str)
+{
+    size_t   fill = 0;
+    if ( str.length() > max_len )
+        _str.erase(max_len);
+    else
+        fill = max_len - str.length();
+
+    _str.append(fill, '_');
+}
 
 HexStringField::~HexStringField()
 {}
 
-
-void
-HexStringField::initStringField()
-{
-}
 
 void
 HexStringField::operator= ( const HexString & hexstr )
@@ -38,6 +56,13 @@ void
 HexStringField::operator= ( const std::string & str )
 {
     this->assign(str);
+}
+
+
+size_t
+HexStringField::length() const
+{
+    return _str.length();
 }
 
 
@@ -62,6 +87,7 @@ HexStringField::append ( const std::string & str )
     return *this;
 }
 
+/* this is fun */
 HexString&
 HexStringField::append ( size_t count, char ch )
 {
@@ -81,12 +107,14 @@ HexStringField::append ( size_t count, char ch )
     return *this;
 }
 
+
 HexString&
 HexStringField::assign ( const HexString & str )
 {
     return this->assign(str.str());
 }
 
+/* wheee */
 HexString&
 HexStringField::assign ( const std::string & str )
 {
@@ -109,12 +137,11 @@ HexStringField::assign ( size_t count, char ch )
     return *this;
 }
 
-HexString::iterator
-HexStringField::erase ( HexString::iterator index )
+HexString&
+HexStringField::erase ( size_type from, size_type to )
 {
-    _str.replace(*index, 1, 1, '_');
-    index--;
-    return index;
+    _str.replace(from, (to-from), 1, '_');
+    return *this;
 }
 
 HexString::iterator
@@ -124,6 +151,7 @@ HexStringField::erase ( HexString::iterator start, HexString::iterator end )
     start--;
     return start;
 }
+
 
 } // namespace
 

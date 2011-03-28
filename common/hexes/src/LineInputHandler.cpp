@@ -44,8 +44,8 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
         if ( _line.size() > 0 ) {
             TextList    & txtlist = p->getTextList();
             HexString   & curline = txtlist.back();
-            curline.str().erase(curline.str().size() - 1);
-	    _line.erase(_line.size() - 1);
+            curline.erase(curline.length() - 1);
+	    _line.erase(_line.length() - 1);
 
 	    int x = p->curX();
 	    p->move(p->curY(), x-1);
@@ -85,7 +85,7 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
         }
 
         if ( _hindx < _history.size() ) {
-            curline.str().append(_history.at(_hindx));
+            curline.append(_history.at(_hindx));
             _line.assign(_history.at(_hindx));
         } else {
             _line.clear();
@@ -116,7 +116,7 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
                 p->addText(f);
             } else {
                 HexString & curline = txtlist.back();
-	        curline.str().append(1, ch);
+	        curline.append(1, ch);
             }
         }
         _line.append(1, ch);

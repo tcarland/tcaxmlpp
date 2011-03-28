@@ -59,7 +59,7 @@ HexString::operator= ( const HexString & hexstr )
 void
 HexString::operator= ( const std::string & str )
 {
-    _str       = str;
+    _str  = str;
 }
 
 bool
@@ -109,7 +109,7 @@ HexString::append ( const HexString & str )
 }
 
 HexString&
-HexString::append ( size_t count, char ch )
+HexString::append ( size_type count, char ch )
 {
     this->_str.append(count, ch);
     return *this;
@@ -130,16 +130,17 @@ HexString::assign ( const HexString & str )
 }
 
 HexString&
-HexString::assign ( size_t count, char ch )
+HexString::assign ( size_type count, char ch )
 {
     this->_str.assign(count, ch);
     return *this;
 }
 
-HexString::iterator
-HexString::erase ( HexString::iterator index )
+HexString&
+HexString::erase ( HexString::size_type from, HexString::size_type to )
 {
-    return this->_str.erase(index);
+    this->_str.erase(from, to);
+    return *this;
 }
 
 HexString::iterator
