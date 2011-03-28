@@ -23,6 +23,7 @@ class TestHexApp : public HexApp {
     virtual void resize();
     void bomb();
     void help();
+    void showIntro();
 
 
   private:

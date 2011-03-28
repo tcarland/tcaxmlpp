@@ -55,7 +55,7 @@ LineOutputHandler::handleOutput ( HexPanel * panel )
         if ( ln < ht && (size_t) ln != tlist.size() && _newline )
             panel->wrap();
         else
-            panel->move(panel->curY(), 1);
+            panel->move(panel->curY(), 1); // err..if ! newline?
         
         if ( st > 0 && st == ln )
             break;

@@ -6,11 +6,6 @@
 
 namespace hexes {
 
-enum Alignment {
-    CENTER = 0,
-    LEFT   = 1,
-    RIGHT  = 2,
-};
 
 HexWindow::HexWindow()
     : _win(NULL),
@@ -114,14 +109,14 @@ HexWindow::height()
 int
 HexWindow::startY()
 {
-    return(this->_starty);
+    return this->_starty;
 }
 
 /** Returns the current X starting coordinate of the window */
 int
 HexWindow::startX()
 {
-    return(this->_startx);
+    return this->_startx;
 }
 
 int
@@ -203,6 +198,7 @@ HexWindow::resize ( int height, int width )
     this->_height = height;
     this->_width  = width;
     ::wresize(_win, height, width);
+    // TODO: this needs to be fixed.
     if ( this->curY() > height || this->curX() > width )
         this->move(height, width);
     return;
@@ -222,7 +218,7 @@ HexWindow::print ( const std::string & str, bool wrap )
     s    = str;
     wd   = _width;
     ht   = _height;
-    left = _width - _win->_curx;
+    left = _width - this->curX();
     from = 0;
 
     if ( _border ) {
@@ -231,16 +227,16 @@ HexWindow::print ( const std::string & str, bool wrap )
         left -= 2;
     }
 
-    if ( _win->_cury > ht )
+    if ( this->curY() > ht )
         return 0;
 
     if ( _win->_curx == 0 && _border )
-        ::wmove(_win, curY(), 1);
+        ::wmove(_win, this->curY(), 1);
 
     if ( left <= 1 ) {
         if ( ! this->wrap() )
             return -1;
-        left = wd - _win->_curx;
+        left = wd - this->curX();
     }
 
     // wrap logic needed to keep curses 
@@ -280,7 +276,7 @@ HexWindow::print ( const std::string & str, bool wrap )
 
         if ( ! this->wrap() )
             break;
-        left = wd - _win->_curx;
+        left = wd - this->curX();
     }
 
     if ( s.length() > 0 && s.length() < (size_t) left )
@@ -299,7 +295,7 @@ HexWindow::print ( const std::string & str, bool wrap )
 int
 HexWindow::print ( const char ch )
 {
-    if ( _win->_curx >= _width )
+    if ( this->curX() >= _width )
         this->wrap();
     return(::waddch(_win, ch));
 }
@@ -316,7 +312,7 @@ int
 HexWindow::wrap()
 {
     int curx = 0;
-    int cury = _win->_cury;
+    int cury = this->curY();
 
     if ( cury >= _height )
         return 0;

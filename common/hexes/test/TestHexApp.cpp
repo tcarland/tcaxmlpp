@@ -2,6 +2,7 @@
 
 #include <unistd.h>
 #include <sstream>
+#include <iomanip>
 
 #include "TestHexApp.h"
 
@@ -26,22 +27,40 @@ void
 TestHexApp::resize()
 {
     int  statstarty, constarty;
-    int  ht;
+    int  ht, wd;
 
     ht = this->height();
+    wd = this->width();
 
     _statheight = (ht * .33) - _conheight;
     _mainheight = ht - _statheight - _conheight - _titleheight;
     statstarty  = ht - _statheight - _conheight;
     constarty   = ht - _conheight;
 
-    mainPanel->resize(_mainheight, this->width());
-    statPanel->resize(_statheight, this->width());
-    conPanel->resize(_conheight, this->width());
+    mainPanel->resize(_mainheight, wd);
+    statPanel->resize(_statheight, wd);
+    conPanel->resize(_conheight, wd);
     statPanel->erase();
     statPanel->moveWindow(statstarty, 0);
     conPanel->erase();
     conPanel->moveWindow(constarty, 0);
+
+    std::ostringstream  res;
+
+    res << "ht = " << ht << " wd = " << wd;
+    statPanel->addText(res.str());
+    res.seekp(std::ios::beg);
+
+    res << "mainPanel: " << _mainheight << ", " << wd << ", 0, 0";
+    statPanel->addText(res.str());
+    res.seekp(std::ios::beg);
+    res << "statPanel: " << _statheight << ", " << wd << ", " 
+        << statstarty << ", 0";
+    statPanel->addText(res.str());
+    res.seekp(std::ios::beg);
+    res << "conPanel: " << _conheight << ", " << wd << ", " 
+        << constarty << ", 0";
+    statPanel->addText(res.str());
 }
 
 void
@@ -85,7 +104,22 @@ TestHexApp::bomb()
     mainPanel->setTextColor(HEX_WHITE);
 }
 
+void
+TestHexApp::showIntro()
+{
+    std::string intro = "     Welcome to libhexes";
 
+    HexDialog d("intro", HexString(intro, HEX_CYAN, HEX_BOLD));
+    d.setDrawTitle(false);
+    d.setTextColor(HEX_CYAN);
+    d.setBorderColor(HEX_GREEN);
+    //d.echoResults(true);
+    //d.setMaxInput(6);
+    d.addText("use /help (/?) for assistance\n \n", HEX_WHITE, HEX_NORMAL);
+    d.addText("            <OK>", 0, HEX_BOLD);
+    d.showDialog();
+    //statPanel->addText(d.getResult());
+}
 
 void
 TestHexApp::run()
@@ -131,20 +165,7 @@ TestHexApp::run()
     cinput->setPrefix(prompt);
 
     this->draw();
-
-    std::string intro = "     Welcome to libhexes";
-
-    HexDialog d("intro", HexString(intro, HEX_CYAN, HEX_BOLD));
-    d.setDrawTitle(false);
-    d.setTextColor(HEX_CYAN);
-    d.setBorderColor(HEX_GREEN);
-    //d.echoResults(true);
-    //d.setMaxInput(6);
-    d.addText("use /help (/?) for assistance\n \n", HEX_WHITE, HEX_NORMAL);
-    d.addText("            <OK>", 0, HEX_BOLD);
-    d.showDialog();
-    std::string res = d.getResult();
-    statPanel->addText(res);
+    this->showIntro();
 
     HexPanel * cur = this->getPanel();
 
@@ -212,6 +233,8 @@ TestHexApp::run()
                 echo = true;
                 mainPanel->addText(" -- character echo enabled --");
             }
+        } else if ( cmd.compare("/intro") == 0 ) {
+            this->showIntro();
         } else if ( cmd.compare("/help") == 0 || cmd.compare("/?") == 0 ) {
             this->help();
         }
