@@ -56,6 +56,8 @@ HexString::operator= ( const HexString & hexstr )
     wrap       = hexstr.wrap;
 }
 
+//----------------------------------------------------------------//
+
 void
 HexString::operator= ( const std::string & str )
 {
@@ -69,6 +71,8 @@ HexString::operator== ( const HexString & hexstr )
         return true;
     return false;
 }
+
+//----------------------------------------------------------------//
 
 const std::string&
 HexString::str() const
@@ -94,6 +98,8 @@ HexString::empty() const
     return(_str.empty());
 }
 
+//----------------------------------------------------------------//
+
 HexString&
 HexString::append ( const std::string & str )
 {
@@ -114,6 +120,8 @@ HexString::append ( size_type count, char ch )
     this->_str.append(count, ch);
     return *this;
 }
+
+//----------------------------------------------------------------//
 
 HexString&
 HexString::assign ( const std::string & str )
@@ -136,6 +144,8 @@ HexString::assign ( size_type count, char ch )
     return *this;
 }
 
+//----------------------------------------------------------------//
+
 HexString&
 HexString::erase ( HexString::size_type from, HexString::size_type to )
 {
@@ -149,6 +159,7 @@ HexString::erase ( HexString::iterator start, HexString::iterator end )
     return this->_str.erase(start, end);
 }
 
+//----------------------------------------------------------------//
 
 bool
 HexString::CharIsVisible ( char ch )
@@ -158,6 +169,21 @@ HexString::CharIsVisible ( char ch )
     return false;
 }
 
+int
+HexString::IndexOf ( const std::string & str, const std::string & match, size_t from )
+{
+    std::string::size_type  indx;
+
+    if ( from > str.length() || from < 0 )
+        return -1;
+
+    if ( (indx = str.find(match, from)) == std::string::npos )
+        return -1;
+
+    return((int) indx);
+}
+
+//----------------------------------------------------------------//
 
 }  // namespace
 

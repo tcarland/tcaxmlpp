@@ -62,9 +62,27 @@ class HexString {
     int                getAlignment()  const { return alignment; }
     int                getWrap()       const { return wrap; }
 
+
   public:
 
     static bool        CharIsVisible ( char ch );
+    static int         IndexOf       ( const std::string & str,
+                                       const std::string & match,
+                                       size_t from );
+    template< typename OutputIterator_ >
+    static inline void Split         ( const std::string  & str,
+                                       const char           delimiter,
+                                       OutputIterator_      outI )
+    {
+        std::string::size_type  begin = 0, end = 0;
+        while ( (begin = str.find_first_not_of(delimiter, begin)) != std::string::npos )
+        {
+            end     = str.find_first_of(delimiter, begin);
+            *outI++ = str.substr(begin, end - begin);
+            begin   = end;
+        }
+        return;
+    }
 
 
   public:

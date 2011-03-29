@@ -1,5 +1,5 @@
 #define _HEXES_HEXPANEL_CPP_
-#include <sstream>
+
 
 #include "HexPanel.h"
 #include "HexWindow.h"
@@ -11,41 +11,6 @@ namespace hexes {
 
 //----------------------------------------------------------------//
 
-namespace hexinternal {
-
-template< typename OutputIterator_ >
-static inline
-void  split ( const std::string  & str, 
-              const char           delimiter,
-              OutputIterator_      outI )
-{
-    std::string::size_type  begin = 0, end = 0;
-
-    while ( (begin = str.find_first_not_of(delimiter, begin)) != std::string::npos )
-    {
-        end     = str.find_first_of(delimiter, begin);
-        *outI++ = str.substr(begin, end - begin);
-        begin   = end;
-    }
-}
-
-static 
-int indexOf ( const std::string & str, const std::string & match, size_t from )
-{
-    std::string::size_type  indx;
-
-    if ( from > str.length() || from < 0 )
-	return -1;
-
-    if ( (indx = str.find(match, from)) == std::string::npos )
-	return -1;
-
-    return( (int) indx );
-}
-
-} // namespace hexinternal
-
-//----------------------------------------------------------------//
 
 HexPanel::HexPanel ( const std::string & title )
     : _hwin(new HexWindow()),
@@ -353,12 +318,12 @@ HexPanel::addText ( const std::string & str, int color, int attr )
 void
 HexPanel::addText ( const HexString & hexstr )
 {
-    if ( hexinternal::indexOf(hexstr.str(), "\n", 0) >= 0 )
+    if ( HexString::IndexOf(hexstr.str(), "\n", 0) >= 0 )
     {
         std::vector<std::string> slist;
         std::vector<std::string>::iterator  sIter;
 
-        hexinternal::split(hexstr.str(), '\n', std::back_inserter(slist));
+        HexString::Split(hexstr.str(), '\n', std::back_inserter(slist));
 
         for ( sIter = slist.begin(); sIter != slist.end(); ++sIter ) {
             HexString line(*sIter, hexstr.color, hexstr.attributes);
