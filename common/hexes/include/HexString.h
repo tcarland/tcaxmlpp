@@ -6,16 +6,24 @@
 
 namespace hexes {
 
+
 /**  The HexString class simply wraps a stdc++ string object
   *  associating some of our needed HexApp attributes such as
   *  color and attributes from curses, alignment and wrap
   *  functionality used by HexPanel and others.
   *
-  *  We allow this class to be extended to allow for making
-  *  custom string behavior (eg. a TextField for use in forms)
+  *  Originally, the string impl here was more complex with
+  *  an interface defined to allow for proper inheritance,
+  *  however this was deemed to heavy and the interface was
+  *  dropped. The functions marked virtual are a result of
+  *  this, but we saw no harm in allowing this to be
+  *  extended despite the limitations of not having a
+  *  proper interface so they remain virtual.
  */
 class HexString {
+
   public:
+
     typedef std::string::iterator  iterator;
     typedef std::string::size_type size_type;
 

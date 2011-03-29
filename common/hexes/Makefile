@@ -20,8 +20,7 @@ LIBS=
 LFLAGS=		
 
 OBJS=		src/HexApp.o src/HexPanel.o src/HexWindow.o \
-		src/HexString.o src/HexStringField.o \
-		src/HexDialog.o src/HexStack.o \
+		src/HexString.o src/HexDialog.o src/HexStack.o \
 		src/LineInputHandler.o src/LineOutputHandler.o
 
 ALL_OBJS=	$(OBJS)
