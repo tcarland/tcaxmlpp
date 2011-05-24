@@ -1,7 +1,32 @@
+/**
+  * @file HexString.h
+  *
+  * Copyright (c) 2011 Timothy Charlton Arland
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
+  *
+  * This file is part of libhexes.
+  *
+  * libhexes is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU Lesser General Public License as
+  * published by the Free Software Foundation, either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * libhexes is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Lesser General Public License for more details.
+  *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with libhexes.
+  * If not, see <http://www.gnu.org/licenses/>.
+ **/
 #ifndef _HEXES_HEXSTRING_H_
 #define _HEXES_HEXSTRING_H_
 
 #include <string> 
+#include <sstream>
 
 
 namespace hexes {
@@ -74,9 +99,11 @@ class HexString {
   public:
 
     static bool        CharIsVisible ( char ch );
+
     static int         IndexOf       ( const std::string & str,
                                        const std::string & match,
                                        size_t from );
+
     template< typename OutputIterator_ >
     static inline void Split         ( const std::string  & str,
                                        const char           delimiter,
@@ -90,6 +117,23 @@ class HexString {
             begin   = end;
         }
         return;
+    }
+
+    template<typename T>
+    static inline std::string ToString  ( const T & a )
+    {
+        std::stringstream  stream;
+        stream << a;
+        return stream.str();
+    }
+
+    template<typename T>
+    static inline  T    FromString      ( const std::string & str )
+    {
+        T target = T();
+        std::stringstream stream(str);
+        stream >> target;
+        return target;
     }
 
 

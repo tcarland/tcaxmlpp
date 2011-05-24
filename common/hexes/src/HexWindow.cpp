@@ -1,3 +1,27 @@
+/**
+  * @file HexWindow.cpp
+  *
+  * Copyright (c) 2011 Timothy Charlton Arland
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
+  *
+  * This file is part of libhexes.
+  *
+  * libhexes is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU Lesser General Public License as
+  * published by the Free Software Foundation, either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * libhexes is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Lesser General Public License for more details.
+  *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with libhexes.
+  * If not, see <http://www.gnu.org/licenses/>.
+ **/
 #define _HEXES_HEXWINDOW_CPP_
 
 #include "HexWindow.h"
@@ -14,7 +38,7 @@ HexWindow::HexWindow()
       _starty(0),
       _startx(0),
       _border(false),
-      _wordwrap(true)
+      _wordwrap(false)
 {
     _win = HexWindow::CreateWindow(_height, _width, _starty, _startx);
 }
@@ -26,7 +50,7 @@ HexWindow::HexWindow ( int height, int width, bool border )
       _starty(0),
       _startx(0),
       _border(border),
-      _wordwrap(true)
+      _wordwrap(false)
 {
     _win = HexWindow::CreateWindow(_height, _width, _starty, _startx);
 }
@@ -40,7 +64,7 @@ HexWindow::HexWindow ( int height, int width,
       _starty(starty), 
       _startx(startx),
       _border(border),
-      _wordwrap(true)
+      _wordwrap(false)
 {
     _win = HexWindow::CreateWindow(_height, _width, _starty, _startx);
 }

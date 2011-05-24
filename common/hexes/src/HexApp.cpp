@@ -1,3 +1,27 @@
+/**
+  * @file HexApp.cpp
+  *
+  * Copyright (c) 2011 Timothy Charlton Arland
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
+  *
+  * This file is part of libhexes.
+  *
+  * libhexes is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU Lesser General Public License as
+  * published by the Free Software Foundation, either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * libhexes is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Lesser General Public License for more details.
+  *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with libhexes.
+  * If not, see <http://www.gnu.org/licenses/>.
+ **/
 #define HEXES_HEXAPP_CPP_
 
 #include <ncurses.h>
@@ -36,6 +60,9 @@ HexApp::~HexApp()
 
 //----------------------------------------------------------------//
 
+/**  Detects whether the application has been resized by comparing
+  * the current height/width to the tracked values.
+ **/
 bool
 HexApp::resized()
 {
@@ -46,9 +73,13 @@ HexApp::resized()
         _row    = LINES;
         resized = true;
     }
+
     return resized;
 }
 
+/**  Initiates a redraw event for all panels and calls the underlying ncurses/panel
+  *  update functions.
+ **/
 int
 HexApp::draw()
 {
@@ -105,6 +136,7 @@ HexApp::draw()
 
 //----------------------------------------------------------------//
 
+/**  Initiates a poll/input event on the current active panel. */
 int
 HexApp::poll()
 {
@@ -133,6 +165,7 @@ HexApp::poll()
     return r;
 }
 
+/** Sets I/O timeout delay in milliseconds */
 void
 HexApp::timeout ( int delay_ms )
 {
@@ -142,6 +175,8 @@ HexApp::timeout ( int delay_ms )
 
 //----------------------------------------------------------------//
 
+
+/** Sets the provided HexPanel as the 'Top' or focused panel. */
 void
 HexApp::setFocus ( HexPanel * panel )
 {
@@ -155,6 +190,7 @@ HexApp::setFocus ( HexPanel * panel )
     _curPanel = panel;
 }
 
+/** Cycles panel focus to the next HexPanel in the window stack */
 HexPanel*
 HexApp::setFocusNext()
 {
@@ -176,6 +212,7 @@ HexApp::setFocusNext()
     return _curPanel;
 }
 
+/** Cycles panel focus to the previous HexPanel in the window stack */
 HexPanel*
 HexApp::setFocusPrev()
 {
@@ -199,6 +236,9 @@ HexApp::setFocusPrev()
 
 //----------------------------------------------------------------//
 
+/** Creates a new HexPanel and add its to the PanelStack. If no
+  * 'top' or focused panel is set, the HexPanel is set as top panel.
+ **/
 HexPanel*
 HexApp::createPanel ( const std::string & title, 
                       int height, int width, 
@@ -257,7 +297,9 @@ HexApp::addPanel ( HexPanel * panel )
     return true;
 }
 
-
+/**  Returns the HexPanel pointer for the given title, or
+  *  NULL if no such title exists
+ **/
 HexPanel*
 HexApp::getPanel ( const std::string & title )
 {

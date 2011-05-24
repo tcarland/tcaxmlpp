@@ -1,3 +1,27 @@
+/**
+  * @file HexPanel.cpp
+  *
+  * Copyright (c) 2011 Timothy Charlton Arland
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
+  *
+  * This file is part of libhexes.
+  *
+  * libhexes is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU Lesser General Public License as
+  * published by the Free Software Foundation, either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * libhexes is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Lesser General Public License for more details.
+  *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with libhexes.
+  * If not, see <http://www.gnu.org/licenses/>.
+ **/
 #define _HEXES_HEXPANEL_CPP_
 
 
@@ -339,13 +363,16 @@ HexPanel::addText ( const HexString & hexstr )
     if ( _drawBorder )
         ht -= 2;
 
+    while ( _textlist.size() > (size_t) _maxLines )
+        _textlist.pop_front();
+    /*
     if ( _textlist.size() >= (size_t) ht )
     {
         if ( ! _scrollable || _textlist.size() > ((size_t)ht + _maxLines) )
             _textlist.pop_front();
         _scrollTo = 0; // if scrollto on output
     }
-
+    */
     return;
 }
 /*@}*/

@@ -85,7 +85,17 @@ TestHexApp::help()
 void
 TestHexApp::bomb()
 {
-    mainPanel->setTextColor(HEX_BLUE);
+    HexString hexstr;
+
+    int clr = mainPanel->getTextColor();
+    hexstr  = HexString("mainPanel text color set to ", HEX_RED, 0);
+    hexstr.append(HexString::ToString(clr));
+    hexstr.append(" attributes for HEX_NORMAL = ");
+    hexstr.append(HexString::ToString(HEX_NORMAL));
+    mainPanel->addText(hexstr);
+
+
+    //mainPanel->setTextColor(HEX_BLUE_BLACK);
     mainPanel->addText(" ");
     mainPanel->addText(" ");
     mainPanel->addText("                     _-^--^=-_");
@@ -101,7 +111,15 @@ TestHexApp::bomb()
     mainPanel->addText("                      | ;  :|");
     mainPanel->addText("             _____.,-#%&$@%#&#~,._____");
     mainPanel->addText(" ");
-    mainPanel->setTextColor(HEX_WHITE);
+
+    clr     = mainPanel->getTextColor();
+    hexstr  = HexString("mainPanel text color set to ", HEX_RED, 0);
+    hexstr.append(HexString::ToString(clr));
+
+    mainPanel->addText(hexstr);
+    //mainPanel->setTextColor(0);
+
+    return;
 }
 
 void
@@ -143,6 +161,7 @@ TestHexApp::run()
 
     mainPanel->setWindowTitle(" Main ", HEX_GREEN);
     mainPanel->enableScroll(true);
+    mainPanel->setMaxLines(500);
 
     statPanel->setWindowTitle(" Status ", HEX_GREEN);
     statPanel->enableScroll(true);
