@@ -4,7 +4,7 @@
     <tnmsd
         agent_name="tnms/tnmsd/devserver_b"
         agent_key="tnmsd11b"
-        logfile="/opt/tcanms/tnms/logs/tnmsd-devserver_b.log"
+        logfile="/opt/tnms/logs/tnmsd-devserver_b.log"
         syslog="false"
         debug="true"
         auth_server="localhost"

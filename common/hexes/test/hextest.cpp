@@ -2,8 +2,10 @@
 
 //#include <iostream>
 
+
 #include "TestHexApp.h"
 using namespace hexes;
+
 
 
 int main ( int argc, char **argv )

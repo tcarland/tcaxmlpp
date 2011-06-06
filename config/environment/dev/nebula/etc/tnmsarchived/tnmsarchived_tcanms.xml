@@ -3,14 +3,14 @@
 <tnms version="0.1">
 
 <tnmsarchived
-    agent_name="tnms/tnmsarchived/tcanms"
-    logfile="/opt/tcanms/tnms/logs/tnmsarchived_tcanms.log"
+    agent_name="tnms/tnmsarchived/tnms"
+    logfile="/opt/tnms/logs/tnmsarchived_tnms.log"
     syslog="false"
     debug="true"
     version="1"
 
     dbhost="localhost"
-    dbname="tcanms"
+    dbname="tnms"
     dbuser="tnmsarchive"
     dbpass="tnmsarchive11b">
 

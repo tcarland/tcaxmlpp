@@ -1,18 +1,19 @@
 #!/bin/bash
 #
-#   Build script for individual projects, or any sub-project that might wish 
-#   to be extracted from the overall workspace.
+#   Build script for projects that may wish to be extracted or 
+#   distributed individually from the overall workspace. 
+#   Primarily meant for 'build.sh dist' for creating a distribution
+#   copy without source control metadata and including the custom
+#   build/make environment
 #
-#   Essentially provides a method to link the make environment within a 
-#   standalone project for exporting or distributing individually.
-
 
 PNAME=${0##*\/}
-VERSION="1.12"
+VERSION="1.13"
 AUTHOR="tcarland@gmail.com"
 
 PARENT=".."
 TOPDIR="."
+
 LINKLIST="tcamake"
 BUILDDEF="build_defs"
 DODIST=0
@@ -20,6 +21,39 @@ RSYNC="rsync"
 OPTIONS="-avL --delete --exclude=.cvs --exclude=.svn --exclude=.hg "
 DRYRUN="--dry-run"
 retval=0
+
+if [ -n "$TCAMAKE_BUILD_LINKS" ]; then
+    LINKLIST="$TCAMAKE_BUILD_LINKS $LINKLIST"
+fi
+
+usage()
+{
+    echo ""
+    echo "Usage: $PNAME [command] {option} "
+    echo ""
+    echo "   [command] :  a standard 'make' target (eg. all, clean, etc) "
+    echo "                or one of the following commands."
+    echo ""
+    echo "       'dist' [path] <dryrun> "
+    echo "                  : requires a valid path as {option}"
+    echo "                     Syncs the project to 'path/projectname'"
+    echo "       'link'     : Creates project build links only"
+    echo "       'unlink'   : Removes build links only"
+    echo "       'clean'    : Removes build links and runs 'make clean'"
+    echo "       'show'     : shows the determined project root and "
+    echo "                     what links would be created. (dry run) "
+    echo ""
+    echo " Summary: creates a complete distribution directory that"
+    echo " includes required project paths by creating temporary "
+    echo " soft links. Any unrecognized commands are passed through"
+    echo " to 'make'."
+    echo " Additional project links can be defined by setting the "
+    echo " envvar TCAMAKE_BUILD_LINKS to the list of relative paths"
+    echo " from TOPDIR.";
+    echo ""
+    echo "  $PNAME: Version: $VERSION by $AUTHOR"
+    echo ""
+}
 
 
 findTopDirectory()
@@ -149,32 +183,6 @@ doDist()
 }
 
 
-usage()
-{
-    echo ""
-    echo "Usage: $PNAME [command] {option} "
-    echo ""
-    echo "   [command] :  a standard 'make' target (eg. all, clean, etc) "
-    echo "                or one of the following commands."
-    echo ""
-    echo "       'dist' [path] <dryrun> "
-    echo "                  : requires a valid path as {option}"
-    echo "                     Syncs the project to 'path/projectname'"
-    echo "       'link'     : Creates project build links only"
-    echo "       'unlink'   : Removes build links only"
-    echo "       'clean'    : Removes build links and runs 'make clean'"
-    echo "       'show'     : shows the determined project root and "
-    echo "                     what links would be created. (dry run) "
-    echo ""
-    echo ""
-    echo "   Summary: creates a complete distribution directory "
-    echo "      that includes required project paths by creating "
-    echo "      temporary soft links. Any unrecognized commands are "
-    echo "      passed through to 'make'"
-    echo ""
-    echo "  $PNAME: Version: $VERSION by $AUTHOR"
-    echo ""
-}
 
 
 if [ -z "$1" ]; then
