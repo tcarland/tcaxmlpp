@@ -2,7 +2,11 @@
 #
 #  tnms_install.sh
 #
-VERSION="1.32"
+#    The installation script prepares our TNMS installation
+#  creating any necessary directories and synchronizing the 
+#  environment configurations.
+#
+VERSION="1.33"
 AUTHOR="tcarland@gmail.com"
 
 PNAME=${0##*\/}
@@ -66,7 +70,6 @@ usage()
     echo ""
     echo "Usage: $PNAME [-fhv] [-e environment] [-t targethost]"
     echo ""
-    #echo "   -D | --database    : generate dbcreate scripts, exec and exit "
     echo "   -f | --force       : force overwrite of install target '${TNMS_PREFIX}'"
     echo "   -h | --help        : display this help and exit"
     echo "   -v | --version     : display verion info and exit"

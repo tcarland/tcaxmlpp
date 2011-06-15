@@ -1,13 +1,13 @@
 #!/bin/bash
 #
-#   TNMS init script 
+#   The TNMS system init/control script.
 #
-#   The script is used for starting, stopping, and verifying TNMS services.
-#
+#   The script is used for starting, stopping, restarting and 
+#  verifying all TNMS services.
 #
 
 PNAME=${0##*\/}
-VERSION="1.14"
+VERSION="1.15"
 AUTHOR="tcarland@gmail.com"
 
 SYSHOME=""
@@ -86,14 +86,14 @@ INITERR=0
 usage()
 {
     echo ""
-    echo "Usage: $PNAME {start|stop|restart|info} [service] [key]"
+    echo "Usage: $PNAME {start|stop|restart|forcereset|info} [service] [key]"
     echo ""
     echo "  service = service name to start"
     echo "  key     = process identifier "
     echo ""
     echo "  Note: 'restart' will only restart services determined not currently "
     echo "  running. To force the restart of an individual process, stop|start "
-    echo "  targets must be provided."
+    echo "  targets must be provided or use 'forcereset' to restart all processes."
     echo ""
     return 1
 }
@@ -372,6 +372,10 @@ case "$1" in
         ;;
     'restart')
         restart_services $2 $3
+        ;;
+    'forcereset')
+        stop_services $2 $3
+        start_services $2 $3
         ;;
     'info'|'status')
         info_services $2 $3
