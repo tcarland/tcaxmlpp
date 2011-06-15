@@ -2,7 +2,7 @@
 #
 # tnms_dbinit.sh
 #
-VERSION="0.1"
+VERSION="0.22"
 AUTHOR="tcarland@gmail.com"
 
 PNAME=${0/#.\//}
@@ -17,7 +17,6 @@ dbname=
 dbuser=
 dbhost=
 dbpass=
-do_local=
 dbsql=
 auser=root
 aprompt=
@@ -79,7 +78,6 @@ usage()
     echo "                       this file is exec'd after creating the DB (if requested)"
     echo "    -U | --user      : name of user to have access to new db (required)"
     echo "    -H | --host      : host from which user will access db (default: localhost)"
-    echo "    -L | --localhost : include localhost access for user (if host is other)"
     echo "    -P | --password  : the user's password (required) "
     echo "   -------------------------------------------------------"
     echo "   Privileged account info:"
@@ -116,9 +114,6 @@ init_db()
     if [ -z "$dbname" ] || [ -z "$dbuser" ]; then
         echo "  dbname or dbuser options are not set, aborting init_db()"
         return 1
-    fi
-    if [ -z "$dbhost" ]; then
-        dbhost="localhost"
     fi
     if [ -z "$dbpass" ]; then
         echo "  No password set for $dbuser@$dbhost"
@@ -226,9 +221,6 @@ while [ $# -gt 0 ]; do
             dbpass="$2"
             shift
             ;;
-        -L|--localhost)
-            do_local=1
-            ;;
         -x|--adminuser)
             auser="$2"
             shift;
@@ -255,7 +247,7 @@ if [ -z "$dbname" ] && [ -z "$dbsql" ]; then
     exit 1
 fi
 
-if [ -z "$dbhost" ] || [ $do_local -eq 1 ]; then
+if [ -z "$dbhost" ]; then
     dbhost="localhost"
 fi
 

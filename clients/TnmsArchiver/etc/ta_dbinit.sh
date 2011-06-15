@@ -5,7 +5,7 @@
 #     using the db credentials defined in ta_credentials.conf
 #     located in $TNMS_HOME/etc and initializes the db.
 #
-VERSION="0.1"
+VERSION="0.221"
 AUTHOR="tcarland@gmail.com"
 
 PNAME=${0/#.\//}
