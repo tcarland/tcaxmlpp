@@ -82,9 +82,9 @@ class MysqlSession : public SqlSessionInterface {
         throw ( SqlException );
     
     MysqlSession ( const std::string & dbname, 
-                   const std::string & dbhost, 
                    const std::string & dbuser, 
                    const std::string & dbpass,
+                   const std::string & dbhost,
                    const std::string & dbport = "" )
         throw ( SqlException );
     
@@ -102,9 +102,9 @@ class MysqlSession : public SqlSessionInterface {
     virtual bool   dbconnect() throw ( SqlException );
 
     virtual bool   dbconnect   ( const std::string & dbname, 
-                                 const std::string & dbhost, 
                                  const std::string & dbuser, 
                                  const std::string & dbpass,
+                                 const std::string & dbhost,
                                  const std::string & dbport = "" )
         throw ( SqlException );
     

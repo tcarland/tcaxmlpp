@@ -32,12 +32,12 @@ namespace tcasqlpp {
 PgsqlSession::PgsqlSession() { }
 
 PgsqlSession::PgsqlSession ( const std::string & dbname, 
-                             const std::string & dbhost, 
-                             const std::string & dbuser, 
+                             const std::string & dbuser,
                              const std::string & dbpass,
+                             const std::string & dbhost,
                              const std::string & dbport )
 {
-    _connstr = PgsqlSession::MakeConnStr(dbname, dbhost, dbuser, dbpass, dbport);
+    _connstr = PgsqlSession::MakeConnStr(dbname, dbuser, dbpass, dbhost, dbport);
 }
 
 PgsqlSession::PgsqlSession ( const PgsqlSession & sql )
@@ -69,12 +69,12 @@ PgsqlSession::dbconnect()
 
 bool
 PgsqlSession::dbconnect ( const std::string & dbname, 
-                          const std::string & dbhost, 
                           const std::string & dbuser, 
                           const std::string & dbpass,
+                          const std::string & dbhost,
                           const std::string & dbport )
 {
-    this->_connstr = PgsqlSession::MakeConnStr(dbname, dbhost, dbuser, dbpass, dbport);
+    this->_connstr = PgsqlSession::MakeConnStr(dbname, dbuser, dbpass, dbhost, dbport);
     return this->dbconnect();
 }
 
@@ -133,9 +133,9 @@ PgsqlSession::run ( const TRANSACTOR & transaction ) const
 
 std::string
 PgsqlSession::MakeConnStr ( const std::string & dbname, 
-                            const std::string & dbhost, 
                             const std::string & dbuser, 
                             const std::string & dbpass,
+                            const std::string & dbhost,
                             const std::string & dbport )
 {
     std::string connstr = "";

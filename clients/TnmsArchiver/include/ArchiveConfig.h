@@ -20,11 +20,11 @@ namespace tnmsdb {
 /** Database Settings */
 struct  ArchiveDbConfig
 {
-    std::string  db_host;
-    std::string  db_port;
     std::string  db_name;
     std::string  db_user;
     std::string  db_pass;
+    std::string  db_host;
+    std::string  db_port;
 };
 
 

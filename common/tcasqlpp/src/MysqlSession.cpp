@@ -45,16 +45,16 @@ MysqlSession::MysqlSession() throw ( SqlException )
 
 
 MysqlSession::MysqlSession ( const std::string & dbname, 
-                             const std::string & dbhost,
 			     const std::string & dbuser, 
                              const std::string & dbpass,
+                             const std::string & dbhost,
                              const std::string & dbport )
     throw ( SqlException )
     : _dbcon(NULL),
       _dbname(dbname),
-      _dbhost(dbhost),
       _dbuser(dbuser),
       _dbpass(dbpass),
+      _dbhost(dbhost),
       _dbport(dbport),
       _timeout(DEFAULT_CONNECT_TIMEOUT),
       _compress(false),
@@ -67,9 +67,9 @@ MysqlSession::MysqlSession ( const std::string & dbname,
 MysqlSession::MysqlSession ( const MysqlSession & sql ) throw ( SqlException )
     : _dbcon(NULL),
       _dbname(sql._dbname),
-      _dbhost(sql._dbhost),
       _dbuser(sql._dbuser),
       _dbpass(sql._dbpass),
+      _dbhost(sql._dbhost),
       _dbport(sql._dbport),
       _timeout(sql._timeout),
       _compress(false),
@@ -105,9 +105,9 @@ MysqlSession::init() throw ( SqlException )
 
 bool
 MysqlSession::dbconnect ( const std::string & dbname, 
-                          const std::string & dbhost,
                           const std::string & dbuser, 
                           const std::string & dbpass,
+                          const std::string & dbhost,
                           const std::string & dbport )
     throw ( SqlException )
 {
@@ -116,9 +116,9 @@ MysqlSession::dbconnect ( const std::string & dbname,
     }
 
     _dbname = dbname;
-    _dbhost = dbhost;
     _dbuser = dbuser;
     _dbpass = dbpass;
+    _dbhost = dbhost;
     _dbport = dbport;
 
     return this->dbconnect();

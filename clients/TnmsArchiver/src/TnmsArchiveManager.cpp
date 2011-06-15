@@ -288,11 +288,11 @@ TnmsArchiveManager::parseConfig ( const std::string & cfg, const time_t & now )
 
     ArchiveDbConfig  dbcfg;
 
+    dbcfg.db_name = cfgmgr.getAttribute("dbname");
+    dbcfg.db_user = cfgmgr.getAttribute("dbuser");
+    dbcfg.db_pass = cfgmgr.getAttribute("dbpass");
     dbcfg.db_host = cfgmgr.getAttribute("dbhost");
-    dbcfg.db_host = cfgmgr.getAttribute("dbport");
-    dbcfg.db_host = cfgmgr.getAttribute("dbname");
-    dbcfg.db_host = cfgmgr.getAttribute("dbuser");
-    dbcfg.db_host = cfgmgr.getAttribute("dbpass");
+    dbcfg.db_port = cfgmgr.getAttribute("dbport");
 
     if ( dbcfg.db_host.compare(_dbCfg.db_host) != 0 ||
          dbcfg.db_port.compare(_dbCfg.db_port) != 0 || 
@@ -303,7 +303,7 @@ TnmsArchiveManager::parseConfig ( const std::string & cfg, const time_t & now )
         if ( _sql )
             delete _sql;
 
-        _sql = new SqlSession(dbcfg.db_name, dbcfg.db_host, dbcfg.db_user, dbcfg.db_pass, dbcfg.db_port);
+        _sql = new SqlSession(dbcfg.db_name, dbcfg.db_user, dbcfg.db_pass, dbcfg.db_host, dbcfg.db_port);
     }
 
     // assign the new config

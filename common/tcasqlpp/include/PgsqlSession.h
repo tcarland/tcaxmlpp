@@ -40,8 +40,10 @@ class PgsqlSession : public SqlSessionInterface {
   public:
 
     PgsqlSession();
-    PgsqlSession ( const std::string & dbname, const std::string & dbhost, 
-                   const std::string & dbuser, const std::string & dbpass,
+    PgsqlSession ( const std::string & dbname,
+                   const std::string & dbuser,
+                   const std::string & dbpass,
+                   const std::string & dbhost,
                    const std::string & dbport = "" );
 
     PgsqlSession ( const PgsqlSession & sql );
@@ -54,9 +56,9 @@ class PgsqlSession : public SqlSessionInterface {
     bool           connect()   { return this->dbconnect(); }
     virtual bool   dbconnect();
     virtual bool   dbconnect   ( const std::string & dbname, 
-                                 const std::string & dbhost, 
                                  const std::string & dbuser, 
                                  const std::string & dbpass,
+                                 const std::string & dbhost,
                                  const std::string & dbport = "" );
     
     void           close()     { return this->dbclose(); }
@@ -83,9 +85,9 @@ class PgsqlSession : public SqlSessionInterface {
   protected:
 
     static std::string MakeConnStr ( const std::string & dbname, 
-                                     const std::string & dbhost, 
                                      const std::string & dbuser, 
                                      const std::string & dbpass,
+                                     const std::string & dbhost,
                                      const std::string & dbport );
   protected:
 
