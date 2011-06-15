@@ -23,7 +23,7 @@ using namespace tcasqlpp;
 namespace tnmsauth {
 
 
-std::string TnmsAuthManager::_Version = "v0.189";
+std::string TnmsAuthManager::_Version = "v0.190";
 
 
 TnmsAuthManager::TnmsAuthManager ( const std::string & config ) 
@@ -235,11 +235,11 @@ TnmsAuthManager::parseConfig ( const std::string & cfg, const time_t & now )
     // auth attributes
     AuthDbConfig  acfg;
 
-    acfg.db_host = cfgmgr.getAttribute("db_host");
-    acfg.db_port = cfgmgr.getAttribute("db_port");
     acfg.db_name = cfgmgr.getAttribute("db_name");
     acfg.db_user = cfgmgr.getAttribute("db_user");
     acfg.db_pass = cfgmgr.getAttribute("db_pass");
+    acfg.db_host = cfgmgr.getAttribute("db_host");
+    acfg.db_port = cfgmgr.getAttribute("db_port");
     acfg.timeout = StringUtils::fromString<time_t>(cfgmgr.getAttribute("soap_timeout"));
 
     acfg.max_connections = StringUtils::fromString<time_t>(cfgmgr.getAttribute("max_connections"));
@@ -261,9 +261,9 @@ TnmsAuthManager::parseConfig ( const std::string & cfg, const time_t & now )
             delete _authDb; 
 
         sql = (SqlSessionInterface*) new SqlSession(acfg.db_name,
-                                                    acfg.db_host,
                                                     acfg.db_user,
                                                     acfg.db_pass,
+                                                    acfg.db_host,
                                                     acfg.db_port);
         _authDb = new AuthDbThread(acfg, sql);
         _authDb->start();
