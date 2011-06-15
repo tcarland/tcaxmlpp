@@ -4,7 +4,7 @@
 
 <tnmsarchived
     agent_name="tnms/tnmsarchived/tnms"
-    logfile="tnmsarchived_tcanms.log"
+    logfile="tnmsarchived_tnms.log"
     syslog="false"
     debug="true"
     version="1"
@@ -19,7 +19,7 @@
         host="localhost"
         port="15600">
 
-        <subscribe name="tcanms"/>
+        <subscribe name="tnms"/>
 
         <archiver
             index_name="tnms.element_name"

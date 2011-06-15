@@ -20,6 +20,7 @@ DbArchiver::DbArchiver ( SqlSession * session, SchemaConfig & config )
       schema(config)
 {
     tree->subscribe("*", notifier);
+    this->connect();
 }
 
 
@@ -33,16 +34,8 @@ void
 DbArchiver::runUpdates ( const time_t & now, bool flush )
 {
     if ( ! sql->isConnected() ) 
-    {
-        LogFacility::LogMessage("DbArchiver intitiating database connection");
-        if ( ! sql->connect() ) {
-            LogFacility::LogMessage("DbArchiver: ERROR in connection: " 
-                + sql->sqlErrorStr());
+        if ( ! this->connect() )
             return;
-        }
-        LogFacility::LogMessage("Archive connection established for " 
-            + schema.index_table);
-    }
 
     if ( ! notifier->lock() )
         return;
@@ -77,6 +70,23 @@ DbArchiver::runUpdates ( const time_t & now, bool flush )
     }
 
     return;
+}
+
+bool
+DbArchiver::connect()
+{
+    LogFacility::LogMessage("DbArchiver intitiating database connection");
+
+    if ( ! sql->connect() ) {
+        LogFacility::LogMessage("DbArchiver: ERROR in connection: "
+            + sql->sqlErrorStr());
+        return false;
+    }
+
+    LogFacility::LogMessage("Archive connection established for "
+        + schema.index_table);
+
+    return true;
 }
 
 void

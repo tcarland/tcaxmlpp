@@ -28,7 +28,7 @@
 #define _TCANETPP_CONFIG_H_
  
 
-#define TCANETPP_UPDATE   "03.08.2011"
+#define TCANETPP_UPDATE   "06.13.2011"
 #define TCANETPP_VERSION  "1.0.1"
 
 

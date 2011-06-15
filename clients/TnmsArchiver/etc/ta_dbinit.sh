@@ -27,19 +27,19 @@ echo ""
 echo "$PNAME: "
 if [ -z "$RC_TNMS_BASHRC" ]; then
     if [ -e $CONFIGDIR/etc/tnmsrc ]; then
-        echo "  Using rc: $CONFIGDIR/etc/tnmsrc"
+        echo "  Using rc: '$CONFIGDIR/etc/tnmsrc'"
         source $CONFIGDIR/etc/tnmsrc
     elif [ -e $HOME/tnms/etc/tnmsrc ]; then
-        echo "  Using rc from: $HOME/tnms/etc/tnmsrc"
+        echo "  Using rc from: '$HOME/tnms/etc/tnmsrc'"
         source $HOME/tnms/etc/tnmsrc
     elif [ -e $HOME/etc/tnmsrc ]; then
-        echo "  Using rc from: $HOME/etc/tnmsrc"
+        echo "  Using rc from: '$HOME/etc/tnmsrc'"
         source $HOME/etc/tnmsrc
-    elif [ -e $TNMS_PREFIX/tnms/etc/tnmsrc ]; then
-        echo "  Using rc from $TNMS_PREFIX/tnsm/etc/tnmsrc"
-        source $TNMS_PREFIX/tnsm/etc/tnmsrc
+    elif [ -e $TNMS_PREFIX/etc/tnmsrc ]; then
+        echo "  Using rc from '$TNMS_PREFIX/etc/tnmsrc'"
+        source $TNMS_PREFIX/etc/tnmsrc
     else
-        echo "Error: Failed to locate rc file: tnmsrc"
+        echo "Error: Failed to locate rc file: tnmsrc'"
         exit 1
     fi
 fi

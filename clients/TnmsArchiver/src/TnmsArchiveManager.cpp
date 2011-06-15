@@ -16,7 +16,7 @@ namespace tnmsdb {
 
 
 std::string
-TnmsArchiveManager::_Version = "v0.12";
+TnmsArchiveManager::_Version = "v0.14";
 
 
 TnmsArchiveManager::TnmsArchiveManager ( const std::string & configfile )
@@ -52,6 +52,7 @@ TnmsArchiveManager::run()
 {
     time_t  now = ::time(NULL);
 
+    LogFacility::InitThreaded();
     LogFacility::SetLogTime(now);
 
     if ( _debug ) {
@@ -192,6 +193,12 @@ TnmsArchiveManager::createArchivers()
     ArchiverDbMap::iterator   dIter;
     SchemaConfigList::iterator sIter;
 
+    if ( _sql == NULL )
+    {
+        LogFacility::LogMessage("Error with SQL Handle");
+        return;
+    }
+
     for ( dIter = _dbConfigMap.begin(); dIter != _dbConfigMap.end(); ++dIter )
     {
         SchemaConfigList & dblist = dIter->second;
@@ -281,11 +288,11 @@ TnmsArchiveManager::parseConfig ( const std::string & cfg, const time_t & now )
 
     ArchiveDbConfig  dbcfg;
 
-    dbcfg.db_host = cfgmgr.getAttribute("db_host");
-    dbcfg.db_host = cfgmgr.getAttribute("db_port");
-    dbcfg.db_host = cfgmgr.getAttribute("db_name");
-    dbcfg.db_host = cfgmgr.getAttribute("db_user");
-    dbcfg.db_host = cfgmgr.getAttribute("db_pass");
+    dbcfg.db_host = cfgmgr.getAttribute("dbhost");
+    dbcfg.db_host = cfgmgr.getAttribute("dbport");
+    dbcfg.db_host = cfgmgr.getAttribute("dbname");
+    dbcfg.db_host = cfgmgr.getAttribute("dbuser");
+    dbcfg.db_host = cfgmgr.getAttribute("dbpass");
 
     if ( dbcfg.db_host.compare(_dbCfg.db_host) != 0 ||
          dbcfg.db_port.compare(_dbCfg.db_port) != 0 || 

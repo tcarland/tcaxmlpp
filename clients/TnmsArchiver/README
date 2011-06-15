@@ -1,33 +1,35 @@
+README
 
 
-
-installation:
-
-  To install an archiver instance involves generating a configuration xml 
+Installation:
+------------
+  Installing an archiver instance involves generating a configuration xml 
 and intializing the database accordingly.
 
 Step 1: Database intialization
 
-  The automated script, ta_initdb.sh, can be used to automatically generate
+  The automated script, 'ta_initdb.sh', can be used to automatically generate
 the database specifics by first modifying ta_dbcredentials.conf with the 
 following options:
 
-TCANMS_DBUSER=
-TCANMS_DBPASS=
-TCANMS_DBHOST=
+TNMS_DBUSER=
+TNMS_DBPASS=
+TNMS_DBHOST=
 
- The script will generate the necessary SQL and create the database and exec
- the SQL via the config script 'tcanms_dbinit.sh'. 
+ The script will generate the necessary SQL, create the database, and exec
+ the SQL via the main tnms config script 'tnms_dbinit.sh'. 
  
  This script will assume all SQL is exec'd by the root sql account. If your 
  database 'root' user is not named 'root' or you wish to use a different 
- account, then you must run the tcanms_dbinit.sh script by hand. 
+ account, then you should run the 'tnms_dbinit.sh' script by hand. 
  
-  1. First run 'ta_createdbsql.sh' with the name of the database 
-     and the name of the sql file to generate.
-  2. Run the 'tcanms_dbinit.sh' script using the -D and -f options providing 
-     the database name and sql file generated in step 1, respectively, and 
-     providing the db account details with proper permissions for creating 
-     the database.
-     (see 'tcanms_dbinit.sh --help' for more details)
+  1. First run 'ta_createdbsql.sh' with the unique instance name, 
+     which will be the name of the database, and a filename; the 
+     script will generate and write the sql schema to this file.
+
+  2. Run the 'tnms_dbinit.sh' script using the -D and -f options 
+     providing the database name and sql file generated in step 1, 
+     respectively, and providing the db account details with proper 
+     permissions for creating the database.
+     (see 'tnms_dbinit.sh --help' for more details)
 

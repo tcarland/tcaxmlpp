@@ -25,7 +25,7 @@ namespace tnmsdb {
 #define DEFAULT_HOLDDOWN_INTERVAL  30
 #define DEFAULT_REPORT_INTERVAL    30
 
-#define TNMSARCHIVER_CONFIG_ROOT   "archiver"
+#define TNMSARCHIVER_CONFIG_ROOT   "tnmsarchived"
 
 
 class ClientIOHandler;

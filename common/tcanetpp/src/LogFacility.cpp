@@ -42,29 +42,28 @@ namespace tcanetpp {
 // ----------------------------------------------------------------------
 //  Initialization
 
-LogFacility::StreamMap  LogFacility::_StreamMap  = LogFacility::StreamMap();
-
 #ifndef WIN32
-#ifdef PTHREADS
-tcanetpp::ThreadLock  LogFacility::_Lock         = tcanetpp::ThreadLock();
-#endif
+# ifdef PTHREADS
+tcanetpp::ThreadLock   LogFacility::_Lock       = tcanetpp::ThreadLock();
+# endif
 #endif
 
-
-time_t             LogFacility::_LogTime    = 0;
-bool               LogFacility::_Init       = false;
-bool               LogFacility::_InitLock   = false;
-bool               LogFacility::_TryLock    = false;
-bool               LogFacility::_Syslog     = false;
-bool               LogFacility::_Broadcast  = false;
-bool               LogFacility::_Enabled    = false;
-bool               LogFacility::_Debug      = false;
-std::string        LogFacility::_LogName    = "";
-std::string        LogFacility::_LogPrefix  = "";
-std::string        LogFacility::_LogTimeStr = "";
+LogFacility::StreamMap LogFacility::_StreamMap  = LogFacility::StreamMap();
+time_t                 LogFacility::_LogTime    = 0;
+bool                   LogFacility::_Init       = false;
+bool                   LogFacility::_InitLock   = false;
+bool                   LogFacility::_TryLock    = false;
+bool                   LogFacility::_Syslog     = false;
+bool                   LogFacility::_Broadcast  = false;
+bool                   LogFacility::_Enabled    = false;
+bool                   LogFacility::_Debug      = false;
+std::string            LogFacility::_LogName    = "";
+std::string            LogFacility::_LogPrefix  = "";
+std::string            LogFacility::_LogTimeStr = "";
 
 
 // ----------------------------------------------------------------------
+
 
 /**  Initializes a thread-safe version of the LogFacility.
   *  If @param trylock is true, the mutex lock is non-blocking and if the
@@ -132,9 +131,9 @@ LogFacility::OpenSyslog ( const std::string & prefix, int facility )
     LogFacility::_Syslog   = true;
     LogFacility::_Enabled  = true;
     LogFacility::InitLogMessage();
-
     return true;
-#endif
+#   endif
+
     return false;
 }
 

@@ -119,7 +119,6 @@ init_db()
     fi
     if [ -z "$dbhost" ]; then
         dbhost="localhost"
-        do_local=1
     fi
     if [ -z "$dbpass" ]; then
         echo "  No password set for $dbuser@$dbhost"
@@ -132,14 +131,8 @@ init_db()
         # generate sql
         echo "CREATE SCHEMA IF NOT EXISTS \`$dbname\`;" > $SQL
 
-        if [ -n "$do_local" ]; then
-            echo "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$dbpass';" >> $SQL
-            echo "GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON $dbname.* TO '$dbuser'@'localhost';" >> $SQL
-        fi
-        if [ "$dbhost" != "localhost" ]; then
-            echo "CREATE USER '$dbuser'@'$dbhost' IDENTIFIED BY '$dbpass';" >> $SQL
-            echo "GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON $dbname.* TO '$dbuser'@'$dbhost';" >> $SQL
-        fi
+        echo "CREATE USER '$dbuser'@'$dbhost' IDENTIFIED BY '$dbpass';" >> $SQL
+        echo "GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON $dbname.* TO '$dbuser'@'$dbhost';" >> $SQL
         echo "" >> $SQL
         
         exec_sql $SQL
@@ -260,6 +253,10 @@ done
 if [ -z "$dbname" ] && [ -z "$dbsql" ]; then
     usage
     exit 1
+fi
+
+if [ -z "$dbhost" ] || [ $do_local -eq 1 ]; then
+    dbhost="localhost"
 fi
 
 if [ -n "$dbname" ]; then

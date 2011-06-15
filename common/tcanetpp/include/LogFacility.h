@@ -62,10 +62,9 @@ typedef enum LogLevel
 
 
 
-/**  The LogFacility class is a convenient wrapper to set of 
-  *  various logging mechanism's supporting thread-safe, simultaneous 
-  *  logging to syslog facilities, local filesystem logging, and/or 
-  *  abstract c++ io streams (std::ostream). 
+/**  The LogFacility class is a convenient wrapper to various
+ *   log mechanism's supporting thread-safe logging to syslog
+ *   facilities, local file, and/or C++ I/O streams (std::ostream).
  **/
 class LogFacility {
 

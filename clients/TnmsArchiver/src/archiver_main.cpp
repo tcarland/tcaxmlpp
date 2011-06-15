@@ -14,7 +14,7 @@ using namespace tcanetpp;
 
 
 static const
-char process[]    = "archiver";
+char process[]  = "archiver";
 
 
 TnmsArchiveManager * mgr = NULL;
