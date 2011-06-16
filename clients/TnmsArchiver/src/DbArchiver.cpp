@@ -44,6 +44,8 @@ DbArchiver::runUpdates ( const time_t & now, bool flush )
 
     std::string table_name = this->getTargetTable(now);
 
+    this->tree->updateSubscribers();
+
     if ( LogFacility::GetDebug() ) {
         LogFacility::Message  logmsg;
         logmsg << "DbArchiver::runUpdates (" << now << "): " << table_name
@@ -214,7 +216,7 @@ DbArchiver::getTimePeriods ( DbNameList & namelist )
         return;
 
     if ( LogFacility::GetDebug() )
-        LogFacility::LogMessage("DbArchiver::getTimePeriods()");
+        LogFacility::LogMessage("DbArchiver::getTimePeriods() " + schema.data_table);
 
     Result::iterator  rIter;
 
@@ -242,7 +244,7 @@ DbArchiver::createTimePeriods ( DbIndexList & indices )
     DbIndexList::const_iterator iIter;
 
     if ( LogFacility::GetDebug() )
-        LogFacility::LogMessage("DbArchiver::createTimePeriods()");
+        LogFacility::LogMessage("DbArchiver::createTimePeriods() " + schema.data_table);
 
     for ( iIter = indices.begin(); iIter != indices.end(); ++iIter ) {
         const DbTimePeriod & period = *iIter;
@@ -266,7 +268,7 @@ DbArchiver::deleteTimePeriods ( DbIndexList & indices )
     DbIndexList::const_iterator  iIter;
 
     if ( LogFacility::GetDebug() )
-        LogFacility::LogMessage("DbArchiver::deleteTimePeriods()");
+        LogFacility::LogMessage("DbArchiver::deleteTimePeriods() " + schema.data_table);
 
     for ( iIter = indices.begin(); iIter != indices.end(); ++iIter ) 
     {

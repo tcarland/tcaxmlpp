@@ -32,7 +32,7 @@ DbMaintainer::runMaintainer ( const time_t & now )
 {
     DbIndexList  to_create, to_delete;
 
-    LogFacility::LogMessage("DbMaintainer::run()");
+    LogFacility::LogMessage("DbMaintainer::run(): " + _dataName);
 
     this->getCurrentPeriods(std::inserter(_current, _current.begin()));
     this->getDatabasePeriods(std::inserter(_dbperiods, _dbperiods.begin()));

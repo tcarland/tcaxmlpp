@@ -170,7 +170,7 @@ ClientIOHandler::handle_close ( const EventIO & io )
     LogFacility::LogMessage("ClientIOHandler::handle_close() " + client->getHostStr());
 
     client->close();
-    _clients.erase(client);
+    //_clients.erase(client);
 
     io.evmgr->removeEvent(io.evid);
 

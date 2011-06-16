@@ -177,9 +177,9 @@ class MysqlSession : public SqlSessionInterface {
     MYSQL*		_dbcon;
 
     std::string	        _dbname;
-    std::string	        _dbhost;
     std::string	        _dbuser;
     std::string	        _dbpass;
+    std::string	        _dbhost;
     std::string         _dbport;
 
     std::string	        _sqlerr;

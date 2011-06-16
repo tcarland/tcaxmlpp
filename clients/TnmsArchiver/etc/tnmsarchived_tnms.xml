@@ -3,7 +3,7 @@
 <tnms version="0.1">
 
 <tnmsarchived
-    agent_name="tnms/tnmsarchived/tnms"
+    agent_name="tnms/archiver/tnms"
     logfile="tnmsarchived_tnms.log"
     syslog="false"
     debug="true"
