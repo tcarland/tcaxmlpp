@@ -26,6 +26,8 @@ DbArchiver::DbArchiver ( SqlSession * session, SchemaConfig & config )
 
 DbArchiver::~DbArchiver()
 {
+    delete sql;
+    delete notifier;
     delete tree;
 }
 
@@ -42,15 +44,23 @@ DbArchiver::runUpdates ( const time_t & now, bool flush )
 
     std::string table_name = this->getTargetTable(now);
 
+    if ( LogFacility::GetDebug() ) {
+        LogFacility::Message  logmsg;
+        logmsg << "DbArchiver::runUpdates (" << now << "): " << table_name
+               << " processing " << notifier->metricq.size() << " updates.";
+        LogFacility::LogMessage(logmsg.str());
+    }
+
     while ( ! notifier->metricq.empty() )
     {
         TnmsMetric & metric = notifier->metricq.front();
         Query        query  = sql->newQuery();
 
         const std::string & valstr = metric.getValue();
-        uint32_t    id     = this->getElementId(metric.getElementName());
-        uint64_t    val    = metric.getValue<uint64_t>();
-        uint64_t    avg    = metric.getValueAvg<uint64_t>();
+
+        uint32_t  id   = this->getElementId(metric.getElementName());
+        uint64_t  val  = metric.getValue<uint64_t>();
+        uint64_t  avg  = metric.getValueAvg<uint64_t>();
 
         if ( id == 0 )
             continue;
@@ -75,7 +85,7 @@ DbArchiver::runUpdates ( const time_t & now, bool flush )
 bool
 DbArchiver::connect()
 {
-    LogFacility::LogMessage("DbArchiver intitiating database connection");
+    LogFacility::LogMessage("DbArchiver initiating database connection");
 
     if ( ! sql->connect() ) {
         LogFacility::LogMessage("DbArchiver: ERROR in connection: "
@@ -84,7 +94,7 @@ DbArchiver::connect()
     }
 
     LogFacility::LogMessage("Archive connection established for "
-        + schema.index_table);
+        + schema.data_table);
 
     return true;
 }
@@ -102,6 +112,13 @@ DbArchiver::loadIndexMap()
         return;
 
     Result::iterator  rIter;
+
+    if ( LogFacility::GetDebug() ) {
+        LogFacility::Message msg;
+        msg << "DbArchiver: loadIndexMap() stored " << res.size()
+            << " items";
+        LogFacility::LogMessage(msg.str());
+    }
 
     for ( rIter = res.begin(); rIter != res.end(); ++rIter )
     {
@@ -196,6 +213,9 @@ DbArchiver::getTimePeriods ( DbNameList & namelist )
     if ( ! sql->submitQuery(query, res) )
         return;
 
+    if ( LogFacility::GetDebug() )
+        LogFacility::LogMessage("DbArchiver::getTimePeriods()");
+
     Result::iterator  rIter;
 
     for ( rIter = res.begin(); rIter != res.end(); ++rIter )
@@ -221,6 +241,9 @@ DbArchiver::createTimePeriods ( DbIndexList & indices )
 {
     DbIndexList::const_iterator iIter;
 
+    if ( LogFacility::GetDebug() )
+        LogFacility::LogMessage("DbArchiver::createTimePeriods()");
+
     for ( iIter = indices.begin(); iIter != indices.end(); ++iIter ) {
         const DbTimePeriod & period = *iIter;
 
@@ -241,6 +264,9 @@ void
 DbArchiver::deleteTimePeriods ( DbIndexList & indices )
 {    
     DbIndexList::const_iterator  iIter;
+
+    if ( LogFacility::GetDebug() )
+        LogFacility::LogMessage("DbArchiver::deleteTimePeriods()");
 
     for ( iIter = indices.begin(); iIter != indices.end(); ++iIter ) 
     {

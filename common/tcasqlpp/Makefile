@@ -48,7 +48,7 @@ all: lib
 include $(TOPDIR)/tcamake/project_defs
 
 
-lib: arlib solib
+lib: arlib
 
 arlib: lib/libtcasqlpp.a
 solib: libtcasqlpp.so.1.1.19

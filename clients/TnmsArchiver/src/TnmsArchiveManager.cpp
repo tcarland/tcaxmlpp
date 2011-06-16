@@ -16,7 +16,7 @@ namespace tnmsdb {
 
 
 std::string
-TnmsArchiveManager::_Version = "v0.14";
+TnmsArchiveManager::_Version = "v0.153";
 
 
 TnmsArchiveManager::TnmsArchiveManager ( const std::string & configfile )

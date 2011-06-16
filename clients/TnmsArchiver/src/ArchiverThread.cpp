@@ -67,6 +67,9 @@ ArchiverThread::run()
 
         now = LogFacility::GetLogTime();
 
+        if ( LogFacility::GetDebug() )
+            LogFacility::LogMessage("ArchiverThread::run()");
+
         // run updates
         if ( _timer.id == _tid )
             this->runUpdates(now);

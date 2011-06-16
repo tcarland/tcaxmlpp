@@ -14,8 +14,8 @@ using namespace tnmsCore;
 using namespace tcasqlpp;
 
 
-
 namespace tnmsdb {
+
 
 class ArchiveSubscriber;
 

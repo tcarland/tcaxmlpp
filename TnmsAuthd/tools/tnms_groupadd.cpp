@@ -1,4 +1,4 @@
-#define _TNMSAUTHD_GROUPADD_CPP_
+#define _TNMSAUTH_GROUPADD_CPP_
 
 #include <string.h>
 
@@ -14,7 +14,7 @@ using namespace tcanetpp;
 
 
 static const
-char TNMSAUTH_GROUPADD_VERSION [] = "v0.11";
+char TNMSAUTH_GROUPADD_VERSION [] = "v0.12";
 
 
 const char * process  = "tnms_groupadd";
@@ -160,7 +160,7 @@ int main ( int argc, char **argv )
     uint32_t     gid  = 0;
 
     try {
-        sql = new SqlSession(_Dbname, _Dbhost, _Dbuser, _Dbpass);
+        sql = new SqlSession(_Dbname, _Dbuser, _Dbpass, _Dbhost);
     } catch ( SqlException & err ) {
         std::cout << "Fatal Error initializing connection to database: "
             << err.toString() << std::endl;

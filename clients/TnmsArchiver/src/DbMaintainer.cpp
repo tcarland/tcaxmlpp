@@ -37,6 +37,9 @@ DbMaintainer::runMaintainer ( const time_t & now )
     this->getCurrentPeriods(std::inserter(_current, _current.begin()));
     this->getDatabasePeriods(std::inserter(_dbperiods, _dbperiods.begin()));
 
+    this->getIntervalsToCreate(std::back_inserter(to_create));
+    this->getIntervalsToDelete(std::back_inserter(to_delete));
+
     this->createTimePeriods(to_create);
     this->deleteTimePeriods(to_delete);
 

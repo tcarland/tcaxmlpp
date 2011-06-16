@@ -29,6 +29,9 @@ ClientIOHandler::timeout ( const EventTimer & timer )
 
     const time_t & now = timer.abstime.tv_sec;
 
+    if ( LogFacility::GetDebug() )
+        LogFacility::LogMessage("ClientIOHandler::timeout()");
+
     ClientSet::iterator  cIter;
     for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
     {
@@ -55,6 +58,7 @@ ClientIOHandler::timeout ( const EventTimer & timer )
         else 
         {
             if ( client->isAuthorized() && ! client->isSubscribed() ) {
+                LogFacility::LogMessage("ClientIOHandler authorized, sending resub");
                 client->resubscribe();
             } else if ( ! client->isAuthorized() ) {
                 if ( (_recon + client->getReconnectTime()) <= now ) {

@@ -20,7 +20,7 @@ INCLUDES=       -I.
 BIN=		tnms_useradd
 
 
-OBJS=		tnms_useradd.o
+OBJS=		tnms_useradd.o tnms_groupadd.o
 ALL_OBJS=	$(OBJS)
 ALL_BINS=	$(BIN)
 
@@ -30,7 +30,11 @@ all: tnms_useradd
 include $(TOPDIR)/tcamake/project_defs
 
 
-tnms_useradd: $(OBJS)
+tnms_useradd: tnms_useradd.o
+	$(make-cxxbin-rule)
+	@echo
+
+tnms_groupadd: tnms_groupadd.o
 	$(make-cxxbin-rule)
 	@echo
 

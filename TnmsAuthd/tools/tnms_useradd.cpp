@@ -1,4 +1,4 @@
-#define _TNMS_USERADD_CPP_
+#define _TNMSAUTH_USERADD_CPP_
 
 extern "C" {
 # include <string.h>
@@ -20,7 +20,7 @@ using namespace tcaxmlpp;
 
 
 static const
-char TNMS_USERADD_VERSION [] = "v1.11";
+char TNMS_USERADD_VERSION [] = "v1.12";
 
 
 const char * process = "tnms_useradd";
@@ -437,7 +437,7 @@ int main ( int argc, char **argv )
     uint32_t     uid  = 0;
 
     try {
-        sql = new SqlSession(_Dbname, _Dbhost, _Dbuser, _Dbpass);
+        sql = new SqlSession(_Dbname, _Dbuser, _Dbpass, _Dbhost);
     } catch ( SqlException & err ) {
         std::cout << "Fatal Error initializing connection to database: "
             << err.toString() << std::endl;
