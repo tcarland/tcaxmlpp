@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<polheir version="0.1">
+
+    <query_section name="SLB">
+    <query
+        name="VServer"
+        oid=".1.3.6.1.4.1.9.9.161.1.4.1.1.2.3"
+        query_type="getnext"
+        oid_has_key="true"
+        use_slot_num="true"
+        update_interval="30">
+
+        <result_map>
+            <result val="1" name="OutOfService"/>
+            <result val="2" name="InService"/>
+            <result val="3" name="Failed"/>
+            <result val="4" name="ReadyToTest"/>
+            <result val="5" name="Testing"/>
+            <result val="6" name="MaxConnsThrottle"/>
+            <result val="7" name="MaxClientsThrottle"/>
+        </result_map>
+
+        <query
+            name="IpAddress"
+            oid=".1.3.6.1.4.1.9.9.161.1.4.1.1.4"
+            query_type="get"
+            use_slot_num="true"/>
+
+        <query
+            name="Conns"
+            oid=".1.3.6.1.4.1.9.9.161.1.4.1.1.17"
+            query_type="get"
+            use_slot_num="true"
+            use_oid_key="true"/>
+    </query>
+    </query_section>
+
+</polheir>

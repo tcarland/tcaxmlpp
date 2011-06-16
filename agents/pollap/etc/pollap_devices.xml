@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<polheir version="0.1">
+    <devices>
+        <device
+            name="sdt-slb1"
+            host="64.37.144.221"
+            ro_community="SOEsnmp">
+
+            <query 
+                name="SLB" 
+                use_slot_num="3"
+                update_interval="30"/>
+        </device>
+    </devices>
+
+</polhier>
+
+

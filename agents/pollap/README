@@ -1,0 +1,31 @@
+
+
+  Pollap: Snmp Poller Project
+  ---------------------------
+
+
+ Performance analysis of an snmp poller. 
+
+   ( (num_devices * queries/dev) * intervals/min ) * pdu_size 
+                          /
+                  60 secs = bytes/sec ??
+
+   
+  Multi-staged project for providing three key aspects of an snmp poller.
+
+  1.  A well-defined configuration (xml) for creating a heirarchy of 
+  query relationships. Specifically, the ability to use an snmp object id
+  as the 'key' to subsequent and related snmp queries (ie. sub-queries).
+  The configuration heirarchy and device mapping to related queries would 
+  be abstracted in a fashion to permit a highly scaleable poller design.
+  
+  2. A fast and efficient snmp poller.
+
+    Simple, serial style polling in a threaded environment.
+    Potential snmp wrapper for utilizing any given number of underlying 
+    snmp libraries for performance comparison.
+
+  3. Abstract Data collection entailing a modular approach to resulting 
+  data output. eg. sql, rrd, other.
+
+  
