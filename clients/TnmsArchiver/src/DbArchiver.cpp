@@ -215,9 +215,6 @@ DbArchiver::getTimePeriods ( DbNameList & namelist )
     if ( ! sql->submitQuery(query, res) )
         return;
 
-    if ( LogFacility::GetDebug() )
-        LogFacility::LogMessage("DbArchiver::getTimePeriods() " + schema.data_table);
-
     Result::iterator  rIter;
 
     for ( rIter = res.begin(); rIter != res.end(); ++rIter )
@@ -243,9 +240,6 @@ DbArchiver::createTimePeriods ( DbIndexList & indices )
 {
     DbIndexList::const_iterator iIter;
 
-    if ( LogFacility::GetDebug() )
-        LogFacility::LogMessage("DbArchiver::createTimePeriods() " + schema.data_table);
-
     for ( iIter = indices.begin(); iIter != indices.end(); ++iIter ) {
         const DbTimePeriod & period = *iIter;
 
@@ -266,9 +260,6 @@ void
 DbArchiver::deleteTimePeriods ( DbIndexList & indices )
 {    
     DbIndexList::const_iterator  iIter;
-
-    if ( LogFacility::GetDebug() )
-        LogFacility::LogMessage("DbArchiver::deleteTimePeriods() " + schema.data_table);
 
     for ( iIter = indices.begin(); iIter != indices.end(); ++iIter ) 
     {

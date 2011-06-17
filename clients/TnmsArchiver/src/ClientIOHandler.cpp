@@ -56,6 +56,7 @@ ClientIOHandler::timeout ( const EventTimer & timer )
         {
             if ( client->isAuthorized() && ! client->isSubscribed() ) {
                 LogFacility::LogMessage("ClientIOHandler authorized, sending resub");
+                client->subscribeStructure();
                 client->resubscribe();
             } else if ( ! client->isAuthorized() ) {
                 if ( (_recon + client->getReconnectTime()) <= now ) {

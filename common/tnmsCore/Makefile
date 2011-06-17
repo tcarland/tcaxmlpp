@@ -43,7 +43,7 @@ lib:	arlib
 
 arlib:	lib/libtnmsCore.a
 
-solib:	lib/libtnmsCore.so.0.0.1
+solib:	lib/libtnmsCore.so.0.1.1
 
 lib/libtnmsCore.a:  ${OBJS}
 	( $(MKDIR) lib )
@@ -52,7 +52,7 @@ lib/libtnmsCore.a:  ${OBJS}
 	ld -r -o $@ ${OBJS} ${LFLAGS} ${LIBS}
 	@echo
 
-lib/libtnmsCore.so.0.0.1: ${OBJS}
+lib/libtnmsCore.so.0.1.1: ${OBJS}
 	( $(MKDIR) lib )
 	( $(RM) $@ lib/libtnmsCore.so
 	$(make-so-rule)

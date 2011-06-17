@@ -30,13 +30,16 @@ ArchiveMessageHandler::AddHandler ( const TnmsAdd & add )
     ArchiverSet::iterator  aIter;
     const std::string    & name = add.getElementName();
      
-    if ( StringUtils::startsWith(name, _rootname) )
-        _client->subscribe(name);
-    else
-        return;
-
     if ( LogFacility::GetDebug() )
         LogFacility::LogMessage("ArchiveMessageHandler::AddHandler() " + name);
+
+    if ( StringUtils::startsWith(name, _rootname) )
+        _client->subscribe(name);
+    else {
+        LogFacility::LogMessage("ArchiveMessageHandler::AddHandler() ignoring "
+                + name);
+        return;
+    }
 
     for ( aIter = _archivers.begin(); aIter != _archivers.end(); ++aIter )
         (*aIter)->tree->add(name);
@@ -46,7 +49,7 @@ ArchiveMessageHandler::AddHandler ( const TnmsAdd & add )
 
 
 void
-ArchiveMessageHandler::RemoveHandler ( const TnmsRemove  & remove )
+ArchiveMessageHandler::RemoveHandler ( const TnmsRemove & remove )
 {
     ArchiverSet::iterator  aIter;
     const std::string    & name = remove.getElementName();
@@ -62,16 +65,19 @@ ArchiveMessageHandler::RemoveHandler ( const TnmsRemove  & remove )
 
 
 void
-ArchiveMessageHandler::MetricHandler ( const TnmsMetric  & metric )
+ArchiveMessageHandler::MetricHandler ( const TnmsMetric & metric )
 {
     ArchiverSet::iterator  aIter;
-
-    if ( ! StringUtils::startsWith(metric.getElementName(), _rootname) )
-        return;
 
     if ( LogFacility::GetDebug() )
         LogFacility::LogMessage("ArchiveMessageHandler::MetricHandler() " 
             + metric.getElementName());
+
+    if ( ! StringUtils::startsWith(metric.getElementName(), _rootname) ) {
+        LogFacility::LogMessage("ArchiveMessageHandler::MetricHandler() ignoring "
+                + metric.getElementName());
+        return;
+    }
 
     for ( aIter = _archivers.begin(); aIter != _archivers.end(); ++aIter )
         (*aIter)->tree->update(metric);
@@ -104,14 +110,14 @@ ArchiveMessageHandler::StructureHandler ( bool  subscribe )
 
 
 void
-ArchiveMessageHandler::AuthReplyHandler ( const TnmsAuthReply   & reply )
+ArchiveMessageHandler::AuthReplyHandler ( const TnmsAuthReply & reply )
 {
     _client->AuthReplyHandler(reply);    
 }
 
 
 void
-ArchiveMessageHandler::LastMessageHandler ( int   record_type )
+ArchiveMessageHandler::LastMessageHandler ( int  record_type )
 {}
 
 

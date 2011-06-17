@@ -1,7 +1,7 @@
 /*
  * tnmsCore.h
  *
- *  Copyright(c) 2008, 2009  Timothy Charlton Arland
+ *  Copyright(c) 2008-2011  Timothy Charlton Arland
  *      tca@charltontechnology.net
  *
  */
@@ -11,7 +11,7 @@
 
 //  global version info
 #define TNMS_VERSION_MAJOR         0x0001
-#define TNMS_VERSION_MINOR         0x0057
+#define TNMS_VERSION_MINOR         0x0058
 #define TNMS_VERSION               ( (((uint32_t)TNMS_VERSION_MAJOR << 16) & 0xffff0000) | \
                                       ((uint32_t)TNMS_VERSION_MINOR) )
 #define TNMSCORE_VERSION           ( TNMS_VERSION )

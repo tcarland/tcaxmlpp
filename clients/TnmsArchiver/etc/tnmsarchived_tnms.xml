@@ -17,9 +17,9 @@
     <client
         name="server_c"
         host="localhost"
-        port="15600">
+        port="15605">
 
-        <subscribe name="tnms"/>
+        <subscribe name="tnms/"/>
 
         <archiver
             index_name="tnms.element_name"

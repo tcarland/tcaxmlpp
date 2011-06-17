@@ -402,6 +402,7 @@ bool
 TnmsTree::subStructure ( TreeSubscriber * sub )
 {
     _structureSubs.insert(sub);
+    this->request("*", sub); // dump tree
     return true;
 }
 

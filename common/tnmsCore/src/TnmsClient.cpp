@@ -142,7 +142,7 @@ TnmsClient::send ( const time_t & now )
     if ( wtt < 0 )
         return wtt;
     else if ( (wt+wtt) > 0 )
-        LogFacility::LogMessage("TnmsClient::send(): " + StringUtils::toString(wt+wtt));
+        LogFacility::LogMessage("TnmsClient::send(): " + StringUtils::toString(wt+wtt) + " " + this->getClientAuthStr());
 
     return(wtt + wt);
 }
