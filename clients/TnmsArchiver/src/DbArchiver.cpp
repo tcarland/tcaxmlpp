@@ -64,8 +64,11 @@ DbArchiver::runUpdates ( const time_t & now, bool flush )
         uint64_t  val  = metric.getValue<uint64_t>();
         uint64_t  avg  = metric.getValueAvg<uint64_t>();
 
-        if ( id == 0 )
+        if ( id == 0 ) {
+            LogFacility::LogMessage("DbArchiver::runUpdates() id not found for element: "
+                + metric.getElementName());
             continue;
+        }
 
         query << "INSERT DELAYED INTO " << table_name 
               << " (element_id, value_type, value, value_avg, samples, value_str, data, last ) VALUES ("
@@ -87,15 +90,13 @@ DbArchiver::runUpdates ( const time_t & now, bool flush )
 bool
 DbArchiver::connect()
 {
-    LogFacility::LogMessage("DbArchiver initiating database connection");
-
     if ( ! sql->connect() ) {
         LogFacility::LogMessage("DbArchiver: ERROR in connection: "
             + sql->sqlErrorStr());
         return false;
     }
 
-    LogFacility::LogMessage("Archive connection established for "
+    LogFacility::LogMessage("ArchiveDB connection established for "
         + schema.data_table);
 
     return true;
@@ -148,7 +149,7 @@ DbArchiver::getElementId ( const std::string & name )
     if ( eIter == _indexes.end() )
         return this->queryElementId(name);
 
-    id = eIter->second;
+    id = (uint32_t) eIter->second;
 
     return id;
 }
@@ -193,8 +194,8 @@ DbArchiver::insertElementId ( const std::string & name )
 
     if ( ! sql->submitQuery(query) )
         return id;
- 
-    // this is mysql specific
+
+    // TODO: fix this is mysql specific
     id = sql->insert_id();
 
     if ( id > 0 )
