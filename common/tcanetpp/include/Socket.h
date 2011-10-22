@@ -89,8 +89,8 @@ class Socket {
     /**   A Socket factory class used to created derived Socket classes
       * for UDP based sockets. Since UDP is connectionless, there is 
       * no listen socket descriptor, yet maintaining a separate client 
-      * instance of the Socket class might be desired. Doing this requires
-      * using the same descriptor which this factory makes possible.
+      * instance of the Socket class can be useful. For this we need a 
+      * copy of the same descriptor which this factory makes possible.
      **/
     class UdpSocketFactory : public SocketFactory {
         sockaddr_in  _csock;
