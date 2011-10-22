@@ -1,4 +1,4 @@
-TOPDIR = ..
+TOPDIR = ../..
 
 NEED_PTHREADS = 1
 NEED_TNMSAPI = 1
