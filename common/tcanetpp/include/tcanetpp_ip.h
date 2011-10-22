@@ -64,6 +64,10 @@ typedef struct IpHeader {
 
 } netip_h;
 
+#define IP_HDRLEN(ip)   ( ((ip)->version) & 0x0f)
+#define IP_VERSION(ip)  ( ((ip)->version) >> 4)
+
+
 /**  The UDP Header definition. */
 typedef struct UdpHeader {
     uint16_t  srcport;
@@ -77,6 +81,55 @@ typedef struct UdpHeader {
     {}
 
 } netudp_h;
+
+
+/** The TCP Header definition. */
+typedef struct TcpHeader {
+    uint16_t    srcport;
+    uint16_t    dstport;
+    uint32_t    seq;
+    uint32_t    ack_seq;
+    uint8_t     offset;
+    uint8_t     flags;
+    uint16_t    win;
+    uint16_t    chksum;
+    uint16_t    urgp;
+
+    TcpHeader()
+        : srcport(0), dstport(0),
+          seq(0), ack_seq(0),
+          offset(0), flags(0),
+          win(0), chksum(0), urgp(0)
+    {}
+
+} nettcp_h;
+
+#define TCP_FIN  0x01
+#define TCP_SYN  0x02
+#define TCP_RST  0x04
+#define TCP_PUSH 0x08
+#define TCP_ACK  0x10
+#define TCP_URG  0x20
+#define TCP_ECE  0x40
+#define TCP_CWR  0x80
+#define TCP_FLAGS               (TCP_FIN|TCP_SYN|TCP_RST|TCP_PUSH|TCP_ACK|TCP_URG)
+#define TCP_OFFSET(tcp)         ( ((tcp)->offset & 0xf0) >> 4)
+
+
+enum TcpState {
+    TCP_ESTABLISHED = 1,
+    TCP_SYN_SENT,
+    TCP_SYN_RECV,
+    TCP_FIN_WAIT1,
+    TCP_FIN_WAIT2,
+    TCP_TIME_WAIT,
+    TCP_CLOSE,
+    TCP_CLOSE_WAIT,
+    TCP_LAST_ACK,
+    TCP_LISTEN,
+    TCP_CLOSING
+};
+
 
 /**  The ICMP Header definition */
 typedef struct IcmpHeader {
@@ -92,7 +145,6 @@ typedef struct IcmpHeader {
     {}
 
 } neticmp_h;
-
 
 //  ICMP types and codes 
 // We redefine these for simplifying platform compatability
