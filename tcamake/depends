@@ -53,21 +53,9 @@ endif
 #   Define requirements below
 #-------------------------------------------------------------------------
 
-ifdef NEED_LIBDNET
-INCLUDES += -I$(TOPDIR)/common/libdnet/include
-LFLAGS   += -L$(TOPDIR)/common/libdnet/src
-LIBS     += -ldnet
-endif
-
-ifdef NEED_LIBNET
-INCLUDES += -I$(TOPDIR)/common/libnet/include
-LFLAGS   += -L$(TOPDIR)/common/libnet/src
-LIBS     += -lnet
-endif
-
 ifdef NEED_LIBPCAP
-INCLUDES += -I$(TOPDIR)/common/pcap
-LFLAGS   += -L$(TOPDIR)/common/pcap
+#INCLUDES += -I$(TOPDIR)/common/ext/libpcap-1.1.1
+#LFLAGS   += -L$(TOPDIR)/common/ext/libpcap-1.1.1
 LIBS     += -lpcap
 endif
 

@@ -56,9 +56,9 @@ class ThreadException : public Exception {
   *  which sets up the thread and makes the call to the virtual 'init() method 
   *  to provide custom thread initialization routines, and then 'run()'.
   *  On thread exit or termination, the users' virtual method 'finished()' is 
-  *  called. Finally, stop() will terminate the thread and 'join' if appropriate. 
-  *  The thread will forcibly call 'stop()' and potentially attempt to 'join' 
-  *  the thread if the object is destroyed without the user stopping it.
+  *  called. Finally, stop() will terminate the thread and 'join' if applicable. 
+  *  The thread will forcibly call 'stop()' and potentially attempt to join 
+  *  the thread if the object is destroyed.
   *  setAlarm() allows for the signaling of the underlying thread 
   *  implementation as a nice 'stop'.
  **/

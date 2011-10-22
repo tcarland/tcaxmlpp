@@ -78,6 +78,7 @@ extern "C" {
 #define ERRORSTRLEN       256
 #define MAXMASKLEN        32
 #define IPV4ADDR_LOOPBACK 16777343
+#define ETHER_ADDRLEN     6
  
 
 typedef struct in_addr    inaddr_t;

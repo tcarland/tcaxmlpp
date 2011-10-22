@@ -1,7 +1,11 @@
 /** 
   * @file tcanetpp_ip.h
   *
-  *   Defines our IP headers for use with raw sockets.
+  *   Defines the standard IP headers for use with raw sockets. 
+  * These are defined within this library to avoid having to 
+  * use platform specific defines for various headers. This also
+  * means we avoid the issue of some fields varying slightly in
+  * convention across platforms.
   *
   * Copyright (c) 2010 Timothy Charlton Arland
   * @author tca@charltontechnology.net
@@ -30,10 +34,15 @@
 #include "tcanetpp_types.h"
 
 
-/**  The IP header defined for use within this lib to avoid 
-  *  performing platform specific defines since the header 
-  *  and its fields vary slightly in convention across systems
- **/
+/**  The Ethernet header definition */
+typedef struct EthHeader {
+    uint8_t  dsthost[ETHER_ADDRLEN];
+    uint8_t  srchost[ETHER_ADDRLEN];
+    uint16_t ethtype;
+} neteth_h;
+
+
+/**  The IP header definition */
 typedef struct IpHeader {
     uint8_t   version;
     uint8_t   tos;
