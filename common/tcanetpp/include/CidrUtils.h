@@ -31,7 +31,7 @@
 #include <string>
 #include <vector>
 
-#include "tcanetpp_types.h"
+#include "tcanetpp_ip.h"
 #include "Prefix.hpp"
 
 
@@ -86,6 +86,7 @@ public:
     static int          pton            ( const std::string & ipstr, 
                                           ipv4addr_t        & addr );
 
+    static std::string  ether_ntop      ( const ethaddr_t   * addr );
 
     static std::string  GetHostName();
 

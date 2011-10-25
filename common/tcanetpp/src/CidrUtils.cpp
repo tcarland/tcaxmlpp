@@ -32,6 +32,7 @@
 #ifndef WIN32
 # include <arpa/inet.h>
 # include <netinet/in.h>
+# include <netinet/ether.h>
 # include <netdb.h>
 #endif
 
@@ -327,6 +328,27 @@ CidrUtils::pton ( const std::string & ipstr, ipv4addr_t & addr )
 #   endif
 
     return rs;
+}
+
+//-------------------------------------------------------------------//
+
+std::string
+CidrUtils::ether_ntop ( const ethaddr_t * addr )
+{
+    std::string  ethstr;
+    char hwaddr[18];
+    
+    if ( addr == NULL )
+        return ethstr;
+
+    snprintf(hwaddr, 18, "%02x:%02x:%02x:%02x:%02x:%02x",
+        addr->ether_octet[0], addr->ether_octet[1],
+        addr->ether_octet[2], addr->ether_octet[3],
+        addr->ether_octet[4], addr->ether_octet[5]);
+
+    ethstr.assign(hwaddr);
+
+    return ethstr;
 }
 
 //-------------------------------------------------------------------//
