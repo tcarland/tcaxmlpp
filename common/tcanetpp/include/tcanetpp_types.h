@@ -33,7 +33,6 @@ extern "C" {
 #endif
 
 
-
 #ifdef WIN32
 # include <Winsock2.h>
 # include <ws2tcpip.h>
@@ -80,10 +79,9 @@ extern "C" {
 #define IPV4ADDR_LOOPBACK 16777343
 #define ETHER_ADDRLEN     6
 
-#define SOCKET_TCP  IPPROTO_TCP
-#define SOCKET_UDP  IPPROTO_UDP
-#define SOCKET_ICMP IPPROTO_ICMP
-
+#define SOCKET_TCP        IPPROTO_TCP
+#define SOCKET_UDP        IPPROTO_UDP
+#define SOCKET_ICMP       IPPROTO_ICMP
 
 typedef struct in_addr    inaddr_t;
 

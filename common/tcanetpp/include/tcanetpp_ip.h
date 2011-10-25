@@ -34,14 +34,6 @@
 #include "tcanetpp_types.h"
 
 
-/**  The Ethernet header definition */
-typedef struct EthHeader {
-    uint8_t  dsthost[ETHER_ADDRLEN];
-    uint8_t  srchost[ETHER_ADDRLEN];
-    uint16_t ethtype;
-} neteth_h;
-
-
 /**  The IP header definition */
 typedef struct IpHeader {
     uint8_t   version;
@@ -113,7 +105,7 @@ typedef struct TcpHeader {
 #define TCP_ECE  0x40
 #define TCP_CWR  0x80
 #define TCP_FLAGS               (TCP_FIN|TCP_SYN|TCP_RST|TCP_PUSH|TCP_ACK|TCP_URG)
-#define TCP_OFFSET(tcp)         ( ((tcp)->offset & 0xf0) >> 4)
+#define TCP_OFFSET(tcp)         (((tcp)->offset & 0xf0) >> 4)
 
 
 enum TcpState {
@@ -190,8 +182,22 @@ typedef struct IcmpHeader {
 #define ICMP_REDIR_HOSTTOS      3
 
 /* Codes for TIME_EXCEEDED. */
-#define ICMP_EXC_TTL            0       /* TTL count exceeded           */
-#define ICMP_EXC_FRAGTIME       1       /* Fragment Reass time exceeded */
+#define ICMP_EXC_TTL            0       /* TTL count exceeded  */
+#define ICMP_EXC_FRAGTIME       1       /* Fragment Reasses time exceeded */
+
+
+/**  Ethernet address as redefined from net/ethernet.h */
+typedef struct EtherAddr {
+    uint8_t  ether_octet[ETHER_ADDRLEN];
+} ethaddr_t;
+
+
+/**  The Ethernet header definition */
+typedef struct EthHeader {
+    uint8_t  dsthost[ETHER_ADDRLEN];
+    uint8_t  srchost[ETHER_ADDRLEN];
+    uint16_t ethtype;
+} neteth_h;
 
 
 #endif  // _TCANETPP_TCANETIP_H_
