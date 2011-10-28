@@ -66,7 +66,7 @@ PT_new ( cidr_t     cidr,
     memset(np->rocks, 0, sizeof(np->rocks));
 
     if ( rock )
-	np->rocks[cidr.addrlen] = rock;
+	np->rocks[cidr.masklen] = rock;
 
     return np;
 }
@@ -171,9 +171,9 @@ PT_removeR ( ptNode_t * node, cidr_t cidr, int bit )
 
     if ( node->bit <= bit ) 
     {
-	if ( node->key == cidr.addr && node->rocks[cidr.addrlen] ) {
-	    rock = node->rocks[cidr.addrlen];
-	    node->rocks[cidr.addrlen] = NULL;
+	if ( node->key == cidr.addr && node->rocks[cidr.masklen] ) {
+	    rock = node->rocks[cidr.masklen];
+	    node->rocks[cidr.masklen] = NULL;
 	}
 	return rock;
     }
@@ -237,9 +237,9 @@ PT_searchLongHandler ( ptNode_t * node )
     {
 	if ( node->rocks[i] && PT_basePrefix(searchCidr.addr, i) == node->key )  
         {
-	    if ( i > resultCidr.addrlen ) {
+	    if ( i > resultCidr.masklen ) {
 		resultCidr.addr    = node->key;
-		resultCidr.addrlen = i;
+		resultCidr.masklen = i;
 	    }
 	}
     }
@@ -276,7 +276,7 @@ pt_init()
     cidr_t     cidr;
 
     cidr.addr    = 0;
-    cidr.addrlen = 0;
+    cidr.masklen = 0;
 
     head = PT_new(cidr, -1, NULL, NULL, NULL);
 
@@ -308,10 +308,10 @@ pt_insert ( ptNode_t * head, cidr_t cidr, void * rock )
 	for ( bit = 0; PT_GETBIT(cidr.addr,bit) == PT_GETBIT(node->key, bit); bit++ );
 	head->llink = PT_insertR(head->llink, cidr, bit, head, rock);
     } 
-    else if ( ! node->rocks[cidr.addrlen] ) 
+    else if ( ! node->rocks[cidr.masklen] )
     {
 	result = 1;
-	node->rocks[cidr.addrlen] = rock;
+	node->rocks[cidr.masklen] = rock;
     }
 	
     return result;
@@ -329,7 +329,7 @@ pt_exists ( ptNode_t * head, cidr_t cidr )
 
     node = PT_searchR(head->llink, cidr.addr, -1);
 
-    if ( node->key == cidr.addr && (node->rocks[cidr.addrlen]) )
+    if ( node->key == cidr.addr && (node->rocks[cidr.masklen]) )
 	return 1;
 
     return 0;
@@ -348,8 +348,8 @@ pt_match ( ptNode_t * head, cidr_t cidr )
 
     node = PT_searchR(head->llink, cidr.addr, -1);
 
-    if ( node->key == cidr.addr && (node->rocks[cidr.addrlen]) )
-	rock = node->rocks[cidr.addrlen];
+    if ( node->key == cidr.addr && (node->rocks[cidr.masklen]) )
+	rock = node->rocks[cidr.masklen];
 
     return rock;
 }
@@ -362,8 +362,8 @@ pt_matchLongest ( ptNode_t * head, cidr_t cidr )
 {
     void * rock = NULL;
 
-    searchCidr.addr    = PT_basePrefix(cidr.addr, cidr.addrlen);
-    searchCidr.addrlen = cidr.addrlen;
+    searchCidr.addr    = PT_basePrefix(cidr.addr, cidr.masklen);
+    searchCidr.masklen = cidr.masklen;
 
     memset(&resultCidr, 0, sizeof(cidr_t));
 

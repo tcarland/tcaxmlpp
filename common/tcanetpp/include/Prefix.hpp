@@ -52,13 +52,13 @@ class Prefix {
     Prefix()
     {
         _pfx.addr     = 0;
-        _pfx.addrlen  = 0;
+        _pfx.masklen  = 0;
     }
 
     Prefix ( ipv4addr_t addr, uint16_t len )
     {
         _pfx.addr     = addr;
-        _pfx.addrlen  = len;
+        _pfx.masklen  = len;
     }
 
     Prefix ( const cidr_t & cidr ) 
@@ -68,7 +68,7 @@ class Prefix {
     Prefix ( const Prefix & p ) 
     {
 	_pfx.addr    = p.getPrefix();
-	_pfx.addrlen = p.getPrefixLen();
+	_pfx.masklen = p.getPrefixLen();
     }
 
     virtual ~Prefix() {}
@@ -77,13 +77,13 @@ class Prefix {
     bool   operator==  ( const Prefix & prefix ) const
     {
         return( (_pfx.addr == prefix._pfx.addr) 
-                && (_pfx.addrlen == prefix._pfx.addrlen) );
+                && (_pfx.masklen == prefix._pfx.masklen) );
     }
     
     bool   operator<   ( const Prefix & prefix ) const
     {
         if ( _pfx.addr == prefix._pfx.addr )
-            return(_pfx.addrlen < prefix._pfx.addrlen);
+            return(_pfx.masklen < prefix._pfx.masklen);
         return(_pfx.addr < prefix._pfx.addr);
     }
 
@@ -94,7 +94,7 @@ class Prefix {
 
     inline uint8_t       getPrefixLen() const
     {
-        uint8_t masklen = *((uint8_t*)&_pfx.addrlen);
+        uint8_t masklen = *((uint8_t*)&_pfx.masklen);
         return masklen;
     }
 

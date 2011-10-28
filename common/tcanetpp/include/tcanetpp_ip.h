@@ -1,7 +1,7 @@
 /** 
   * @file tcanetpp_ip.h
   *
-  *   Defines the standard IP headers for use with raw sockets. 
+  *   Defines various IP headers.
   * These are defined within this library to avoid having to 
   * use platform specific defines for various headers. This also
   * means we avoid the issue of some fields varying slightly in
@@ -34,6 +34,28 @@
 #include "tcanetpp_types.h"
 
 
+
+// ----------------------------------------------------------------------
+//  Ethernet header
+
+
+/**  Ethernet address as redefined from net/ethernet.h */
+typedef struct EtherAddr {
+    uint8_t  ether_octet[ETHER_ADDRLEN];
+} ethaddr_t;
+
+
+/**  The Ethernet header definition */
+typedef struct EthHeader {
+    uint8_t  dsthost[ETHER_ADDRLEN];
+    uint8_t  srchost[ETHER_ADDRLEN];
+    uint16_t ethtype;
+} neteth_h;
+
+
+// ----------------------------------------------------------------------
+//  IP Header
+
 /**  The IP header definition */
 typedef struct IpHeader {
     uint8_t   version;
@@ -60,6 +82,9 @@ typedef struct IpHeader {
 #define IP_VERSION(ip)  ( ((ip)->version) >> 4)
 
 
+// ----------------------------------------------------------------------
+//  UDP Header
+
 /**  The UDP Header definition. */
 typedef struct UdpHeader {
     uint16_t  srcport;
@@ -74,6 +99,35 @@ typedef struct UdpHeader {
 
 } netudp_h;
 
+
+// ----------------------------------------------------------------------
+// TCP header
+
+#define TCP_FLAG_FIN  0x01
+#define TCP_FLAG_SYN  0x02
+#define TCP_FLAG_RST  0x04
+#define TCP_FLAG_PUSH 0x08
+#define TCP_FLAG_ACK  0x10
+#define TCP_FLAG_URG  0x20
+#define TCP_FLAG_ECE  0x40
+#define TCP_FLAG_CWR  0x80
+#define TCP_FLAGS               (TCP_FLAG_FIN|TCP_FLAG_SYN|TCP_FLAG_RST|TCP_FLAG_PUSH|TCP_FLAG_ACK|TCP_FLAG_URG)
+#define TCP_OFFSET(tcp)         (((tcp)->offset & 0xf0) >> 4)
+
+
+enum TcpState {
+    TCP_STATE_ESTABLISHED = 1,
+    TCP_STATE_SYN_SENT,
+    TCP_STATE_SYN_RECV,
+    TCP_STATE_FIN_WAIT1,
+    TCP_STATE_FIN_WAIT2,
+    TCP_STATE_TIME_WAIT,
+    TCP_STATE_CLOSE,
+    TCP_STATE_CLOSE_WAIT,
+    TCP_STATE_LAST_ACK,
+    TCP_STATE_LISTEN,
+    TCP_STATE_CLOSING
+};
 
 /** The TCP Header definition. */
 typedef struct TcpHeader {
@@ -96,32 +150,9 @@ typedef struct TcpHeader {
 
 } nettcp_h;
 
-#define TCP_FIN  0x01
-#define TCP_SYN  0x02
-#define TCP_RST  0x04
-#define TCP_PUSH 0x08
-#define TCP_ACK  0x10
-#define TCP_URG  0x20
-#define TCP_ECE  0x40
-#define TCP_CWR  0x80
-#define TCP_FLAGS               (TCP_FIN|TCP_SYN|TCP_RST|TCP_PUSH|TCP_ACK|TCP_URG)
-#define TCP_OFFSET(tcp)         (((tcp)->offset & 0xf0) >> 4)
 
-
-enum TcpState {
-    TCP_ESTABLISHED = 1,
-    TCP_SYN_SENT,
-    TCP_SYN_RECV,
-    TCP_FIN_WAIT1,
-    TCP_FIN_WAIT2,
-    TCP_TIME_WAIT,
-    TCP_CLOSE,
-    TCP_CLOSE_WAIT,
-    TCP_LAST_ACK,
-    TCP_LISTEN,
-    TCP_CLOSING
-};
-
+// ----------------------------------------------------------------------
+//  ICMP Header
 
 /**  The ICMP Header definition */
 typedef struct IcmpHeader {
@@ -139,7 +170,7 @@ typedef struct IcmpHeader {
 } neticmp_h;
 
 //  ICMP types and codes 
-// We redefine these for simplifying platform compatability
+// We redefine these for simplifying platform compatibility
 #define ICMP_ECHOREPLY          0
 #define ICMP_DEST_UNREACH       3
 #define ICMP_SOURCE_QUENCH      4 
@@ -183,21 +214,8 @@ typedef struct IcmpHeader {
 
 /* Codes for TIME_EXCEEDED. */
 #define ICMP_EXC_TTL            0       /* TTL count exceeded  */
-#define ICMP_EXC_FRAGTIME       1       /* Fragment Reasses time exceeded */
+#define ICMP_EXC_FRAGTIME       1       /* Fragment reassemble time exceeded */
 
-
-/**  Ethernet address as redefined from net/ethernet.h */
-typedef struct EtherAddr {
-    uint8_t  ether_octet[ETHER_ADDRLEN];
-} ethaddr_t;
-
-
-/**  The Ethernet header definition */
-typedef struct EthHeader {
-    uint8_t  dsthost[ETHER_ADDRLEN];
-    uint8_t  srchost[ETHER_ADDRLEN];
-    uint16_t ethtype;
-} neteth_h;
 
 
 #endif  // _TCANETPP_TCANETIP_H_

@@ -88,11 +88,11 @@ typedef struct in_addr    inaddr_t;
 
 /** Struct defining an IP Address and its associated Mask 
  *  length in bits representing the a.b.c.d/mb cidr format.
- *  We use a short for the addr length to keep alignment.
+ *  We use a short for the mask length to keep alignment.
  **/
 typedef struct cidr {
     ipv4addr_t   addr;
-    uint16_t     addrlen;
+    uint16_t     masklen;
 } cidr_t;
 
 
