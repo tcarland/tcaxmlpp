@@ -35,6 +35,7 @@
 
 
 
+
 // ----------------------------------------------------------------------
 //  Ethernet header
 
@@ -56,7 +57,8 @@ typedef struct EthHeader {
 // ----------------------------------------------------------------------
 //  IP Header
 
-/**  The IP header definition */
+
+/**  The IP header definition redefined from netinet/ip.h */
 typedef struct IpHeader {
     uint8_t   version;
     uint8_t   tos;
@@ -85,7 +87,8 @@ typedef struct IpHeader {
 // ----------------------------------------------------------------------
 //  UDP Header
 
-/**  The UDP Header definition. */
+
+/**  The UDP Header definition redefined from netinet/udp.h. */
 typedef struct UdpHeader {
     uint16_t  srcport;
     uint16_t  dstport;
@@ -102,6 +105,7 @@ typedef struct UdpHeader {
 
 // ----------------------------------------------------------------------
 // TCP header
+
 
 #define TCP_FLAG_FIN  0x01
 #define TCP_FLAG_SYN  0x02
@@ -129,7 +133,7 @@ enum TcpState {
     TCP_STATE_CLOSING
 };
 
-/** The TCP Header definition. */
+/** The TCP Header definition redefined from netinet/tcp.h */
 typedef struct TcpHeader {
     uint16_t    srcport;
     uint16_t    dstport;
@@ -154,7 +158,7 @@ typedef struct TcpHeader {
 // ----------------------------------------------------------------------
 //  ICMP Header
 
-/**  The ICMP Header definition */
+/**  The ICMP Header definition redefined from netinet/ip_icmp.h */
 typedef struct IcmpHeader {
     uint8_t  type;
     uint8_t  code;

@@ -58,11 +58,11 @@ TnmsWxTreeCtl::Init()
 
 bool
 TnmsWxTreeCtl::Create  ( wxWindow        * parent,
-                      const wxWindowID  id,
-                      const wxString  & name,
-                      const wxPoint   & pos,
-                      const wxSize    & size,
-                      long              style )
+                         const wxWindowID  id,
+                         const wxString  & name,
+                         const wxPoint   & pos,
+                         const wxSize    & size,
+                         long              style )
 {
     if ( ! wxControl::Create(parent, id, pos, size, style, wxDefaultValidator, name) )
         return false;
