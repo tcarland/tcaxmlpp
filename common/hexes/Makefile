@@ -67,9 +67,10 @@ test:
 	( cd test; $(MAKE) all )
 	@echo
 
-clean: test-clean
+clean:
 	$(RM) $(ALL_OBJS) \
-	*.d *.bd *.D *.o src/*.d src/*.D src/*.bd src/*.o lib/*.bd
+	*.d *.bd *.D *.o src/*.d src/*.D src/*.bd src/*.o lib/*.bd \
+	test/*.o test/*.bd test/*.d test/*.D
 	@echo
 	
 test-clean:
