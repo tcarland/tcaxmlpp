@@ -46,6 +46,13 @@ FileStat::FileStat ( const std::string & filename )
 FileStat::~FileStat() {}
 
 
+bool
+FileStat::operator< ( const FileStat & fs ) const
+{
+    return(this->_file < fs.getFileName());
+}
+
+
 std::string
 FileStat::getFileName() const
 {
@@ -178,8 +185,23 @@ FileStat::size() const
     return((size_t)_statb.st_size);
 }
 
+size_t
+FileStat::blocks() const
+{
+    return(this->blockCount() * this->blockSize());
+}
 
+size_t
+FileStat::blockCount() const
+{
+    return((size_t)_statb.st_blocks);
+}
 
+size_t
+FileStat::blockSize() const
+{
+    return((size_t)_statb.st_blksize);
+}
 
 }  // namespace
 

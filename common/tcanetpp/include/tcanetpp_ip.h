@@ -158,7 +158,9 @@ typedef struct TcpHeader {
 // ----------------------------------------------------------------------
 //  ICMP Header
 
-/**  The ICMP Header definition redefined from netinet/ip_icmp.h */
+/**  The ICMP Header definition redefined from netinet/ip_icmp.h
+ *   This is a weak translation and ip_icmp.h header should be preferred.
+ **/
 typedef struct IcmpHeader {
     uint8_t  type;
     uint8_t  code;
@@ -219,6 +221,40 @@ typedef struct IcmpHeader {
 /* Codes for TIME_EXCEEDED. */
 #define ICMP_EXC_TTL            0       /* TTL count exceeded  */
 #define ICMP_EXC_FRAGTIME       1       /* Fragment reassemble time exceeded */
+
+
+// ----------------------------------------------------------------------
+//  IGMP Header
+
+typedef struct IgmpHeader {
+    uint8_t     type;
+    uint8_t     code;
+    uint16_t    chksum;
+    ipv4addr_t  grpaddr;
+} netigmp_h;
+
+#define IGMP_TYPE_MEMBERQUERY   0x11
+#define IGMP_TYPE_REPORTV1      0x12
+#define IGMP_TYPE_DVMRP         0x13
+#define IGMP_TYPE_PIM           0x14
+#define IGMP_TYPE_TRACE         0x15
+#define IGMP_TYPE_REPORTV2      0x16
+#define IGMP_TYPE_LEAVEGRPV2    0x17
+#define IGMP_TYPE_MTRACERESP    0x1e
+#define IGMP_TYPE_MTRACE        0x1f
+
+#define IGMP_TYPE_MAXHOSTDELAY  10
+#define IGMP_TYPE_TIMERSCALE    10
+
+/* IGMP v2 state table */
+#define IGMP_STATE_DELAY  1
+#define IGMP_STATE_IDLE   2
+#define IGMP_STATE_LAZY   3
+#define IGMP_STATE_SLEEP  4
+#define IGMP_STATE_AWAKE  5
+
+#define IGMP_ROUTER_V1    1
+#define IGMP_ROUTER_V2    2
 
 
 

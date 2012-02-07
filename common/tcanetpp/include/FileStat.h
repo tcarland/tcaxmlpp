@@ -56,25 +56,30 @@ class FileStat {
         throw ( Exception );
     virtual ~FileStat();
 
-    bool           isReadable() const;
-    bool           isDirectory() const;
-    bool           isBlockDevice() const;
-    bool           isCharDevice() const;
-    bool           isPipe() const;
-    bool           isSocket() const;
-    bool           isSymlink() const;
+    bool          operator< ( const FileStat & fs ) const;
 
-    time_t         lastTouched() const;
-    time_t         lastAccessed() const;
-    uid_t          uidOwner() const;
-    gid_t          gidOwner() const;
+    bool          isReadable() const;
+    bool          isDirectory() const;
+    bool          isBlockDevice() const;
+    bool          isCharDevice() const;
+    bool          isPipe() const;
+    bool          isSocket() const;
+    bool          isSymlink() const;
 
-    std::string    getFileName() const;
-    std::string    getPathName() const;
-    std::string    getAbsoluteName() const;
+    time_t        lastTouched() const;
+    time_t        lastAccessed() const;
+    uid_t         uidOwner() const;
+    gid_t         gidOwner() const;
 
-    size_t         size() const;
-    size_t         bytes() const { return this->size(); }
+    std::string   getFileName() const;
+    std::string   getPathName() const;
+    std::string   getAbsoluteName() const;
+
+    size_t        size() const;
+    size_t        bytes() const { return this->size(); }
+    size_t        blocks() const;
+    size_t        blockCount() const;
+    size_t        blockSize() const;
 
   protected:
 
