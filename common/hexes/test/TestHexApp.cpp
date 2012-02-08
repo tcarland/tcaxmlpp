@@ -71,6 +71,7 @@ TestHexApp::help()
     mainPanel->addText("  /help  - displays this help");
     mainPanel->addText("  /bomb  - blow stuff up");
     mainPanel->addText("  /clear - clears the main window");
+    mainPanel->addText("  /intro - show intro window");
     mainPanel->addText("  /echo  - toggle the display of character input");
     mainPanel->addText("  /quit  - exits the app.");
     mainPanel->addText(" ");
@@ -131,8 +132,8 @@ TestHexApp::showIntro()
     d.setDrawTitle(false);
     d.setTextColor(HEX_CYAN);
     d.setBorderColor(HEX_GREEN);
-    d.echoResults(true);  // example if we wanted to request info
-    d.setMaxInput(6);
+    d.echoResults(true, '*');  // example if we wanted to request info
+    d.setMaxInput(12);
     d.addText("use /help (/?) for assistance\n \n", HEX_WHITE, HEX_NORMAL);
     d.addText("            <OK>", 0, HEX_BOLD);
     d.showDialog();

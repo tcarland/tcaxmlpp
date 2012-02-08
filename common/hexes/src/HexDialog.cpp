@@ -37,6 +37,7 @@ namespace hexes {
 HexDialog::HexDialog ( const std::string & title,
                        const HexString   & dialog )
     : HexPanel(title, 0, 0, 0, 0),
+      _echochar(0),
       _rescnt(0),
       _dynsz(true),
       _char(true),
@@ -55,6 +56,7 @@ HexDialog::HexDialog ( const std::string & title,
                        int   height, int   width,
                        int   starty, int   startx )
     : HexPanel(title, height, width, starty, startx),
+      _echochar(0),
       _rescnt(0),
       _dynsz(false),
       _char(true),
@@ -94,7 +96,8 @@ HexDialog::showDialog()
         if ( ch == 127 && ! echo )
             echo = _echo;
 
-        if ( echo ) {
+        if ( echo )
+        {
             TextList    & tlist = this->getTextList();
             HexString   & inl   = tlist.back();
             std::string & ln    = cinput->getLine();
@@ -102,15 +105,34 @@ HexDialog::showDialog()
 
             if ( indx < 0 )
                 indx = 0;
-            if ( HexString::CharIsVisible(ch) ) {
+
+            if ( HexString::CharIsVisible(ch) )
+            {
+                if ( _echochar > 0 )
+                    ch = _echochar;
                 if ( ln.length() < (size_t) _rescnt ) {
                     inl.str().replace(indx, 1, 1, ch);
-                } else if ( echo ) {  // catch = length and stop echo
+                } else if ( echo ) {   // catch = length and stop echo
                     inl.str().replace(indx, 1, 1, ch);
                     echo = false;
                 }
-            } else if ( ch == 127 ) {
-                inl.str().assign(ln);
+            }
+            else if ( ch == 127 )      // if bksp/del
+            {
+                if ( _echochar > 0 )   // echo masking char instead of input
+                {
+                    inl.str().assign("");
+                    if ( ln.length() > 0 ) {
+	                inl.str().assign("*");
+                        inl.str().append((ln.length() - 1), '*');
+                    }
+                }
+                else
+                {
+	            inl.str().assign(ln);
+	        }
+
+                // draw remaining field underscore
                 int cnt = _rescnt - ln.length();
                 inl.str().append(cnt, '_');
             }
@@ -119,8 +141,8 @@ HexDialog::showDialog()
         this->redraw();
         ch = this->poll();
     }
-    _result = cinput->getLine();
 
+    _result = cinput->getLine();
     this->hide();
 
     return ch;
@@ -150,9 +172,11 @@ HexDialog::setCharOnly ( bool chin )
   *  if the dialog is dynamically sized.
  **/
 void
-HexDialog::echoResults ( bool echo )
+HexDialog::echoResults ( bool echo, char echochar )
 {
     _echo = echo;
+    if ( echochar > 0 && HexString::CharIsVisible(echochar) )
+        _echochar = echochar;
 }
 
 /**  Sets a maximum number of characters to be accepted as input. */

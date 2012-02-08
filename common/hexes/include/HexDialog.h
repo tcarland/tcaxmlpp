@@ -54,7 +54,7 @@ class HexDialog : public HexPanel {
     std::string  getResult();
 
     void         setCharOnly ( bool chin );
-    void         echoResults ( bool echo );
+    void         echoResults ( bool echo, char echochar = 0 );
     void         setMaxInput ( int  count );
 
 
@@ -67,6 +67,8 @@ class HexDialog : public HexPanel {
   private:
 
     std::string  _result;
+
+    char         _echochar;
     int          _rescnt;
     bool         _dynsz;
     bool         _char;
