@@ -40,7 +40,7 @@ namespace tcanetpp {
 
 
 const size_t
-StringUtils::MAXLINE = BIGSTRLINE;
+StringUtils::MAXLINE = TCANET_BIGSTRLINE;
 
 
 // ----------------------------------------------------------------------

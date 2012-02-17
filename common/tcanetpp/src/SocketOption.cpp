@@ -41,10 +41,10 @@ SocketOption::SocketOption()
 
 SocketOption::SocketOption ( int level, int optid, int optval,
                              const std::string & name )
-    : _level(level),
+    : _namestr(name),
+      _level(level),
       _optid(optid),
-      _optval(optval),
-      _namestr(name)
+      _optval(optval)
 {}
 
 

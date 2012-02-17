@@ -39,6 +39,7 @@
 #include "CidrUtils.h"
 #include "Socket.h"
 #include "StringUtils.h"
+#include "tcanetpp_random.h"
 
 
 namespace tcanetpp {
@@ -294,6 +295,56 @@ CidrUtils::MatchCidr ( Prefix & p, ipv4addr_t addr )
     return(p.getPrefix() == CidrUtils::ToBasePrefix(addr, p.getPrefixLen()));
 }
 
+//-------------------------------------------------------------------//
+
+uint32_t
+CidrUtils::RandomValue ( double range ) 
+{
+    if ( tcanet_seeded() == 0 )
+        tcanet_seed();
+    return tcanet_randomValue(range);
+}
+
+Prefix
+CidrUtils::RandomPrefix ( Prefix & agg )
+{
+    Prefix p(CidrUtils::RandomPrefix(agg.getPrefix(), agg.getPrefixLen()), 24);
+    return p;
+}
+
+ipv4addr_t
+CidrUtils::RandomPrefix ( ipv4addr_t agg, uint8_t masklen )
+{
+    ipv4addr_t  addr     = 0;
+    int         blksz    = 0;
+    int         subval   = 0;
+    uint8_t     subnet   = 0;
+    uint8_t     pos      = 0;
+    uint8_t    *ptr;
+    uint8_t     octets[4];
+
+    if ( tcanet_seeded() == 0 )
+	tcanet_seed();
+
+    blksz = CidrUtils::GetCidrRange(masklen, &pos);
+
+    if ( pos > 0 ) // adjust for octet array
+	pos--;
+
+    ptr   = (uint8_t*) &agg;
+
+    for ( int i = 0; i < 4; i++, ptr++ )
+	octets[i] = (*(uint8_t*)ptr);
+
+    subnet = octets[pos];
+    subval = (int) tcanet_randomValue((double)blksz);
+
+    octets[pos] = (subnet + (subval - 1));
+    ptr = &octets[0];
+
+    addr = *(ipv4addr_t*)ptr;
+    return addr;
+}
 
 //-------------------------------------------------------------------//
 
@@ -356,10 +407,10 @@ CidrUtils::ether_ntop ( const ethaddr_t * addr )
 std::string
 CidrUtils::GetHostName()
 {
-    char         hstr[MAXSTRLINE];
+    char         hstr[TCANET_MAXSTRLINE];
     std::string  hostname;
 
-    if ( ::gethostname(hstr, (size_t) MAXSTRLINE) < 0 )
+    if ( ::gethostname(hstr, (size_t) TCANET_MAXSTRLINE) < 0 )
         return hostname;
 
     hostname = hstr;

@@ -32,15 +32,14 @@
 #include <math.h>
 #include <time.h>
 
+#include "tcanetpp_random.h"
 
-#include "random.h"
 
-
-static int _seeded = 0;
+static int _tcanet_seeded = 0;
 
 
 static void
-Seed()
+TCANET_Seed()
 {
     long    x, y;
     int     s;
@@ -59,28 +58,34 @@ Seed()
 }
 
 static uint32_t
-RandomValue ( double range ) 
+TCANET_RandomValue ( double range ) 
 {
     long s = abs((long)((range * rand()) / (RAND_MAX + 1.0)));
-    return (uint32_t) s;
+    return((uint32_t) s);
 }
 
 
 
+int
+tcanet_seeded()
+{
+    return _tcanet_seeded;
+}
+
 void
 tcanet_seed()
 {
-    Seed();
-    _seeded = 1;
+    TCANET_Seed();
+    _tcanet_seeded = 1;
 }
 
 
 uint32_t
 tcanet_randomValue ( double range )
 {
-    if ( ! _seeded )
+    if ( ! _tcanet_seeded )
 	tcanet_seed();
-    return RandomValue(range);
+    return TCANET_RandomValue(range);
 }
 
 

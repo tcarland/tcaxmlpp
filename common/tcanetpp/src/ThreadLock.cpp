@@ -36,6 +36,17 @@ extern "C" {
 
 namespace tcanetpp {
 
+/* ----------------------------------------------------------------------- */
+ThreadAutoMutex::ThreadAutoMutex ( ThreadLock * lock )
+    : _mutex(lock)
+{
+    this->_mutex->lock();
+}
+
+ThreadAutoMutex::~ThreadAutoMutex()
+{
+    this->_mutex->unlock();
+}
 
 /* ----------------------------------------------------------------------- */
 /**  The ThreadLock class is a simple wrapper for a pthread mutex and
@@ -47,7 +58,6 @@ namespace tcanetpp {
   *  protection from the misuse of a pthread mutex, but is perfectly safe
   *  if used correctly.
  **/ 
-
 
 ThreadLock::ThreadLock()
 {

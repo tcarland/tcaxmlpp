@@ -1,5 +1,5 @@
-/**  
-  * @file RandomPrefix.h
+/**
+  * @file random.h
   *
   * Copyright (c) 2002 Timothy Charlton Arland 
   * @author  tca@charltontechnology.net
@@ -22,39 +22,25 @@
   * License along with tcanetpp.  
   * If not, see <http://www.gnu.org/licenses/>.
  **/
-#ifndef _TCANETPP_RANDOMPREFIX_H_
-#define _TCANETPP_RANDOMPREFIX_H_
+#ifndef _TCANETPP_RANDOM_H_
+#define _TCANETPP_RANDOM_H_
+
+#include "tcanetpp_types.h"
 
 
-#include "Prefix.hpp"
-#include "random.h"
+# ifdef __cplusplus
+extern "C" {
+# endif
 
-namespace tcanetpp {
     
-
-/** Random number and prefix generation */
-class Random {
-
-  public:
-
-    /** Returns a pseudo-random positive (unsigned) integer by way of rand() */
-    static
-    uint32_t    RandomValue   ( double range );
-
-    static
-    Prefix*     RandomPrefix  ( Prefix * agg );
-
-    static 
-    ipv4addr_t  RandomPrefix  ( ipv4addr_t agg, uint8_t prefix_mb );
-
-  protected:
-
-    static bool  _seeded;
-
-};
-
-} // namespace
+void      tcanet_seed();
+int       tcanet_seeded();
+uint32_t  tcanet_randomValue ( double range );
 
 
-#endif  // _TCANETPP_RANDOMPREFIX_H_
+# ifdef __cplusplus
+}
+# endif
+
+#endif  // _TCANETPP_RANDOM_H_
 

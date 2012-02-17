@@ -98,7 +98,7 @@ class Thread {
 
   private:
 
-    static void*        threadEntry ( void * arg );
+    static void*        ThreadEntry ( void * arg );
 
 
   protected:

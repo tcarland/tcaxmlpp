@@ -27,7 +27,6 @@
 #include <algorithm>
 
 #include "ThreadMutexPool.h"
-#include "ThreadAutoMutex.hpp"
 
 
 namespace tcanetpp {

@@ -75,7 +75,7 @@ Thread::start() throw ( ThreadException )
     if ( _tid != 0 )
 	throw ThreadException("Thread::start() id non-zero, already started?");
 
-    if ( pthread_create(&_tid, NULL, threadEntry, (void*)this) != 0 ) {
+    if ( ::pthread_create(&_tid, NULL, Thread::ThreadEntry, (void*)this) != 0 ) {
         std::ostringstream  serr;
         serr << "Thread::start() pthread_create error: " << errno;
         _serr = serr.str();
@@ -91,7 +91,7 @@ Thread::start() throw ( ThreadException )
     }
 
     if ( _detach )
-        pthread_detach(_tid);
+        ::pthread_detach(_tid);
 
     return;
 }
@@ -109,7 +109,7 @@ Thread::stop() throw ( ThreadException )
 
     this->setAlarm();
 
-    if ( ! _detach && pthread_join(_tid, NULL) != 0 ) {
+    if ( ! _detach && ::pthread_join(_tid, NULL) != 0 ) {
         std::ostringstream  serr;
         serr << "Thread::stop() pthread_join error: "
              << _threadName << " : " << errno;
@@ -167,7 +167,7 @@ Thread::setAlarm()
  *   all new threads.
  **/
 void*
-Thread::threadEntry ( void* arg )
+Thread::ThreadEntry ( void* arg )
 {
     Thread * t = (Thread*) arg;
 
@@ -188,7 +188,7 @@ Thread::threadEntry ( void* arg )
 void
 Thread::yield()
 {
-    sched_yield();
+    ::sched_yield();
 }
 
 

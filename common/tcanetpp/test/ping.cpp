@@ -11,7 +11,7 @@ extern "C" {
 #include <iostream>
 
 #include "tcanetpp_ip.h"
-#include "random.h"
+#include "tcanetpp_random.h"
 #include "Socket.h"
 #include "Exception.hpp"
 #include "CidrUtils.h"

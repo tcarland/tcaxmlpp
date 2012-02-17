@@ -33,7 +33,7 @@ OBJS =		    src/SocketOption.o src/Socket.o src/BufferedSocket.o \
 		    src/Whois.o src/EventManager.o \
 		    src/CidrUtils.o src/StringUtils.o \
 		    src/FileStat.o src/FileUtils.o \
-		    src/LogFacility.o src/random.o src/RandomPrefix.o \
+		    src/LogFacility.o src/tcanetpp_random.o \
 		    src/patricia.o src/DeviceMap.o \
 		    src/NetworkDevice.o src/NetworkInterface.o
 

@@ -38,10 +38,10 @@
 namespace tcanetpp {
 
 
-#define SMLSTRLINE  256
-#define MEDSTRLINE  1024
-#define BIGSTRLINE  2048
-#define MAXSTRLINE  4096
+#define TCANET_SMLSTRLINE  256
+#define TCANET_MEDSTRLINE  1024
+#define TCANET_BIGSTRLINE  2048
+#define TCANET_MAXSTRLINE  4096
 
 
 /**   A class of static methods for convenient string manipulation. */
@@ -149,10 +149,10 @@ class StringUtils {
     static const size_t  MAXLINE;
 
 
+#ifdef TCANETPP_WIDECHAR
 // ----------------------------------------------------------------------
 //  The same interface is provided for wide chars and is enabled by the
 //  following compile-time definition.
-#ifdef TCANETPP_WIDECHAR
 
     static bool          equals           ( const std::wstring & wstrA, 
                                             const std::wstring & wstrB );

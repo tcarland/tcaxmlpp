@@ -43,6 +43,7 @@ class SocketOption {
 public:
     
     SocketOption();
+
     SocketOption ( int level, int optname, int optval,
                    const std::string & name = "" );
     
@@ -50,12 +51,11 @@ public:
     
     
     int         level() const;
-    inline int  getOptionLevel() const { return this->level(); }
-
     int         id() const;
-    inline int  getOptionId() const { return this->id(); }
-
     int         value() const;
+
+    inline int  getOptionLevel() const { return this->level(); }
+    inline int  getOptionId() const    { return this->id(); }
     inline int  getOptionValue() const { return this->value(); }
 
     
@@ -66,7 +66,7 @@ public:
     const std::string&   toString() const { return this->name(); }
 
 
-    /*  static Factory Methods  */
+    /*  Static Factory Methods  */
             
     static SocketOption  SetReuseAddr  ( int val );
     static SocketOption  SetLinger     ( int val );
@@ -77,16 +77,16 @@ public:
     static SocketOption  SetSndLoWat   ( int val );
     static SocketOption  SetRcvTimeout ( int val );
     static SocketOption  SetSndTimeout ( int val );
-
     static SocketOption  SetNoFragment ( int val );
     static SocketOption  SetTTL        ( int val );
     
-private:
 
+protected:
+
+    std::string     	_namestr;
     int                 _level;
     int                 _optid;
     int             	_optval;
-    std::string     	_namestr;
 	
 };
 

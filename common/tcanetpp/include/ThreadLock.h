@@ -27,7 +27,6 @@
 #ifndef _TCANETPP_THREADLOCK_H_
 #define _TCANETPP_THREADLOCK_H_
 
-
 extern "C" {
 # include <pthread.h>
 # include <time.h>
@@ -35,6 +34,28 @@ extern "C" {
 
 
 namespace tcanetpp {
+
+
+class ThreadLock;
+
+
+
+/**  Simple class to lock/unlock a mutex on construction/destruction
+  *  allowing for simple synchronization of a class method by simply
+  *  instantiating this object
+ **/
+class ThreadAutoMutex {
+
+  public:
+
+    ThreadAutoMutex ( ThreadLock * lock );
+    ~ThreadAutoMutex();
+
+  private:
+
+    ThreadLock *  _mutex;
+};
+
 
 
 /** A simple wrapper to a pthread mutex and conditional allowing

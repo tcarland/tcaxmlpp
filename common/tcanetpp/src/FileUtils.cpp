@@ -208,8 +208,8 @@ std::string
 FileUtils::GetCurrentPath()
 {
     std::string  path;
-    char         pname[MEDSTRLINE];
-    size_t       psz = MEDSTRLINE;
+    char         pname[TCANET_MEDSTRLINE];
+    size_t       psz = TCANET_MEDSTRLINE;
 
 #   ifdef WIN32
 #   else

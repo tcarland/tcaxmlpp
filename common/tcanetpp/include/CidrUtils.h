@@ -74,22 +74,22 @@ public:
 
     static uint8_t      SubnetValue     ( ipv4addr_t addr, uint8_t subnet_pos );
 
-
     static bool         DeAggregate     ( Prefix     & p, uint8_t masklen, 
                                           PrefixList & v );
 
-
     static bool         MatchCidr       ( Prefix     & p, ipv4addr_t addr );
 
+    static uint32_t     RandomValue     ( double range );
+    static Prefix       RandomPrefix    ( Prefix & agg );
+    static ipv4addr_t   RandomPrefix    ( ipv4addr_t agg, uint8_t masklen );
 
+
+    static std::string  ether_ntop      ( const ethaddr_t   * addr );
     static std::string  ntop            ( ipv4addr_t          addr );
     static int          pton            ( const std::string & ipstr, 
                                           ipv4addr_t        & addr );
 
-    static std::string  ether_ntop      ( const ethaddr_t   * addr );
-
     static std::string  GetHostName();
-
     static std::string  GetHostName     ( ipv4addr_t          addr );
 
     static ipv4addr_t   GetHostAddr();

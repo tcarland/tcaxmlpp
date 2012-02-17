@@ -72,6 +72,7 @@ class HashMap {
   public:
 
     HashMap() {}
+
     virtual ~HashMap() { this->clear(); }
 
 
