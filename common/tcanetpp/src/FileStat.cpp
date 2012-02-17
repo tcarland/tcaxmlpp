@@ -167,36 +167,44 @@ FileStat::lastTouched() const
     return _statb.st_mtime;
 }
 
+/**  Returns the owner's uid. */
 uid_t
 FileStat::uidOwner() const
 {
     return _statb.st_uid;
 }
 
+/**  Returns the owner's group id. */
 gid_t
 FileStat::gidOwner() const
 {
     return _statb.st_gid;
 }
 
+/** Returns the file size in bytes */
 size_t 
 FileStat::size() const 
 {
     return((size_t)_statb.st_size);
 }
 
+/** Returns the total block size used by the file
+  * basically blockCount() * blockSize() 
+ **/
 size_t
 FileStat::blocks() const
 {
     return(this->blockCount() * this->blockSize());
 }
 
+/** Returns the number of disk blocks used by the file */
 size_t
 FileStat::blockCount() const
 {
     return((size_t)_statb.st_blocks);
 }
 
+/** Returns the size of one block for the underlying filesystem */
 size_t
 FileStat::blockSize() const
 {

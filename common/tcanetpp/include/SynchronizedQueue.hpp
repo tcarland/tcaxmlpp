@@ -32,7 +32,6 @@ extern "C" {
 }
 #include <queue>
 
-
 #include "ThreadLock.h"
 
 
@@ -40,6 +39,7 @@ namespace tcanetpp {
 
 
 #define DEFAULT_QUEUE_MAXSIZE 65535
+
 
 
 template<class ValueType> class SynchronizedQueue {
@@ -51,10 +51,7 @@ template<class ValueType> class SynchronizedQueue {
     {}
 
 
-    virtual ~SynchronizedQueue()
-    { 
-        this->clear(); 
-    }
+    virtual ~SynchronizedQueue() { this->clear(); }
 
 
     int  push ( ValueType object )
@@ -72,7 +69,7 @@ template<class ValueType> class SynchronizedQueue {
     int  pop ( ValueType & object )
     {
 	if ( this->size() == 0 || _mutex.lock() < 0 )
-	    return 0;
+            return 0;
 
 	object = _queue.front();
 	_queue.pop();
@@ -114,6 +111,7 @@ template<class ValueType> class SynchronizedQueue {
     	return _mutex.notify();
     }
 
+
     size_t size()
     {
         size_t  sz = 0;
@@ -121,13 +119,15 @@ template<class ValueType> class SynchronizedQueue {
         if ( _mutex.lock() < 0 )
             return sz;
 
-        sz = _queue.size();
+        sz  = _queue.size();
         _mutex.unlock();
 
-	    return sz;
+        return sz;
     }
 
+
     bool empty() { return this->isEmpty(); }
+
 
     bool isEmpty()
     {
@@ -148,28 +148,30 @@ template<class ValueType> class SynchronizedQueue {
         if ( _mutex.lock() < 0 )
             return;
 
-	    while ( !_queue.empty() )
-	        _queue.pop();
+        while ( !_queue.empty() )
+            _queue.pop();
 
         _mutex.unlock();
     }
+
 
     size_t maxSize()
     {
         return _maxSize;
     }
 
+
     void maxSize ( size_t maxsz )
     {
         _maxSize = maxsz;
     }
+
 
   private:
 
     std::queue<ValueType>    _queue;
     size_t                   _maxSize;
     ThreadLock               _mutex;
-
 
 };
 
