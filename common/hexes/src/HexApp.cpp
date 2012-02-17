@@ -533,6 +533,7 @@ HexApp::InitCurses ( bool termRaw, bool echo )
     return;
 }
 
+/* initiate default color map */
 void
 HexApp::InitColors()
 {

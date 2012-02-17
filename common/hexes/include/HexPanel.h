@@ -35,6 +35,7 @@
 namespace hexes {
 
 class HexApp;
+class HexPanel;
 class HexWindow;
 class HexString;
 class HexOutputInterface;
@@ -44,8 +45,23 @@ class HexInputInterface;
 #define DEF_SCRLBK_SIZE  100
 #define MAX_SCRLBK_SIZE  65535
 
+typedef std::list<HexString>      HexStringList;
+typedef hexes::HexStringList      TextList;
 
-typedef std::list<HexString> TextList;
+
+
+class PanelFactory {
+  public:
+    PanelFactory ( HexPanel * parent );
+    virtual ~PanelFactory() {}
+
+    virtual HexPanel* operator() ( int panelId, const std::string & title = "" );
+
+  protected:
+    HexPanel * _parent;
+};
+
+
 
 
 class HexPanel {

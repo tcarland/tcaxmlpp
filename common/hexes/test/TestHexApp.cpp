@@ -71,7 +71,7 @@ TestHexApp::help()
     mainPanel->addText("  /help  - displays this help");
     mainPanel->addText("  /bomb  - blow stuff up");
     mainPanel->addText("  /clear - clears the main window");
-    mainPanel->addText("  /intro - show intro window");
+    mainPanel->addText("  /intro - show intro dialog window");
     mainPanel->addText("  /echo  - toggle the display of character input");
     mainPanel->addText("  /quit  - exits the app.");
     mainPanel->addText(" ");
@@ -203,7 +203,7 @@ TestHexApp::run()
             std::ostringstream  ostr;
             ostr << "ch = " << ch << "   '" << (char) ch << "'";
 
-            if ( wcmd ) {
+            if ( wcmd ) {              // window command reset
                 wcmd = false;
                 cinput->setParse(true);
                 ostr << " <window command>";
@@ -213,7 +213,7 @@ TestHexApp::run()
                     cur = this->setFocusPrev();
             }
 
-            if ( ch == HEX_KEY_WINDOW ) {
+            if ( ch == HEX_KEY_WINDOW ) { // window command detect
                 wcmd = true;
                 cinput->setParse(false);
             }

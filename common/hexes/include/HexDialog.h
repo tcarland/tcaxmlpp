@@ -77,4 +77,5 @@ class HexDialog : public HexPanel {
 };
 
 } // namespace 
+
 #endif // _HEXES_HEXDIALOG_H_

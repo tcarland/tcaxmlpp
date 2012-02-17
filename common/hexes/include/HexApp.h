@@ -60,15 +60,15 @@ extern "C" {
 
 namespace hexes {
 
-
-#define LIBHEXES_VERSION "v0.112"
-
-
 class HexPanel;
 
+
+#define LIBHEXES_VERSION "v0.113"
+
+
 typedef std::vector<HexPanel*>            PanelStack;
-typedef std::list<std::string>            StringList;
 typedef std::map<std::string, HexPanel*>  PanelMap;
+typedef std::list<std::string>            StringList;
 
 
 

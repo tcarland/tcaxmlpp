@@ -35,6 +35,17 @@ namespace hexes {
 
 //----------------------------------------------------------------//
 
+PanelFactory::PanelFactory ( HexPanel * parent )
+    : _parent(parent)
+{}
+
+HexPanel*
+PanelFactory::operator() ( int panelId, const std::string & title )
+{
+    return NULL;
+}
+
+//----------------------------------------------------------------//
 
 HexPanel::HexPanel ( const std::string & title )
     : _hwin(new HexWindow()),

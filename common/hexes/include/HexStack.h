@@ -32,14 +32,6 @@
 namespace hexes {
 
 
-class PanelFactory {
-    HexPanel * _parent;
-  public:
-    PanelFactory ( HexPanel * parent );
-    virtual ~PanelFactory() {}
-    virtual HexPanel* operator() ( int panelId, const std::string & title = "" );
-};
-
 
 class HexStack : public HexPanel {
 
