@@ -117,6 +117,9 @@ class Socket {
              SocketType   type,   int      protocol )
         throw ( SocketException );
     
+    Socket ( sockaddr_in * sa,   size_t salen, uint16_t port,
+             SocketType    type, int    protocol )
+        throw ( SocketException );
 
     virtual ~Socket();
 	

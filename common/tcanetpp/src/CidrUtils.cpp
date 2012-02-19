@@ -507,7 +507,7 @@ CidrUtils::GetHostAddrList ( const std::string & host, IpAddrList & addrlist )
 int
 CidrUtils::GetAddrInfo ( const std::string & host,
                          const addrinfo    * hints,
-                         struct addrinfo  ** res )
+                         addrinfo         ** res )
 {
     int r = 0;
 
@@ -549,7 +549,7 @@ CidrUtils::IsLoopback ( ipv4addr_t addr )
 addrinfo
 CidrUtils::GetTCPServerHints()
 {
-    struct addrinfo hints;
+    struct addrinfo  hints;
 
     memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_family    = AF_UNSPEC;
@@ -562,7 +562,7 @@ CidrUtils::GetTCPServerHints()
 addrinfo
 CidrUtils::GetUDPServerHints()
 {
-    struct addrinfo hints;
+    struct addrinfo  hints;
 
     memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_family    = AF_UNSPEC;
@@ -575,7 +575,7 @@ CidrUtils::GetUDPServerHints()
 addrinfo
 CidrUtils::GetTCPClientHints()
 {
-    struct addrinfo hints;
+    struct addrinfo  hints;
 
     memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_family    = AF_UNSPEC;
@@ -590,7 +590,7 @@ CidrUtils::GetTCPClientHints()
 addrinfo
 CidrUtils::GetUDPClientHints()
 {
-    struct addrinfo hints;
+    struct addrinfo  hints;
 
     memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_family    = AF_UNSPEC;

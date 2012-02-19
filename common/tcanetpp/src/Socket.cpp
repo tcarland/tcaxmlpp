@@ -117,6 +117,24 @@ Socket::Socket ( ipv4addr_t ipaddr, uint16_t port, SocketType type, int protocol
 
 }
 
+Socket::Socket ( sockaddr_in * sa, size_t salen, uint16_t port, SocketType type, int protocol )
+    throw ( SocketException )
+    : _socktype(type),
+      _proto(protocol),
+      _port(port),
+      _bound(false),
+      _connected(false),
+      _block(false),
+      _noUdpClose(false)
+{
+    Socket::ResetDescriptor(this->_fd);
+
+    ::memcpy(&_sock, sa, salen);
+    _addrstr = Socket::ntop((sockaddr_storage*) sa);
+    _hoststr = _addrstr;
+    _hoststr.append(":").append(StringUtils::toString(_port));
+}
+
 
 Socket::Socket ( sockfd_t & fd, sockaddr_storage & csock, SocketType type, int protocol )
     : _fd(fd),
