@@ -68,25 +68,27 @@ public:
 };
 
 
+
 /**  The Socket class represents a BSD style socket using either
   *  the GNU C Library or Winsock2 in the case of WIN32 hosts and 
   *  provides an object-oriented interface for performing socket
   *  io.
  **/
 class Socket {
+
   public:
+
 
     /**  The default Socket factory class used by Socket::accept() */
     class SocketFactory {
       public:
         virtual ~SocketFactory() {}
-            
         virtual Socket* operator() ( sockfd_t & fd, sockaddr_in & csock, 
                                      SocketType type, int protocol );
     };
 
 
-    /**   A Socket factory class used to created derived Socket classes
+    /**   A Socket factory class used to create a derived Socket class
       * for UDP based sockets. Since UDP is connectionless, there is 
       * no listen socket descriptor, yet maintaining a separate client 
       * instance of the Socket class can be useful. For this we need a 
@@ -95,7 +97,7 @@ class Socket {
     class UdpSocketFactory : public SocketFactory {
         sockaddr_in  _csock;
       public:
-        explicit UdpSocketFactory ( sockaddr_in sock )
+        explicit UdpSocketFactory ( sockaddr_in & sock )
             : _csock(sock)
         {}
         virtual ~UdpSocketFactory() {}
@@ -111,7 +113,10 @@ class Socket {
 	
     Socket();
 
-    Socket ( ipv4addr_t ipaddr, uint16_t port, SocketType type, int protocol )
+    Socket ( ipv4addr_t   ipaddr,
+             uint16_t     port,
+             SocketType   type,
+             int          protocol )
         throw ( SocketException );
     
     virtual ~Socket();
@@ -119,7 +124,10 @@ class Socket {
 	
   protected:
 	
-    Socket ( sockfd_t & fd, sockaddr_in & csock, SocketType type, int protocol );
+    Socket ( sockfd_t    & fd,
+             sockaddr_in & csock,
+             SocketType    type,
+             int           protocol );
 	
   public:
     
@@ -141,6 +149,7 @@ class Socket {
     ipv4addr_t          getAddress() const;
     const std::string&  getAddressString() const;
     const std::string&  getHostString() const;
+    sockaddr_storage*   getSockAddr();
 
     ipv4addr_t          getAddr() const       { return this->getAddress(); }
     const std::string&  getAddrString() const { return this->getAddressString(); }
@@ -208,7 +217,7 @@ class Socket {
   private:
     
     sockfd_t                _fd;
-    sockaddr_in             _sock;
+    sockaddr_storage        _sock;
     SocketType              _socktype;
     int                     _proto;
     uint16_t                _port;

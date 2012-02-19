@@ -97,6 +97,15 @@ public:
     static void         GetHostAddrList ( const std::string & host, 
                                           IpAddrList        & addrlist );
 
+    static int          GetAddrInfo     ( const std::string     & host,
+                                          const struct addrinfo * hints,
+                                          struct addrinfo      ** res );
+
+    static int          GetNameInfo     ( const struct sockaddr * sa, 
+                                          socklen_t               salen,
+                                          std::string           & result,
+                                          int                     flags );
+
     static bool         IsLoopback      ( ipv4addr_t addr );
 
 };

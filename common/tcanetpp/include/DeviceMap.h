@@ -35,6 +35,7 @@
 
 namespace tcanetpp {
 
+
 class NetworkDevice;
 
 
@@ -58,11 +59,9 @@ class DeviceMap {
     
 
     NetworkDevice*      find     ( ipv4addr_t addr );
-
     NetworkDevice*      insert   ( ipv4addr_t addr );
     NetworkDevice*      insert   ( const NetworkDevice & device );
     bool                insert   ( NetworkDevice * device );
-
     NetworkDevice*      remove   ( ipv4addr_t addr);
 
     bool                exists   ( ipv4addr_t addr );

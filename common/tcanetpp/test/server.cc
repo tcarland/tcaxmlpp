@@ -31,9 +31,45 @@ void             sigHandler     ( int signal );
 // globals
 bool    _Alarm = false;
 
-
 std::vector<BufferedSocket*>            clist;
 std::vector<BufferedSocket*>::iterator  cIter;
+
+
+
+BufferedSocket*
+createServer ( int port )
+{
+    int     retry  = 0;
+
+    BufferedSocket *server = NULL;
+
+    while ( retry < 4 ) {
+
+	try {
+	    server = new BufferedSocket(0, port, SOCKTYPE_SERVER, SOCKET_TCP);
+
+	    if ( ! server->init(true) ) {
+		printf("Socket error: %s\n", server->errorStr().c_str());
+	    } else {
+		server->setNonBlocking();
+		server->setSocketOption(SocketOption::SetRcvBuf(65535));
+		server->setSocketOption(SocketOption::SetNoFragment(1));
+                printf("Server created: %s:%d\n", server->getAddrStr().c_str(), 
+                    server->getPort());
+		return server;
+	    }
+	} catch ( SocketException err ) {
+	    printf("Socket exception: %s: Retrying...\n", err.toString().c_str());
+	    delete server;
+	}
+	retry++;
+	sleep(15);
+    }
+
+    printf("Fatal error creating server socket\n");
+    return NULL;
+}
+
 
 
 int main ( int argc, char **argv )
@@ -132,7 +168,7 @@ recvClientData ( BufferedSocket * client, char * buffer )
 	rd = client->read(buffer, sizeof(foo_t));
 
 	if ( rd != sizeof(foo_t) && rd > 0 ) {
-	    printf("Read error rcvd %d != %d\n", rd, sizeof(foo_t));
+	    printf("Read error rcvd %d != %lu\n", rd, sizeof(foo_t));
 	    return 0;
 	} else if ( rd < 0 ) {
 	    return -1;
@@ -141,8 +177,7 @@ recvClientData ( BufferedSocket * client, char * buffer )
 	}
 	printf("bytes read = %d\n", rd);
 
-	head = (foo_t*) buffer;
-
+	head  = (foo_t*) buffer;
 	stamp = head->timestamp;
 
 	printf("Processed foo_t from %s timestamp: %u count: %u\n",
@@ -159,38 +194,6 @@ sigHandler ( int signal )
     if ( signal == SIGINT || signal == SIGTERM )
 	_Alarm = true;
     return;
-}
-
-
-BufferedSocket*
-createServer ( int port )
-{
-    int     retry  = 0;
-
-    BufferedSocket *server = NULL;
-
-    while ( retry < 4 ) {
-
-	try {
-	    server = new BufferedSocket(0, port, SOCKTYPE_SERVER, SOCKET_TCP);
-	    if ( ! server->init(true) ) {
-		printf("Socket error: %s\n", server->errorStr().c_str());
-	    } else {
-		server->setNonBlocking();
-		server->setSocketOption(SocketOption::SetRcvBuf(65535));
-		server->setSocketOption(SocketOption::SetNoFragment(1));
-		return server;
-	    }
-	} catch ( SocketException err ) {
-	    printf("Socket exception: %s: Retrying...\n", err.toString().c_str());
-	    delete server;
-	}
-	retry++;
-	sleep(15);
-    }
-
-    printf("Fatal error creating server socket\n");
-    return NULL;
 }
 
 

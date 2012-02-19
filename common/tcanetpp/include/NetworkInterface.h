@@ -28,7 +28,6 @@
 #include <string>
 #include <vector>
 
-
 #include "tcanetpp_types.h"
 
 
@@ -75,12 +74,13 @@ class NetworkInterface {
   private:
 
     ipv4addr_t		_device_ip;
-    int			_if_index;
     ipv4addr_t		_if_addr;
+
     std::string 	_if_name;
     std::string		_description;
     std::string         _vlan;
 
+    int			_if_index;
     int                 _id;
 
 };

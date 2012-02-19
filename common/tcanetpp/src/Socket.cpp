@@ -88,6 +88,7 @@ Socket::Socket ( ipv4addr_t ipaddr, uint16_t port, SocketType type, int protocol
       _noUdpClose(false)
 {
     Socket::ResetDescriptor(this->_fd);
+    sockaddr_in * sock = (struct sockaddr_in*) &_sock;
     
     if ( _socktype <= SOCKTYPE_NONE || _socktype > SOCKTYPE_RAW )
         throw SocketException("Socket error: Invalid Socket type");
@@ -95,27 +96,28 @@ Socket::Socket ( ipv4addr_t ipaddr, uint16_t port, SocketType type, int protocol
     if ( _proto < 0 || _proto > 255 )
         throw SocketException("Socket error: Invalid protocol");
     
-    ::memset(&_sock, 0, sizeof(struct sockaddr_in));
-    _sock.sin_family = AF_INET;
-    _sock.sin_port   = htons(_port);
+    ::memset(sock, 0, sizeof(struct sockaddr_in));
+    sock->sin_family = PF_INET;
+    sock->sin_port   = htons(_port);
     
     if ( (_socktype >= SOCKTYPE_SERVER && ipaddr == 0) ) {
-        _sock.sin_addr.s_addr = htonl(INADDR_ANY);
+        sock->sin_addr.s_addr = htonl(INADDR_ANY);
     } else {
         if ( ipaddr == 0 && _socktype < SOCKTYPE_SERVER )
-            throw SocketException("Socket error: Invalid IP addr");
+            throw SocketException("Socket error: Invalid IP Address");
             
-        _sock.sin_addr.s_addr = ipaddr;
-        _addrstr = Socket::ntop(_sock.sin_addr.s_addr);
-        _hoststr = _addrstr;
-        _hoststr.append(":").append(StringUtils::toString(_port));
+        sock->sin_addr.s_addr = ipaddr;
     }
+
+    _addrstr = Socket::ntop(sock->sin_addr.s_addr);
+    _hoststr = _addrstr;
+    _hoststr.append(":").append(StringUtils::toString(_port));
+
 }
 
 
 Socket::Socket ( sockfd_t & fd, sockaddr_in & csock, SocketType type, int protocol )
     : _fd(fd),
-      _sock(csock),
       _socktype(type),
       _proto(protocol),
       _bound(false),
@@ -123,6 +125,11 @@ Socket::Socket ( sockfd_t & fd, sockaddr_in & csock, SocketType type, int protoc
       _block(false),
       _noUdpClose(false)
 {
+    sockaddr_in * sock    = (sockaddr_in*) &_sock;
+    sock->sin_family      = csock.sin_family;
+    sock->sin_addr.s_addr = csock.sin_addr.s_addr;
+    sock->sin_port        = csock.sin_port;
+
     if ( Socket::IsValidDescriptor(this->_fd) ) {
         if ( _proto == IPPROTO_TCP )
             _connected  = true;
@@ -358,7 +365,7 @@ Socket::accept ( SocketFactory & factory )
     	return NULL;
 
     len = sizeof(csock);
-    memset(&csock, 0, len);
+    ::memset(&csock, 0, len);
 
     if ( _proto == SOCKET_TCP )
     {
@@ -617,7 +624,19 @@ Socket::getHostString() const
 ipv4addr_t
 Socket::getAddress() const
 {
-    return( (ipv4addr_t) _sock.sin_addr.s_addr );
+    ipv4addr_t addr = 0;
+    if ( _sock.ss_family == PF_INET )
+    {
+        sockaddr_in * sock = (sockaddr_in*) &_sock;
+        addr = sock->sin_addr.s_addr;
+    }
+    return addr;
+}
+
+sockaddr_storage*
+Socket::getSockAddr()
+{
+    return &_sock;
 }
 
 // ----------------------------------------------------------------------

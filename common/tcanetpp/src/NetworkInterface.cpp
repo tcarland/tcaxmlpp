@@ -33,30 +33,27 @@ namespace tcanetpp {
 
 NetworkInterface::NetworkInterface()
     : _device_ip(0),
-      _if_index(0),
-      _if_addr(0)
-{
-}
+      _if_addr(0),
+      _if_index(0)
+{}
 
 
 NetworkInterface::NetworkInterface ( ipv4addr_t deviceip, int indx )
     : _device_ip(deviceip), 
-      _if_index(indx),
-      _if_addr(0)
-{
-}
+      _if_addr(0),
+      _if_index(indx)
+{}
 
 
 NetworkInterface::NetworkInterface ( const NetworkInterface & nif )
     : _device_ip(nif._device_ip),
-      _if_index(nif._if_index),
       _if_addr(nif._if_addr),
       _if_name(nif._if_name),
       _description(nif._description),
       _vlan(nif._vlan),
+      _if_index(nif._if_index),
       _id(nif._id)
-{
-}
+{}
 
 
 NetworkInterface::~NetworkInterface() {}
@@ -66,19 +63,21 @@ void
 NetworkInterface::operator= ( const NetworkInterface & nif )
 {
     _device_ip   = nif._device_ip;
-    _if_index    = nif._if_index;
     _if_addr     = nif._if_addr;
     _if_name     = nif._if_name;
     _description = nif._description;
     _vlan        = nif._vlan;
+    _if_index    = nif._if_index;
     _id          = nif._id;
 }
+
 
 bool
 NetworkInterface::operator== ( const NetworkInterface & nif )
 {
     return(_if_addr == nif._if_addr && _if_index == nif._if_index);
 }
+
 
 bool
 NetworkInterface::operator< ( const NetworkInterface & nif )

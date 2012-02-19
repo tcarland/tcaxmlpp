@@ -504,6 +504,40 @@ CidrUtils::GetHostAddrList ( const std::string & host, IpAddrList & addrlist )
 
 //-------------------------------------------------------------------//
 
+int
+CidrUtils::GetAddrInfo ( const std::string     & host, 
+                         const struct addrinfo * hints,
+                         struct addrinfo      ** res )
+{
+    int r = 0;
+
+    r = ::getaddrinfo(host.c_str(), NULL, hints, res);
+
+    return r;
+}
+
+// flags = NI_NUMERICHOST
+int
+CidrUtils::GetNameInfo ( const struct sockaddr * sa,
+                         socklen_t      salen,
+                         std::string  & result,
+                         int            flags = NI_NUMERICHOST )
+{
+    int    r   = 0;
+    size_t len = TCANET_SMLSTRLINE;
+
+    char  host[TCANET_SMLSTRLINE];
+    char  serv[TCANET_SMLSTRLINE];
+
+    r = ::getnameinfo(sa, salen, &host[0], len, &serv[0], len, flags);
+
+    result.assign(host);
+
+    return r;
+}
+
+//-------------------------------------------------------------------//
+
 bool
 CidrUtils::IsLoopback ( ipv4addr_t addr )
 {
