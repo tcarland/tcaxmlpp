@@ -248,7 +248,7 @@ CidrUtils::DeAggregate ( Prefix & p, uint8_t mb, std::vector<Prefix> &v )
 {
     uint32_t base;
     uint8_t  octets[4], *ptr;
-    int      indxA, indxB, num;
+    int      indxA, indxB, num, x;
     bool     big = false;
 
     if ( p.getPrefixLen() > mb || 
@@ -275,11 +275,15 @@ CidrUtils::DeAggregate ( Prefix & p, uint8_t mb, std::vector<Prefix> &v )
     while ( num != 0 ) {
         Prefix p = Prefix( (*(ipv4addr_t*)ptr), mb );
 	v.push_back(p);
-	octets[indxB] = octets[indxB]++;
+	x = octets[indxB];
+	octets[indxB] = x++;
 	if ( octets[indxB] == 0 ) {
-	    octets[indxA] = octets[indxA]++;
-            if ( big && octets[indxA] == 0 )
-                octets[0] = octets[0]++;
+	    x = octets[indxA];
+	    octets[indxA] = x++;
+            if ( big && octets[indxA] == 0 ) {
+                x = octets[0];
+                octets[0] = x++;
+            }
         }
 	num--;
     }
@@ -504,6 +508,7 @@ CidrUtils::GetHostAddrList ( const std::string & host, IpAddrList & addrlist )
 
 //-------------------------------------------------------------------//
 
+/** Simple wrapper for getaddrinfo */
 int
 CidrUtils::GetAddrInfo ( const std::string & host,
                          const addrinfo    * hints,
@@ -517,6 +522,7 @@ CidrUtils::GetAddrInfo ( const std::string & host,
 }
 
 // flags = NI_NUMERICHOST
+/**  Simple wrapper for performing a reverse lookup with getnameinfo */
 int
 CidrUtils::GetNameInfo ( const sockaddr * sa,
                          socklen_t        salen,
@@ -530,7 +536,6 @@ CidrUtils::GetNameInfo ( const sockaddr * sa,
     char  serv[TCANET_SMLSTRLINE];
 
     r = ::getnameinfo(sa, salen, &host[0], len, &serv[0], len, flags);
-
     result.assign(host);
 
     return r;
@@ -546,6 +551,7 @@ CidrUtils::IsLoopback ( ipv4addr_t addr )
 
 //-------------------------------------------------------------------//
 
+/**  Factory methods for creating addrinfo hints */
 addrinfo
 CidrUtils::GetTCPServerHints()
 {
