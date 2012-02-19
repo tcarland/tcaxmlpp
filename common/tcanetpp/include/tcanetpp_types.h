@@ -85,14 +85,26 @@ extern "C" {
 typedef struct in_addr    inaddr_t;
 
 
+
 /** Structure defining an IP Address and its associated mask
  *  length in bits representing the a.b.c.d/mb cidr format.
  *  We use a short for the mask length to keep alignment.
  **/
-typedef struct cidr {
+typedef struct ipv4cidr {
     ipv4addr_t   addr;
     uint16_t     masklen;
+
+    ipv4cidr()
+        : addr(0),
+          masklen(0)
+    {}
+
+    ipv4cidr ( ipv4addr_t addr_, uint16_t mb_ = 32 )
+        : addr(addr_),
+          masklen(mb_)
+    {}
 } cidr_t;
+
 
 /** Union for ensuring consistent sizing of sockaddr structures */
 typedef union sock_address
@@ -103,6 +115,16 @@ typedef union sock_address
     struct sockaddr_storage ss;
 } sockaddr_t;
 
+
+typedef struct ipv6addr {
+    uint64_t    r_addr;
+    uint64_t    i_addr;
+
+    ipv6addr()
+        : r_addr(0),
+          i_addr(0)
+    {}
+} ipv6addr_t;
 
 # ifdef __cplusplus
 }  // extern C
