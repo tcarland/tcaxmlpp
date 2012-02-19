@@ -50,10 +50,10 @@ typedef hexes::HexStringList      TextList;
 
 
 
-class PanelFactory {
+class HexPanelFactory {
   public:
-    PanelFactory ( HexPanel * parent );
-    virtual ~PanelFactory() {}
+    HexPanelFactory ( HexPanel * parent );
+    virtual ~HexPanelFactory() {}
 
     virtual HexPanel* operator() ( int panelId, const std::string & title = "" );
 

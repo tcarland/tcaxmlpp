@@ -40,29 +40,36 @@ typedef std::vector<Prefix>  PrefixList;
 
 
 /**  An instance of the Prefix class represents a single 'cidr' 
-  *  format IPV4 Address and its associated mask length. The class
+  *  format IP Address and its associated mask length. The class 
   *  is used with the tcanetpp library and provides convenient 
-  *  sorting and equality operators for use with the STL.
+  *  sorting and equality operators for use with the Standard 
+  *  Template Library.
  **/
 class Prefix {
 
   public:
 
     Prefix()
-        : _pfx(0,0)
-    {}
+    {
+        _pfx.addr     = 0;
+        _pfx.masklen  = 0;
+    }
 
     Prefix ( ipv4addr_t addr, uint16_t len )
-        : _pfx(addr, len)
-    {}
+    {
+        _pfx.addr     = addr;
+        _pfx.masklen  = len;
+    }
 
     Prefix ( const cidr_t & cidr ) 
         : _pfx(cidr) 
     {}
       
     Prefix ( const Prefix & p ) 
-        : _pfx(p.getPrefix(), p.getPrefixLen())
-    {}
+    {
+	_pfx.addr    = p.getPrefix();
+	_pfx.masklen = p.getPrefixLen();
+    }
 
     virtual ~Prefix() {}
 
@@ -99,9 +106,7 @@ class Prefix {
 
   protected:
 
-    ipv4cidr   _pfx;
-    //bool       _ipv4only;
-    //ipv6addr   _ipv6;
+    cidr_t	_pfx;
 
 };
 

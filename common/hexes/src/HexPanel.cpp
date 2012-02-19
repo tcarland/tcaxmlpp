@@ -35,12 +35,12 @@ namespace hexes {
 
 //----------------------------------------------------------------//
 
-PanelFactory::PanelFactory ( HexPanel * parent )
+HexPanelFactory::HexPanelFactory ( HexPanel * parent )
     : _parent(parent)
 {}
 
 HexPanel*
-PanelFactory::operator() ( int panelId, const std::string & title )
+HexPanelFactory::operator() ( int panelId, const std::string & title )
 {
     return NULL;
 }

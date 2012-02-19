@@ -93,16 +93,6 @@ typedef struct in_addr    inaddr_t;
 typedef struct ipv4cidr {
     ipv4addr_t   addr;
     uint16_t     masklen;
-
-    ipv4cidr()
-        : addr(0),
-          masklen(0)
-    {}
-
-    ipv4cidr ( ipv4addr_t addr_, uint16_t mb_ = 32 )
-        : addr(addr_),
-          masklen(mb_)
-    {}
 } cidr_t;
 
 
@@ -119,11 +109,6 @@ typedef union sock_address
 typedef struct ipv6addr {
     uint64_t    r_addr;
     uint64_t    i_addr;
-
-    ipv6addr()
-        : r_addr(0),
-          i_addr(0)
-    {}
 } ipv6addr_t;
 
 # ifdef __cplusplus

@@ -34,7 +34,7 @@ namespace hexes {
 HexStack::HexStack ( const std::string & title )
     : HexPanel(title),
       _curPanel(NULL),
-      _factory(new PanelFactory(this)),
+      _factory(new HexPanelFactory(this)),
       _winCmd(false)
 {
 }
@@ -44,7 +44,7 @@ HexStack::HexStack ( const std::string & title,
                      int   starty, int   startx )
     : HexPanel(title, height, width, starty, startx),
       _curPanel(NULL),
-      _factory(new PanelFactory(this)),
+      _factory(new HexPanelFactory(this)),
       _winCmd(false)
 {}
 

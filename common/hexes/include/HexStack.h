@@ -49,14 +49,14 @@ class HexStack : public HexPanel {
     virtual int  poll();
     virtual void resize  ( int height, int width );
 
-    void setPanelFactory ( PanelFactory * factory );
+    void setPanelFactory ( HexPanelFactory * factory );
 
 
   protected:
 
     PanelStack          _stack;
     HexPanel *          _curPanel;
-    PanelFactory *      _factory;
+    HexPanelFactory *   _factory;
 
     bool                _winCmd;
 
