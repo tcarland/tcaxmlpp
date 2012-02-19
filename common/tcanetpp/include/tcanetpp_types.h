@@ -73,7 +73,9 @@ extern "C" {
 
 // some commonly used defines and types
 //
-#define INET_CIDRSTRLEN   20
+#define INET4ADDRSTRLEN   INET_ADDRSTRLEN;
+#define INET6ADDRSTRLEN   INET6_ADDRSTRLEN;
+#define INET4_CIDRSTRLEN  20
 #define ERRORSTRLEN       256
 #define MAXMASKLEN        32
 #define IPV4ADDR_LOOPBACK 16777343
@@ -94,6 +96,15 @@ typedef struct cidr {
     ipv4addr_t   addr;
     uint16_t     masklen;
 } cidr_t;
+
+
+typedef union sock_address
+{
+    struct sockaddr         sa;
+    struct sockaddr_in      sa_in;
+    struct sockaddr_in6     sa_in6;
+    struct sockaddr_storage ss;
+} sockaddr_t;
 
 
 # ifdef __cplusplus

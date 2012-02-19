@@ -107,13 +107,13 @@ CidrUtils::ToString ( const Prefix & pfx )
 std::string
 CidrUtils::ToString ( ipv4addr_t addr, uint8_t mb )
 {
-    char  cidr[INET_CIDRSTRLEN];
+    char  cidr[INET4_CIDRSTRLEN];
 
     std::string  cidrStr = CidrUtils::ntop(addr);
 #   ifdef WIN32
-    ::_snprintf(cidr, INET_CIDRSTRLEN, "%s%s%u", cidrStr.c_str(), "/", mb);
+    ::_snprintf(cidr, INET4_CIDRSTRLEN, "%s%s%u", cidrStr.c_str(), "/", mb);
 #   else
-    ::snprintf(cidr, INET_CIDRSTRLEN, "%s%s%u", cidrStr.c_str(), "/", mb);
+    ::snprintf(cidr, INET4_CIDRSTRLEN, "%s%s%u", cidrStr.c_str(), "/", mb);
 #   endif
 
     cidrStr.assign(cidr);

@@ -46,8 +46,10 @@ class BufferedSocket : public Socket {
       public:
         virtual ~BufferedSocketFactory() {}
 
-        virtual Socket* operator() ( sockfd_t & fd, sockaddr_in & csock,
-                                     SocketType type, int proto );
+        virtual Socket* operator() ( sockfd_t         & fd,
+                                     sockaddr_storage & csock,
+                                     SocketType         type,
+                                     int                proto );
     };
 
     static BufferedSocketFactory   factory;
@@ -55,10 +57,10 @@ class BufferedSocket : public Socket {
 
   protected:
 
-    BufferedSocket ( sockfd_t    & fd, 
-                     sockaddr_in & csock,
-                     SocketType    type,
-                     int           proto );
+    BufferedSocket ( sockfd_t         & fd,
+                     sockaddr_storage & csock,
+                     SocketType         type,
+                     int                proto );
 
   public:
 

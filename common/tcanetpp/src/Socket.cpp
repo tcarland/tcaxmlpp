@@ -49,14 +49,14 @@ Socket::SocketFactory Socket::factory;
 // ----------------------------------------------------------------------
 
 Socket*
-Socket::SocketFactory::operator() ( sockfd_t & fd, sockaddr_in & csock, 
+Socket::SocketFactory::operator() ( sockfd_t & fd, sockaddr_storage & csock,
                                     SocketType type, int protocol )
 {
     return new Socket(fd, csock, type, protocol);
 }
 
 Socket*
-Socket::UdpSocketFactory::operator() ( sockfd_t & fd, sockaddr_in & csock,
+Socket::UdpSocketFactory::operator() ( sockfd_t & fd, sockaddr_storage & csock,
                                        SocketType type, int protocol )
 {
     return new Socket(fd, _csock, type, protocol);
@@ -76,7 +76,9 @@ Socket::Socket()
     Socket::ResetDescriptor(this->_fd);
 }
 
-
+/**  IPV4 constructor for creating a client or server socket utilizing an IPV4
+  *  address and port.
+ **/
 Socket::Socket ( ipv4addr_t ipaddr, uint16_t port, SocketType type, int protocol )
     throw ( SocketException )
     : _socktype(type),
@@ -116,8 +118,9 @@ Socket::Socket ( ipv4addr_t ipaddr, uint16_t port, SocketType type, int protocol
 }
 
 
-Socket::Socket ( sockfd_t & fd, sockaddr_in & csock, SocketType type, int protocol )
+Socket::Socket ( sockfd_t & fd, sockaddr_storage & csock, SocketType type, int protocol )
     : _fd(fd),
+      _sock(csock),
       _socktype(type),
       _proto(protocol),
       _bound(false),
@@ -125,11 +128,6 @@ Socket::Socket ( sockfd_t & fd, sockaddr_in & csock, SocketType type, int protoc
       _block(false),
       _noUdpClose(false)
 {
-    sockaddr_in * sock    = (sockaddr_in*) &_sock;
-    sock->sin_family      = csock.sin_family;
-    sock->sin_addr.s_addr = csock.sin_addr.s_addr;
-    sock->sin_port        = csock.sin_port;
-
     if ( Socket::IsValidDescriptor(this->_fd) ) {
         if ( _proto == IPPROTO_TCP )
             _connected  = true;
@@ -141,10 +139,14 @@ Socket::Socket ( sockfd_t & fd, sockaddr_in & csock, SocketType type, int protoc
         _bound     = false;
     }
     
-    _port    = ntohs(csock.sin_port);
-    _addrstr = Socket::ntop(csock.sin_addr.s_addr);
-    _hoststr = _addrstr;
-    _hoststr.append(":").append(StringUtils::toString(_port));
+    if ( _sock.ss_family == AF_INET )
+    {
+        sockaddr_in * sock = (sockaddr_in*) &csock;
+	_port    = ntohs(sock->sin_port);
+	_addrstr = Socket::ntop(sock->sin_addr.s_addr);
+	_hoststr = _addrstr;
+	_hoststr.append(":").append(StringUtils::toString(_port));
+    }
 }
 
 
@@ -357,7 +359,7 @@ Socket*
 Socket::accept ( SocketFactory & factory )
 {
     Socket             *client = NULL;
-    struct sockaddr_in  csock;
+    sockaddr_storage    csock;
     socklen_t           len;
     sockfd_t            cfd;
 
@@ -907,6 +909,31 @@ Socket::ntop ( ipv4addr_t addr )
 #   endif
 
     return((std::string) ip);
+}
+
+std::string
+Socket::ntop ( sockaddr_storage * ss )
+{
+    std::string addrstr;
+    char ip[INET6_ADDRSTRLEN];
+
+#   ifdef WIN32
+    // use getaddrinfo?
+
+#   else
+    switch ( ss->ss_family )
+    {
+        case AF_INET:
+            addrstr = Socket::ntop(((struct sockaddr_in *)&ss)->sin_addr.s_addr);
+            break;
+        case AF_INET6:
+            ::inet_ntop(ss->ss_family, &((struct sockaddr_in6 *)&ss)->sin6_addr, ip, INET6_ADDRSTRLEN);
+            addrstr.assign(ip);
+            break;
+    }
+#   endif
+
+    return addrstr;
 }
 
 // ----------------------------------------------------------------------

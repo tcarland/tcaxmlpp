@@ -38,10 +38,10 @@ BufferedSocket::BufferedSocketFactory  BufferedSocket::factory;
 
 
 Socket*
-BufferedSocket::BufferedSocketFactory::operator() ( sockfd_t    & fd, 
-                                                    sockaddr_in & csock,
-                                                    SocketType    type, 
-                                                    int           proto )
+BufferedSocket::BufferedSocketFactory::operator() ( sockfd_t         & fd,
+                                                    sockaddr_storage & csock,
+                                                    SocketType         type,
+                                                    int                proto )
 {
     return( (Socket*) new BufferedSocket(fd, csock, type, proto) );
 }
@@ -63,7 +63,7 @@ BufferedSocket::BufferedSocket ( ipv4addr_t ip, uint16_t port, SocketType type, 
     this->init(false);
 }
 
-BufferedSocket::BufferedSocket ( sockfd_t & fd, sockaddr_in & csock, SocketType type, int proto )
+BufferedSocket::BufferedSocket ( sockfd_t & fd, sockaddr_storage & csock, SocketType type, int proto )
     : Socket(fd, csock, type, proto),
       _rbuffer(new CircularBuffer()),
       _wbuffer(NULL),

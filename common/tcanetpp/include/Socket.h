@@ -83,7 +83,7 @@ class Socket {
     class SocketFactory {
       public:
         virtual ~SocketFactory() {}
-        virtual Socket* operator() ( sockfd_t & fd, sockaddr_in & csock, 
+        virtual Socket* operator() ( sockfd_t & fd, sockaddr_storage & csock,
                                      SocketType type, int protocol );
     };
 
@@ -95,14 +95,14 @@ class Socket {
       * copy of the same descriptor which this factory makes possible.
      **/
     class UdpSocketFactory : public SocketFactory {
-        sockaddr_in  _csock;
+        sockaddr_storage  _csock;
       public:
-        explicit UdpSocketFactory ( sockaddr_in & sock )
+        explicit UdpSocketFactory ( sockaddr_storage & sock )
             : _csock(sock)
         {}
         virtual ~UdpSocketFactory() {}
 
-        virtual Socket* operator() ( sockfd_t & fd, sockaddr_in & csock,
+        virtual Socket* operator() ( sockfd_t & fd, sockaddr_storage & csock,
                                      SocketType type, int protocol );
     };
 
@@ -113,21 +113,20 @@ class Socket {
 	
     Socket();
 
-    Socket ( ipv4addr_t   ipaddr,
-             uint16_t     port,
-             SocketType   type,
-             int          protocol )
+    Socket ( ipv4addr_t   ipaddr, uint16_t port,
+             SocketType   type,   int      protocol )
         throw ( SocketException );
     
+
     virtual ~Socket();
 	
 	
   protected:
 	
-    Socket ( sockfd_t    & fd,
-             sockaddr_in & csock,
-             SocketType    type,
-             int           protocol );
+    Socket ( sockfd_t         & fd,
+             sockaddr_storage & csock,
+             SocketType         type,
+             int                protocol );
 	
   public:
     
@@ -190,6 +189,7 @@ class Socket {
     
     static ipv4addr_t   pton     ( const std::string & ipstr );
     static std::string  ntop     ( ipv4addr_t addr );
+    static std::string  ntop     ( sockaddr_storage  * ss );
     
     static bool         IsValidDescriptor ( const sockfd_t & fd );
     static void         ResetDescriptor   ( sockfd_t & fd );
