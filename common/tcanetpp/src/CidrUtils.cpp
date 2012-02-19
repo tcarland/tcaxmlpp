@@ -505,9 +505,9 @@ CidrUtils::GetHostAddrList ( const std::string & host, IpAddrList & addrlist )
 //-------------------------------------------------------------------//
 
 int
-CidrUtils::GetAddrInfo ( const std::string     & host, 
-                         const struct addrinfo * hints,
-                         struct addrinfo      ** res )
+CidrUtils::GetAddrInfo ( const std::string & host,
+                         const addrinfo    * hints,
+                         struct addrinfo  ** res )
 {
     int r = 0;
 
@@ -518,10 +518,10 @@ CidrUtils::GetAddrInfo ( const std::string     & host,
 
 // flags = NI_NUMERICHOST
 int
-CidrUtils::GetNameInfo ( const struct sockaddr * sa,
-                         socklen_t      salen,
-                         std::string  & result,
-                         int            flags = NI_NUMERICHOST )
+CidrUtils::GetNameInfo ( const sockaddr * sa,
+                         socklen_t        salen,
+                         std::string    & result,
+                         int              flags = NI_NUMERICHOST )
 {
     int    r   = 0;
     size_t len = TCANET_SMLSTRLINE;
@@ -542,6 +542,63 @@ bool
 CidrUtils::IsLoopback ( ipv4addr_t addr )
 {
     return(addr == IPV4ADDR_LOOPBACK);
+}
+
+//-------------------------------------------------------------------//
+
+addrinfo
+CidrUtils::GetTCPServerHints()
+{
+    struct addrinfo hints;
+
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family    = AF_UNSPEC;
+    hints.ai_socktype  = SOCKET_TCP;
+    hints.ai_flags     = AI_PASSIVE;
+
+    return hints;
+}
+
+addrinfo
+CidrUtils::GetUDPServerHints()
+{
+    struct addrinfo hints;
+
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family    = AF_UNSPEC;
+    hints.ai_socktype  = SOCKET_UDP;
+    hints.ai_flags     = AI_PASSIVE;
+
+    return hints;
+}
+
+addrinfo
+CidrUtils::GetTCPClientHints()
+{
+    struct addrinfo hints;
+
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family    = AF_UNSPEC;
+    hints.ai_socktype  = SOCKET_TCP;
+    hints.ai_flags     = 0;
+    hints.ai_protocol  = 0;
+
+    return hints;
+}
+
+
+addrinfo
+CidrUtils::GetUDPClientHints()
+{
+    struct addrinfo hints;
+
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family    = AF_UNSPEC;
+    hints.ai_socktype  = SOCKET_UDP;
+    hints.ai_flags     = 0;
+    hints.ai_protocol  = 0;
+
+    return hints;
 }
 
 //-------------------------------------------------------------------//
