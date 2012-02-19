@@ -82,14 +82,10 @@ extern "C" {
 #define IPV4ADDR_LOOPBACK 16777343
 #define ETHER_ADDRLEN     6
 
-#define SOCKET_TCP        IPPROTO_TCP
-#define SOCKET_UDP        IPPROTO_UDP
-#define SOCKET_ICMP       IPPROTO_ICMP
-
 typedef struct in_addr    inaddr_t;
 
 
-/** Struct defining an IP Address and its associated Mask 
+/** Structure defining an IP Address and its associated mask
  *  length in bits representing the a.b.c.d/mb cidr format.
  *  We use a short for the mask length to keep alignment.
  **/
@@ -98,7 +94,7 @@ typedef struct cidr {
     uint16_t     masklen;
 } cidr_t;
 
-
+/** Union for ensuring consistent sizing of sockaddr structures */
 typedef union sock_address
 {
     struct sockaddr         sa;

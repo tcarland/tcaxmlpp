@@ -46,6 +46,10 @@
 namespace tcanetpp {
 
 
+#define SOCKET_TCP    IPPROTO_TCP
+#define SOCKET_UDP    IPPROTO_UDP
+#define SOCKET_ICMP   IPPROTO_ICMP
+
 
 /**  Socket types for Socket constructor  */
 typedef enum SocketType

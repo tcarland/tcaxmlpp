@@ -44,7 +44,7 @@ namespace tcanetpp {
   *   Class Constructor for a circular buffer instance. 
   *  Throws an exception if the underlying malloc fails or the
   *  buffer size is out of range. If no size is given,
-  *  a default is used.
+  *  a default size is used.
  **/
 CircularBuffer::CircularBuffer ( size_t totalsize ) throw ( BufferException )
     : _buffer(NULL),
@@ -54,7 +54,7 @@ CircularBuffer::CircularBuffer ( size_t totalsize ) throw ( BufferException )
 }
 
 /**  Performs a full copy of the buffer including the current
-  *  read/write/wrap state.
+  *  RW state.
  **/
 CircularBuffer::CircularBuffer ( const CircularBuffer & buffer ) 
     throw ( BufferException )
@@ -84,6 +84,7 @@ CircularBuffer::~CircularBuffer()
 
 // ----------------------------------------------------------------------
 
+/** Internal initialization function used by the constructor(s) */
 void
 CircularBuffer::init() throw ( BufferException )
 {
@@ -107,6 +108,7 @@ CircularBuffer::init() throw ( BufferException )
 }
 
 // ----------------------------------------------------------------------
+
 /**   Reads 'n' bytes from the circular buffer to the
   *   provided buffer, returning the number of bytes
   *   actually copied to the buffer.
@@ -114,7 +116,6 @@ CircularBuffer::init() throw ( BufferException )
   *   @param buff  the buffer to fill.
   *   @param n     the number of bytes to copy. 
  **/
-
 size_t
 CircularBuffer::read ( void *buff, size_t n )
 {
@@ -145,13 +146,13 @@ CircularBuffer::read ( void *buff, size_t n )
 }
 
 // ----------------------------------------------------------------------
+
 /**   Writes 'n' bytes from the provided buffer to the 
   *   CirBuffer returning the number of bytes written.
   *
   *   @param buff  the buffer from which to copy.
   *   @param n     the number of bytes to copy.
  **/
-
 size_t
 CircularBuffer::write ( const void *buff, size_t n )
 {
@@ -184,11 +185,11 @@ CircularBuffer::write ( const void *buff, size_t n )
 }
 
 // ----------------------------------------------------------------------
+
 /**   Reverses the buffer by the provided number of bytes.
   *   NOTE that this is only a safe operation immediatly
   *   following a read and while NO writes have occured.
  **/
-
 size_t
 CircularBuffer::reverse ( size_t offset )
 {
@@ -224,8 +225,8 @@ CircularBuffer::reverse ( size_t offset )
 }
 
 // ----------------------------------------------------------------------
-/**   Skips the read position forward the provided number of bytes */
 
+/**   Skips the read position forward the provided number of bytes */
 size_t
 CircularBuffer::skip ( size_t offset )
 {
@@ -244,10 +245,10 @@ CircularBuffer::skip ( size_t offset )
 }
 
 // ----------------------------------------------------------------------
+
 /**   Returns the number of bytes available for reading
   *   contiguously (without a buffer wrap).
  **/
-
 size_t
 CircularBuffer::readPtrAvailable() const
 {
@@ -278,10 +279,10 @@ CircularBuffer::readAvailable() const
 }
 
 // ----------------------------------------------------------------------
+
 /**   The amount of contigous space available for writing
   *   without a buffer wrap.
  **/
-
 size_t
 CircularBuffer::writePtrAvailable() const
 {
@@ -296,10 +297,10 @@ CircularBuffer::writePtrAvailable() const
 }
 
 // ----------------------------------------------------------------------
+
 /**   The total amount space available for writing including
   *   any 'wrapped' space.
  **/
-
 size_t
 CircularBuffer::writeAvailable() const
 {
@@ -314,8 +315,8 @@ CircularBuffer::writeAvailable() const
 }
 
 // ----------------------------------------------------------------------
-/**   Returns a boolean indicating the current buffer state */
 
+/**   Returns a boolean indicating the current buffer state */
 bool
 CircularBuffer::isWrapped() const
 {
@@ -349,7 +350,6 @@ CircularBuffer::clear()
   *   the buffer. The method can throw an exception if the call 
   *   to realloc fails.
  **/
-
 bool
 CircularBuffer::resize ( size_t buffsize ) throw ( BufferException )
 {
@@ -532,7 +532,6 @@ CircularBuffer::setWritePtr ( size_t offset ) throw ( BufferException )
   *   @param size  is populated with the total size available
   *   for reading.
  **/
-
 char*
 CircularBuffer::getReadPtr ( size_t * size )
 {
@@ -567,7 +566,6 @@ CircularBuffer::getReadPtr ( size_t * size )
   *   
   *   @param offset  is the size (bytes) read off the buffer.
  **/
-
 void
 CircularBuffer::setReadPtr ( size_t offset ) throw ( BufferException )
 {

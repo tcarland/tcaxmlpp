@@ -50,8 +50,8 @@ namespace tcanetpp {
 /*  Default size limitations. */
 #define MIN_CIRBUFFER_SIZE       1
 #define MAX_CIRBUFFER_SIZE       (4294967295U)
-#define DEFAULT_CIRBUFFER_SIZE   (1024000)
-#define CIRBUFFER_VERSION        "v1.97"
+#define DEFAULT_CIRBUFFER_SIZE   (1024000U)
+#define CIRBUFFER_VERSION        "v1.98"
 
 
 // ----------------------------------------------------------------------
@@ -120,6 +120,7 @@ class CircularBuffer {
     size_t         readPtrAvailable() const;
     size_t         writePtrAvailable() const;
 
+    static
     const char*    Version();
 
 
