@@ -38,7 +38,7 @@
 #include <cstdlib>
 
 
-#include "tcanetpp_types.h"
+#include "tcanetpp_ip.h"
 #include "Exception.hpp"
 #include "SocketOption.h"
 
@@ -195,7 +195,8 @@ class Socket {
     static void         Unblock  ( Socket * s );
     
     static ipv4addr_t   pton     ( const std::string & ipstr );
-    static std::string  ntop     ( ipv4addr_t addr );
+    static std::string  ntop     ( ipv4addr_t        & addr );
+    static std::string  ntop     ( ipv6addr_t        & addr );
     static std::string  ntop     ( sockaddr_storage  * ss );
     
     static bool         IsValidDescriptor ( const sockfd_t & fd );

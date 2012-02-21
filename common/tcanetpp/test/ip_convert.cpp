@@ -47,7 +47,8 @@ int main ( int argc, char **argv )
             if ( r != 1 )
                 std::cout << "Error in CidrUtils::pton " << r << std::endl;
 
-            in6addr_t  addr = *((in6addr_t*)&ip6addr);
+            //in6addr_t  addr = *((in6addr_t*)&ip6addr);
+            in6addr_t  addr = ip6addr.toAddr();
             std::string rev = CidrUtils::ntop(addr);
 
             std::cout << "   "           << std::setiosflags(std::ios::left) << std::setw(38)

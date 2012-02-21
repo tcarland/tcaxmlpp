@@ -912,46 +912,65 @@ Socket::pton ( const std::string & ipstr )
     return addr;
 }
 
-
 std::string
-Socket::ntop ( ipv4addr_t addr )
+Socket::ntop ( ipv4addr_t & addr )
 {
-    char ip[INET_ADDRSTRLEN];
+    std::string  ipstr;
+    const char * dst = NULL;
+    char         ip[INET_ADDRSTRLEN];
 
 #   ifdef WIN32
     inaddr_t ipaddr;
     ipaddr.s_addr = addr;
     ::strncpy(ip, inet_ntoa(ipaddr), INET_ADDRSTRLEN);
+    ipstr.assign(ip);
 #   else
-    ::inet_ntop(AF_INET, &addr, ip, sizeof(ip));
+    dst = ::inet_ntop(AF_INET, &addr, ip, INET_ADDRSTRLEN);
+    if ( dst )
+        ipstr.assign(ip);
 #   endif
 
-    return((std::string) ip);
+    return ipstr;
+}
+
+std::string
+Socket::ntop ( ipv6addr_t & addr )
+{
+    sockaddr_in6 ss;
+
+    ss.sin6_family = AF_INET6;
+    ss.sin6_addr   = *((in6addr_t*)&addr);
+
+    return Socket::ntop((sockaddr_storage*)&ss);
 }
 
 std::string
 Socket::ntop ( sockaddr_storage * ss )
 {
-    std::string addrstr;
-    char ip[INET6_ADDRSTRLEN];
+    std::string  ipstr;
+    const char * dst = NULL;
+    char         ip[INET6_ADDRSTRLEN];
 
 #   ifdef WIN32
     // use getaddrinfo?
 
 #   else
+
     switch ( ss->ss_family )
     {
         case AF_INET:
-            addrstr = Socket::ntop(((struct sockaddr_in *)&ss)->sin_addr.s_addr);
+            dst = ::inet_ntop(AF_INET, &((struct sockaddr_in *)&ss)->sin_addr.s_addr, ip, INET6_ADDRSTRLEN);
             break;
         case AF_INET6:
-            ::inet_ntop(ss->ss_family, &((struct sockaddr_in6 *)&ss)->sin6_addr, ip, INET6_ADDRSTRLEN);
-            addrstr.assign(ip);
+            dst = ::inet_ntop(ss->ss_family, &((struct sockaddr_in6 *)&ss)->sin6_addr, ip, INET6_ADDRSTRLEN);
             break;
     }
+    if ( dst )
+        ipstr.assign(ip);
+
 #   endif
 
-    return addrstr;
+    return ipstr;
 }
 
 // ----------------------------------------------------------------------

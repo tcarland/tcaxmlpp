@@ -68,6 +68,11 @@ typedef struct ipv6addr {
             return(b < addr.b);
         return( a < addr.a );
     }
+
+    in6addr_t toAddr()
+    {
+        return( *((in6addr_t*) this) );
+    }
 } ipv6addr_t;
 
 
