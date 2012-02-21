@@ -55,27 +55,39 @@ class BufferedSocket : public Socket {
     static BufferedSocketFactory   factory;
 
 
-  protected:
-
-    BufferedSocket ( sockfd_t         & fd,
-                     sockaddr_storage & csock,
-                     SocketType         type,
-                     int                proto );
-
   public:
 
     BufferedSocket();
 
-    BufferedSocket ( ipv4addr_t  ip, 
-                     uint16_t    port, 
-                     SocketType  socktype, 
-                     int         proto );
+    BufferedSocket ( ipv4addr_t   ip,
+                     uint16_t     port,
+                     SocketType   socktype,
+                     int          proto ) throw ( SocketException );
+
+    BufferedSocket ( ipv6addr_t   ip,
+                     uint16_t     port,
+                     SocketType   socktype,
+                     int          proto ) throw ( SocketException );
+
+    BufferedSocket ( sockaddr_t * sa,
+                     size_t       salen,
+                     uint16_t     port,
+                     SocketType   type,
+                     int          protocol ) throw ( SocketException );
 
     virtual ~BufferedSocket();
 
 
+  protected:
+
+    BufferedSocket ( sockfd_t   & fd,
+                     sockaddr_t & csock,
+                     SocketType   type,
+                     int          proto );
+
+  public:
+
     /*  from Socket */
-    
     virtual int      init  ( bool block = false );
     virtual ssize_t  read  ( void * vptr, size_t n );
     virtual ssize_t  write ( const void * vptr, size_t n );

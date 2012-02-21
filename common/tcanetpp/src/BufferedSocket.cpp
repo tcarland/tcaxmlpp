@@ -55,6 +55,7 @@ BufferedSocket::BufferedSocket()
 {}
 
 BufferedSocket::BufferedSocket ( ipv4addr_t ip, uint16_t port, SocketType type, int proto )
+    throw ( SocketException )
     : Socket(ip, port, type, proto),
       _rbuffer(new CircularBuffer()),
       _wbuffer(NULL),
@@ -63,7 +64,29 @@ BufferedSocket::BufferedSocket ( ipv4addr_t ip, uint16_t port, SocketType type, 
     this->init(false);
 }
 
-BufferedSocket::BufferedSocket ( sockfd_t & fd, sockaddr_storage & csock, SocketType type, int proto )
+BufferedSocket::BufferedSocket ( ipv6addr_t ip, uint16_t port, SocketType type, int proto )
+    throw ( SocketException )
+    : Socket(ip, port, type, proto),
+      _rbuffer(new CircularBuffer()),
+      _wbuffer(NULL),
+      _wbx(false)
+{
+    this->init(false);
+}
+
+BufferedSocket::BufferedSocket ( sockaddr_t * sa, size_t salen,
+                                 uint16_t port, SocketType type, int proto )
+    throw ( SocketException )
+    : Socket(sa, salen, port, type, proto),
+      _rbuffer(new CircularBuffer()),
+      _wbuffer(NULL),
+      _wbx(false)
+{
+    this->init(false);
+}
+
+// protected constructor
+BufferedSocket::BufferedSocket ( sockfd_t & fd, sockaddr_t & csock, SocketType type, int proto )
     : Socket(fd, csock, type, proto),
       _rbuffer(new CircularBuffer()),
       _wbuffer(NULL),
