@@ -51,24 +51,26 @@ class Prefix {
 
     Prefix()
     {
-        _pfx.addr     = 0;
-        _pfx.masklen  = 0;
+        _pfx.addr = 0;
+        _pfx.mb   = 0;
     }
 
-    Prefix ( ipv4addr_t addr, uint16_t len )
+    Prefix ( ipv4addr_t addr, uint16_t mb )
     {
-        _pfx.addr     = addr;
-        _pfx.masklen  = len;
+        _pfx.addr = addr;
+        _pfx.mb   = mb;
     }
 
     Prefix ( const cidr_t & cidr ) 
-        : _pfx(cidr) 
-    {}
-      
+    {
+        _pfx.addr = cidr.addr;
+        _pfx.mb   = cidr.mb;
+    }
+
     Prefix ( const Prefix & p ) 
     {
-	_pfx.addr    = p.getPrefix();
-	_pfx.masklen = p.getPrefixLen();
+	_pfx.addr = p.getPrefix();
+	_pfx.mb   = p.getPrefixLen();
     }
 
     virtual ~Prefix() {}
@@ -77,13 +79,13 @@ class Prefix {
     bool   operator==  ( const Prefix & prefix ) const
     {
         return( (_pfx.addr == prefix._pfx.addr) 
-                && (_pfx.masklen == prefix._pfx.masklen) );
+               && (_pfx.mb == prefix._pfx.mb) );
     }
     
     bool   operator<   ( const Prefix & prefix ) const
     {
         if ( _pfx.addr == prefix._pfx.addr )
-            return(_pfx.masklen < prefix._pfx.masklen);
+            return(_pfx.mb < prefix._pfx.mb  );
         return(_pfx.addr < prefix._pfx.addr);
     }
 
@@ -94,8 +96,8 @@ class Prefix {
 
     inline uint8_t       getPrefixLen() const
     {
-        uint8_t masklen = *((uint8_t*)&_pfx.masklen);
-        return masklen;
+        uint8_t mb = *((uint8_t*)&_pfx.mb  );
+        return mb;
     }
 
     inline const cidr_t& getCidr() const

@@ -51,7 +51,8 @@ public:
     static bool         IsBasePrefix    ( ipv4addr_t  addr, uint8_t mb );
     static ipv4addr_t   ToBasePrefix    ( ipv4addr_t  addr, uint8_t mb );
 
-    static std::string  ToString        ( ipv4addr_t     addr );
+    static std::string  ToString        ( ipv4addr_t   & addr );
+    static std::string  ToString        ( ipv6addr_t   & addr );
     static std::string  ToString        ( const Prefix & pfx );
     static std::string  ToString        ( ipv4addr_t     addr, uint8_t mb );
     static ipv4addr_t   ToAddr          ( const std::string & addrStr );
@@ -85,9 +86,14 @@ public:
 
 
     static std::string  ether_ntop      ( const ethaddr_t   * addr );
-    static std::string  ntop            ( ipv4addr_t          addr );
+
+    static std::string  ntop            ( const ipv4addr_t  & addr );
+    static std::string  ntop            ( const ipv6addr_t  & addr );
+
     static int          pton            ( const std::string & ipstr, 
                                           ipv4addr_t        & addr );
+    static int          pton            ( const std::string & ipstr,
+                                          ipv6addr_t        & addr );
 
     static std::string  GetHostName();
     static std::string  GetHostName     ( ipv4addr_t          addr );
@@ -106,7 +112,8 @@ public:
                                           std::string       & result,
                                           int                 flags );
 
-    static bool         IsLoopback      ( ipv4addr_t addr );
+    static bool         IsLoopback      ( ipv4addr_t        & addr );
+    static bool         IsLoopback      ( ipv6addr_t        & addr );
 
     static addrinfo     GetTCPServerHints();
     static addrinfo     GetUDPServerHints();

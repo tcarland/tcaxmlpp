@@ -87,9 +87,15 @@ CidrUtils::ToBasePrefix ( ipv4addr_t addr, uint8_t mb )
 
 //-------------------------------------------------------------------//
 
-/** Convert the given IPv4 address to a string wrapping the 'ntop' function. */
+/** Convert the given IP address to a string wrapping the 'ntop' function. */
 std::string
-CidrUtils::ToString ( ipv4addr_t addr )
+CidrUtils::ToString ( ipv4addr_t & addr )
+{
+    return CidrUtils::ntop(addr);
+}
+
+std::string
+CidrUtils::ToString ( ipv6addr_t & addr )
 {
     return CidrUtils::ntop(addr);
 }
@@ -353,8 +359,9 @@ CidrUtils::RandomPrefix ( ipv4addr_t agg, uint8_t masklen )
 //-------------------------------------------------------------------//
 
 std::string
-CidrUtils::ntop ( ipv4addr_t addr )
+CidrUtils::ntop ( const ipv4addr_t & addr )
 {
+    const char * dst;
     char         ip[INET_ADDRSTRLEN];
     std::string  ipstr;
 
@@ -363,13 +370,31 @@ CidrUtils::ntop ( ipv4addr_t addr )
     wip.s_addr = addr;
     ::strncpy(ip, ::inet_ntoa(wip), INET_ADDRSTRLEN);
 #   else
-    ::inet_ntop(AF_INET, &addr, ip, sizeof(ip));
+    dst = ::inet_ntop(AF_INET, &addr, ip, sizeof(ip));
 #   endif
 
-    ipstr.assign(ip);
+    if ( dst != NULL )
+        ipstr.assign(ip);
     
-    return(ipstr);
+    return ipstr;
 }
+
+std::string
+CidrUtils::ntop ( const ipv6addr_t & addr )
+{
+    const char * dst = NULL;
+    char         ip[INET6_ADDRSTRLEN];
+    std::string  ipstr;
+
+    dst = ::inet_ntop(AF_INET6, &addr, ip, INET6_ADDRSTRLEN);
+
+    if ( dst )
+        ipstr.assign(ip);
+
+    return ipstr;
+}
+
+//-------------------------------------------------------------------//
 
 int
 CidrUtils::pton ( const std::string & ipstr, ipv4addr_t & addr )
@@ -384,6 +409,13 @@ CidrUtils::pton ( const std::string & ipstr, ipv4addr_t & addr )
 
     return rs;
 }
+
+int
+CidrUtils::pton ( const std::string & ipstr, ipv6addr_t & addr )
+{
+    return( ::inet_pton(AF_INET6, ipstr.c_str(), &addr) );
+}
+
 
 //-------------------------------------------------------------------//
 
@@ -423,7 +455,7 @@ CidrUtils::GetHostName()
 }
 
 std::string
-CidrUtils::GetHostName ( ipv4addr_t addr )
+CidrUtils::GetHostName ( ipv4addr_t  addr )
 {
     std::string       hostname;
     struct  hostent  *hp = NULL;
@@ -436,6 +468,7 @@ CidrUtils::GetHostName ( ipv4addr_t addr )
     return hostname;
 }
 
+//-------------------------------------------------------------------//
 
 ipv4addr_t
 CidrUtils::GetHostAddr()
@@ -529,11 +562,10 @@ CidrUtils::GetNameInfo ( const sockaddr * sa,
                          std::string    & result,
                          int              flags = NI_NUMERICHOST )
 {
+    char   host[TCANET_SMLSTRLINE];
+    char   serv[TCANET_SMLSTRLINE];
     int    r   = 0;
     size_t len = TCANET_SMLSTRLINE;
-
-    char  host[TCANET_SMLSTRLINE];
-    char  serv[TCANET_SMLSTRLINE];
 
     r = ::getnameinfo(sa, salen, &host[0], len, &serv[0], len, flags);
     result.assign(host);
@@ -544,9 +576,15 @@ CidrUtils::GetNameInfo ( const sockaddr * sa,
 //-------------------------------------------------------------------//
 
 bool
-CidrUtils::IsLoopback ( ipv4addr_t addr )
+CidrUtils::IsLoopback ( ipv4addr_t & addr )
 {
     return(addr == IPV4ADDR_LOOPBACK);
+}
+
+bool
+CidrUtils::IsLoopback ( ipv6addr_t & addr )
+{
+    return(addr == in6addr_loopback);
 }
 
 //-------------------------------------------------------------------//

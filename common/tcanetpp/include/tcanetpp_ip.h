@@ -36,14 +36,48 @@
 
 
 // ----------------------------------------------------------------------
-//  Ethernet header
+//   IPV6 Address
 
+/**  IPv6 address. We redefine this as two uint64's to
+  *  allow for object comparison.
+ **/
+typedef struct ipv6addr {
+    uint64_t  a;
+    uint64_t  b;
+
+    ipv6addr() : a(0), b(0) {}
+
+    ipv6addr ( uint64_t a_, uint64_t b_)
+        : a(a_), b(b_)
+    {}
+
+    ipv6addr ( const in6addr_t & addr )
+    {
+        a  = ((const uint64_t*) &addr)[0];
+        b  = ((const uint64_t*) &addr)[1];
+    }
+
+    bool operator== ( const struct ipv6addr & addr ) const
+    {
+        return( (a == addr.a) && (b == addr.b) );
+    }
+
+    bool operator< ( const struct ipv6addr & addr ) const
+    {
+        if ( a == addr.a )
+            return(b < addr.b);
+        return( a < addr.a );
+    }
+} ipv6addr_t;
+
+
+// ----------------------------------------------------------------------
+//  Ethernet header
 
 /**  Ethernet address as redefined from net/ethernet.h */
 typedef struct EtherAddr {
     uint8_t  ether_octet[ETHER_ADDRLEN];
 } ethaddr_t;
-
 
 /**  The Ethernet header definition */
 typedef struct EthHeader {
@@ -54,7 +88,7 @@ typedef struct EthHeader {
 
 
 // ----------------------------------------------------------------------
-//  IP Header
+//  IPV4 Header
 
 
 /**  The IP header definition redefined from netinet/ip.h */
@@ -157,22 +191,6 @@ typedef struct TcpHeader {
 // ----------------------------------------------------------------------
 //  ICMP Header
 
-/**  The ICMP Header definition redefined from netinet/ip_icmp.h
- *   This is a weak translation and ip_icmp.h header should be preferred.
- **/
-typedef struct IcmpHeader {
-    uint8_t  type;
-    uint8_t  code;
-    uint16_t chksum;
-    uint16_t id;
-    uint16_t seq;
-
-    IcmpHeader()
-        : type(0), code(0), chksum(0), 
-          id(0), seq(0)
-    {}
-
-} neticmp_h;
 
 //  ICMP types and codes 
 // We redefine these for simplifying platform compatibility
@@ -190,7 +208,6 @@ typedef struct IcmpHeader {
 #define ICMP_ADDRESS            17
 #define ICMP_ADDRESSREPLY       18
 #define NR_ICMP_TYPES           18
-
 
 /* Codes for UNREACH. */
 #define ICMP_NET_UNREACH        0
@@ -222,15 +239,26 @@ typedef struct IcmpHeader {
 #define ICMP_EXC_FRAGTIME       1       /* Fragment reassemble time exceeded */
 
 
+/**  The ICMP Header definition redefined from netinet/ip_icmp.h
+ *   This is a weak translation and ip_icmp.h header should be preferred.
+ **/
+typedef struct IcmpHeader {
+    uint8_t  type;
+    uint8_t  code;
+    uint16_t chksum;
+    uint16_t id;
+    uint16_t seq;
+
+    IcmpHeader()
+        : type(0), code(0), chksum(0),
+          id(0), seq(0)
+    {}
+
+} neticmp_h;
+
+
 // ----------------------------------------------------------------------
 //  IGMP Header
-
-typedef struct IgmpHeader {
-    uint8_t     type;
-    uint8_t     code;
-    uint16_t    chksum;
-    ipv4addr_t  grpaddr;
-} netigmp_h;
 
 #define IGMP_TYPE_MEMBERQUERY   0x11
 #define IGMP_TYPE_REPORTV1      0x12
@@ -254,6 +282,19 @@ typedef struct IgmpHeader {
 
 #define IGMP_ROUTER_V1    1
 #define IGMP_ROUTER_V2    2
+
+
+typedef struct IgmpHeader {
+    uint8_t     type;
+    uint8_t     code;
+    uint16_t    chksum;
+    ipv4addr_t  grpaddr;
+
+    IgmpHeader()
+        : type(0), code(0), chksum(0),
+          grpaddr(0)
+    {}
+} netigmp_h;
 
 
 

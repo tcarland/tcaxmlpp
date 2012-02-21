@@ -32,7 +32,6 @@
 extern "C" {
 #endif
 
-
 #ifdef WIN32
 # include <Winsock2.h>
 # include <ws2tcpip.h>
@@ -49,67 +48,50 @@ extern "C" {
 
 // not relying on win32 inttypes, so we define our own.
 #ifdef WIN32  
-
-  typedef long                 ssize_t;
-  typedef signed char          int8_t;
-  typedef unsigned char        uint8_t;
-  typedef short                int16_t;
-  typedef unsigned short       uint16_t;
-  typedef int                  int32_t;
-  typedef unsigned             uint32_t;
-  typedef long long            int64_t;
-  typedef unsigned long long   uint64_t;
- 
-  typedef int                  socklen_t;
-  typedef unsigned long        ipv4addr_t;
-  typedef SOCKET               sockfd_t;
-  
-#else  
-
-  typedef uint32_t             ipv4addr_t;
-  typedef int                  sockfd_t;
-
+  typedef long                   ssize_t;
+  typedef signed char            int8_t;
+  typedef unsigned char          uint8_t;
+  typedef short                  int16_t;
+  typedef unsigned short         uint16_t;
+  typedef int                    int32_t;
+  typedef unsigned long          uint32_t;
+  typedef long long              int64_t;
+  typedef unsigned long long     uint64_t;
+  typedef int                    socklen_t;
 #endif
 
+// file descriptors are abstracted this type
+//
+#ifdef WIN32
+  typedef SOCKET                 sockfd_t;
+#else  
+  typedef int                    sockfd_t;
+#endif
 
 // some commonly used defines and types
 //
-#define INET4ADDRSTRLEN   INET_ADDRSTRLEN;
-#define INET6ADDRSTRLEN   INET6_ADDRSTRLEN;
-#define INET4_CIDRSTRLEN  20
-#define ERRORSTRLEN       256
-#define MAXMASKLEN        32
-#define IPV4ADDR_LOOPBACK 16777343
-#define ETHER_ADDRLEN     6
+#define INET4ADDRSTRLEN         INET_ADDRSTRLEN;
+#define INET6ADDRSTRLEN         INET6_ADDRSTRLEN;
+#define INET4_CIDRSTRLEN        20
+#define ERRORSTRLEN             256
+#define MAXMASKLEN              32
+#define IPV4ADDR_LOOPBACK       16777343
+#define ETHER_ADDRLEN           6
 
-typedef struct in_addr    inaddr_t;
+// some handy typedef's
+typedef struct in_addr          inaddr_t;
+typedef struct in6_addr         in6addr_t;
+typedef uint32_t                ipv4addr_t;
+typedef struct sockaddr_storage sockaddr_t;
 
 
-
-/** Structure defining an IP Address and its associated mask
+/** Structure defining an IPV4 Address and its mask
  *  length in bits representing the a.b.c.d/mb cidr format.
- *  We use a short for the mask length to keep alignment.
  **/
 typedef struct ipv4cidr {
     ipv4addr_t   addr;
-    uint16_t     masklen;
+    uint16_t     mb;
 } cidr_t;
-
-
-/** Union for ensuring consistent sizing of sockaddr structures */
-typedef union sock_address
-{
-    struct sockaddr         sa;
-    struct sockaddr_in      sa_in;
-    struct sockaddr_in6     sa_in6;
-    struct sockaddr_storage ss;
-} sockaddr_t;
-
-
-typedef struct ipv6addr {
-    uint64_t    r_addr;
-    uint64_t    i_addr;
-} ipv6addr_t;
 
 # ifdef __cplusplus
 }  // extern C
