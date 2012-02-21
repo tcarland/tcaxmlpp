@@ -87,7 +87,7 @@ class Socket {
     class SocketFactory {
       public:
         virtual ~SocketFactory() {}
-        virtual Socket* operator() ( sockfd_t & fd, sockaddr_storage & csock,
+        virtual Socket* operator() ( sockfd_t & fd, sockaddr_t & csock,
                                      SocketType type, int protocol );
     };
 
@@ -99,41 +99,50 @@ class Socket {
       * copy of the same descriptor which this factory makes possible.
      **/
     class UdpSocketFactory : public SocketFactory {
-        sockaddr_storage  _csock;
+        sockaddr_t  _csock;
       public:
-        explicit UdpSocketFactory ( sockaddr_storage & sock )
+        explicit UdpSocketFactory ( sockaddr_t & sock )
             : _csock(sock)
         {}
         virtual ~UdpSocketFactory() {}
 
-        virtual Socket* operator() ( sockfd_t & fd, sockaddr_storage & csock,
+        virtual Socket* operator() ( sockfd_t & fd, sockaddr_t & csock,
                                      SocketType type, int protocol );
     };
 
     static SocketFactory  factory;
+    static ipv6addr_t     ipv6addr_any;
 	
 
   public:
 	
     Socket();
 
-    Socket ( ipv4addr_t   ipaddr, uint16_t port,
-             SocketType   type,   int      protocol )
-        throw ( SocketException );
+    Socket ( ipv4addr_t   ipaddr,
+             uint16_t     port,
+             SocketType   type,
+             int          protocol ) throw ( SocketException );
     
-    Socket ( sockaddr_in * sa,   size_t salen, uint16_t port,
-             SocketType    type, int    protocol )
-        throw ( SocketException );
+    Socket ( ipv6addr_t   ipaddr,
+             uint16_t     port,
+             SocketType   type,
+             int          protocol ) throw ( SocketException );
+
+    Socket ( sockaddr_t * sa,
+             size_t       salen,
+             uint16_t     port,
+             SocketType   type,
+             int          protocol ) throw ( SocketException );
 
     virtual ~Socket();
 	
 	
   protected:
 	
-    Socket ( sockfd_t         & fd,
-             sockaddr_storage & csock,
-             SocketType         type,
-             int                protocol );
+    Socket ( sockfd_t   & fd,
+             sockaddr_t & csock,
+             SocketType   type,
+             int          protocol );
 	
   public:
     
@@ -169,38 +178,38 @@ class Socket {
     const int&          getSocketProtocol() const;
     const uint16_t&     getPort() const;
 
-    void                setUdpNoClose ( bool noclose );
+    void                setUdpNoClose ( bool  noclose );
     bool                getUdpNoClose() const;
 
     int                 setSocketOption ( int level, int optname, int optval );
-    int                 setSocketOption ( SocketOption sockopt );
-    SocketOption        getSocketOption ( SocketOption sockopt );
+    int                 setSocketOption ( SocketOption  sockopt );
+    SocketOption        getSocketOption ( SocketOption  sockopt );
     
     void                setBlocking();
     void                setNonBlocking();
     bool                isBlocking();
     
     const std::string&  getErrorString() const;
-    const std::string&  errorStr() const     { return this->getErrorString(); }
+    const std::string&  errorStr() const { return this->getErrorString(); }
     
-    virtual ssize_t     read     ( void * vptr, size_t n );
+    virtual ssize_t     read     ( void       * vptr, size_t n );
     virtual ssize_t     write    ( const void * vptr, size_t n );
-
-    virtual ssize_t     readFrom ( void * vptr, size_t n, sockaddr_in & csock );
+    virtual ssize_t     readFrom ( void       * vptr, size_t n,
+                                   sockaddr_t & csock );
             
     
   public:	
     
-    static void         Block    ( Socket * s );
-    static void         Unblock  ( Socket * s );
+    static void         Block    ( Socket           * s );
+    static void         Unblock  ( Socket           * s );
     
-    static ipv4addr_t   pton     ( const std::string & ipstr );
+    static std::string  ntop     ( sockaddr_t        * ss );
     static std::string  ntop     ( ipv4addr_t        & addr );
     static std::string  ntop     ( ipv6addr_t        & addr );
-    static std::string  ntop     ( sockaddr_storage  * ss );
+    static ipv4addr_t   pton     ( const std::string & ipstr );
     
     static bool         IsValidDescriptor ( const sockfd_t & fd );
-    static void         ResetDescriptor   ( sockfd_t & fd );
+    static void         ResetDescriptor   ( sockfd_t       & fd );
 
     static uint16_t     IpChkSum ( uint16_t * t, int n );
    
@@ -225,7 +234,7 @@ class Socket {
   private:
     
     sockfd_t                _fd;
-    sockaddr_storage        _sock;
+    sockaddr_t              _sock;
     SocketType              _socktype;
     int                     _proto;
     uint16_t                _port;

@@ -44,19 +44,22 @@
 namespace tcanetpp {
 
 
+// ----------------------------------------------------------------------
+
 Socket::SocketFactory Socket::factory;
+ipv6addr_t Socket::ipv6addr_any = ipv6addr();
 
 // ----------------------------------------------------------------------
 
 Socket*
-Socket::SocketFactory::operator() ( sockfd_t & fd, sockaddr_storage & csock,
+Socket::SocketFactory::operator() ( sockfd_t & fd, sockaddr_t & csock,
                                     SocketType type, int protocol )
 {
     return new Socket(fd, csock, type, protocol);
 }
 
 Socket*
-Socket::UdpSocketFactory::operator() ( sockfd_t & fd, sockaddr_storage & csock,
+Socket::UdpSocketFactory::operator() ( sockfd_t & fd, sockaddr_t & csock,
                                        SocketType type, int protocol )
 {
     return new Socket(fd, _csock, type, protocol);
@@ -117,7 +120,7 @@ Socket::Socket ( ipv4addr_t ipaddr, uint16_t port, SocketType type, int protocol
 
 }
 
-Socket::Socket ( sockaddr_in * sa, size_t salen, uint16_t port, SocketType type, int protocol )
+Socket::Socket ( ipv6addr_t ipaddr, uint16_t port, SocketType type, int protocol )
     throw ( SocketException )
     : _socktype(type),
       _proto(protocol),
@@ -128,15 +131,53 @@ Socket::Socket ( sockaddr_in * sa, size_t salen, uint16_t port, SocketType type,
       _noUdpClose(false)
 {
     Socket::ResetDescriptor(this->_fd);
+    sockaddr_in6 * sock = (struct sockaddr_in6*) &_sock;
 
-    ::memcpy(&_sock, sa, salen);
-    _addrstr = Socket::ntop((sockaddr_storage*) sa);
+    if ( _socktype <= SOCKTYPE_NONE || _socktype > SOCKTYPE_RAW )
+        throw SocketException("Socket error: Invalid Socket type");
+
+    if ( _proto < 0 || _proto > 255 )
+        throw SocketException("Socket error: Invalid protocol");
+
+    ::memset(sock, 0, sizeof(struct sockaddr_in6));
+    sock->sin6_family = PF_INET6;
+    sock->sin6_port   = htons(_port);
+
+    if ( (_socktype >= SOCKTYPE_SERVER && ipaddr == ipv6addr_any ) ) {
+        sock->sin6_addr = in6addr_any;
+    } else {
+        if ( ipaddr == ipv6addr_any && _socktype < SOCKTYPE_SERVER )
+            throw SocketException("Socket error: Invalid IP Address");
+
+        sock->sin6_addr = *((in6addr_t*) &ipaddr);
+    }
+
+    _addrstr = Socket::ntop(ipaddr);
     _hoststr = _addrstr;
-    _hoststr.append(":").append(StringUtils::toString(_port));
+    _hoststr.append("/:").append(StringUtils::toString(_port));
+}
+
+Socket::Socket ( sockaddr_t * sa, size_t salen, uint16_t port, SocketType type, int protocol )
+    throw ( SocketException )
+    : _sock(*sa),
+      _socktype(type),
+      _proto(protocol),
+      _port(port),
+      _bound(false),
+      _connected(false),
+      _block(false),
+      _noUdpClose(false)
+{
+    Socket::ResetDescriptor(this->_fd);
+
+    //::memcpy(&_sock, sa, salen);
+    _addrstr = Socket::ntop((sockaddr_t*) &_sock);
+    _hoststr = _addrstr;
+    _hoststr.append("/:").append(StringUtils::toString(_port));
 }
 
 
-Socket::Socket ( sockfd_t & fd, sockaddr_storage & csock, SocketType type, int protocol )
+Socket::Socket ( sockfd_t & fd, sockaddr_t & csock, SocketType type, int protocol )
     : _fd(fd),
       _sock(csock),
       _socktype(type),
@@ -159,11 +200,21 @@ Socket::Socket ( sockfd_t & fd, sockaddr_storage & csock, SocketType type, int p
     
     if ( _sock.ss_family == AF_INET )
     {
-        sockaddr_in * sock = (sockaddr_in*) &csock;
+        sockaddr_in * sock;
+        sock     = (sockaddr_in*) &csock;
 	_port    = ntohs(sock->sin_port);
 	_addrstr = Socket::ntop(sock->sin_addr.s_addr);
 	_hoststr = _addrstr;
-	_hoststr.append(":").append(StringUtils::toString(_port));
+	_hoststr.append("/:").append(StringUtils::toString(_port));
+    }
+    else if ( _sock.ss_family == AF_INET6 )
+    {
+        sockaddr_in6 * sock;
+        sock     = (sockaddr_in6*) &csock;
+        _port    = ntohs(sock->sin6_port);
+        _addrstr = Socket::ntop(&csock);
+        _hoststr = _addrstr;
+	_hoststr.append("/:").append(StringUtils::toString(_port));
     }
 }
 
@@ -376,10 +427,10 @@ Socket::accept()
 Socket*
 Socket::accept ( SocketFactory & factory )
 {
-    Socket             *client = NULL;
-    sockaddr_storage    csock;
-    socklen_t           len;
-    sockfd_t            cfd;
+    Socket      * client = NULL;
+    sockaddr_t    csock;
+    socklen_t     len;
+    sockfd_t      cfd;
 
     if ( _socktype < SOCKTYPE_SERVER )
     	return NULL;
@@ -464,7 +515,7 @@ Socket::write ( const void * vptr, size_t n )
 // ----------------------------------------------------------------------
 
 ssize_t
-Socket::readFrom ( void * vptr, size_t n, sockaddr_in & csock )
+Socket::readFrom ( void * vptr, size_t n, sockaddr_t & csock )
 {
     socklen_t len = 0;
     ssize_t   rd  = 0;
@@ -472,7 +523,7 @@ Socket::readFrom ( void * vptr, size_t n, sockaddr_in & csock )
     if ( _proto == IPPROTO_TCP && _socktype != SOCKTYPE_RAW )
         return -1;
 
-    len = sizeof(struct sockaddr_in);
+    len = sizeof(csock);
     rd  = ::recvfrom(_fd, (char*) vptr, n, 0, (struct sockaddr*) &csock, &len);
 
     if ( rd < 0 ) {
@@ -494,8 +545,8 @@ Socket::readFrom ( void * vptr, size_t n, sockaddr_in & csock )
 ssize_t
 Socket::read ( void * vptr, size_t n )
 {
-    struct sockaddr_in csock;
-    ssize_t   rd  = 0;
+    sockaddr_t csock;
+    ssize_t    rd  = 0;
 
     if ( _proto == IPPROTO_UDP && ! _connected ) {
     	rd  = this->readFrom(vptr, n, csock);
@@ -653,7 +704,7 @@ Socket::getAddress() const
     return addr;
 }
 
-sockaddr_storage*
+sockaddr_t*
 Socket::getSockAddr()
 {
     return &_sock;
@@ -941,11 +992,11 @@ Socket::ntop ( ipv6addr_t & addr )
     ss.sin6_family = AF_INET6;
     ss.sin6_addr   = *((in6addr_t*)&addr);
 
-    return Socket::ntop((sockaddr_storage*)&ss);
+    return Socket::ntop((sockaddr_t*)&ss);
 }
 
 std::string
-Socket::ntop ( sockaddr_storage * ss )
+Socket::ntop ( sockaddr_t * ss )
 {
     std::string  ipstr;
     const char * dst = NULL;
