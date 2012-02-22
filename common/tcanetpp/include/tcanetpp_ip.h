@@ -50,7 +50,6 @@ typedef struct ipv6addr {
     ipv6addr ( uint64_t a_, uint64_t b_)
         : a(a_), b(b_)
     {}
-
     ipv6addr ( const in6addr_t & addr )
     {
         a  = ((const uint64_t*) &addr)[0];
@@ -76,8 +75,10 @@ typedef struct ipv6addr {
 } ipv6addr_t;
 
 
+
 // ----------------------------------------------------------------------
 //  Ethernet header
+
 
 /**  Ethernet address as redefined from net/ethernet.h */
 typedef struct EtherAddr {
@@ -90,6 +91,7 @@ typedef struct EthHeader {
     uint8_t  srchost[ETHER_ADDRLEN];
     uint16_t ethtype;
 } neteth_h;
+
 
 
 // ----------------------------------------------------------------------
@@ -118,8 +120,50 @@ typedef struct IpHeader {
 
 } netip_h;
 
+
 #define IP_HDRLEN(ip)   ( ((ip)->version) & 0x0f)
 #define IP_VERSION(ip)  ( ((ip)->version) >> 4)
+
+
+
+// ----------------------------------------------------------------------
+//  IPV6 Header
+
+
+#define IPV6_NXTHDR_HOPBYHOP 0x00
+#define IPV6_NXTHDR_ICMPV4   0x01
+#define IPV6_NXTHDR_IGMPV4   0x02
+#define IPV6_NXTHDR_IPIP     0x04
+#define IPV6_NXTHDR_TCP      0x06
+#define IPV6_NXTHDR_EGP      0x08
+#define IPV6_NXTHDR_UDP      0x11
+#define IPV6_NXTHDR_IPV6     0x29
+#define IPV6_NXTHDR_ROUTE    0x2b
+#define IPV6_NXTHDR_FRAG     0x2c
+#define IPV6_NXTHDR_RSVP     0x2e
+#define IPV6_NXTHDR_ESP      0x32
+#define IPV6_NXTHDR_AH       0x33
+#define IPV6_NXTHDR_ICMPV6   0x3a
+#define IPV6_NXTHDR_NONE     0x3b
+#define IPV6_NXTHDR_DSTOPT   0x3c
+
+
+
+typedef struct Ip6Header {
+    uint32_t    flow;       /* 4 bits version, 8 bits TC, 20 bits flowid */
+    uint16_t    length;
+    uint8_t     nexthdr;
+    uint8_t     hoplimit;
+    ipv6addr_t  srcaddr;
+    ipv6addr_t  dstaddr;
+
+    Ip6Header()
+        : flow(0x60),
+          length(0),
+          nexthdr(0),
+          hoplimit(0)
+    {}
+} netip6_h;
 
 
 // ----------------------------------------------------------------------
@@ -145,16 +189,16 @@ typedef struct UdpHeader {
 // TCP header
 
 
-#define TCP_FLAG_FIN  0x01
-#define TCP_FLAG_SYN  0x02
-#define TCP_FLAG_RST  0x04
-#define TCP_FLAG_PUSH 0x08
-#define TCP_FLAG_ACK  0x10
-#define TCP_FLAG_URG  0x20
-#define TCP_FLAG_ECE  0x40
-#define TCP_FLAG_CWR  0x80
-#define TCP_FLAGS               (TCP_FLAG_FIN|TCP_FLAG_SYN|TCP_FLAG_RST|TCP_FLAG_PUSH|TCP_FLAG_ACK|TCP_FLAG_URG)
-#define TCP_OFFSET(tcp)         (((tcp)->offset & 0xf0) >> 4)
+#define TCP_FLAG_FIN    0x01
+#define TCP_FLAG_SYN    0x02
+#define TCP_FLAG_RST    0x04
+#define TCP_FLAG_PUSH   0x08
+#define TCP_FLAG_ACK    0x10
+#define TCP_FLAG_URG    0x20
+#define TCP_FLAG_ECE    0x40
+#define TCP_FLAG_CWR    0x80
+#define TCP_FLAGS       (TCP_FLAG_FIN|TCP_FLAG_SYN|TCP_FLAG_RST|TCP_FLAG_PUSH|TCP_FLAG_ACK|TCP_FLAG_URG)
+#define TCP_OFFSET(tcp) (((tcp)->offset & 0xf0) >> 4)
 
 
 enum TcpState {
