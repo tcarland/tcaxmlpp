@@ -54,6 +54,7 @@ class FileStat {
 
     FileStat ( const std::string & filename) 
         throw ( Exception );
+
     virtual ~FileStat();
 
     bool          operator< ( const FileStat & fs ) const;

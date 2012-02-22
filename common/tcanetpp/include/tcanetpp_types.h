@@ -47,26 +47,30 @@ extern "C" {
 
 
 // not relying on win32 inttypes, so we define our own.
-#ifdef WIN32  
-  typedef long                   ssize_t;
-  typedef signed char            int8_t;
-  typedef unsigned char          uint8_t;
-  typedef short                  int16_t;
-  typedef unsigned short         uint16_t;
-  typedef int                    int32_t;
-  typedef unsigned long          uint32_t;
-  typedef long long              int64_t;
-  typedef unsigned long long     uint64_t;
-  typedef int                    socklen_t;
-#endif
+#  ifdef WIN32
+typedef long                     ssize_t;
+typedef signed char              int8_t;
+typedef unsigned char            uint8_t;
+typedef short                    int16_t;
+typedef unsigned short           uint16_t;
+typedef int                      int32_t;
+typedef unsigned long            uint32_t;
+typedef long long                int64_t;
+typedef unsigned long long       uint64_t;
+typedef int                      socklen_t;
+#  endif
 
-// file descriptors are abstracted this type
+
+// win32 socket descriptor and storage
 //
-#ifdef WIN32
-  typedef SOCKET                 sockfd_t;
-#else  
-  typedef int                    sockfd_t;
-#endif
+#  ifdef WIN32
+typedef SOCKET                   sockfd_t;
+typedef SOCKADDR_STORAGE         sockaddr_t;
+#  else
+typedef int                      sockfd_t;
+typedef struct sockaddr_storage  sockaddr_t;
+#  endif
+
 
 // some commonly used defines and types
 //
@@ -82,7 +86,6 @@ extern "C" {
 typedef struct in_addr          inaddr_t;
 typedef struct in6_addr         in6addr_t;
 typedef uint32_t                ipv4addr_t;
-typedef struct sockaddr_storage sockaddr_t;
 
 
 /** Structure defining an IPV4 Address and its mask
@@ -92,6 +95,7 @@ typedef struct ipv4cidr {
     ipv4addr_t   addr;
     uint16_t     mb;
 } cidr_t;
+
 
 # ifdef __cplusplus
 }  // extern C

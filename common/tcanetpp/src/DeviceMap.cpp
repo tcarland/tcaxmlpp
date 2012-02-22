@@ -33,6 +33,8 @@
 namespace tcanetpp {
 
 
+// ----------------------------------------------------------------------
+
 DeviceMap::DeviceMap()
     : _groupId(0),
       _debug(false)
