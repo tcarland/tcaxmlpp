@@ -1,5 +1,7 @@
 
+#include <string.h>
 #include <cstdio>
+#include <iostream>
 
 #include "CidrUtils.h"
 
@@ -8,11 +10,53 @@ using namespace tcanetpp;
 
 int main ( int argc, char **argv )
 {
-    std::string localname = CidrUtils::GetHostName();
-    printf("Localhost name: %s\n\n", localname.c_str());
+
+    ipv6addr_t    addr;
+    std::string   result, name;
+    int           r, i;
+
+    addr = in6addr_loopback;
+    r    = CidrUtils::GetNameInfo(addr, result, NI_NUMERICHOST);
+
+    std::cout << "ipv6 loopback: r = " << r << "  nameinfo: " 
+              << result << std::endl;
+
+
+    name  = CidrUtils::GetHostName();
+    printf("Localhost name: %s\n\n", name.c_str());
+
+    // Query addrs for local host
+    struct addrinfo   hints, *res, *ai;
+
+    name  = "comet.ratnest.org";
+    hints = CidrUtils::GetTCPServerHints();
+    r     = CidrUtils::GetAddrInfo(name, &hints, &res);
+    ai    = res;
+    i     = 1;
+
+    std::cout << "  " << name << std::endl;
+    while ( ai ) {
+        CidrUtils::GetNameInfo((const sockaddr*) ai->ai_addr, ai->ai_addrlen, result, NI_NUMERICHOST);
+        std::cout << "addr result: " << i << " > " << result << std::endl;
+        i++;
+        ai = ai->ai_next;
+    }
 
     // Query for all host addrs for a given forward
-    std::string name = "www.google.com";
+    name  = "www.google.com";
+
+    hints = CidrUtils::GetTCPClientHints();
+    r     = CidrUtils::GetAddrInfo(name, &hints, &res);
+    ai    = res;
+    i     = 1;
+
+    std::cout << "  " << name << std::endl;
+    while ( ai ) {
+        CidrUtils::GetNameInfo((const sockaddr*) ai->ai_addr, ai->ai_addrlen, result, NI_NUMERICHOST);
+        std::cout << "addr result: " << i << " > " << result << std::endl;
+        i++;
+        ai = ai->ai_next;
+    }
 
     if ( argc > 1 )
         name.assign(argv[1]);

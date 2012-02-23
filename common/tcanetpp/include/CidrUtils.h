@@ -107,6 +107,10 @@ public:
                                           const addrinfo    * hints,
                                           addrinfo         ** res );
 
+    static int          GetNameInfo     ( const ipv6addr_t  & addr,
+                                          std::string       & result,
+                                          int                 flags );
+
     static int          GetNameInfo     ( const sockaddr    * sa,
                                           socklen_t           salen,
                                           std::string       & result,

@@ -17,7 +17,7 @@ namespace tnmsd {
 
 
 std::string
-TnmsManager::_Version = "v0.189";
+TnmsManager::_Version = "v0.190";
 
 
 TnmsManager::TnmsManager ( const std::string & configfile )
@@ -73,8 +73,8 @@ TnmsManager::run()
     }
 
     _evmgr->addTimerEvent(this, 5, 0);
-    _reportId  = _evmgr->addTimerEvent(this, _reportDelay, 0);
-    _logId     = _evmgr->addTimerEvent(this, _logCheck, 0);
+    _reportId = _evmgr->addTimerEvent(this, _reportDelay, 0);
+    _logId    = _evmgr->addTimerEvent(this, _logCheck, 0);
 
     if ( ! this->parseConfig(_configfile, now) ) {
         if ( _debug )

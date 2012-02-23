@@ -50,16 +50,16 @@ class TnmsSocket {
     virtual ~TnmsSocket();
 
 
-    int                    openConnection  ( const std::string & host,
-                                          uint16_t port );
+    int                    openConnection    ( const std::string & host,
+                                               uint16_t port );
     int                    openConnection();
 
 
-    virtual int            connect()      { return this->openConnection(); }
-    virtual void           close()        { return this->closeConnection(); }
+    virtual int            connect()         { return this->openConnection(); }
+    virtual void           close()           { return this->closeConnection(); }
 
-    virtual int            send           ( const time_t & now );
-    virtual int            receive        ( const time_t & now );
+    virtual int            send              ( const time_t & now );
+    virtual int            receive           ( const time_t & now );
 
     ssize_t                flush();
     size_t                 txBytesBuffered();

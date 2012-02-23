@@ -28,6 +28,7 @@ namespace tnmsd {
 #define TNMSD_REPORTI_METRIC       "reportInterval"
 #define TNMSD_HOLDDOWN_METRIC      "holddownInterval"
 
+
 class AgentIOHandler;
 class ClientIOHandler;
 
@@ -98,6 +99,8 @@ class TnmsManager : public EventTimerHandler {
 
     typedef std::map<std::string, MirrorConnection>  ClientMap;
 
+    typedef std::set<Socket*>   ServerSet;
+
 
   private:
 
@@ -108,6 +111,7 @@ class TnmsManager : public EventTimerHandler {
     Socket*                     _client;
     AuthClient*                 _auth;
 
+    ServerSet                   _agents;
     ClientMap                   _clients;
     evid_t                      _agentId, _clientId;
     evid_t                      _reportId, _logId;

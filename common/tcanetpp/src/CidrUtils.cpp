@@ -443,19 +443,24 @@ CidrUtils::ether_ntop ( const ethaddr_t * addr )
 std::string
 CidrUtils::GetHostName()
 {
-    char         hstr[TCANET_MAXSTRLINE];
+    //char         hstr[TCANET_MEDSTRLINE];
     std::string  hostname;
+    ipv6addr_t   lo = in6addr_loopback;
 
+    CidrUtils::GetNameInfo(lo, hostname, 0);
+
+/*
     if ( ::gethostname(hstr, (size_t) TCANET_MAXSTRLINE) < 0 )
         return hostname;
 
     hostname = hstr;
+*/
 
     return hostname;
 }
 
 std::string
-CidrUtils::GetHostName ( ipv4addr_t  addr )
+CidrUtils::GetHostName ( ipv4addr_t addr )
 {
     std::string       hostname;
     struct  hostent  *hp = NULL;
@@ -557,20 +562,39 @@ CidrUtils::GetAddrInfo ( const std::string & host,
 // flags = NI_NUMERICHOST
 /**  Simple wrapper for performing a reverse lookup with getnameinfo */
 int
+CidrUtils::GetNameInfo ( const ipv6addr_t & addr,
+                         std::string      & result,
+                         int                flags )
+{
+    sockaddr_in6  sa;
+    socklen_t     salen;
+
+    salen          = sizeof(sa);
+    ::memset(&sa, 0, salen);
+    sa.sin6_family = AF_INET6;
+    sa.sin6_addr   = addr.toAddr();
+
+    return CidrUtils::GetNameInfo((const sockaddr*)&sa, salen, result, flags);
+}
+
+
+int
 CidrUtils::GetNameInfo ( const sockaddr * sa,
                          socklen_t        salen,
                          std::string    & result,
-                         int              flags = NI_NUMERICHOST )
+                         int              flags )
 {
-    char   host[TCANET_SMLSTRLINE];
-    char   serv[TCANET_SMLSTRLINE];
-    int    r   = 0;
-    size_t len = TCANET_SMLSTRLINE;
+    char   host[TCANET_MEDSTRLINE];
+    char   serv[TCANET_MEDSTRLINE];
+    size_t len = TCANET_MEDSTRLINE;
+    int    res = 0;
 
-    r = ::getnameinfo(sa, salen, &host[0], len, &serv[0], len, flags);
-    result.assign(host);
+    res   = ::getnameinfo(sa, salen, &host[0], len, &serv[0], len, flags);
 
-    return r;
+    if ( res == 0 )
+        result.assign(host);
+
+    return res;
 }
 
 //-------------------------------------------------------------------//
