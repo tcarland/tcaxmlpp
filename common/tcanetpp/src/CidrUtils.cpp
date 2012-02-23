@@ -37,6 +37,7 @@
 #endif
 
 #include "CidrUtils.h"
+#include "AddrInfo.h"
 #include "Socket.h"
 #include "StringUtils.h"
 #include "tcanetpp_random.h"
@@ -87,7 +88,7 @@ std::string
 CidrUtils::ToString ( const ipv6addr_t & addr )
 {
     std::string res;
-    CidrUtils::GetNameInfo(addr, res, NI_NUMERICHOST);
+    AddrInfo::GetNameInfo(addr, res, NI_NUMERICHOST);
     return res;
 }
 
@@ -415,14 +416,14 @@ CidrUtils::GetHostName()
     ipv6addr_t   lo = in6addr_loopback;
     int  r;
 
-    r = CidrUtils::GetNameInfo(lo, hostname, 0);
+    r = AddrInfo::GetNameInfo(lo, hostname, 0);
 
     if ( r == 0 )
         return hostname;
 
     ipv4addr_t  lo4 = IPV4ADDR_LOOPBACK;
 
-    r = CidrUtils::GetNameInfo(lo4, hostname, 0);
+    r = AddrInfo::GetNameInfo(lo4, hostname, 0);
 
     return hostname;
 }
@@ -475,26 +476,26 @@ CidrUtils::GetHostAddr ( const std::string & host )
     if ( CidrUtils::pton(host, addr) == 1 )
         return addr;
 
-    struct addrinfo hints = CidrUtils::GetTCPClientHints();
-    struct addrinfo *ai, *res;
+    AddrInfo * ai;
+    struct addrinfo  *res;
 
-    int r  = CidrUtils::GetAddrInfo(host, &hints, &res);
+    ai  = AddrInfo::GetAddrInfo(host);
 
-    if ( r != 0 )
+    if ( ai == NULL )
         return addr;
 
-    ai = res;
-    while ( ai )
+    res = ai->begin();
+    while ( res )
     {
-        if ( ai->ai_family == AF_INET ) {
-            sockaddr_in * sa = (sockaddr_in*) ai->ai_addr;
+        if ( res->ai_family == AF_INET ) {
+            sockaddr_in * sa = (sockaddr_in*) res->ai_addr;
             addr = sa->sin_addr.s_addr;
             break;
         }
 
-        ai = ai->ai_next;
+        res = ai->next();
     }
-    ::freeaddrinfo(res);
+    delete ai;
     
     return addr;
 }
@@ -525,75 +526,6 @@ CidrUtils::GetHostAddrList ( const std::string & host, IpAddrList & addrlist )
     return;
 }
 
-//-------------------------------------------------------------------//
-
-/** Simple wrapper for getaddrinfo */
-int
-CidrUtils::GetAddrInfo ( const std::string & host,
-                         const addrinfo    * hints,
-                         addrinfo         ** res )
-{
-    int r = 0;
-
-    r = ::getaddrinfo(host.c_str(), NULL, hints, res);
-
-    return r;
-}
-
-int
-CidrUtils::GetNameInfo ( const ipv4addr_t & addr,
-                         std::string      & result,
-                         int                flags )
-{
-    sockaddr_in  sa;
-    socklen_t    salen;
-
-    salen = sizeof(sa);
-    ::memset(&sa, 0, salen);
-
-    sa.sin_family = AF_INET;
-    sa.sin_addr.s_addr = addr;
-
-    return CidrUtils::GetNameInfo((const sockaddr*)&sa, salen, result, flags);
-}
-
-// flags = NI_NUMERICHOST
-/**  Simple wrapper for performing a reverse lookup with getnameinfo */
-int
-CidrUtils::GetNameInfo ( const ipv6addr_t & addr,
-                         std::string      & result,
-                         int                flags )
-{
-    sockaddr_in6  sa;
-    socklen_t     salen;
-
-    salen          = sizeof(sa);
-    ::memset(&sa, 0, salen);
-    sa.sin6_family = AF_INET6;
-    sa.sin6_addr   = addr.toAddr();
-
-    return CidrUtils::GetNameInfo((const sockaddr*)&sa, salen, result, flags);
-}
-
-
-int
-CidrUtils::GetNameInfo ( const sockaddr * sa,
-                         socklen_t        salen,
-                         std::string    & result,
-                         int              flags )
-{
-    char   host[TCANET_MEDSTRLINE];
-    char   serv[TCANET_MEDSTRLINE];
-    size_t len = TCANET_MEDSTRLINE;
-    int    res = 0;
-
-    res   = ::getnameinfo(sa, salen, &host[0], len, &serv[0], len, flags);
-
-    if ( res == 0 )
-        result.assign(host);
-
-    return res;
-}
 
 //-------------------------------------------------------------------//
 
@@ -607,64 +539,6 @@ bool
 CidrUtils::IsLoopback ( ipv6addr_t & addr )
 {
     return(addr == in6addr_loopback);
-}
-
-//-------------------------------------------------------------------//
-
-/**  Factory methods for creating addrinfo hints */
-addrinfo
-CidrUtils::GetTCPServerHints()
-{
-    struct addrinfo  hints;
-
-    memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_family    = AF_UNSPEC;
-    hints.ai_socktype  = SOCKET_TCP;
-    hints.ai_flags     = AI_PASSIVE;
-
-    return hints;
-}
-
-addrinfo
-CidrUtils::GetUDPServerHints()
-{
-    struct addrinfo  hints;
-
-    memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_family    = AF_UNSPEC;
-    hints.ai_socktype  = SOCKET_UDP;
-    hints.ai_flags     = AI_PASSIVE;
-
-    return hints;
-}
-
-addrinfo
-CidrUtils::GetTCPClientHints()
-{
-    struct addrinfo  hints;
-
-    memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_family    = AF_UNSPEC;
-    hints.ai_socktype  = SOCKET_TCP;
-    hints.ai_flags     = 0;
-    hints.ai_protocol  = 0;
-
-    return hints;
-}
-
-
-addrinfo
-CidrUtils::GetUDPClientHints()
-{
-    struct addrinfo  hints;
-
-    memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_family    = AF_UNSPEC;
-    hints.ai_socktype  = SOCKET_UDP;
-    hints.ai_flags     = 0;
-    hints.ai_protocol  = 0;
-
-    return hints;
 }
 
 //-------------------------------------------------------------------//

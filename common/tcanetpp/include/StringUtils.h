@@ -28,6 +28,7 @@
 #ifndef _TCANETPP_STRINGUTILS_H_
 #define _TCANETPP_STRINGUTILS_H_
 
+#include <string.h>
 #include <string>
 #include <sstream>
 

@@ -100,30 +100,10 @@ public:
     static void         GetHostAddrList ( const std::string & host, 
                                           IpAddrList        & addrlist );
 
-    static int          GetAddrInfo     ( const std::string & host,
-                                          const addrinfo    * hints,
-                                          addrinfo         ** res );
-
-    static int          GetNameInfo     ( const ipv4addr_t  & addr,
-                                          std::string       & result,
-                                          int                 flags );
-
-    static int          GetNameInfo     ( const ipv6addr_t  & addr,
-                                          std::string       & result,
-                                          int                 flags );
-
-    static int          GetNameInfo     ( const sockaddr    * sa,
-                                          socklen_t           salen,
-                                          std::string       & result,
-                                          int                 flags );
 
     static bool         IsLoopback      ( ipv4addr_t        & addr );
     static bool         IsLoopback      ( ipv6addr_t        & addr );
 
-    static addrinfo     GetTCPServerHints();
-    static addrinfo     GetUDPServerHints();
-    static addrinfo     GetTCPClientHints();
-    static addrinfo     GetUDPClientHints();
 
 };
 

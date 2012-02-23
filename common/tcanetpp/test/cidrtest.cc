@@ -4,6 +4,8 @@
 #include <iostream>
 
 #include "CidrUtils.h"
+#include "IpAddr.h"
+#include "AddrInfo.h"
 
 using namespace tcanetpp;
 
@@ -15,65 +17,85 @@ int main ( int argc, char **argv )
     std::string   result, name;
     int           r, i;
 
+    AddrInfo        * ai;
+    struct addrinfo * res;
+
+
+    //  localhost
     addr = in6addr_loopback;
-    r    = CidrUtils::GetNameInfo(addr, result, NI_NUMERICHOST);
+    r    = AddrInfo::GetNameInfo(addr, result, NI_NUMERICHOST);
 
     std::cout << "ipv6 loopback: r = " << r << "  nameinfo: " 
               << result << std::endl;
 
 
-    name  = CidrUtils::GetHostName();
-    printf("Localhost name: %s\n\n", name.c_str());
+    IpAddr ipaddr(in6addr_loopback);
+    name   = CidrUtils::GetHostName();
+    std::cout << " IpAddr: " << ipaddr.toString()
+              << "  ==  " << name << std::endl;
+    std::cout << std::endl;
 
+    // -------------------------------------------
     // Query addrs for local host
-    struct addrinfo   hints, *res, *ai;
 
     name  = "comet.ratnest.org";
-    hints = CidrUtils::GetTCPServerHints();
-    r     = CidrUtils::GetAddrInfo(name, &hints, &res);
-    ai    = res;
+    ai    = AddrInfo::GetAddrInfo(name);
     i     = 1;
 
     std::cout << "  " << name << std::endl;
-    while ( ai ) {
-        CidrUtils::GetNameInfo((const sockaddr*) ai->ai_addr, ai->ai_addrlen, result, NI_NUMERICHOST);
-        std::cout << "addr result: " << i << " > " << result << std::endl;
-        i++;
-        ai = ai->ai_next;
-    }
-
-    // Query for all host addrs for a given forward
-    name  = "www.google.com";
-
-    hints = CidrUtils::GetTCPClientHints();
-    r     = CidrUtils::GetAddrInfo(name, &hints, &res);
-    ai    = res;
-    i     = 1;
-
-    std::cout << "  " << name << std::endl;
-    while ( ai ) {
-        CidrUtils::GetNameInfo((const sockaddr*) ai->ai_addr, ai->ai_addrlen, result, NI_NUMERICHOST);
-        std::cout << "addr result: " << i << " > " << result << std::endl;
-        i++;
-        ai = ai->ai_next;
-    }
-
-    if ( argc > 1 )
-        name.assign(argv[1]);
-
-    IpAddrList  alist;
-    IpAddrList::iterator  aIter;
-
-    CidrUtils::GetHostAddrList(name, alist);
-    int c = 1;
-
-    printf("Resolving addresses for %s\n", name.c_str());
-
-    for ( aIter = alist.begin(); aIter != alist.end(); ++aIter, ++c ) 
+    for ( res = ai->begin(); res != NULL; res = ai->next() )
     {
-        ipv4addr_t addr = *aIter;
-        printf("Addr %d is %u  :  %s\n", c, addr, CidrUtils::ntop(addr).c_str());
+        AddrInfo::GetNameInfo((const sockaddr*) res->ai_addr, res->ai_addrlen, result, NI_NUMERICHOST);
+        std::cout << "addr result: " << i << " > " << result << std::endl;
+        i++;
     }
+
+    delete ai;
+    ai = NULL;
+    std::cout << std::endl;
+
+
+    // -------------------------------------------
+    // Query for all host addrs for a given forward
+
+    name  = "www.google.com";
+    ai    = AddrInfo::GetAddrInfo(name);
+    res   = ai->begin();
+    i     = 1;
+
+    std::cout << "  " << name << std::endl;
+    while ( res ) {
+        AddrInfo::GetNameInfo((const sockaddr*) res->ai_addr, res->ai_addrlen, result, NI_NUMERICHOST);
+        std::cout << "addr result: " << i << " > " << result << std::endl;
+        i++;
+        res = ai->next();
+    }
+    delete ai;
+    ai = NULL;
+    std::cout << std::endl;
+
+
+    // -------------------------------------------
+    // process argument
+
+    if ( argc > 1 ) {
+        name.assign(argv[1]);
+        ai   = AddrInfo::GetAddrInfo(name);
+        res  = ai->begin();
+        i     = 1;
+
+        std::cout << "  " << name << std::endl;
+        while ( res ) {
+            AddrInfo::GetNameInfo((const sockaddr*) res->ai_addr, res->ai_addrlen, result, NI_NUMERICHOST);
+            std::cout << "addr result: " << i << " > " << result << std::endl;
+            i++;
+            res = ai->next();
+        }
+
+        delete ai;
+        ai = NULL;
+    }
+
 
     std::string  cidr = "192.102.249.0/32";
     Prefix       p;
