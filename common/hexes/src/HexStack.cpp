@@ -75,7 +75,7 @@ HexStack:: resize ( int height, int width )
 }
 
 void
-HexStack::setPanelFactory ( PanelFactory * factory )
+HexStack::setPanelFactory ( HexPanelFactory * factory )
 {
     if ( this->_factory )
         delete _factory;

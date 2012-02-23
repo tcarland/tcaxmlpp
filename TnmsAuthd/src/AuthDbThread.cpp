@@ -4,7 +4,6 @@
 
 // tcanetpp
 #include "LogFacility.h"
-#include "ThreadAutoMutex.hpp"
 // tcasqlpp
 #include "SqlSession.hpp"
 // tnmsSession
@@ -13,7 +12,6 @@
 
 
 namespace tnmsauth {
-
 
 
 

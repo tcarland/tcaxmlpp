@@ -58,8 +58,8 @@ class TnmsSocket {
     virtual int            connect()      { return this->openConnection(); }
     virtual void           close()        { return this->closeConnection(); }
 
-    virtual int            send           ( const time_t  & now );
-    virtual int            receive        ( const time_t  & now );
+    virtual int            send           ( const time_t & now );
+    virtual int            receive        ( const time_t & now );
 
     ssize_t                flush();
     size_t                 txBytesBuffered();

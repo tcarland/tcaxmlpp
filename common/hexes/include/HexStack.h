@@ -49,6 +49,7 @@ class HexStack : public HexPanel {
     virtual int  poll();
     virtual void resize  ( int height, int width );
 
+
     void setPanelFactory ( HexPanelFactory * factory );
 
 
