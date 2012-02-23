@@ -344,7 +344,7 @@ NetworkDevice::setDevice ( const std::string & host )
     std::string      hoststr;
 
     // check for a hostaddr in string format
-    if ( CidrUtils::StringToAddr(host, addr) ) {
+    if ( (addr = CidrUtils::GetHostAddr(host)) > 0 ) {
 	return this->setDevice(addr);
 	
     //  this is very CDP specific which often returns 'serial_num (host)'

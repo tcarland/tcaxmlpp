@@ -51,14 +51,11 @@ public:
     static bool         IsBasePrefix    ( ipv4addr_t  addr, uint8_t mb );
     static ipv4addr_t   ToBasePrefix    ( ipv4addr_t  addr, uint8_t mb );
 
-    static std::string  ToString        ( ipv4addr_t   & addr );
-    static std::string  ToString        ( ipv6addr_t   & addr );
-    static std::string  ToString        ( const Prefix & pfx );
-    static std::string  ToString        ( ipv4addr_t     addr, uint8_t mb );
-    static ipv4addr_t   ToAddr          ( const std::string & addrStr );
+    static std::string  ToString        ( const ipv4addr_t  & addr );
+    static std::string  ToString        ( const ipv6addr_t  & addr );
+    static std::string  ToString        ( const Prefix      & pfx );
+    static std::string  ToString        ( const ipv4addr_t  & addr, uint8_t mb );
 
-    static int          StringToAddr    ( const std::string & addrStr, 
-                                          ipv4addr_t        & addr );
     static int          StringToCidr    ( const std::string & cidrStr,
                                           Prefix            & pfx );
 
@@ -75,14 +72,14 @@ public:
 
     static uint8_t      SubnetValue     ( ipv4addr_t addr, uint8_t subnet_pos );
 
-    static bool         DeAggregate     ( Prefix     & p, uint8_t masklen, 
+    static bool         DeAggregate     ( Prefix     & p,  uint8_t masklen,
                                           PrefixList & v );
 
     static bool         MatchCidr       ( Prefix     & p, ipv4addr_t addr );
 
-    static uint32_t     RandomValue     ( double range );
-    static Prefix       RandomPrefix    ( Prefix & agg );
-    static ipv4addr_t   RandomPrefix    ( ipv4addr_t agg, uint8_t masklen );
+    static uint32_t     RandomValue     ( double       range );
+    static Prefix       RandomPrefix    ( Prefix     & agg );
+    static ipv4addr_t   RandomPrefix    ( ipv4addr_t   agg, uint8_t masklen );
 
 
     static std::string  ether_ntop      ( const ethaddr_t   * addr );
@@ -106,6 +103,10 @@ public:
     static int          GetAddrInfo     ( const std::string & host,
                                           const addrinfo    * hints,
                                           addrinfo         ** res );
+
+    static int          GetNameInfo     ( const ipv4addr_t  & addr,
+                                          std::string       & result,
+                                          int                 flags );
 
     static int          GetNameInfo     ( const ipv6addr_t  & addr,
                                           std::string       & result,
