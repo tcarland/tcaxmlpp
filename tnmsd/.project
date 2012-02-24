@@ -3,7 +3,6 @@
 	<name>tnmsd</name>
 	<comment></comment>
 	<projects>
-		<project>TnmsApi</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

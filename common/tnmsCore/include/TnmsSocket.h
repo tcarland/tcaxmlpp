@@ -13,6 +13,7 @@
 
 #include "BufferedSocket.h"
 #include "CircularBuffer.h"
+#include "AddrInfo.h"
 using namespace tcanetpp;
 
 
@@ -198,7 +199,7 @@ class TnmsSocket {
 
     bool                        _compression;
 
-    std::string                 _hostname;
+    std::string                 _host, _hostname;
     std::string                 _login;
     std::string                 _authname;
     std::string                 _authkey;
@@ -212,6 +213,7 @@ class TnmsSocket {
   private:
 
     BufferedSocket *            _sock;
+    AddrInfo *                  _ai;
     tnmsHeader *                _hdr;
 
     /*  Buffers */

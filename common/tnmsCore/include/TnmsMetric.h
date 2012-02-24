@@ -30,6 +30,11 @@ class TnmsMetric : public TnmsMessage {
 
     virtual void        reset();
 
+    /*  Serializable */
+    virtual ssize_t     serialize   ( char * buffer, size_t buffer_len ) const;
+    virtual ssize_t     deserialize ( const char * buffer, size_t buffer_len );
+    virtual size_t      size() const;
+
 
     eValueType          getValueType() const;
 
@@ -45,6 +50,7 @@ class TnmsMetric : public TnmsMessage {
         return val;
     }
 
+
     bool                setValue    ( const std::string & value );
 
     template< typename T >
@@ -58,6 +64,7 @@ class TnmsMetric : public TnmsMessage {
         }
         return false;
     }
+
 
     template<typename T>
     T                   getValueAvg() const
@@ -82,6 +89,7 @@ class TnmsMetric : public TnmsMessage {
         return false;
     }
 
+
     uint32_t            getTimestamp() const;
     void                setTimestamp ( uint32_t epoch );
 
@@ -90,11 +98,6 @@ class TnmsMetric : public TnmsMessage {
 
     uint32_t            getSamples() const;
     void                setSamples ( uint32_t samples );
-
-    /*  Serializable */
-    virtual ssize_t     serialize   ( char * buffer, size_t buffer_len ) const;
-    virtual ssize_t     deserialize ( const char * buffer, size_t buffer_len );
-    virtual size_t      size() const;
 
 
   protected:

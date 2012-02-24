@@ -22,6 +22,7 @@ TnmsSocket::TnmsSocket ( MessageHandler * msgHandler )
       _msgHandler(msgHandler),
       _compression(TNMS_COMPRESSION_ENABLE),
       _sock(NULL),
+      _ai(NULL),
       _hdr(NULL),
       _rxbuff(NULL),
       _zxbuff(NULL),
@@ -44,11 +45,12 @@ TnmsSocket::TnmsSocket ( MessageHandler * msgHandler )
 
 
 TnmsSocket::TnmsSocket ( const std::string & host, uint16_t port,
-                         MessageHandler * msgHandler )
+                         MessageHandler    * msgHandler )
     : _authFunctor(new AuthAllFunctor(_authorizations)),
       _msgHandler(msgHandler),
       _compression(TNMS_COMPRESSION_ENABLE),
       _sock(NULL),
+      _ai(NULL),
       _hdr(NULL),
       _rxbuff(NULL),
       _zxbuff(NULL),
@@ -75,6 +77,7 @@ TnmsSocket::TnmsSocket ( BufferedSocket * sock, MessageHandler * msgHandler )
       _msgHandler(msgHandler),
       _compression(TNMS_COMPRESSION_ENABLE),
       _sock(sock),
+      _ai(NULL),
       _hdr(NULL),
       _rxbuff(NULL),
       _zxbuff(NULL),
@@ -136,8 +139,8 @@ TnmsSocket::init()
 
     // buffers
     _wxcbuff        = new CircularBuffer(TNMS_PACKET_SIZE * 2);
-    _rxbuff         = (char*) malloc((size_t) TNMS_PACKET_SIZE);
-    _zxbuff         = (char*) malloc((size_t) TNMS_PACKET_SIZE);
+    _rxbuff         = (char*) ::malloc((size_t) TNMS_PACKET_SIZE);
+    _zxbuff         = (char*) ::malloc((size_t) TNMS_PACKET_SIZE);
     _rxbuffsz       = (size_t) TNMS_PACKET_SIZE;
     _zxbuffsz       = (size_t) TNMS_PACKET_SIZE;
     _lastWxTime     = 0;
@@ -165,25 +168,28 @@ TnmsSocket::init()
 int
 TnmsSocket::openConnection ( const std::string & host, uint16_t port )
 {
-    ipv4addr_t addr = CidrUtils::GetHostAddr(host);
+    if ( _sock ) {
+        if (_sock->isConnected() ) {
+            _errstr = "Socket already connected. close first.";
+            return -1;
+        }
+        delete _sock;
+    }
 
-    if ( addr == 0 ) {
+    if ( _ai )
+        delete _ai;
+
+    _ai  = AddrInfo::GetAddrInfo(host, port);
+
+    if ( _ai == NULL ) {
         _errstr = "Invalid host ";
         _errstr.append(host);
         return -1;
     }
 
-    _hostname = host;
-    _port     = port;
-
-    if ( this->_sock ) {
-        if ( _sock->isConnected() )
-            this->close();
-        delete _sock;
-    }
-
-    _sock = new BufferedSocket(addr, _port, SOCKTYPE_CLIENT, SOCKET_TCP);
-
+    _host = host;
+    _port = port;
+    _sock = new BufferedSocket(_ai->getAddr(), _ai->getAddrLen(), _port, SOCKTYPE_CLIENT, _ai->getSocktype());
     _sock->setNonBlocking();
     _sock->rxBufferSize(TNMS_PACKET_SIZE);
     this->setHostStr();
@@ -196,18 +202,19 @@ int
 TnmsSocket::openConnection()
 {
     if ( _sock == NULL ) {
-        _errstr = "No socket";
+        _errstr = "TnmsSocket::openConnection() No socket";
         return -1;
     }
 
     if ( ! _connecting && _sock->isConnected() ) {
         _errstr = "Socket already connected";
-        return -1;
+        return 0;
     } else if ( ! _connecting ) {
         _sock->init(false);
     }
 
-    int conn = 0;
+    addrinfo * res  = NULL;
+    int        conn = 0;
 
     if ( (conn = _sock->connect()) > 0 ) {
         _connecting = false;
@@ -216,14 +223,29 @@ TnmsSocket::openConnection()
         _connecting = true;
         return conn;
     } else {
-        _errstr = "Error connecting to host: ";
+        _errstr = "TnmsSocket: Error connecting to host: ";
         _errstr.append(_sock->errorStr());
         _connecting = false;
         _sock->close();
-        return conn;
+
+        if ( _ai == NULL )
+            return conn;
+
+        if ( (res = _ai->next()) != NULL ) {
+            delete _sock;
+            _sock = new BufferedSocket((sockaddr_t*) res->ai_addr, res->ai_addrlen,
+                                       _port, SOCKTYPE_CLIENT, res->ai_protocol);
+            _sock->setNonBlocking();
+            _sock->rxBufferSize(TNMS_PACKET_SIZE);
+            this->setHostStr();
+            return this->openConnection();
+        }
     }
 
-    if ( this->_subtree )
+    delete _ai;
+    _ai  = NULL;
+
+    if ( conn && this->_subtree )
         this->subscribeStructure();
 
     return conn;
@@ -467,7 +489,7 @@ TnmsSocket::setCompression ( bool compress )
     if ( compress ) {
         if ( _zxbuff )
             ::free(_zxbuff);
-        _zxbuff  = (char*) malloc((size_t) TNMS_PACKET_SIZE);
+        _zxbuff  = (char*) ::malloc((size_t) TNMS_PACKET_SIZE);
     } else {
         if ( _zxbuff )
             ::free(_zxbuff);

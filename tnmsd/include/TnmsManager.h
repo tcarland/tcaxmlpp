@@ -11,6 +11,7 @@ using namespace tcanetpp;
 #include "tnmsCore.h"
 #include "TnmsConfig.h"
 #include "TnmsClient.h"
+#include "TnmsTree.h"
 using namespace tnmsCore;
 
 

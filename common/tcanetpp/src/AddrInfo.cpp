@@ -1,4 +1,33 @@
-
+/**
+  * @file Addrinfo.cpp
+  *
+  *   Defines various IP headers.
+  * These are defined within this library to avoid having to
+  * use platform specific defines for various headers. This also
+  * means we avoid the issue of some fields varying slightly in
+  * convention across platforms.
+  *
+  * Copyright (c) 2010 Timothy Charlton Arland
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
+  *
+  * This file is part of tcanetpp.
+  *
+  * tcanetpp is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU Lesser General Public License as
+  * published by the Free Software Foundation, either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * tcanetpp is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Lesser General Public License for more details.
+  *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with tcanetpp.
+  * If not, see <http://www.gnu.org/licenses/>.
+ **/
 #define _TCANETPP_ADDRINFO_CPP_
 
 #include "AddrInfo.h"
@@ -99,6 +128,13 @@ AddrInfo::get()
     return _ai;
 }
 
+sockaddr_t*
+AddrInfo::getAddr()
+{
+    if ( _ai )
+        return((sockaddr_t*) _ai->ai_addr);
+    return NULL;
+}
 
 int
 AddrInfo::getFlags() const
@@ -173,7 +209,7 @@ AddrInfo::setProtocol ( int proto )
 }
 
 size_t
-AddrInfo::getAddrlen() const
+AddrInfo::getAddrLen() const
 {
     if ( this->isValid() )
         return _ai->ai_addrlen;
