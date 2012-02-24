@@ -33,12 +33,13 @@
 
 #include "tcanetpp_ip.h"
 #include "Prefix.hpp"
+#include "IpAddr.h"
 
 
 namespace tcanetpp {
 
 
-typedef std::vector<ipv4addr_t>   IpAddrList;
+typedef std::vector<IpAddr>   IpAddrList;
 
 
 /**  The CidrUtils class is a collection of static utility functions for 

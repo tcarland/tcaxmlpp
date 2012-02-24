@@ -52,6 +52,7 @@ class IpAddr {
   public:
 
     IpAddr();
+    IpAddr ( const sockaddr * sa );
     IpAddr ( const ipv4addr_t & addr, uint8_t mb = 32 );
     IpAddr ( const ipv6addr_t & addr, uint8_t mb = 64 );
     IpAddr ( const IpAddr & ipaddr );
@@ -88,6 +89,7 @@ class IpAddr {
 
     static std::string  ntop         ( const ipv4addr_t  & addr );
     static std::string  ntop         ( const ipv6addr_t  & addr );
+    static std::string  ntop         ( const sockaddr_t  * sock );
 
     static int          pton         ( const std::string & ipstr,
                                        ipv4addr_t        & addr );
@@ -103,6 +105,11 @@ class IpAddr {
     static uint32_t     RandomValue  ( double range );
     static IpAddr       RandomAddr   ( IpAddr & agg );
     static ipv4addr_t   RandomPrefix ( ipv4addr_t addr, uint8_t mb );
+
+    static bool         IsBasePrefix ( const ipv4addr_t & pfx, uint8_t mb);
+    static ipv4addr_t   ToBasePrefix ( const ipv4addr_t & pfx, uint8_t mb);
+
+    static ipv4addr_t   BitsToMask   ( uint8_t mb );
 
 
   protected:

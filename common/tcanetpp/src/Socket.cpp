@@ -39,6 +39,7 @@
 
 
 #include "StringUtils.h"
+#include "IpAddr.h"
 
 
 namespace tcanetpp {
@@ -114,7 +115,7 @@ Socket::Socket ( ipv4addr_t ipaddr, uint16_t port, SocketType type, int protocol
         sock->sin_addr.s_addr = ipaddr;
     }
 
-    _addrstr = Socket::ntop(sock->sin_addr.s_addr);
+    _addrstr = IpAddr::ntop(sock->sin_addr.s_addr);
     _hoststr = _addrstr;
     _hoststr.append(":").append(StringUtils::toString(_port));
 
@@ -152,7 +153,7 @@ Socket::Socket ( ipv6addr_t ipaddr, uint16_t port, SocketType type, int protocol
         sock->sin6_addr = *((in6addr_t*) &ipaddr);
     }
 
-    _addrstr = Socket::ntop(ipaddr);
+    _addrstr = IpAddr::ntop(ipaddr);
     _hoststr = _addrstr;
     _hoststr.append("/:").append(StringUtils::toString(_port));
 }
@@ -170,8 +171,7 @@ Socket::Socket ( sockaddr_t * sa, size_t salen, uint16_t port, SocketType type, 
 {
     Socket::ResetDescriptor(this->_fd);
 
-    //::memcpy(&_sock, sa, salen);
-    _addrstr = Socket::ntop((sockaddr_t*) &_sock);
+    _addrstr = IpAddr::ntop((sockaddr_t*) &_sock);
     _hoststr = _addrstr;
     _hoststr.append("/:").append(StringUtils::toString(_port));
 }
@@ -203,7 +203,7 @@ Socket::Socket ( sockfd_t & fd, sockaddr_t & csock, SocketType type, int protoco
         sockaddr_in * sock;
         sock     = (sockaddr_in*) &csock;
 	_port    = ntohs(sock->sin_port);
-	_addrstr = Socket::ntop(sock->sin_addr.s_addr);
+	_addrstr = IpAddr::ntop(sock->sin_addr.s_addr);
 	_hoststr = _addrstr;
 	_hoststr.append("/:").append(StringUtils::toString(_port));
     }
@@ -212,7 +212,7 @@ Socket::Socket ( sockfd_t & fd, sockaddr_t & csock, SocketType type, int protoco
         sockaddr_in6 * sock;
         sock     = (sockaddr_in6*) &csock;
         _port    = ntohs(sock->sin6_port);
-        _addrstr = Socket::ntop(&csock);
+        _addrstr = IpAddr::ntop(sock->sin6_addr);
         _hoststr = _addrstr;
 	_hoststr.append("/:").append(StringUtils::toString(_port));
     }
@@ -427,10 +427,10 @@ Socket::accept()
 Socket*
 Socket::accept ( SocketFactory & factory )
 {
-    Socket      * client = NULL;
-    sockaddr_t    csock;
-    socklen_t     len;
-    sockfd_t      cfd;
+    Socket     * client = NULL;
+    sockaddr_t   csock;
+    socklen_t    len;
+    sockfd_t     cfd;
 
     if ( _socktype < SOCKTYPE_SERVER )
     	return NULL;
@@ -943,85 +943,6 @@ Socket::InitializeSocket ( sockfd_t & fd, int socktype, int proto )
     }
 
     return;
-}
-
-// ----------------------------------------------------------------------
-
-ipv4addr_t
-Socket::pton ( const std::string & ipstr )
-{
-    ipv4addr_t addr = 0;
-
-#   ifdef WIN32
-    addr = (unsigned long) inet_addr(ipstr.c_str());
-    if ( addr < 0 )
-        addr = 0;
-#   else
-    ::inet_pton(AF_INET, ipstr.c_str(), &addr);
-#   endif
-    
-    return addr;
-}
-
-std::string
-Socket::ntop ( ipv4addr_t & addr )
-{
-    std::string  ipstr;
-    const char * dst = NULL;
-    char         ip[INET_ADDRSTRLEN];
-
-#   ifdef WIN32
-    inaddr_t ipaddr;
-    ipaddr.s_addr = addr;
-    ::strncpy(ip, inet_ntoa(ipaddr), INET_ADDRSTRLEN);
-    ipstr.assign(ip);
-#   else
-    dst = ::inet_ntop(AF_INET, &addr, ip, INET_ADDRSTRLEN);
-    if ( dst )
-        ipstr.assign(ip);
-#   endif
-
-    return ipstr;
-}
-
-std::string
-Socket::ntop ( ipv6addr_t & addr )
-{
-    sockaddr_in6 ss;
-
-    ss.sin6_family = AF_INET6;
-    ss.sin6_addr   = *((in6addr_t*)&addr);
-
-    return Socket::ntop((sockaddr_t*)&ss);
-}
-
-std::string
-Socket::ntop ( sockaddr_t * ss )
-{
-    std::string  ipstr;
-    const char * dst = NULL;
-    char         ip[INET6_ADDRSTRLEN];
-
-#   ifdef WIN32
-    // use getaddrinfo?
-
-#   else
-
-    switch ( ss->ss_family )
-    {
-        case AF_INET:
-            dst = ::inet_ntop(AF_INET, &((struct sockaddr_in *)&ss)->sin_addr.s_addr, ip, INET6_ADDRSTRLEN);
-            break;
-        case AF_INET6:
-            dst = ::inet_ntop(ss->ss_family, &((struct sockaddr_in6 *)&ss)->sin6_addr, ip, INET6_ADDRSTRLEN);
-            break;
-    }
-    if ( dst )
-        ipstr.assign(ip);
-
-#   endif
-
-    return ipstr;
 }
 
 // ----------------------------------------------------------------------

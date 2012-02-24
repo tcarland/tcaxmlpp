@@ -50,6 +50,7 @@ typedef struct ipv6addr {
     ipv6addr ( uint64_t a_, uint64_t b_)
         : a(a_), b(b_)
     {}
+
     ipv6addr ( const in6addr_t & addr )
     {
         a  = ((const uint64_t*) &addr)[0];

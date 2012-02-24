@@ -62,6 +62,30 @@ IpAddr::IpAddr ( const ipv4addr_t & addr, uint8_t mb )
     this->setIpAddr(addr);
 }
 
+IpAddr::IpAddr ( const sockaddr * sa )
+    : _addr(0, 0),
+      _mb(0),
+      _ipv4only(false)
+{
+    sockaddr_t * sock = (sockaddr_t*) sa;
+
+    switch (sock->ss_family)
+    {
+        case AF_INET:
+            sockaddr_in * sin4;
+            sin4      = (sockaddr_in*) sa;
+            _ipv4only = true;
+            _mb       = 32;
+            this->setIpAddr(sin4->sin_addr.s_addr);
+            break;
+        case AF_INET6:
+            sockaddr_in6 * sin6;
+            sin6  = (sockaddr_in6*) sa;
+            _mb   = 64;
+            _addr = sin6->sin6_addr;
+            break;
+    }
+}
 
 IpAddr::IpAddr ( const ipv6addr_t & addr, uint8_t mb )
     : _addr(addr),
@@ -259,6 +283,33 @@ IpAddr::ntop ( const ipv6addr_t & addr )
     return ipstr;
 }
 
+std::string
+IpAddr::ntop ( const sockaddr_t * sock )
+{
+    std::string  ipstr;
+    const char * dst = NULL;
+    char         ip[INET6_ADDRSTRLEN];
+
+#   ifdef WIN32
+    // getaddrinfo?
+#   else
+
+    switch ( sock->ss_family )
+    {
+        case AF_INET:
+            dst = ::inet_ntop(sock->ss_family, &((struct sockaddr_in*) sock)->sin_addr.s_addr, ip, INET6_ADDRSTRLEN);
+            break;
+        case AF_INET6:
+            dst = ::inet_ntop(sock->ss_family, &((struct sockaddr_in6*) sock)->sin6_addr, ip, INET6_ADDRSTRLEN);
+            break;
+    }
+    if ( dst )
+        ipstr.assign(ip);
+
+#   endif
+
+    return ipstr;
+}
 //-------------------------------------------------------------------//
 
 int
@@ -390,8 +441,46 @@ IpAddr::RandomPrefix ( ipv4addr_t agg, uint8_t masklen )
     return addr;
 }
 
+//-------------------------------------------------------------------//
+
+bool
+IpAddr::IsBasePrefix ( const ipv4addr_t & pfx, uint8_t mb )
+{
+    return(IpAddr::ToBasePrefix(pfx, mb) == pfx);
+}
+
+ipv4addr_t
+IpAddr::ToBasePrefix ( const ipv4addr_t & pfx, uint8_t mb )
+{
+    ipv4addr_t addr = pfx;
+    uint32_t   mask = 0xffffffff;
+
+    if ( mb > MAXMASKLEN )
+        return 0;
+
+    mask  = mask >> (32 - mb) << (32 - mb);
+    addr &= htonl(mask);
+
+    return addr;
+}
+
+//-------------------------------------------------------------------//
+
+ipv4addr_t
+IpAddr::BitsToMask ( uint8_t mb )
+{
+    ipv4addr_t  mask = 0xffffffff;
+
+    if ( mb > MAXMASKLEN )
+        return mask;
+
+    mask = mask >> (32 - mb) << (32 - mb);
+
+    return mask;
+}
 
 
+//-------------------------------------------------------------------//
 
 } // namespace
 

@@ -203,11 +203,6 @@ class Socket {
     static void         Block    ( Socket           * s );
     static void         Unblock  ( Socket           * s );
     
-    static std::string  ntop     ( sockaddr_t        * ss );
-    static std::string  ntop     ( ipv4addr_t        & addr );
-    static std::string  ntop     ( ipv6addr_t        & addr );
-    static ipv4addr_t   pton     ( const std::string & ipstr );
-    
     static bool         IsValidDescriptor ( const sockfd_t & fd );
     static void         ResetDescriptor   ( sockfd_t       & fd );
 

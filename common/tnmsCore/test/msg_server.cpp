@@ -6,6 +6,7 @@ extern "C" {
 # include <errno.h>
 # include <signal.h>
 # include <stdio.h>
+# include <string.h>
 }
 
 #include <cstdlib>
@@ -14,11 +15,11 @@ extern "C" {
 
 
 #include "LogFacility.h"
-#include "CidrUtils.h"
+using namespace tcanetpp;
 #include "TnmsSocket.h"
 #include "TestMessageHandler.hpp"
-using namespace tcanetpp;
 using namespace tnmsCore;
+
 using namespace tnmsTest;
 
 
@@ -105,7 +106,7 @@ sigHandler ( int signal )
 
 int main ( int argc, char **argv )
 {
-    BufferedSocket      *server, *client;
+    BufferedSocket  *server, *client;
 
     fd_set   rset;
     int      rdy;
@@ -133,7 +134,7 @@ int main ( int argc, char **argv )
 	exit(-1);
     }
     
-    LogFacility::OpenLogFile("msgsvr", "msgsvr.log", false);
+    LogFacility::OpenLogFile("msgsvr", "msgsvr", "msgsvr.log", false);
 
     while ( ! _Alarm ) {
 	struct timeval to;
@@ -143,10 +144,10 @@ int main ( int argc, char **argv )
 	for ( cIter = clist.begin(); cIter != clist.end(); cIter++ )
 	    FD_SET((*cIter)->getFD(), &rset);
 	
-	bzero(&to, sizeof(to));
+	::memset(&to, 0, sizeof(to));
 	to.tv_sec = 5;
 
-	if ( (rdy = select(maxfdp, &rset, NULL, NULL, &to)) < 0 ) {
+	if ( (rdy = ::select(maxfdp, &rset, NULL, NULL, &to)) < 0 ) {
 	    if ( errno == EINTR )
 		continue;
 	    else

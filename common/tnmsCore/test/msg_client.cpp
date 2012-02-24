@@ -8,7 +8,7 @@ extern "C" {
 }
 
 #include "LogFacility.h"
-#include "CidrUtils.h"
+#include "IpAddr.h"
 #include "TnmsSocket.h"
 #include "TestMessageHandler.hpp"
 using namespace tcanetpp;
@@ -37,7 +37,7 @@ int main ( int argc, char **argv )
     std::string  host = "localhost";
     TnmsSocket * sock = NULL;
 
-    CidrUtils::pton("127.0.0.1", addr);
+    IpAddr::pton("127.0.0.1", addr);
 
     if ( argc == 1 ) {
 	printf("Usage: client [server_port]\n");
@@ -63,7 +63,7 @@ int main ( int argc, char **argv )
     signal(SIGTERM, &sigHandler);
     signal(SIGPIPE, SIG_IGN);
 
-    LogFacility::OpenLogFile("msgclient", "msgclient.log", false);
+    LogFacility::OpenLogFile("msgclient", "msgclient", "msgclient.log", false);
 
     TnmsMetric metric1("foo/bar");
     TnmsAdd add("foo/bar");

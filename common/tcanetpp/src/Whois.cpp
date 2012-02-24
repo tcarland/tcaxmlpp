@@ -55,12 +55,15 @@ Whois::init ( const std::string & host, uint16_t port )
     IpAddrList::iterator  hIter;
     for ( hIter = addrs.begin(); hIter != addrs.end(); ++hIter )
     {
-        ipv4addr_t & addr = *hIter;
+        IpAddr & addr = *hIter;
+
+        if ( ! addr.ipv4only() ) 
+            continue;
 
         if ( _sock )
             delete _sock;
 
-        _sock = new Socket(addr, port, SOCKTYPE_CLIENT, SOCKET_TCP);
+        _sock = new Socket(addr.getAddr4(), port, SOCKTYPE_CLIENT, SOCKET_TCP);
         _sock->setBlocking();
         if ( _sock->connect() > 0 )
             break;

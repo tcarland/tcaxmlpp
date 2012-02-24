@@ -495,6 +495,19 @@ CidrUtils::GetHostAddr ( const std::string & host )
 void
 CidrUtils::GetHostAddrList ( const std::string & host, IpAddrList & addrlist )
 {
+    AddrInfo * ai = AddrInfo::GetAddrInfo(host);
+    addrinfo * res;
+
+    if ( ai == NULL )
+        return;
+
+    res = ai->begin();
+    for ( res = ai->begin(); res != NULL; res = ai->next() )
+    {
+        IpAddr addr(res->ai_addr);
+        addrlist.push_back(addr);
+    }
+    /*
     struct hostent  *hp;
     char           **pptr;
 
@@ -513,7 +526,7 @@ CidrUtils::GetHostAddrList ( const std::string & host, IpAddrList & addrlist )
           default:
              return;
     }
-
+*/
     return;
 }
 

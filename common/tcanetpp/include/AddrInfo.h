@@ -144,7 +144,9 @@ class AddrInfo {
     static addrinfo    GetUDPServerHints();
     static addrinfo    GetTCPClientHints();
     static addrinfo    GetUDPClientHints();
-    static int       ai_error;
+
+    static int         ai_error;
+
 
   protected:
 
