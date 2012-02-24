@@ -14,7 +14,8 @@ extern "C" {
 #include "tcanetpp_random.h"
 #include "Socket.h"
 #include "Exception.hpp"
-#include "CidrUtils.h"
+#include "IpAddr.h"
+#include "AddrInfo.h"
 #include "StringUtils.h"
 #include "Serializer.h"
 #include "CircularBuffer.h"
@@ -281,8 +282,7 @@ int main ( int argc, char ** argv )
     ::signal(SIGPIPE, SIG_IGN);
     ::signal(SIGINT,  &sigHandler);
 
-    ipv4addr_t srcaddr = CidrUtils::GetHostAddr();
-    ipv4addr_t dstaddr = CidrUtils::GetHostAddr(host);
+    ipv4addr_t dstaddr = AddrInfo::GetHostAddr(host);
 
     if ( dstaddr == 0 ) {
         std::cout << "Invalid target host: " << host << std::endl;
@@ -299,9 +299,11 @@ int main ( int argc, char ** argv )
     char       * wptr    = NULL;
     char       * wbuff   = NULL;
     char       * data    = NULL;
+    const char * dt      = NULL;
     bool         sendReq = true;
 
-    sockaddr_in  csock;
+    sockaddr_t   csock;
+    sockaddr_in* sa;
     ipv4addr_t   addr;
     size_t       sz, buflen, idsz;
     ssize_t      wt, rd;
@@ -318,7 +320,7 @@ int main ( int argc, char ** argv )
 
     CircularBuffer * rbuff = new CircularBuffer(buflen);
 
-    wbuff       = (char*) malloc(buflen);
+    wbuff       = (char*) ::malloc(buflen);
     req         = (neticmp_h*) wbuff;
     its         = (icmp_ts*) wbuff + sizeof(neticmp_h);
     data        = wbuff + idsz;
@@ -335,18 +337,18 @@ int main ( int argc, char ** argv )
     if ( size > (buflen - idsz) )
         size = buflen - idsz - 4;
 
-    size     += Serializer::PadLen(size);
+    size  += Serializer::PadLen(size);
     InitDataBlock(size);
-    const char * d = RandData.substr(0, size).data();
-    ::memcpy(data, d, size);
+
+    dt = RandData.substr(0, size).data();
+    ::memcpy(data, dt, size);
     its->size = size;
 
     std::cout << "Sending ";
     if ( count > 0 )
         std::cout << "(" << count << ") " ;
-    std::cout << "ICMP echo requests from " << CidrUtils::ntop(srcaddr)
-        << " to " << CidrUtils::ntop(dstaddr) << " (" << host << ")" 
-        << std::endl;
+    std::cout << "ICMP echo requests to " << IpAddr::ntop(dstaddr) 
+              << " (" << host << ")" << std::endl;
     std::cout << "ICMP data size is " << size << std::endl;
 
     while ( ! Alarm )
@@ -392,9 +394,11 @@ int main ( int argc, char ** argv )
             errorOut("Error in writing to rbuff");
 
         rd   = icmps->readFrom(wptr, sz, csock);
-        addr = csock.sin_addr.s_addr;
         if ( rd < 0 )
             errorOut("Error in readFrom " + icmps->getErrorString());
+        
+        sa   = (sockaddr_in*) &csock;
+        addr = sa->sin_addr.s_addr;
 
         rbuff->setWritePtr(rd);
 
@@ -426,7 +430,7 @@ int main ( int argc, char ** argv )
 
                 float ms = timeDiff(tvin, tvsnt);
 
-                std::cout << (rd+sz) << " bytes from " << CidrUtils::ntop(addr)
+                std::cout << (rd+sz) << " bytes from " << IpAddr::ntop(addr)
                     << ": seq=" << response.icmph.seq << " time=" << ms << " ms" 
                     << std::endl;
 

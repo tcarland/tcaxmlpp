@@ -15,7 +15,7 @@ extern "C" {
 
 #include "foo.h"
 
-#include "CidrUtils.h"
+#include "IpAddr.h"
 #include "BufferedSocket.h"
 
 
@@ -181,7 +181,7 @@ recvClientData ( BufferedSocket * client, char * buffer )
 	stamp = head->timestamp;
 
 	printf("Processed foo_t from %s timestamp: %u count: %u\n",
-	    CidrUtils::ntop(head->client).c_str(), stamp, head->count);
+	    IpAddr::ntop(head->client).c_str(), stamp, head->count);
 
     } while ( rd > 0 );
 

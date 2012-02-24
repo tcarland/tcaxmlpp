@@ -30,7 +30,8 @@ int main ( int argc, char **argv )
 
 
     IpAddr ipaddr(in6addr_loopback);
-    name   = CidrUtils::GetHostName();
+    name   = AddrInfo::GetHostName();
+
     std::cout << " IpAddr: " << ipaddr.toString()
               << "  ==  " << name << std::endl;
     std::cout << std::endl;

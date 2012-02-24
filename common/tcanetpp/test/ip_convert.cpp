@@ -7,6 +7,7 @@
 #include <iomanip>
 
 #include "CidrUtils.h"
+#include "IpAddr.h"
 #include "StringUtils.h"
 using namespace tcanetpp;
 
@@ -43,7 +44,7 @@ int main ( int argc, char **argv )
         } else if ( StringUtils::indexOf(input, ":") >= 0 ) {  // ipv6i
             ipv6addr_t  ip6addr;
 
-            r = CidrUtils::pton(input, ip6addr);
+            r = IpAddr::pton(input, ip6addr);
             if ( r != 1 )
                 std::cout << "Error in CidrUtils::pton " << r << std::endl;
 
@@ -55,7 +56,7 @@ int main ( int argc, char **argv )
                       << input << " == " << std::setiosflags(std::ios::right) << std::setw(38)
                       << rev             << std::resetiosflags(std::ios::right);
 
-            if ( CidrUtils::IsLoopback(ip6addr) )
+            if ( IpAddr::IsLoopback(ip6addr) )
                 std::cout << " <loopback>";
             std::cout << std::endl;
 

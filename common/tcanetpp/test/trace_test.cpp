@@ -17,7 +17,8 @@ extern "C" {
 #include "tcanetpp_ip.h"
 #include "Socket.h"
 #include "EventManager.h"
-#include "CidrUtils.h"
+#include "IpAddr.h"
+#include "AddrInfo.h"
 #include "StringUtils.h"
 #include "CircularBuffer.h"
 #include "LogFacility.h"
@@ -264,10 +265,8 @@ int main ( int argc, char ** argv )
     ::memset(&tvin, 0, sizeof(tvin));
     ::memset(&tvo, 0, sizeof(tvo));
 
-    ipv4addr_t  srcaddr = CidrUtils::GetHostAddr();
-    ipv4addr_t  dstaddr = CidrUtils::GetHostAddr(host);
-    std::string srcname = CidrUtils::ntop(srcaddr);
-    std::string dstname = CidrUtils::ntop(dstaddr);
+    ipv4addr_t  dstaddr = AddrInfo::GetHostAddr(host);
+    std::string dstname = IpAddr::ntop(dstaddr);
 
     if ( dstaddr == 0 ) {
         std::cout << "Invalid target " << host << std::endl;
@@ -284,7 +283,8 @@ int main ( int argc, char ** argv )
     dropPriv();
 
     /* init buffers */
-    sockaddr_in   csock;
+    sockaddr_t    csock;
+    sockaddr_in * sa;
     ipv4addr_t    addr;
     netudp_h    * udph;
     PathData    * udata;
@@ -420,7 +420,9 @@ int main ( int argc, char ** argv )
         sz   = rbuff->writePtrAvailable();
         wptr = rbuff->getWritePtr(&sz);
         rd   = icmps->readFrom(wptr, sz, csock);
-        addr = csock.sin_addr.s_addr;
+        sa   = (sockaddr_in*) &csock;
+        addr = sa->sin_addr.s_addr;
+
         if ( rd < 0 )
             errorOut("Error in readFrom " + icmps->getErrorString());
         rbuff->setWritePtr(rd);
@@ -481,7 +483,7 @@ int main ( int argc, char ** argv )
 
             if ( hop >= pathseq.size() ) { 
                 std::cout << " Invalid ttl " << hop
-                    << " from " << CidrUtils::ntop(iph.dstaddr) << std::endl;
+                    << " from " << IpAddr::ntop(iph.dstaddr) << std::endl;
                 continue;
             }
                 
@@ -525,7 +527,7 @@ int main ( int argc, char ** argv )
             }
 
             std::cout << std::setw(2) << hop << ": " 
-                << std::setw(15) << CidrUtils::ntop(response.iph.srcaddr) 
+                << std::setw(15) << IpAddr::ntop(response.iph.srcaddr) 
                 << "  <" << pdata.seq << ">"
                 << std::setw(8) << std::setprecision(3) << rtt
                 << std::setw(8) << std::setprecision(3) << avg
@@ -551,9 +553,9 @@ int main ( int argc, char ** argv )
 
     std::cout << std::endl << std::endl;
     version();
-    std::cout << "Destination: " << CidrUtils::ntop(dstaddr);
+    std::cout << "Destination: " << IpAddr::ntop(dstaddr);
     if ( resolve )
-        std::cout << " <" << CidrUtils::GetHostName(dstaddr) << ">  ";
+        std::cout << " <" << AddrInfo::GetHostName(dstaddr) << ">  ";
     std::cout << " Hop count: " << phops << std::endl;
 
     std::cout << std::endl;
@@ -590,7 +592,7 @@ int main ( int argc, char ** argv )
         loss    = ( 100.0 - ( ((float)pdata.cnt / pdata.seq) * 100.0) );
         rttavg  = ( pdata.rtt_total / pdata.cnt );
         rtdavg  = ( pdata.rtd_total / (float) (pdata.cnt - 1) );
-        hopname = CidrUtils::ntop(pdata.ipaddr);
+        hopname = IpAddr::ntop(pdata.ipaddr);
 
         std::cout << std::setw(2)  << pdata.hop << ": " 
                   << std::setw(18) << std::setiosflags(std::ios_base::right) <<  hopname 
@@ -602,7 +604,7 @@ int main ( int argc, char ** argv )
                   << std::setw(10) << std::setprecision(3) << pdata.rtd_min
                   << std::setw(10) << std::setprecision(3) << pdata.rtd_max;
         if ( resolve )
-            std::cout << "    <" << CidrUtils::GetHostName(pdata.ipaddr) << "> ";
+            std::cout << "    <" << AddrInfo::GetHostName(pdata.ipaddr) << "> ";
         
         std::cout << std::endl;
     }

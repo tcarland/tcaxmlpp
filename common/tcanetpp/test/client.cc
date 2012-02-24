@@ -7,7 +7,7 @@ extern "C" {
 # include <time.h>
 }
 
-#include "CidrUtils.h"
+#include "IpAddr.h"
 #include "BufferedSocket.h"
 
 #include "foo.h"
@@ -35,14 +35,14 @@ int main ( int argc, char **argv )
 
     BufferedSocket  * sock = NULL;
 
-    CidrUtils::pton("127.0.0.1", addr);
+    IpAddr::pton("127.0.0.1", addr);
 
     if ( argc == 1 ) {
 	printf("Usage: client [server_port]\n");
 	exit(0);
     }
 
-    printf("Connecting to %s\n", CidrUtils::ntop(addr).c_str());
+    printf("Connecting to %s\n", IpAddr::ntop(addr).c_str());
 
     port = atoi(argv[1]);
 
