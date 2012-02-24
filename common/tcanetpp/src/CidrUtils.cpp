@@ -413,15 +413,14 @@ std::string
 CidrUtils::GetHostName()
 {
     std::string  hostname;
-    ipv6addr_t   lo = in6addr_loopback;
+    ipv6addr_t   lo  = in6addr_loopback;
+    ipv4addr_t   lo4 = IPV4ADDR_LOOPBACK;
     int  r;
 
     r = AddrInfo::GetNameInfo(lo, hostname, 0);
 
     if ( r == 0 )
         return hostname;
-
-    ipv4addr_t  lo4 = IPV4ADDR_LOOPBACK;
 
     r = AddrInfo::GetNameInfo(lo4, hostname, 0);
 
@@ -431,14 +430,8 @@ CidrUtils::GetHostName()
 std::string
 CidrUtils::GetHostName ( ipv4addr_t addr )
 {
-    std::string       hostname;
-    struct  hostent  *hp = NULL;
-        
-    if ( (hp = ::gethostbyaddr((char*)&addr, sizeof(addr), AF_INET)) == NULL )
-        return hostname;
-
-    hostname = hp->h_name;
-
+    std::string hostname;
+    AddrInfo::GetNameInfo(addr, hostname, 0);
     return hostname;
 }
 
@@ -485,14 +478,12 @@ CidrUtils::GetHostAddr ( const std::string & host )
         return addr;
 
     res = ai->begin();
-    while ( res )
-    {
+    while ( res ) {
         if ( res->ai_family == AF_INET ) {
             sockaddr_in * sa = (sockaddr_in*) res->ai_addr;
             addr = sa->sin_addr.s_addr;
             break;
         }
-
         res = ai->next();
     }
     delete ai;

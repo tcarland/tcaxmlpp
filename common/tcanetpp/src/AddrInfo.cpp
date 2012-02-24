@@ -31,6 +31,7 @@
 #define _TCANETPP_ADDRINFO_CPP_
 
 #include "AddrInfo.h"
+#include "IpAddr.h"
 #include "StringUtils.h"
 #include "Socket.h"
 
@@ -339,6 +340,63 @@ AddrInfo::GetNameInfo ( const sockaddr    * sock,
 
 // ----------------------------------------------------------------------
 
+std::string
+AddrInfo::GetHostName()
+{
+    std::string  host;
+    ipv6addr_t   lo  = in6addr_loopback;
+    ipv4addr_t   lo4 = IPV4ADDR_LOOPBACK;
+    int  r;
+
+    r = AddrInfo::GetNameInfo(lo, host, 0);
+
+    if ( r == 0 )
+        return host;
+
+    r = AddrInfo::GetNameInfo(lo4, host, 0);
+
+    return host;
+}
+
+std::string
+AddrInfo::GetHostName ( const ipv4addr_t & addr )
+{
+    std::string host;
+    AddrInfo::GetNameInfo(addr, host, 0);
+    return host;
+}
+
+ipv4addr_t
+AddrInfo::GetHostAddr ( const std::string & host )
+{
+    ipv4addr_t  addr = 0;
+
+    if ( IpAddr::pton(host, addr) == 1 )
+        return addr;
+
+    AddrInfo * ai;
+    struct addrinfo  *res;
+
+    ai  = AddrInfo::GetAddrInfo(host);
+
+    if ( ai == NULL )
+        return addr;
+
+    res = ai->begin();
+    while ( res ) {
+        if ( res->ai_family == AF_INET ) {
+            sockaddr_in * sa = (sockaddr_in*) res->ai_addr;
+            addr = sa->sin_addr.s_addr;
+            break;
+        }
+        res = ai->next();
+    }
+    delete ai;
+
+    return addr;
+}
+
+// ----------------------------------------------------------------------
 
 addrinfo
 AddrInfo::GetTCPServerHints()

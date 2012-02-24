@@ -8,7 +8,6 @@
 
 #include "TnmsSocket.h"
 
-#include "CidrUtils.h"
 #include "StringUtils.h"
 using namespace tcanetpp;
 

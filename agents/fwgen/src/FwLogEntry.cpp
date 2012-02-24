@@ -6,7 +6,8 @@
 #include "FwLogEntry.h"
 
 #include "StringUtils.h"
-#include "CidrUtils.h"
+#include "IpAddr.h"
+#include "AddrInfo.h"
 using namespace tcanetpp;
 
 
@@ -132,8 +133,8 @@ FwLogEntry::SetHostname ( FwLogEntry & fwe )
 {
     ipv4addr_t   srcaddr;
 
-    if ( CidrUtils::pton(fwe.src, srcaddr) == 1 ) {
-        fwe.host = CidrUtils::GetHostName(srcaddr);
+    if ( IpAddr::pton(fwe.src, srcaddr) == 1 ) {
+        fwe.host = AddrInfo::GetHostName(srcaddr);
     }
 }
 

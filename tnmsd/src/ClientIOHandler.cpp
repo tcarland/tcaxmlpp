@@ -55,9 +55,11 @@ ClientIOHandler::timeout ( const EventTimer & timer )
 
         if ( client->isMirror() ) 
         {
+            time_t recon = stat.lastConn.getValue<time_t>() + client->getReconnectTime();
+
             if ( ! client->isConnected() || client->isConnecting() )
             {
-                if ( (stat.lastConn.getValue<time_t>() + client->getReconnectTime()) > now )
+                if ( ! client->isConnecting() && recon > now )
                     continue;
 
                 if ( (c = client->connect()) < 0 ) {
@@ -82,7 +84,7 @@ ClientIOHandler::timeout ( const EventTimer & timer )
                     c = 3;
                     stat.connState.setValue(TNMS_INT32, c);
                 } else if ( ! client->isAuthorized() ) {
-                    if ( (stat.lastConn.getValue<time_t>() + client->getReconnectTime()) <= now ) {
+                    if ( recon <= now ) {
                         client->login();
                         stat.lastConn.setValue(TNMS_UINT32, now);
                     }

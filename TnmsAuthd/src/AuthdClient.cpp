@@ -3,7 +3,7 @@
 #include "AuthdClient.h"
 #include "AuthDbThread.h"
 
-#include "CidrUtils.h"
+#include "IpAddr.h"
 #include "LogFacility.h"
 using namespace tcanetpp;
 
@@ -45,7 +45,7 @@ AuthdClient::AuthRequestHandler ( const TnmsAuthRequest & request )
     }
 
     if ( ipaddr.empty() )
-        ipaddr = CidrUtils::ntop(request.ipaddr());
+        ipaddr = IpAddr::ntop(request.ipaddr());
 
     LogFacility::LogMessage("AuthdClient::AuthRequestHandler() for "
         + request.getElementName());

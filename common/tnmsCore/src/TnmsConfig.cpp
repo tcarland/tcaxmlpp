@@ -7,7 +7,7 @@
 using namespace tcaxmlpp;
 
 #include "StringUtils.h"
-#include "CidrUtils.h"
+#include "AddrInfo.h"
 #include "LogFacility.h"
 using namespace tcanetpp;
 
@@ -223,7 +223,7 @@ TnmsConfigHandler::parseClient ( XmlNode * node )
         clientcfg.connection_name = node->getAttribute("name");
     if ( node->haveAttribute("host") ) {
         clientcfg.hostname = node->getAttribute("host");
-        clientcfg.hostaddr = CidrUtils::GetHostAddr(clientcfg.hostname);
+        clientcfg.hostaddr = AddrInfo::GetHostAddr(clientcfg.hostname);
     }
     if ( node->haveAttribute("port") )
         clientcfg.port = StringUtils::fromString<uint16_t>(node->getAttribute("port"));

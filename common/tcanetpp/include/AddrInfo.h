@@ -104,44 +104,46 @@ class AddrInfo {
   public:
 
     /* static factory methods */
-    static AddrInfo*  GetAddrInfo ( const std::string & host,
-                                    const std::string & svc = "" );
+    static AddrInfo*   GetAddrInfo ( const std::string & host,
+                                     const std::string & svc = "" );
 
-    static AddrInfo*  GetAddrInfo ( const std::string & host,
-                                    uint16_t            port );
+    static AddrInfo*   GetAddrInfo ( const std::string & host,
+                                     uint16_t            port );
 
 
     /* static methods for getaddrinfo/getnameinfo */
-    static int        GetAddrInfo ( const std::string & host,
-                                    const addrinfo    * hints,
-                                    addrinfo         ** res );
+    static int         GetAddrInfo ( const std::string & host,
+                                     const addrinfo    * hints,
+                                     addrinfo         ** res );
 
-    static int        GetAddrInfo ( const std::string & host,
-                                    const std::string & svc,
-                                    const addrinfo    * hints,
-                                    addrinfo         ** res );
+    static int         GetAddrInfo ( const std::string & host,
+                                     const std::string & svc,
+                                     const addrinfo    * hints,
+                                     addrinfo         ** res );
 
-    static int        GetNameInfo ( const ipv4addr_t  & addr,
-                                    std::string       & result,
-                                    int                 flags);
+    static int         GetNameInfo ( const ipv4addr_t  & addr,
+                                     std::string       & result,
+                                     int                 flags);
 
-    static int        GetNameInfo ( const ipv6addr_t  & addr,
-                                    std::string       & result,
-                                    int                 flags );
+    static int         GetNameInfo ( const ipv6addr_t  & addr,
+                                     std::string       & result,
+                                     int                 flags );
 
-    static int        GetNameInfo ( const sockaddr    * sock,
-                                    socklen_t           salen,
-                                    std::string       & result,
-                                    int                 flags );
+    static int         GetNameInfo ( const sockaddr    * sock,
+                                     socklen_t           salen,
+                                     std::string       & result,
+                                     int                 flags );
+
+    /* methods for legacy support */
+    static std::string GetHostName();
+    static std::string GetHostName ( const ipv4addr_t  & addr );
+    static ipv4addr_t  GetHostAddr ( const std::string & host );
 
     /* factory methods for generating addrinfo hints */
-
-    static addrinfo  GetTCPServerHints();
-    static addrinfo  GetUDPServerHints();
-    static addrinfo  GetTCPClientHints();
-    static addrinfo  GetUDPClientHints();
-
-
+    static addrinfo    GetTCPServerHints();
+    static addrinfo    GetUDPServerHints();
+    static addrinfo    GetTCPClientHints();
+    static addrinfo    GetUDPClientHints();
     static int       ai_error;
 
   protected:

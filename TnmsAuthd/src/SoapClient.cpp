@@ -5,7 +5,7 @@
 #include "soapStub.h"
 #include "TnmsAuth.nsmap"
 
-#include "CidrUtils.h"
+#include "IpAddr.h"
 #include "StringUtils.h"
 #include "FileUtils.h"
 #include "LogFacility.h"
@@ -24,7 +24,7 @@ SoapClient::SoapClient ( const int & fd, struct soap * tsoap )
       _fd(fd),
       _isSvr(false)
 {
-    _ipaddr = CidrUtils::ntop(ntohl(tsoap->ip));
+    _ipaddr = IpAddr::ntop(ntohl(tsoap->ip));
 }
 
 SoapClient::SoapClient ( const std::string & pemfile )

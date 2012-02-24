@@ -9,7 +9,7 @@
 
 
 #include "StringUtils.h"
-#include "CidrUtils.h"
+#include "IpAddr.h"
 using namespace tcanetpp;
 
 
@@ -120,7 +120,7 @@ SnmpUtils::QueryIpTable ( SnmpSession * session, IfaceIpMap & ipmap )
 	
         addr = (ipv4addr_t) *vIter;
 	toid = IP_INDXENTRY_OID;
-	toid.append(".").append(CidrUtils::ntop(addr));
+	toid.append(".").append(IpAddr::ntop(addr));
 
 	response = session->get(toid.c_str());
 

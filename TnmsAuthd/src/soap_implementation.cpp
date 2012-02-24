@@ -4,9 +4,6 @@
 
 #include "soapH.h"
 
-#include "CidrUtils.h"
-using namespace tcanetpp;
-
 #include "AuthDbThread.h"
 using namespace tnmsauth;
 
