@@ -51,7 +51,9 @@ namespace tcanetpp {
 //-------------------------------------------------------------------//
 IpAddr::IpAddr()
     :  _mb(0)
-{}
+{
+    ::memset(&_saddr, 0, sizeof(sockaddr_t));
+}
 
 
 IpAddr::IpAddr ( const ipv4addr_t & addr, uint8_t mb )

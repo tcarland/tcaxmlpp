@@ -76,7 +76,7 @@ SnmpUtils::MapInterfaces ( SnmpSession * session, NetworkDevice & device )
 
 	ifv.push_back(iface);
     }
-    device.setNetworkInterfaces(ifv);
+    device.setInterfaces(ifv);
 
     return;
 }

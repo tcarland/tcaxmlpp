@@ -49,7 +49,7 @@ DeviceMap::~DeviceMap()
 // ----------------------------------------------------------------------
 
 NetworkDevice*
-DeviceMap::find ( ipv4addr_t addr )
+DeviceMap::find ( const IpAddr & addr )
 {
     NetworkDevice       * device = NULL;
     DeviceMap::iterator   dIter;
@@ -63,7 +63,7 @@ DeviceMap::find ( ipv4addr_t addr )
 // ----------------------------------------------------------------------
 
 NetworkDevice*
-DeviceMap::insert ( ipv4addr_t addr )
+DeviceMap::insert ( const IpAddr & addr )
 {
     NetworkDevice       * dev = NULL;
     DeviceMap::iterator   dIter;
@@ -110,7 +110,7 @@ DeviceMap::insert ( NetworkDevice * device )
 // ----------------------------------------------------------------------
 
 NetworkDevice*
-DeviceMap::remove ( ipv4addr_t addr )
+DeviceMap::remove ( const IpAddr & addr )
 {
     NetworkDevice      * device = NULL;
     DeviceMap::iterator  dIter;
@@ -126,7 +126,7 @@ DeviceMap::remove ( ipv4addr_t addr )
 // ----------------------------------------------------------------------
 
 bool
-DeviceMap::exists ( ipv4addr_t addr )
+DeviceMap::exists ( const IpAddr & addr )
 {
     if ( this->find(addr) )
 	return true;

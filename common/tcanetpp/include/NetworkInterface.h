@@ -28,6 +28,7 @@
 #include <string>
 #include <vector>
 
+#include "IpAddr.h"
 #include "tcanetpp_types.h"
 
 
@@ -35,6 +36,7 @@ namespace tcanetpp {
 
 
 class NetworkInterface;
+
 typedef std::vector<NetworkInterface>	IfList;
 
 
@@ -43,38 +45,38 @@ class NetworkInterface {
   public:
 
     NetworkInterface();
-    NetworkInterface ( ipv4addr_t deviceip, int indx );
+    NetworkInterface ( const IpAddr & deviceip, int indx );
     NetworkInterface ( const NetworkInterface & nif );
 
     virtual ~NetworkInterface();
 
 
-    virtual void operator=   ( const NetworkInterface & nif );
-    virtual bool operator==  ( const NetworkInterface & nif );
-    virtual bool operator<   ( const NetworkInterface & nif );
+    virtual void        operator=   ( const NetworkInterface & nif );
+    virtual bool        operator==  ( const NetworkInterface & nif );
+    virtual bool        operator<   ( const NetworkInterface & nif );
 
 
-    int          ifIndex() const;
+    int                 ifIndex() const;
 
-    void         ifName ( const std::string & ifname );
-    std::string  ifName() const;
+    void                ifName ( const std::string & ifname );
+    std::string         ifName() const;
 
-    void         description ( const std::string & desc );
-    std::string  description() const;
+    void                description ( const std::string & desc );
+    const std::string&  description() const;
 
-    ipv4addr_t   deviceAddr()  const;
+    const IpAddr&       deviceAddr()  const;
 
-    void         ifAddr ( ipv4addr_t addr );
-    ipv4addr_t   ifAddr() const;
+    void                ifAddr ( const IpAddr & addr );
+    const IpAddr&       ifAddr() const;
 
-    void         ifId   ( int id );
-    int          ifId() const;
+    void                ifId   ( int id );
+    int                 ifId() const;
 
 
   private:
 
-    ipv4addr_t		_device_ip;
-    ipv4addr_t		_if_addr;
+    IpAddr		_device_ip;
+    IpAddr		_if_addr;
 
     std::string 	_if_name;
     std::string		_description;

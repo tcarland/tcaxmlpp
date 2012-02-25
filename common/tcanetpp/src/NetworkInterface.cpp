@@ -32,15 +32,15 @@ namespace tcanetpp {
 
 
 NetworkInterface::NetworkInterface()
-    : _device_ip(0),
-      _if_addr(0),
+    : _device_ip(),
+      _if_addr(),
       _if_index(0)
 {}
 
 
-NetworkInterface::NetworkInterface ( ipv4addr_t deviceip, int indx )
+NetworkInterface::NetworkInterface ( const IpAddr & deviceip, int indx )
     : _device_ip(deviceip), 
-      _if_addr(0),
+      _if_addr(),
       _if_index(indx)
 {}
 
@@ -114,14 +114,14 @@ NetworkInterface::description ( const std::string & desc )
     this->_description = StringUtils::trim(desc);
 }
 
-std::string
+const std::string&
 NetworkInterface::description() const
 {
     return this->_description;
 }
 
 
-ipv4addr_t
+const IpAddr&
 NetworkInterface::deviceAddr() const
 {
     return this->_device_ip;
@@ -129,12 +129,12 @@ NetworkInterface::deviceAddr() const
 
 
 void
-NetworkInterface::ifAddr ( ipv4addr_t addr )
+NetworkInterface::ifAddr ( const IpAddr & addr )
 {
     this->_if_addr = addr;
 }
 
-ipv4addr_t
+const IpAddr&
 NetworkInterface::ifAddr() const
 {
     return this->_if_addr;

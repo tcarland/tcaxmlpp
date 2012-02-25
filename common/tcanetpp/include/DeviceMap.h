@@ -30,6 +30,7 @@
 #include <string>
 #include <map>
 
+#include "IpAddr.h"
 #include "tcanetpp_types.h"
 
 
@@ -46,9 +47,9 @@ class DeviceMap {
 
   public:
 
-    typedef std::map<ipv4addr_t, NetworkDevice*>    IpDeviceMap;
-    typedef IpDeviceMap::iterator                   iterator;
-    typedef IpDeviceMap::const_iterator             const_iterator;
+    typedef std::map<IpAddr, NetworkDevice*>    IpDeviceMap;
+    typedef IpDeviceMap::iterator               iterator;
+    typedef IpDeviceMap::const_iterator         const_iterator;
 
 
   public:
@@ -58,13 +59,13 @@ class DeviceMap {
     virtual ~DeviceMap();
     
 
-    NetworkDevice*      find     ( ipv4addr_t addr );
-    NetworkDevice*      insert   ( ipv4addr_t addr );
+    NetworkDevice*      find     ( const IpAddr        & addr );
+    NetworkDevice*      insert   ( const IpAddr        & addr );
     NetworkDevice*      insert   ( const NetworkDevice & device );
-    bool                insert   ( NetworkDevice * device );
-    NetworkDevice*      remove   ( ipv4addr_t addr);
+    bool                insert   ( NetworkDevice       * device );
+    NetworkDevice*      remove   ( const IpAddr        & addr);
 
-    bool                exists   ( ipv4addr_t addr );
+    bool                exists   ( const IpAddr        & addr );
     bool                exists   ( const NetworkDevice & device );
 
     void                clear(); 

@@ -45,7 +45,7 @@ class NetworkDevice {
   public:
 
     NetworkDevice();
-    NetworkDevice  ( const ipv4addr_t  & deviceip );
+    NetworkDevice  ( const IpAddr      & addr );
     NetworkDevice  ( const std::string & host );
     NetworkDevice  ( const std::string & host, const std::string & community );
     NetworkDevice  ( const NetworkDevice & device );
@@ -59,36 +59,34 @@ class NetworkDevice {
  
     
     bool                setDevice       ( const std::string & host );
-    bool                setDevice       ( const ipv4addr_t  & addr );
+    bool                setDevice       ( const IpAddr      & addr );
 
     void                setDeviceName   ( const std::string & name );
-    void                setDeviceAddr   ( const ipv4addr_t & addr );
+    void                setDeviceAddr   ( const IpAddr      & addr );
 
     const std::string&  deviceName() const;
     const std::string&  name() const;
 
-    const ipv4addr_t&   deviceAddr() const;
-    const ipv4addr_t&   addr() const;
+    const IpAddr&       deviceAddr() const;
+    const IpAddr&       addr() const;
 
     void                deviceId       ( const int & id );
     const int&          deviceId() const;
 
     void                community      ( const std::string & comm );
-    const std::string&  community() const;
-
     void                readCommunity  ( const std::string & comm );
-    const std::string&  readCommunity() const;
-
     void                writeCommunity ( const std::string & comm );
+
+    const std::string&  community() const;
+    const std::string&  readCommunity() const;
     const std::string&  writeCommunity() const;
 
     void                version        ( const std::string & ver );
-    const std::string&  version() const;
-
     void                sysDescr       ( const std::string & desc );
-    const std::string&  sysDescr() const;
-
     void                model          ( const std::string & model );
+
+    const std::string&  version() const;
+    const std::string&  sysDescr() const;
     const std::string&  model() const;
 
     void                serialNumber   ( const std::string & serial );
@@ -105,8 +103,8 @@ class NetworkDevice {
     void                errorStr       ( const std::string & err ); 
     std::string         errorStr() const;
  
-    void                setNetworkInterfaces ( IfList & ifv );
-    IfList&             getNetworkInterfaces();
+    void                setInterfaces  ( IfList & ifv );
+    IfList&             getInterfaces();
 
 
   public:
@@ -119,7 +117,7 @@ class NetworkDevice {
 
     IfList              _ifv;
 
-    ipv4addr_t		_deviceAddr;
+    IpAddr 		_deviceAddr;
     int                 _deviceId;
     std::string	        _deviceName;
     

@@ -44,21 +44,21 @@ namespace tcanetpp {
 
 
 NetworkDevice::NetworkDevice()
-    : _deviceAddr(0),
+    : _deviceAddr(),
       _deviceId(0),
       _pollable(true)
 {}
 
-NetworkDevice::NetworkDevice ( const ipv4addr_t & deviceip )
-    : _deviceAddr(0),
+NetworkDevice::NetworkDevice ( const IpAddr & addr )
+    : _deviceAddr(addr),
       _deviceId(0),
       _pollable(true)
 {
-    this->setDevice(IpAddr::ntop(deviceip));
+    this->setDevice(addr);
 }
 
 NetworkDevice::NetworkDevice ( const std::string & host )
-    : _deviceAddr(0),
+    : _deviceAddr(),
       _deviceId(0),
       _pollable(true)
 {
@@ -67,7 +67,7 @@ NetworkDevice::NetworkDevice ( const std::string & host )
 
 
 NetworkDevice::NetworkDevice ( const std::string & host, const std::string & comm )
-    : _deviceAddr(0),
+    : _deviceAddr(),
       _deviceId(0),
       _readComm(comm),
       _pollable(true)
@@ -146,13 +146,13 @@ NetworkDevice::name() const
     return this->deviceName();
 }
 
-const ipv4addr_t&
+const IpAddr&
 NetworkDevice::deviceAddr() const
 {
     return this->_deviceAddr;
 }
 
-const ipv4addr_t&
+const IpAddr&
 NetworkDevice::addr() const
 {
     return this->deviceAddr();
@@ -338,14 +338,13 @@ NetworkDevice::errorStr() const
 bool
 NetworkDevice::setDevice ( const std::string & host )
 {
-    struct hostent * hp   = NULL;
-    ipv4addr_t       addr = 0;
-    int              indx = 0;
-    int              endx = 0;
-    std::string      hoststr;
+    ipv4addr_t   addr = 0;
+    int          indx = 0;
+    int          endx = 0;
+    std::string  hoststr;
 
     // check for a hostaddr in string format
-    if (  (addr = AddrInfo::GetHostAddr(host)) > 0 ) {
+    if (  IpAddr::pton(host, addr) == 1 ) {
 	return this->setDevice(addr);
 	
     //  this is very CDP specific which often returns 'serial_num (host)'
@@ -362,16 +361,7 @@ NetworkDevice::setDevice ( const std::string & host )
 
     // resolve hostname if we don't have ip yet
     if ( addr == 0 ) {
-	if ( (indx = StringUtils::indexOf(_deviceName, ".")) > 0 )
-	    _deviceName = _deviceName.substr(0, indx);
-
-	hp = ::gethostbyname(_deviceName.c_str());
-
-	if ( ! hp )
-	    return false;
-
-	_deviceName = hp->h_name;
-	_deviceAddr = *((uint32_t*)hp->h_addr);
+        _deviceAddr = AddrInfo::GetHostAddr(host);
     }
 
     return true;
@@ -379,13 +369,13 @@ NetworkDevice::setDevice ( const std::string & host )
 
 
 bool
-NetworkDevice::setDevice ( const ipv4addr_t & addr )
+NetworkDevice::setDevice ( const IpAddr & addr )
 {
     this->_deviceAddr = addr;
-    this->_deviceName = AddrInfo::GetHostName(addr);
+    AddrInfo::GetNameInfo((const sockaddr*) addr.getSockAddr(), sizeof(sockaddr_t), _deviceName, 0);
 
     if ( _deviceName.empty() ) {
-	_deviceName = IpAddr::ntop(_deviceAddr);
+	_deviceName = _deviceAddr.toString();
         return false;
     }
 
@@ -404,7 +394,7 @@ NetworkDevice::setDeviceName ( const std::string & name )
 }
 
 void
-NetworkDevice::setDeviceAddr ( const ipv4addr_t & addr )
+NetworkDevice::setDeviceAddr ( const IpAddr & addr )
 {
     this->_deviceAddr = addr;
 }
@@ -429,13 +419,13 @@ NetworkDevice::ifcount() const
   *   for this device.
  **/
 void
-NetworkDevice::setNetworkInterfaces ( IfList & ifv )
+NetworkDevice::setInterfaces ( IfList & ifv )
 {
     this->_ifv = ifv;
 }
 
 IfList&
-NetworkDevice::getNetworkInterfaces()
+NetworkDevice::getInterfaces()
 {
     return this->_ifv;
 }
@@ -467,20 +457,21 @@ NetworkDevice::SetDeviceVersion ( NetworkDevice & dev, const std::string & desc 
 
     StringUtils::trim(ver);
 
-    if ( dev.deviceAddr() > 0 ) {
+    IpAddr zero;
+    if ( dev.deviceAddr() == zero )
+        return ver;
 
-	dev.sysDescr(desc);
-	dev.version(ver);
+    dev.sysDescr(desc);
+    dev.version(ver);
 
-	/* old ios detection stuff
-	if ( vs.length() == 0 )
-	    dev.ios(0);
-	else if ( StringUtils::indexOf(vs, "IOS") >= 0 )
-	    dev.ios(1);
-	else
-	    dev.ios(-1);
-	 */
-    }
+    /* old ios detection stuff
+    if ( vs.length() == 0 )
+        dev.ios(0);
+    else if ( StringUtils::indexOf(vs, "IOS") >= 0 )
+        dev.ios(1);
+    else
+        dev.ios(-1);
+    */
 
     return ver;
 }
