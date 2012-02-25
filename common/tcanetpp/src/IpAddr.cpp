@@ -40,105 +40,110 @@
 #endif
 
 #include "IpAddr.h"
+#include "AddrInfo.h"
+#include "StringUtils.h"
 #include "tcanetpp_random.h"
 
-#include "AddrInfo.h"
 
 namespace tcanetpp {
 
 
+//-------------------------------------------------------------------//
 IpAddr::IpAddr()
-    : _addr(0, 0),
-      _mb(0),
-      _ipv4only(false)
+    :  _mb(0)
 {}
 
 
 IpAddr::IpAddr ( const ipv4addr_t & addr, uint8_t mb )
-    : _addr(0, 0),
-      _mb(mb),
-      _ipv4only(true)
+    :  _mb(mb)
 {
-    this->setIpAddr(addr);
+    struct sockaddr_in * sin;
+
+    ::memset(&_saddr, 0, sizeof(sockaddr_t));
+
+    sin  = (struct sockaddr_in*) &_saddr;
+    sin->sin_family      = AF_INET;
+    sin->sin_addr.s_addr = addr;
 }
 
-IpAddr::IpAddr ( const sockaddr * sa )
-    : _addr(0, 0),
-      _mb(0),
-      _ipv4only(false)
-{
-    sockaddr_t * sock = (sockaddr_t*) sa;
 
-    switch (sock->ss_family)
+IpAddr::IpAddr ( const sockaddr * sa )
+    : _mb(0)
+{
+    sockaddr_t * s = (sockaddr_t*) sa;
+
+    ::memcpy(&_saddr, s, sizeof(sockaddr_t));
+
+    switch ( s->ss_family )
     {
         case AF_INET:
-            sockaddr_in * sin4;
-            sin4      = (sockaddr_in*) sa;
-            _ipv4only = true;
-            _mb       = 32;
-            this->setIpAddr(sin4->sin_addr.s_addr);
+            _mb  = 32;
             break;
         case AF_INET6:
-            sockaddr_in6 * sin6;
-            sin6  = (sockaddr_in6*) sa;
-            _mb   = 64;
-            _addr = sin6->sin6_addr;
+            _mb  = 64;
+            break;
+        default:
+            _mb  = 0;
             break;
     }
 }
 
+
 IpAddr::IpAddr ( const ipv6addr_t & addr, uint8_t mb )
-    : _addr(addr),
-      _mb(mb),
-      _ipv4only(false)
-{}
+    :  _mb(mb)
+{
+    struct sockaddr_in6 * sin6;
+
+    ::memset(&_saddr, 0, sizeof(sockaddr_t));
+
+    sin6  = (struct sockaddr_in6*) &_saddr;
+    sin6->sin6_family = AF_INET6;
+    sin6->sin6_addr   = (*( (struct in6_addr*) &addr ));
+}
+
 
 IpAddr::IpAddr ( const IpAddr & ipaddr )
-    : _addr(ipaddr.getAddr()),
-      _mb(ipaddr.getPrefixLen()),
-      _ipv4only(ipaddr.ipv4Only())
-{}
+    :  _mb(ipaddr.getPrefixLen())
+{
+    ::memcpy(&_saddr, ipaddr.getSockAddr(), sizeof(sockaddr_t));
+}
 
 IpAddr::~IpAddr()
 {}
 
+//-------------------------------------------------------------------//
 
 bool
 IpAddr::operator== ( const IpAddr & ipaddr ) const
 {
-    return(_addr == ipaddr.getAddr());
+    return( this->getAddr6() == ipaddr.getAddr6() );
 }
 
 bool
 IpAddr::operator< ( const IpAddr & ipaddr ) const
 {
-    return(_addr < ipaddr.getAddr());
+    return( this->getAddr6() < ipaddr.getAddr6() );
 }
 
-
-void
-IpAddr::setIpAddr ( const ipv4addr_t & addr )
-{
-    uint32_t *  oct;
-    
-    oct    = ((uint32_t*) &_addr);
-    oct[3] = addr;
-
-    return;
-}
-
+//-------------------------------------------------------------------//
 
 bool
-IpAddr::ipv4Only() const
+IpAddr::ipv4() const
 {
-    return this->_ipv4only;
+    if ( _saddr.ss_family == AF_INET )
+        return true;
+    return false;
 }
 
-void
-IpAddr::ipv4only ( bool ipv4 )
+bool
+IpAddr::ipv6() const
 {
-    _ipv4only = ipv4;
+    if ( _saddr.ss_family == AF_INET6 )
+        return true;
+    return false;
 }
+
+//-------------------------------------------------------------------//
 
 ipv6addr_t
 IpAddr::getAddr() const
@@ -149,11 +154,14 @@ IpAddr::getAddr() const
 ipv4addr_t
 IpAddr::getAddr4() const
 {
-    ipv4addr_t addr;
-    uint32_t * oct;
+    ipv4addr_t    addr;
+    sockaddr_in * sa;
 
-    oct  = ((uint32_t*) &_addr);
-    addr = oct[3];
+    if ( this->ipv6() )
+        return 0;
+
+    sa   = (sockaddr_in*) &_saddr;
+    addr = sa->sin_addr.s_addr;
 
     return addr;
 }
@@ -161,7 +169,16 @@ IpAddr::getAddr4() const
 ipv6addr_t
 IpAddr::getAddr6() const
 {
-    return _addr;
+    ipv6addr_t     addr;
+    sockaddr_in6 * sa;
+
+    if ( this->ipv4() )
+        return addr;
+
+    sa   = (sockaddr_in6*) &_saddr;
+    addr = ( *((ipv6addr_t*)&sa->sin6_addr) );
+
+    return addr;
 }
 
 ipv4addr_t
@@ -182,41 +199,31 @@ IpAddr::getPrefixLen() const
     return this->_mb;
 }
 
-sockaddr_t
+//-------------------------------------------------------------------//
+
+sockaddr_t*
 IpAddr::getSockAddr()
 {
-    sockaddr_t  ss;
-    socklen_t   sslen;
-
-    sslen = sizeof(ss);
-    ::memset(&ss, 0, sslen);
-
-    if ( this->ipv4only() )
-    {
-        sockaddr_in * sock    = (sockaddr_in*) &ss;
-        sock->sin_family      = AF_INET;
-        sock->sin_addr.s_addr = this->getAddr4();
-    }
-    else
-    {
-        sockaddr_in6 * sock = (sockaddr_in6*) &ss;
-        sock->sin6_family   = AF_INET6;
-        sock->sin6_addr     = *((in6addr_t*) &_addr);
-    }
-
-    return ss;
+    return &_saddr;
 }
+
+const sockaddr_t*
+IpAddr::getSockAddr() const
+{
+    return( (const sockaddr_t*) &_saddr );
+}
+
+//-------------------------------------------------------------------//
 
 std::string
 IpAddr::toString() const
 {
-    if ( _ipv4only ) {
-        ipv4addr_t addr = this->getAddr4();
-        return IpAddr::ntop(addr);
-    }
-
     std::string  ipstr;
-    AddrInfo::GetNameInfo(_addr, ipstr, NI_NUMERICHOST);
+
+    if ( this->ipv4() )
+        ipstr = IpAddr::ntop(this->getAddr4());
+    else
+        AddrInfo::GetNameInfo((const sockaddr*)&_saddr, sizeof(sockaddr_t), ipstr, NI_NUMERICHOST);
 
     return ipstr;
 }
@@ -224,13 +231,15 @@ IpAddr::toString() const
 bool
 IpAddr::isLoopback() const
 {
-    if ( _ipv4only ) {
-        ipv4addr_t addr = this->getAddr4();
-        return IpAddr::IsLoopback(addr);
-    }
+    if ( this->ipv4() )
+        return IpAddr::IsLoopback(this->getAddr4());
 
-    return IpAddr::IsLoopback(_addr);
+    return IpAddr::IsLoopback(this->getAddr6());
 }
+
+
+//-------------------------------------------------------------------//
+//-------------------------------------------------------------------//
 
 
 bool
@@ -402,7 +411,7 @@ IpAddr::RandomAddr ( IpAddr & agg )
 {
     IpAddr  addr;
 
-    if ( agg.ipv4Only() )
+    if ( agg.ipv4() )
         addr = IpAddr(IpAddr::RandomPrefix(agg.getPrefix(), agg.getPrefixLen()), 24);
     return addr;
 }
@@ -431,13 +440,12 @@ IpAddr::RandomPrefix ( ipv4addr_t agg, uint8_t masklen )
     for ( int i = 0; i < 4; i++, ptr++ )
 	octets[i] = (*(uint8_t*)ptr);
 
-    subnet = octets[pos];
-    subval = (int) tcanet_randomValue((double)blksz);
-
+    subnet      = octets[pos];
+    subval      = (int) tcanet_randomValue( (double)blksz );
     octets[pos] = (subnet + (subval - 1));
-    ptr = &octets[0];
+    ptr         = &octets[0];
+    addr        = *(ipv4addr_t*)ptr;
 
-    addr = *(ipv4addr_t*)ptr;
     return addr;
 }
 
@@ -458,10 +466,60 @@ IpAddr::ToBasePrefix ( const ipv4addr_t & pfx, uint8_t mb )
     if ( mb > MAXMASKLEN )
         return 0;
 
-    mask  = mask >> (32 - mb) << (32 - mb);
+    mask  = mask >> (MAXMASKLEN - mb) << (MAXMASKLEN - mb);
     addr &= htonl(mask);
 
     return addr;
+}
+
+std::string
+IpAddr::ToPrefixStr ( const IpAddr & pfx, uint8_t mb )
+{
+    char  pfxstr[INET6_ADDRSTRLEN];
+
+    std::string prefix = IpAddr::ntop( (const sockaddr_t*) pfx.getSockAddr() );
+
+#   ifdef WIN32
+    ::_snprintf(pfxstr, INET6_ADDRSTRLEN, "%s%s%u", prefix.c_str(), "/", mb);
+#   else
+    ::snprintf(pfxstr, INET6_ADDRSTRLEN, "%s%s%u", prefix.c_str(), "/", mb);
+#   endif
+
+    prefix.assign(pfxstr);
+
+    return prefix;
+}
+
+int
+IpAddr::ToIpAddr ( const std::string & str, IpAddr & ipaddr )
+{
+    std::string  addrstr;
+    ipv4addr_t   addr;
+    uint16_t     mb;
+
+    std::string::size_type indx;
+
+    if ( (indx = str.find_first_of('/')) == std::string::npos ) {
+        addrstr = str;
+        mb      = MAXMASKLEN;
+    } else {
+        addrstr = str.substr(0, indx);
+    }
+
+    if ( IpAddr::pton(addrstr, addr) <= 0 )
+        return 0;
+
+    if ( mb == 0 ) {
+        addrstr = str.substr(indx+1);
+        mb = StringUtils::fromString<uint16_t>(addrstr);
+    }
+
+    if ( mb < 1 || mb > 32 )
+        mb = 32;
+
+    ipaddr = IpAddr(addr, mb);
+
+    return 1;
 }
 
 //-------------------------------------------------------------------//
@@ -479,6 +537,86 @@ IpAddr::BitsToMask ( uint8_t mb )
     return mask;
 }
 
+uint8_t
+IpAddr::SubnetValue ( const ipv4addr_t & addr, uint8_t pos )
+{
+    const uint8_t * ptr;
+    uint8_t   octets[4];
+
+    if ( pos > 4 )
+        return 0;
+
+    ptr  = (const uint8_t*) &addr;
+
+    for ( int i = 0; i < 4; i++, ptr++ )
+        octets[i] = (*(const uint8_t*)ptr);
+
+    return octets[pos - 1];
+}
+
+bool
+IpAddr::MatchPrefix ( const IpAddr & pfx, const ipv4addr_t & addr )
+{
+    return( pfx.getPrefix() == IpAddr::ToBasePrefix(addr, pfx.getPrefixLen()) );
+}
+
+//-------------------------------------------------------------------//
+
+bool
+IpAddr::DeAggregate ( const IpAddr & pfx, uint8_t mb, IpAddrList & v )
+{
+    ipv4addr_t  base;
+    uint8_t     octets[4];
+    uint8_t    *ptr;
+    int         A, B, num, x;
+    bool        bigA = false;
+
+    if ( pfx.getPrefixLen() > mb ||
+            ! IpAddr::IsBasePrefix(pfx.getPrefix(), pfx.getPrefixLen()) )
+        return false;
+
+    num = (int) ::pow( (double)2, (double)(mb - pfx.getPrefixLen()) );
+    A   = ( 3 - ( (32 - pfx.getPrefixLen()) / 8 ) );
+    B   = ( 3 - ( (32 - mb) / 8 ) );
+
+    if ( A == 0 ) {
+        A = 1;
+        bigA = true;
+    }
+
+    base = pfx.getPrefix();
+    ptr  = (uint8_t*) &base;
+
+    for ( int i = 0; i < 4; i++, ptr++ )
+        octets[i] = ( *(uint8_t*)ptr );
+
+    ptr = &octets[0];
+
+    IpAddr p;
+    while ( num > 0 )
+    {
+        p = IpAddr( *(ipv4addr_t*)ptr, mb );
+        v.push_back(p);
+
+        x = octets[B];
+        octets[B] = x++;
+
+        if ( octets[B] == 0 )
+        {
+            x = octets[A];
+            octets[A] = x++;
+
+            if ( bigA && octets[A] == 0 ) {
+                x = octets[0];
+                octets[0] = x++;
+            }
+        }
+
+        num--;
+    }
+
+    return true;
+}
 
 //-------------------------------------------------------------------//
 

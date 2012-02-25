@@ -14,7 +14,7 @@ int main ( int argc, char **argv )
 {
 
     ipv6addr_t    addr;
-    std::string   result, name;
+    std::string   result, name, svc;
     int           r, i;
 
     AddrInfo        * ai;
@@ -43,6 +43,11 @@ int main ( int argc, char **argv )
     ai    = AddrInfo::GetAddrInfo(name);
     i     = 1;
 
+    if ( ai == NULL ) {
+        std::cout << "Error getting addrinfo for " << name << std::endl;
+        return -1;
+    }
+
     std::cout << "  " << name << std::endl;
     for ( res = ai->begin(); res != NULL; res = ai->next() )
     {
@@ -61,9 +66,14 @@ int main ( int argc, char **argv )
 
     name  = "www.google.com";
     ai    = AddrInfo::GetAddrInfo(name);
-    res   = ai->begin();
     i     = 1;
 
+    if ( ai == NULL ) {
+        std::cout << "Error getting addrinfo for " << name << std::endl;
+        return -1;
+    }
+
+    res = ai->begin();
     std::cout << "  " << name << std::endl;
     while ( res ) {
         AddrInfo::GetNameInfo((const sockaddr*) res->ai_addr, res->ai_addrlen, result, NI_NUMERICHOST);
@@ -75,6 +85,31 @@ int main ( int argc, char **argv )
     ai = NULL;
     std::cout << std::endl;
 
+
+    // -------------------------------------------
+    // Query for all host addrs for ipaddrany
+    name  = "";
+    svc   = "80";
+    uint16_t pt = 80;
+    ai    = AddrInfo::GetAddrInfo(name, pt);
+    i     = 1;
+
+    if ( ai == NULL ) {
+        std::cout << "Error getting addrinfo for NULL name: " << AddrInfo::ai_error << std::endl;;
+        return -1;
+    }
+
+    res   = ai->begin();
+    std::cout << "  null : 80" << std::endl;
+    while ( res ) {
+        AddrInfo::GetNameInfo((const sockaddr*) res->ai_addr, res->ai_addrlen, result, NI_NUMERICHOST);
+        std::cout << "addrinfo: " << i << " > " << result << std::endl;
+        i++;
+        res = ai->next();
+    }
+    delete ai;
+    ai = NULL;
+    std::cout << std::endl;
 
     // -------------------------------------------
     // process argument

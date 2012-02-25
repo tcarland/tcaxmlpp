@@ -32,12 +32,16 @@
 #define _TCANETPP_IPADDR_H_
 
 #include <string>
+#include <set>
+#include <vector>
+
 #include "tcanetpp_ip.h"
 
 
 namespace tcanetpp {
 
 /*
+ *   ::0:0/96       ipv4 in ipv6
  *   ::ffff:0:0/96  ipv4 mapped ipv6
  *
  *  0     16    32    48    64    80    96   112   128
@@ -51,38 +55,44 @@ class IpAddr {
 
   public:
 
+    typedef std::set<IpAddr>     IpAddrSet;
+    typedef std::vector<IpAddr>  IpAddrList;
+
+
+  public:
+
     IpAddr();
     IpAddr ( const sockaddr * sa );
     IpAddr ( const ipv4addr_t & addr, uint8_t mb = 32 );
     IpAddr ( const ipv6addr_t & addr, uint8_t mb = 64 );
     IpAddr ( const IpAddr & ipaddr );
 
-    ~IpAddr();
+    virtual ~IpAddr();
+
 
     bool                operator==   ( const IpAddr & ipaddr ) const;
     bool                operator<    ( const IpAddr & ipaddr ) const;
 
-    bool                ipv4Only() const;
-    bool                ipv4only() const { return this->ipv4Only(); }
-
-    void                ipv4only ( bool ipv4 );
+    bool                ipv4() const;
+    bool                ipv6() const;
 
     ipv6addr_t          getAddr() const;
-    ipv4addr_t          getAddr4() const;
     ipv6addr_t          getAddr6() const;
-
-    ipv4addr_t          getPrefix() const;
     ipv6addr_t          getPrefix6() const;
+    uint8_t             getPrefix6Len() const { return this->getPrefixLen(); }
 
+    ipv4addr_t          getAddr4() const;
+    ipv4addr_t          getPrefix() const;
     uint8_t             getPrefixLen() const;
 
-    sockaddr_t          getSockAddr();
+    sockaddr_t*         getSockAddr();
+    const sockaddr_t*   getSockAddr() const;
 
     std::string         toString() const;
     bool                isLoopback() const;
 
 
-  public:
+  public:   /*  static functions */
 
     static bool         IsLoopback   ( const ipv4addr_t  & addr );
     static bool         IsLoopback   ( const ipv6addr_t  & addr );
@@ -98,30 +108,33 @@ class IpAddr {
 
     static std::string  ether_ntop   ( const ethaddr_t   * ethaddr );
 
-    static int          GetCidrRange ( uint8_t   mb, 
-                                       uint8_t * subnet = NULL );
-    static int          GetIpv6Range ( uint8_t   mb );
-
-    static uint32_t     RandomValue  ( double range );
-    static IpAddr       RandomAddr   ( IpAddr & agg );
-    static ipv4addr_t   RandomPrefix ( ipv4addr_t addr, uint8_t mb );
-
-    static bool         IsBasePrefix ( const ipv4addr_t & pfx, uint8_t mb);
-    static ipv4addr_t   ToBasePrefix ( const ipv4addr_t & pfx, uint8_t mb);
+    static bool         IsBasePrefix ( const ipv4addr_t  & pfx, uint8_t mb );
+    static ipv4addr_t   ToBasePrefix ( const ipv4addr_t  & pfx, uint8_t mb );
+    static std::string  ToPrefixStr  ( const IpAddr      & pfx, uint8_t mb );
+    static int          ToIpAddr     ( const std::string & str,
+                                       IpAddr            & ipaddr );
 
     static ipv4addr_t   BitsToMask   ( uint8_t mb );
+    static uint8_t      SubnetValue  ( const ipv4addr_t  & addr, uint8_t pos );
 
+    static bool         MatchPrefix  ( const IpAddr      & pfx,
+                                       const ipv4addr_t  & addr );
 
-  protected:
+    static uint32_t     RandomValue  ( double     range );
+    static IpAddr       RandomAddr   ( IpAddr   & agg );
+    static ipv4addr_t   RandomPrefix ( ipv4addr_t addr, uint8_t mb );
 
-    void   setIpAddr  ( const ipv4addr_t & addr );
+    static bool         DeAggregate  ( const IpAddr & pfx, uint8_t mb,
+                                       IpAddrList   & v );
+
+    static int          GetCidrRange ( uint8_t mb, uint8_t * subnet = NULL );
+    static int          GetIpv6Range ( uint8_t mb );
 
 
   private:
 
-    ipv6addr_t          _addr;
+    sockaddr_t          _saddr;
     uint8_t             _mb;
-    bool                _ipv4only;
 
 };
 

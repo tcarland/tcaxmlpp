@@ -145,7 +145,11 @@ class AddrInfo {
     static addrinfo    GetTCPClientHints();
     static addrinfo    GetUDPClientHints();
 
-    static int         ai_error;
+    static std::string GetErrorStr();
+
+  public:
+
+    static std::string ai_error;
 
 
   protected:

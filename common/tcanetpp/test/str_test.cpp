@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "StringUtils.h"
-#include "CidrUtils.h"
+#include "IpAddr.h"
 using namespace tcanetpp;
 
 
@@ -55,7 +55,7 @@ int main() {
     if ( stok.size() >= 1 )
         addrstr = stok[0];
 
-    if ( CidrUtils::StringToAddr(addrstr, addr) <= 0 )
+    if ( IpAddr::pton(addrstr, addr) <= 0 )
 	return -1;
 
     if ( stok.size() == 2 )

@@ -57,7 +57,7 @@ Whois::init ( const std::string & host, uint16_t port )
     {
         IpAddr & addr = *hIter;
 
-        if ( ! addr.ipv4only() ) 
+        if ( ! addr.ipv4() )
             continue;
 
         if ( _sock )

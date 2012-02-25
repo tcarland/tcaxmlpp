@@ -79,6 +79,7 @@ typedef struct sockaddr_storage  sockaddr_t;
 #define INET4_CIDRSTRLEN        20
 #define ERRORSTRLEN             256
 #define MAXMASKLEN              32
+#define MAXMASKLEN_IPV6         64   // nothing should subnet between 64 and 128
 #define IPV4ADDR_LOOPBACK       16777343
 #define ETHER_ADDRLEN           6
 

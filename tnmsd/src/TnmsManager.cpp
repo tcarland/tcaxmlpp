@@ -323,11 +323,6 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
     if ( nsvrcfg.agent_port != svrcfg.agent_port 
             && nsvrcfg.agent_port > 0 )
     {
-        LogFacility::Message  logmsg;
-        logmsg << "TnmsManager::parseConfig(): Agent server listening on port " 
-               << nsvrcfg.agent_port;
-        LogFacility::LogMessage(logmsg.str());
-
         if ( _agent ) {
             _agent->close();
             _evmgr->removeEvent(_agentId);
@@ -342,6 +337,11 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
             return false;
         }
 
+        LogFacility::Message  logmsg;
+        logmsg << "TnmsManager::parseConfig(): Agent server init "  << _agent->getHostStr();
+        LogFacility::LogMessage(logmsg.str());
+
+
         _agentId = _evmgr->addIOEvent(_agentHandler, _agent->getFD(), _agent, true);
     } 
 
@@ -349,11 +349,6 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
     if ( nsvrcfg.client_port != svrcfg.client_port 
             && nsvrcfg.client_port > 0 )
     {
-        LogFacility::Message  logmsg;
-        logmsg << "TnmsManager::parseConfig(): Client Server listening on port " 
-               << nsvrcfg.client_port;
-        LogFacility::LogMessage(logmsg.str());
-
         if ( _client ) {
             _client->close();
             _evmgr->removeEvent(_clientId);
@@ -368,6 +363,10 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
             return false;
         }
 
+        LogFacility::Message  logmsg;
+        logmsg << "TnmsManager::parseConfig(): Client Server init " << _client->getHostStr();
+        LogFacility::LogMessage(logmsg.str());
+
         if ( _startDelay == 0 )
             _clientId = _evmgr->addIOEvent(_clientHandler, _client->getFD(), _client, true);
     }
@@ -376,6 +375,7 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
     _tconfig = config;
 
     this->destroyClients();
+
     // init mirror connections
     if ( _tconfig.clients.size() > 0 )
         this->createClients();

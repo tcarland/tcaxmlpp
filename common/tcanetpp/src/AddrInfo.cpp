@@ -65,7 +65,7 @@ AddrInfo::AddrInfoFactory::operator() ( struct addrinfo * ai )
 
 // ----------------------------------------------------------------------
 
-int AddrInfo::ai_error = 0;
+std::string AddrInfo::ai_error = " -- ";
 
 
 AddrInfo::AddrInfo()
@@ -238,13 +238,16 @@ AddrInfo::getError() const
 AddrInfo*
 AddrInfo::GetAddrInfo ( const std::string & host, const std::string & svc )
 {
-    AddrInfo * ai = NULL;
-    addrinfo * res, hints;
+    AddrInfo   * ai = NULL;
+    addrinfo   * res, hints;
+    int          err;
 
     hints = AddrInfo::GetTCPClientHints();
 
-    if ( (ai_error = AddrInfo::GetAddrInfo(host, svc, &hints, &res)) == 0 )
+    if ( (err = AddrInfo::GetAddrInfo(host, svc, &hints, &res)) == 0 )
         ai = AddrInfo::factory(res);
+    else
+        ai_error = (std::string) ::gai_strerror(err);
 
     return ai;
 }
@@ -264,17 +267,25 @@ AddrInfo::GetAddrInfo ( const std::string & host,
                         const addrinfo    * hints,
                         addrinfo         ** res )
 {
-    return(::getaddrinfo(host.c_str(), NULL, hints, res));
+    std::string svc = "";
+    return AddrInfo::GetAddrInfo(host, svc, hints, res);
 }
 
 
 int
-AddrInfo::GetAddrInfo ( const std::string & host,
-                        const std::string & svc,
+AddrInfo::GetAddrInfo ( const std::string & host, const std::string & svc,
                         const addrinfo    * hints,
                         addrinfo         ** res )
 {
-    return(::getaddrinfo(host.c_str(), svc.c_str(), hints, res));
+    const char * hostname = NULL;
+    const char * service  = NULL;
+
+    if ( ! host.empty() )
+        hostname = host.c_str();
+    if ( ! svc.empty() )
+        service  = svc.c_str();
+
+    return(::getaddrinfo(hostname, service, hints, res));
 }
 
 
@@ -435,8 +446,6 @@ AddrInfo::GetTCPClientHints()
 
     hints.ai_family    = AF_UNSPEC;
     hints.ai_socktype  = SOCKET_TCP;
-    hints.ai_flags     = AI_CANONNAME;
-    hints.ai_protocol  = 0;
 
     return hints;
 }
@@ -450,12 +459,19 @@ AddrInfo::GetUDPClientHints()
 
     hints.ai_family    = AF_UNSPEC;
     hints.ai_socktype  = SOCKET_UDP;
-    hints.ai_flags     = AI_CANONNAME;
-    hints.ai_protocol  = 0;
 
     return hints;
 }
 
+// ----------------------------------------------------------------------
+
+std::string
+AddrInfo::GetErrorStr()
+{
+    return AddrInfo::ai_error;
+}
+
+// ----------------------------------------------------------------------
 
 } // namespace
 
