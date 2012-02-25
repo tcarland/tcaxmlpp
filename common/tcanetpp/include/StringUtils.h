@@ -33,7 +33,7 @@
 #include <sstream>
 
 
-#include "tcanetpp_config.h"
+#include "tcanetpp_types.h"
 
 
 namespace tcanetpp {
@@ -84,6 +84,9 @@ class StringUtils {
 
     static std::string   toUpperCase      ( const std::string & str );
     static void          toUpperCase      ( std::string & str );
+    
+    static std::string   toHexString      ( const uint8_t * buf, 
+                                            size_t len, size_t offset );
 
     static std::string   trim             ( const std::string & str );
     static void          trim             ( std::string & str );
@@ -94,6 +97,7 @@ class StringUtils {
 
     static void          stripComments    ( std::string & strline );
     static void          replaceTabs      ( std::string & strline );
+
 
     /*  Note: the to/fromString functions do NOT work with (u)int8_t 
      *  types since these are often typedef'd from (unsigned)char 

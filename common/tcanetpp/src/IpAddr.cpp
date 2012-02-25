@@ -1,7 +1,6 @@
 /**
   * @file IpAddr.cpp
   *
-  *   Defines various IP headers.
   * These are defined within this library to avoid having to
   * use platform specific defines for various headers. This also
   * means we avoid the issue of some fields varying slightly in

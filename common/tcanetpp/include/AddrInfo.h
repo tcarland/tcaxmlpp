@@ -1,7 +1,6 @@
 /**
   * @file Addrinfo.h
   *
-  *   Defines various IP headers.
   * These are defined within this library to avoid having to
   * use platform specific defines for various headers. This also
   * means we avoid the issue of some fields varying slightly in
@@ -83,14 +82,14 @@ class AddrInfo {
     sockaddr_t* getSockAddr() { return this->getAddr(); }
 
 
-    int         getFlags() const;
-    bool        setFlags ( int flags );
+    bool        setFlags    ( int flags );
+    int         getFlags()  const;
 
+    bool        setFamily   ( int family );
     int         getFamily() const;
-    bool        setFamily ( int family );
 
-    int         getSocktype() const;
     bool        setSocktype ( int type );
+    int         getSocktype() const;
 
     int         getProtocol() const;
     bool        setProtocol ( int proto );
@@ -113,7 +112,7 @@ class AddrInfo {
                                      uint16_t            port );
 
 
-    /* static methods for getaddrinfo/getnameinfo */
+    /* static utility methods for getaddrinfo/getnameinfo */
 
     static int         GetAddrInfo ( const std::string & host,
                                      const addrinfo    * hints,
@@ -137,7 +136,7 @@ class AddrInfo {
                                      std::string       & result,
                                      int                 flags );
 
-    /* methods for legacy support */
+    /* static utility methods for legacy support */
 
     static std::string GetHostName();
     static std::string GetHostName ( const ipv4addr_t  & addr );

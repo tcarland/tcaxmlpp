@@ -29,6 +29,7 @@
 extern "C" {
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 }
 #include <cctype>
 
@@ -206,6 +207,75 @@ StringUtils::toUpperCase ( std::string & str )
     return;
 }
 /*@}*/
+
+// ----------------------------------------------------------------------
+/**  Converts the provided buffer to a human readable, formatted hex string */
+
+std::string
+StringUtils::toHexString ( const uint8_t * buf, size_t len, size_t offset )
+{
+    const uint8_t *ptr;
+    std::string    hexl;
+    char           hexc[TCANET_SMLSTRLINE];
+    char          *hx;
+    size_t         i, gap, lt;
+    int            rt = 0;
+
+    lt  = TCANET_SMLSTRLINE;
+    hx  = &hexc[0];
+    rt  = ::snprintf(hx, lt, "%05lu  ", offset);
+    hx += rt;
+    lt -= rt;
+    ptr = buf;
+
+    for ( i = 0; i < len; ++i )
+    {
+        rt  = ::snprintf(hx, lt, "%02x ", *ptr++);
+        hx += rt;
+        lt -= rt;
+        if ( i == 7 ) {
+            rt = ::snprintf(hx, lt, " ");
+            hx += rt;
+            lt -= rt;
+        }
+    }
+
+    if ( len < 8 ) {
+        rt  = ::snprintf(hx, lt, " ");
+        hx += rt;
+        lt -= rt;
+    }
+
+    if ( len < 16)  {
+        gap = 16 - len;
+        for ( i = 0; i < gap; ++i )  {
+            rt  = ::snprintf(hx, lt, "   ");
+            hx += rt;
+            lt -= rt;
+        }
+    }
+
+    rt  = ::snprintf(hx, lt, "   ");
+    hx += rt;
+    lt -= rt;
+    ptr = buf;
+    
+    for ( i = 0; i < len; ++i )
+    {
+        if ( isprint(*ptr) )
+            rt  = ::snprintf(hx, lt, "%c", *ptr);
+        else
+            rt  = ::snprintf(hx, lt, ".");
+
+        hx += rt;
+        lt -= rt;
+    }
+
+    ::snprintf(hx, lt, "\n");
+    hexl.assign(hexc);
+    
+    return hexl;
+}
 
 
 // ----------------------------------------------------------------------
