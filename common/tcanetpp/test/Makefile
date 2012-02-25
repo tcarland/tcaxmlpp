@@ -20,7 +20,9 @@ INCLUDES=	-I. -I../include
 LIBS=
 
 
-ASOBJ=          ../src/CmdBuf.o ../src/Whois.o
+ASOBJ=          ../src/IpAddr.o ../src/AddrInfo.o \
+		../src/tcanetpp_random.o ../src/Socket.o \
+		../src/SocketOption.o ../src/Whois.o
 
 OBJS=		client.o server.o pack_test.o ping.o
 
@@ -29,23 +31,23 @@ CIDR_OBJS=	cidrtest.o
 PT_OBJS=        
 PTT_OBJS=	pt_test.o
 
-BIN=		pingt asnwho ipconvert client server cachetest pttest \
-		strtest bufftest cidrtest packtest gktrace filetest
+BIN=		asnwho ipconvert client server cachetest pttest \
+		strtest bufftest cidrtest packtest pingt gktrace filetest
 
 ALL_OBJS=	$(OBJS) $(ASOBJ) $(STROBJ) $(CBUFF_OBJS) $(CIDR_OBJS)
 ALL_BINS= 	$(BIN)
 
 
 
-all: pingt ipconvert client server cidrtest strtest bufftest pttest \
-	gktrace packtest filetest
+all: asnwho ipconvert client server cidrtest strtest bufftest pttest \
+	pingt gktrace packtest filetest
 
 
 include ${TOPDIR}/tcamake/project_defs
 
 
 asnwho: $(ASOBJ)
-	$(make-cxxbin-rule)
+	$(CXX) -o $@ $(CFLAGS) $^ -ldl
 	@echo
 
 pingt: ping.o
