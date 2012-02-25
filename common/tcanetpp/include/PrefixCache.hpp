@@ -33,6 +33,8 @@
 
 namespace tcanetpp {
 
+#define DEFAULT_PREFIX_EXPIRE 60
+
 
 /**  Used as the Radix Node in the underlying PrefixTree of a
  *   PrefixCache instance. The PrefixCacheItem wraps the 
@@ -51,7 +53,7 @@ class PrefixCacheItem {
 
   public:
 
-    PrefixCacheItem ( const Prefix & p, ValueType item, int expire )
+    PrefixCacheItem ( const IpAddr & p, ValueType item, int expire )
         : _prefix(p),
           _value(item),
           _expire(expire)
@@ -59,10 +61,10 @@ class PrefixCacheItem {
 
     virtual ~PrefixCacheItem() {}
 
-    void           timeout ( long val )   { _expire = timeout; }
+    void           timeout ( long val )   { _expire = DEFAULT_PREFIX_EXPIRE; }
     long           timeout()              { return _expire; }
 
-    const Prefix&  getPrefix()            { return _prefix; }
+    const IpAddr&  getPrefix()            { return _prefix; }
     Timer          getTimer()             { return _timer; }
     ValueType      getValue()             { return _value; }
 
@@ -71,7 +73,7 @@ class PrefixCacheItem {
 
   private:
 
-    Prefix         _prefix;
+    IpAddr         _prefix;
     ValueType      _value;
     Timer          _timer;
     long           _expire;
@@ -112,9 +114,9 @@ class PrefixCache {
      *   the prefix already exists or insert fails and true on 
      *   successful insert.
      **/
-    bool insert ( Prefix & p, ValueType item, const time_t & now )
+    bool insert ( IpAddr & p, ValueType item, const time_t & now )
     {
-        CacheItem * ci = this->_pt->exactMatch(p);
+        CacheItem * ci = _pt->exactMatch(p);
 
         if ( ci != NULL )
             return false;
@@ -126,7 +128,7 @@ class PrefixCache {
 
         ci->setTimer(timer);
 
-        if ( this->_pt->insert(p, ci) == 0 ) {
+        if ( _pt->insert(p, ci) == 0 ) {
             delete ci;
             return false;
         }
@@ -138,16 +140,16 @@ class PrefixCache {
     /** Removes the cache entry for the given Prefix and returns
      *  the corresponding template object.
      **/
-    ValueType remove ( Prefix & p )
+    ValueType remove ( IpAddr & p )
     {
         ValueType   val;
-        CacheItem * ci = this->_pt->exactMatch(p);
+        CacheItem * ci = _pt->exactMatch(p);
 
         if ( ci == NULL || ci.getPrefix() != p )
             return val;
 
         val = ci->getValue();
-        ci  = this->_pt->remove(p);
+        ci  = _pt->remove(p);
 
         if ( ci )
             delete ci;
@@ -160,7 +162,7 @@ class PrefixCache {
      *   return the success of the lookup and sets the provided 
      *   template object parameter accordingly.
      **/
-    bool  match  ( const Prefix & p, ValueType & val )
+    bool  match  ( const IpAddr & p, ValueType & val )
     {
         CacheItem * ci = this->_pt->exactMatch(p);
 
@@ -176,7 +178,7 @@ class PrefixCache {
      *   and returns the success of the lookup setting the 
      *   target parameter accordingly.
      **/
-    bool longestMatch ( Prefix & p, ValueType & val )
+    bool longestMatch ( IpAddr & p, ValueType & val )
     {
         CacheItem * ci = this->_pt->longestMatch(p);
 
@@ -192,7 +194,7 @@ class PrefixCache {
      *   time plus the configured cache timeout interval.
      *   Returns false if the prefix is not found.
      **/
-    bool refresh ( Prefix & p, time_t & now )
+    bool refresh ( IpAddr & p, time_t & now )
     {
         TimerSetIter  timer;
     	CacheItem    *ci  = this->_pt->exactMatch(p);

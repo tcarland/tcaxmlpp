@@ -34,7 +34,7 @@ extern "C" {
 #endif
 
 #include "patricia.h"
-#include "Prefix.hpp"
+#include "IpAddr.h"
 
 
 namespace tcanetpp {
@@ -52,7 +52,7 @@ namespace tcanetpp {
   *  {
   *    PrefixTree<Object*>  pt;
   *
-  *    Prefix   pfx(addr, mask);
+  *    IpAddr   pfx(addr, mask);
   *    Object*  obj = new Object(pfx);
   *
   *    if ( pt.insert(pfx, obj) )
@@ -85,7 +85,7 @@ class PrefixTree {
     }
 
 
-    int  insert  ( const Prefix & p, T obj )
+    int  insert  ( const IpAddr & p, T obj )
     {
         int result = 0;
 
@@ -97,7 +97,7 @@ class PrefixTree {
     }
 
 
-    T    remove  ( const Prefix & p )
+    T    remove  ( const IpAddr & p )
     {
         this->lock();
         T  object = (T) pt_remove(_pt, p.getCidr());
@@ -107,7 +107,7 @@ class PrefixTree {
     }
 
    
-    T    exactMatch ( const Prefix & p )
+    T    exactMatch ( const IpAddr & p )
     {
         this->lock();
         T   object = (T) pt_match(_pt, p.getCidr());
@@ -117,7 +117,7 @@ class PrefixTree {
     }
 
 
-    T    longestMatch ( Prefix & p )
+    T    longestMatch ( IpAddr & p )
     {
         this->lock();
         T   object = (T) pt_matchLongest(_pt, p.getCidr());

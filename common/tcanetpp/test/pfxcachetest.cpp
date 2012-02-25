@@ -4,7 +4,7 @@
 #include <sys/time.h>
 
 #include "PrefixCache.hpp"
-#include "CidrUtils.h"
+#include "IpAddr.h"
 using namespace tcanetpp;
 
 
@@ -35,7 +35,7 @@ struct myitem {
 
 int main ( int argc, char **argv )
 {
-    Prefix   p;
+    IpAddr   p;
     myitem * item = NULL;
     time_t   now  = 0;
 
@@ -46,14 +46,16 @@ int main ( int argc, char **argv )
     for ( int i = 0; i < 6; i++ )
     {
         now += 5;
-        if ( CidrUtils::StringToCidr(addrs[i], p) == 0 ) {
-            std::cout << "error in address string " << std::endl;
+        if ( IpAddr::ToIpAddr(addrs[i], p) == 0 ) {
+            std::cout << "Error in address string " << addrs[i] << std::endl;
         } else {
             item = new myitem(now);
-            item->addrstr = CidrUtils::ToString(p);
-            pc.insert(p, item, now);
-	    std::cout << "Inserted prefix = " << CidrUtils::ToString(p) 
-                << std::endl;
+            item->addrstr = p.toString();
+            if ( ! pc.insert(p, item, now) )
+                std::cout << "Error inserting prefix " << p.toString();
+            else
+	        std::cout << "Inserted prefix = " << IpAddr::ToPrefixStr(p);
+            std::cout << std::endl;
         }
     }
 

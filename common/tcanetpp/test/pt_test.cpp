@@ -31,7 +31,7 @@ const char* addrs2[] = { "10.0.0.0/8", "192.168.0.0/16" };
 
 
 
-void printNodeHandler(ipv4addr_t addr, void * rock)
+void printNodeHandler ( ipv4addr_t addr, void * rock )
 {
     printf("node address is %s,  ", IpAddr::ntop(addr).c_str());
     if ( rock ) printf("rock is valid\n");
@@ -68,10 +68,9 @@ void debugNodeHandler ( ptNode_t * node )
 
 void nodeFreeHandler ( uint32_t addr, uint16_t mb, void * rock )
 {
-    Prefix* p = (Prefix*) rock;
+    IpAddr * p = (IpAddr*) rock;
     if ( p ) {
-        printf("deleting address %s/%d\n", IpAddr::ntop(p->getPrefix()).c_str(),
-            p->getPrefixLen());
+        printf("deleting address %s\n", p->toString().c_str());
         delete p;
     }
 }
@@ -86,9 +85,6 @@ int main ( int argc, char **argv )
     IpAddrList  srcp;
     IpAddrList::iterator  vIter;
 
-    std::vector<Prefix> srcp;
-    std::vector<Prefix>::iterator vIter;
-
     for ( int i = 0; i < 6; i++ ) {
         IpAddr::ToIpAddr(addrs[i], pfx);
         srcp.push_back(pfx);
@@ -101,7 +97,7 @@ int main ( int argc, char **argv )
     printf("v size is %lu\n", srcp.size());
 
     for ( vIter = srcp.begin(); vIter != srcp.end(); vIter++ )
-        printf("Prefix is %s\n", IpAddr::ToPrefixString(*vIter).c_str());
+        printf("Prefix is %s\n", IpAddr::ToPrefixStr(*vIter).c_str());
 
     ptree = pt_init();
 
@@ -116,22 +112,18 @@ int main ( int argc, char **argv )
 
     IpAddr  p;
     IpAddr::ToIpAddr(addrs[1], p);
-    Prefix *pptr  = (Prefix*) pt_remove(ptree, p.getCidr());
+    IpAddr * pptr = (IpAddr*) pt_remove(ptree, p.getCidr());
 
     if ( pptr ) {
-        printf("removed address %s/%d\n", 
-                IpAddr::ntop(pptr->getPrefix()).c_str(),
-                pptr->getPrefixLen());
+        printf("removed address %s\n", pptr->toString().c_str());
         delete pptr;
     }
    
     for ( vIter = srcp.begin(); vIter != srcp.end(); vIter++ ) {
         if ( (tmp = pt_exists(ptree, vIter->getCidr())) == 0 )
-            printf("Search failed for %s\n", 
-                IpAddr::ToPrefixString(*vIter).c_str());
+            printf("Search failed for %s\n", vIter->toString().c_str());
         else
-            printf("Found addr %s\n",
-                IpAddr::ToPrefixString(*vIter).c_str());
+            printf("Found addr %s\n", vIter->toString().c_str());
     }
 
     pt_free(ptree, &nodeFreeHandler);

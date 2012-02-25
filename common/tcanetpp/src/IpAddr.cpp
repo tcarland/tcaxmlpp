@@ -49,6 +49,8 @@ namespace tcanetpp {
 
 
 //-------------------------------------------------------------------//
+
+
 IpAddr::IpAddr()
     :  _mb(0)
 {
@@ -109,6 +111,7 @@ IpAddr::IpAddr ( const IpAddr & ipaddr )
 {
     ::memcpy(&_saddr, ipaddr.getSockAddr(), sizeof(sockaddr_t));
 }
+
 
 IpAddr::~IpAddr()
 {}
@@ -506,7 +509,7 @@ IpAddr::ToIpAddr ( const std::string & str, IpAddr & ipaddr )
 {
     std::string  addrstr;
     ipv4addr_t   addr;
-    uint16_t     mb;
+    uint16_t     mb = 0;
 
     std::string::size_type indx;
 
