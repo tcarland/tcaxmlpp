@@ -199,6 +199,8 @@ if [ -d "$PROJECT" ]; then
     case "$reply" in
         "y" | "Y")
             ;;
+        "yes")
+            ;;
         *)
             echo "aborting"
             exit 0
@@ -222,9 +224,9 @@ createProject $PROJECT
 RETVAL=$?
 
 if [ $RETVAL -eq 0 ]; then
-    echo "tcamake_new.sh finished successfully"
+    echo "$PNAME finished successfully"
 else
-    echo "tcamake_new.sh finished with errors"
+    echo "$PNAME finished with errors"
 fi
 
 exit $RETVAL

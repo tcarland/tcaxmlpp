@@ -200,7 +200,7 @@ if [ -e $filename ]; then
     read reply
 
     case "$reply" in
-        "y" | "Y")
+        "y" | "Y" | "yes" | "YES")
             echo "Overwriting $filename"
             ;;
         *)

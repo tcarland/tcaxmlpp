@@ -8,7 +8,7 @@
 #
 
 PNAME=${0##*\/}
-VERSION="1.13"
+VERSION="1.14"
 AUTHOR="tcarland@gmail.com"
 
 PARENT=".."
@@ -164,7 +164,7 @@ doDist()
         read reply
 
         case "$reply" in
-            "Y" | "y")
+            "Y" | "y" | "yes" | "YES")
                 ;;
             *)
                 return 0
