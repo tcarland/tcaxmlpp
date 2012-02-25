@@ -237,6 +237,14 @@ IpAddr::isLoopback() const
     return IpAddr::IsLoopback(this->getAddr6());
 }
 
+cidr_t
+IpAddr::getCidr() const
+{
+    cidr_t  cidr;
+    cidr.addr = this->getPrefix();
+    cidr.mb   = this->getPrefixLen();
+    return cidr;
+}
 
 //-------------------------------------------------------------------//
 //-------------------------------------------------------------------//
@@ -473,9 +481,10 @@ IpAddr::ToBasePrefix ( const ipv4addr_t & pfx, uint8_t mb )
 }
 
 std::string
-IpAddr::ToPrefixStr ( const IpAddr & pfx, uint8_t mb )
+IpAddr::ToPrefixStr ( const IpAddr & pfx )
 {
     char  pfxstr[INET6_ADDRSTRLEN];
+    uint8_t mb = pfx.getPrefixLen();
 
     std::string prefix = IpAddr::ntop( (const sockaddr_t*) pfx.getSockAddr() );
 

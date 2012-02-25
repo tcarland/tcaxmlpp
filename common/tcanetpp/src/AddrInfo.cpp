@@ -31,7 +31,6 @@
 #define _TCANETPP_ADDRINFO_CPP_
 
 #include "AddrInfo.h"
-#include "IpAddr.h"
 #include "StringUtils.h"
 #include "Socket.h"
 
@@ -377,6 +376,11 @@ AddrInfo::GetHostName ( const ipv4addr_t & addr )
     return host;
 }
 
+/**  First attempts to convert the provided string
+  *  to an ipv4 address, or upon failure, will
+  *  perform a name lookup via getaddrinfo and
+  *  return the first valid ipv4 address returned.
+ */
 ipv4addr_t
 AddrInfo::GetHostAddr ( const std::string & host )
 {
@@ -405,6 +409,25 @@ AddrInfo::GetHostAddr ( const std::string & host )
     delete ai;
 
     return addr;
+}
+
+int
+AddrInfo::GetAddrList ( const std::string & host, IpAddrList & v )
+{
+    AddrInfo * ai = AddrInfo::GetAddrInfo(host);
+
+    if ( ai == NULL )
+        return 0;
+
+    struct addrinfo * res;
+
+    for ( res = ai->begin(); res != NULL; res = ai->next() )
+    {
+        IpAddr addr(res->ai_addr);
+        v.push_back(addr);
+    }
+
+    return 1;
 }
 
 // ----------------------------------------------------------------------

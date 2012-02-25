@@ -51,13 +51,14 @@ namespace tcanetpp {
  *
  */
 
+class IpAddr;
+
+
+typedef std::set<IpAddr>     IpAddrSet;
+typedef std::vector<IpAddr>  IpAddrList;
+
+
 class IpAddr {
-
-  public:
-
-    typedef std::set<IpAddr>     IpAddrSet;
-    typedef std::vector<IpAddr>  IpAddrList;
-
 
   public:
 
@@ -84,6 +85,7 @@ class IpAddr {
     ipv4addr_t          getAddr4() const;
     ipv4addr_t          getPrefix() const;
     uint8_t             getPrefixLen() const;
+    cidr_t              getCidr() const;
 
     sockaddr_t*         getSockAddr();
     const sockaddr_t*   getSockAddr() const;
@@ -110,7 +112,7 @@ class IpAddr {
 
     static bool         IsBasePrefix ( const ipv4addr_t  & pfx, uint8_t mb );
     static ipv4addr_t   ToBasePrefix ( const ipv4addr_t  & pfx, uint8_t mb );
-    static std::string  ToPrefixStr  ( const IpAddr      & pfx, uint8_t mb );
+    static std::string  ToPrefixStr  ( const IpAddr      & pfx );
     static int          ToIpAddr     ( const std::string & str,
                                        IpAddr            & ipaddr );
 

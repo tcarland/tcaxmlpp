@@ -5,7 +5,8 @@
 
 
 #include "Whois.h"
-#include "CidrUtils.h"
+#include "IpAddr.h"
+#include "AddrInfo.h"
 
 
 namespace tcanetpp {
@@ -46,7 +47,7 @@ Whois::init ( const std::string & host, uint16_t port )
         return;
 
     IpAddrList   addrs;
-    CidrUtils::GetHostAddrList(host, addrs);
+    AddrInfo::GetAddrList(host, addrs);
     if ( addrs.empty() ) { // error
         _errstr = "GetHostAddrList failed to resolve any addresses";
         return;
@@ -65,13 +66,14 @@ Whois::init ( const std::string & host, uint16_t port )
 
         _sock = new Socket(addr.getAddr4(), port, SOCKTYPE_CLIENT, SOCKET_TCP);
         _sock->setBlocking();
+
         if ( _sock->connect() > 0 )
             break;
+
         _sock->close();
     }
 
-    if ( ! _sock->isConnected() ) 
-    {
+    if ( ! _sock->isConnected() )  {
         delete _sock;
         _sock = NULL;
     }

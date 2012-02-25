@@ -39,9 +39,6 @@
 namespace tcanetpp {
 
 
-typedef std::vector<IpAddr>   IpAddrList;
-
-
 /**  The CidrUtils class is a collection of static utility functions for 
   * manipulating IP Address, Prefix, and Cidr's.
  **/
@@ -49,19 +46,13 @@ class CidrUtils {
 	
 public:
 
-    static bool         IsBasePrefix    ( ipv4addr_t  addr, uint8_t mb );
-    static ipv4addr_t   ToBasePrefix    ( ipv4addr_t  addr, uint8_t mb );
 
-    static std::string  ToString        ( const ipv4addr_t  & addr );
-    static std::string  ToString        ( const ipv6addr_t  & addr );
     static std::string  ToString        ( const Prefix      & pfx );
     static std::string  ToString        ( const ipv4addr_t  & addr, uint8_t mb );
 
     static int          StringToCidr    ( const std::string & cidrStr,
                                           Prefix            & pfx );
 
-    static ipv4addr_t   BitsToMask      ( uint8_t     mb );
-    static uint8_t      MaskToBits      ( ipv4addr_t  addr );
 
     static int          GetCidrRange    ( uint8_t mb, uint8_t * subnet_pos );
     static int          GetCidrRange    ( uint8_t mb );
@@ -72,38 +63,6 @@ public:
     }
 
     static uint8_t      SubnetValue     ( ipv4addr_t addr, uint8_t subnet_pos );
-
-    static bool         DeAggregate     ( Prefix     & p,  uint8_t masklen,
-                                          PrefixList & v );
-
-    static bool         MatchCidr       ( Prefix     & p, ipv4addr_t addr );
-
-    static uint32_t     RandomValue     ( double       range );
-    static Prefix       RandomPrefix    ( Prefix     & agg );
-    static ipv4addr_t   RandomPrefix    ( ipv4addr_t   agg, uint8_t masklen );
-
-
-    static std::string  ether_ntop      ( const ethaddr_t   * addr );
-
-    static std::string  ntop            ( const ipv4addr_t  & addr );
-    static std::string  ntop            ( const ipv6addr_t  & addr );
-
-    static int          pton            ( const std::string & ipstr, 
-                                          ipv4addr_t        & addr );
-    static int          pton            ( const std::string & ipstr,
-                                          ipv6addr_t        & addr );
-
-    static std::string  GetHostName();
-    static std::string  GetHostName     ( ipv4addr_t          addr );
-
-    static ipv4addr_t   GetHostAddr();
-    static ipv4addr_t   GetHostAddr     ( const std::string & host );
-    static void         GetHostAddrList ( const std::string & host, 
-                                          IpAddrList        & addrlist );
-
-
-    static bool         IsLoopback      ( ipv4addr_t        & addr );
-    static bool         IsLoopback      ( ipv6addr_t        & addr );
 
 
 };

@@ -45,7 +45,7 @@ class NetworkDevice {
   public:
 
     NetworkDevice();
-    NetworkDevice  ( ipv4addr_t deviceip );
+    NetworkDevice  ( const ipv4addr_t  & deviceip );
     NetworkDevice  ( const std::string & host );
     NetworkDevice  ( const std::string & host, const std::string & community );
     NetworkDevice  ( const NetworkDevice & device );

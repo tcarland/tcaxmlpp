@@ -32,6 +32,8 @@
 #define _TCANETPP_ADDRINFO_H_
 
 #include <string>
+
+#include "IpAddr.h"
 #include "tcanetpp_ip.h"
 
 
@@ -138,6 +140,8 @@ class AddrInfo {
     static std::string GetHostName();
     static std::string GetHostName ( const ipv4addr_t  & addr );
     static ipv4addr_t  GetHostAddr ( const std::string & host );
+    static int         GetAddrList ( const std::string & host,
+                                     IpAddrList        & v );
 
     /* factory methods for generating addrinfo hints */
     static addrinfo    GetTCPServerHints();

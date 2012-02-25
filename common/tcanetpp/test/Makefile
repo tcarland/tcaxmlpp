@@ -13,14 +13,14 @@ NEED_PTHREADS = 1
 endif
 
 ifdef TNMS_DEBUG
-OPT_FLAGS =	-g -DASWHO_MAIN
+OPT_FLAGS =	-g -DTWHOIS_MAIN
 endif
 
 INCLUDES=	-I. -I../include
 LIBS=
 
 
-ASOBJ=          ../src/CmdBuf.o ../src/ASWho.o
+ASOBJ=          ../src/CmdBuf.o ../src/Whois.o
 
 OBJS=		client.o server.o pack_test.o ping.o
 
@@ -44,7 +44,7 @@ all: pingt ipconvert client server cidrtest strtest bufftest pttest \
 include ${TOPDIR}/tcamake/project_defs
 
 
-asnwho: $(ASWHO)
+asnwho: $(ASOBJ)
 	$(make-cxxbin-rule)
 	@echo
 

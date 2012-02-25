@@ -36,7 +36,8 @@ extern "C" {
 #include "NetworkDevice.h"
 
 #include "StringUtils.h"
-#include "CidrUtils.h"
+#include "IpAddr.h"
+#include "AddrInfo.h"
 
 
 namespace tcanetpp {
@@ -48,12 +49,12 @@ NetworkDevice::NetworkDevice()
       _pollable(true)
 {}
 
-NetworkDevice::NetworkDevice ( ipv4addr_t deviceip )
+NetworkDevice::NetworkDevice ( const ipv4addr_t & deviceip )
     : _deviceAddr(0),
       _deviceId(0),
       _pollable(true)
 {
-    this->setDevice(CidrUtils::ntop(deviceip));
+    this->setDevice(IpAddr::ntop(deviceip));
 }
 
 NetworkDevice::NetworkDevice ( const std::string & host )
@@ -344,7 +345,7 @@ NetworkDevice::setDevice ( const std::string & host )
     std::string      hoststr;
 
     // check for a hostaddr in string format
-    if ( (addr = CidrUtils::GetHostAddr(host)) > 0 ) {
+    if (  (addr = AddrInfo::GetHostAddr(host)) > 0 ) {
 	return this->setDevice(addr);
 	
     //  this is very CDP specific which often returns 'serial_num (host)'
@@ -381,10 +382,10 @@ bool
 NetworkDevice::setDevice ( const ipv4addr_t & addr )
 {
     this->_deviceAddr = addr;
-    this->_deviceName = CidrUtils::GetHostName(addr);
+    this->_deviceName = AddrInfo::GetHostName(addr);
 
     if ( _deviceName.empty() ) {
-	_deviceName = CidrUtils::ntop(_deviceAddr);
+	_deviceName = IpAddr::ntop(_deviceAddr);
         return false;
     }
 

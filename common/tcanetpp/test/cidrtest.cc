@@ -3,7 +3,8 @@
 #include <cstdio>
 #include <iostream>
 
-#include "CidrUtils.h"
+#define _cidrtest_cc_
+
 #include "IpAddr.h"
 #include "AddrInfo.h"
 
@@ -134,12 +135,12 @@ int main ( int argc, char **argv )
 
 
     std::string  cidr = "192.102.249.0/32";
-    Prefix       p;
+    IpAddr       pfx;
 
-    CidrUtils::StringToCidr(cidr, p);
+    IpAddr::ToIpAddr(cidr, pfx);
     
     printf("\nProcessing string %s ...\n", cidr.c_str());
-    printf("Result is %u / %u\n", p.getPrefix(), p.getPrefixLen());
+    printf("Result is %u / %u\n", pfx.getPrefix(), pfx.getPrefixLen());
 
     return 0;
 }
