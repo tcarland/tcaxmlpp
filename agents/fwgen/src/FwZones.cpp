@@ -5,7 +5,6 @@
 #include "FwZones.h"
 
 #include "StringUtils.h"
-#include "CidrUtils.h"
 
 
 namespace fwgen {
@@ -323,14 +322,14 @@ FwZones::parseInterfaces ( std::ifstream & ifs, FwDevice * fwdev )
 
         StringUtils::trim(addr);
 
-        if ( ! CidrUtils::StringToCidr(addr, devport.portAddr) ) {
+        if ( ! IpAddr::ToIpAddr(addr, devport.portAddr) ) {
             _errStr = "FwZones::parseInterfaces(): error parsing address: " + addr;
             return false;
         }
 
         if ( this->_debug )
             std::cout << devport.portName << " : "
-                << CidrUtils::toString(devport.portAddr) << " : "
+                << devport.portAddr.toString() << " : "
                 << devport.isExternal << std::endl;
 
         fwdev->portsmap[devport.portName] = devport;

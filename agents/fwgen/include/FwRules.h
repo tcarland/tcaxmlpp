@@ -20,7 +20,8 @@ public:
     
 public:
 
-    FwRules ( FwVars * vars = NULL, FwZones * zones = NULL,
+    FwRules ( FwVars    * vars  = NULL,
+              FwZones   * zones = NULL,
               const std::string & protofile = FWGEN_PROTOCOLS_FILE);
 
     virtual ~FwRules();
@@ -44,7 +45,7 @@ protected:
                                       uint16_t          & pval );
 
     bool            resolveFwVar    ( const std::string & src,
-                                      Prefix            & srcPrefix );
+                                      IpAddr            & srcPrefix );
     bool            resolveFwPort   ( const std::string & portstr,
                                       FwPort            & fwport );
 

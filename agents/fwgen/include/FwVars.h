@@ -5,7 +5,7 @@
 #include <map>
 #include <iterator>
 
-#include "Prefix.hpp"
+#include "IpAddr.h"
 #include "Exception.hpp"
 using namespace tcanetpp;
 
@@ -28,7 +28,7 @@ class FwVars {
 
   public:
 
-    typedef std::map<std::string, Prefix>  FwVarMap;
+    typedef std::map<std::string, IpAddr>  FwVarMap;
     typedef FwVarMap::iterator             iterator;
     typedef FwVarMap::const_iterator       const_iterator;
 
@@ -41,16 +41,16 @@ class FwVars {
 
     bool            parse   ( const std::string & varfile );
 
-    Prefix          find    ( const std::string & name );
+    IpAddr          find    ( const std::string & name );
     bool            exists  ( const std::string & name );
     
     bool            insert  ( const std::string & name, 
-                              Prefix            & pfx );
+                              IpAddr            & pfx );
 
     bool            insert  ( const std::string & name, 
-                              const Prefix      & pfx );
+                              const IpAddr      & pfx );
 
-    Prefix          remove  ( const std::string & name );
+    IpAddr          remove  ( const std::string & name );
 
     void            clear();
     size_t          size() const;

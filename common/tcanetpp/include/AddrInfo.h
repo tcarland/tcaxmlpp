@@ -45,7 +45,6 @@ class AddrInfo {
 
   public:
 
-    /* AddrInfo factory used by static methods */
     class AddrInfoFactory {
       public:
         virtual ~AddrInfoFactory() {}
@@ -106,6 +105,7 @@ class AddrInfo {
   public:
 
     /* static factory methods */
+
     static AddrInfo*   GetAddrInfo ( const std::string & host,
                                      const std::string & svc = "" );
 
@@ -114,6 +114,7 @@ class AddrInfo {
 
 
     /* static methods for getaddrinfo/getnameinfo */
+
     static int         GetAddrInfo ( const std::string & host,
                                      const addrinfo    * hints,
                                      addrinfo         ** res );
@@ -137,19 +138,22 @@ class AddrInfo {
                                      int                 flags );
 
     /* methods for legacy support */
+
     static std::string GetHostName();
     static std::string GetHostName ( const ipv4addr_t  & addr );
     static ipv4addr_t  GetHostAddr ( const std::string & host );
     static int         GetAddrList ( const std::string & host,
                                      IpAddrList        & v );
 
-    /* factory methods for generating addrinfo hints */
+    /* factory methods for generating hints */
+
     static addrinfo    GetTCPServerHints();
     static addrinfo    GetUDPServerHints();
     static addrinfo    GetTCPClientHints();
     static addrinfo    GetUDPClientHints();
 
     static std::string GetErrorStr();
+
 
   public:
 

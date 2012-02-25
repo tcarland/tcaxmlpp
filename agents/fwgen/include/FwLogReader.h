@@ -30,12 +30,13 @@ class FwLogReader : public tcanetpp::Thread {
 
     FwLogQueue*  getQueue();
 
-    void         setMatch ( const std::string & match ) { _match = match; }
+    void         setMatch ( const std::string & match );
 
 
   private:
 
    FwLogQueue             _squeue;
+
    std::string            _logfile;
    std::string            _match;
    bool                   _tail;

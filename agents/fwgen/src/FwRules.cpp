@@ -10,7 +10,6 @@
 
 #include "Exception.hpp"
 #include "StringUtils.h"
-#include "CidrUtils.h"
 using namespace tcanetpp;
 
 
@@ -23,7 +22,8 @@ FwRules::FwRules()
 {}
 */
 
-FwRules::FwRules ( FwVars * vars, FwZones * zones, 
+FwRules::FwRules ( FwVars   * vars,
+                   FwZones  * zones,
                    const std::string & protofile )
     : _vars(vars),
       _zones(zones),
@@ -39,9 +39,9 @@ FwRules::~FwRules() {}
 bool
 FwRules::parse ( const std::string & rulefile )
 {
-    std::string               ln;
-    std::vector<std::string>  rulev;
+    std::string   ln;
 
+    std::vector<std::string>  rulev;
     std::vector<std::string>::iterator  vIter;
 
     std::ifstream  ifn(rulefile.c_str());
@@ -49,11 +49,11 @@ FwRules::parse ( const std::string & rulefile )
     if ( ! ifn )
         return false;
 
-    while ( std::getline(ifn, ln) ) {
+    while ( std::getline(ifn, ln) )
+    {
         StringUtils::trim(ln);
         StringUtils::stripComments(ln);
         StringUtils::replaceTabs(ln);
-
         StringUtils::split(ln, ' ', std::back_inserter(rulev));
 
         if ( rulev.size() < 4 && rulev.size() > 0 ) {
@@ -98,11 +98,14 @@ FwRules::parse ( const std::string & rulefile )
         i = 2;
 
         // src
-        if ( StringUtils::startsWith(rulev[i], "$") ) {
+        if ( StringUtils::startsWith(rulev[i], "$") )
+        {
             ln = rulev[i].substr(1);
             if ( ! this->resolveFwVar(ln, fwrule.src) )
                 return false;
-        } else if ( CidrUtils::StringToCidr(rulev[i], fwrule.src) <= 0 ) {
+        }
+        else if ( IpAddr::ToIpAddr(rulev[i], fwrule.src) <= 0 )
+        {
             _errstr = "Rule parse error in source: " + ln;
             return false;
         }
@@ -115,11 +118,14 @@ FwRules::parse ( const std::string & rulefile )
         }
 
         // dst   w/ i = 3 or 4
-        if ( StringUtils::startsWith(rulev[i], "$") ) {
+        if ( StringUtils::startsWith(rulev[i], "$") )
+        {
             ln = rulev[i].substr(1);
             if ( ! this->resolveFwVar(ln, fwrule.dst) )
                 return false;
-        } else if ( CidrUtils::StringToCidr(rulev[i], fwrule.dst) <= 0 ) {
+        }
+        else if ( IpAddr::ToIpAddr(rulev[i], fwrule.dst) <= 0 )
+        {
             _errstr = "Rule parse error in source: " + ln;
             return false;
         }
@@ -164,7 +170,7 @@ FwRules::resolveProtocol ( const std::string & str, uint16_t & pval )
 }
 
 bool
-FwRules::resolveFwVar ( const std::string & src, Prefix & srcPrefix )
+FwRules::resolveFwVar ( const std::string & src, IpAddr & srcPrefix )
 {
     if ( _vars == NULL ) {
         _errstr = "Unable to resolve variable, no variable map";
@@ -199,10 +205,13 @@ FwRules::resolveFwPort ( const std::string & portstr, FwPort & fwport )
 
     indx = portstr.find_first_of(":");
 
-    if ( indx == std::string::npos ) {
+    if ( indx == std::string::npos )
+    {
         fwport.port = StringUtils::fromString<uint16_t>(portstr);
         fwport.ranged = false;
-    } else {
+    }
+    else
+    {
         pstr             = portstr.substr(0, indx);
         fwport.port      = StringUtils::fromString<uint16_t>(pstr);
         pstr             = portstr.substr(indx+1);
@@ -236,7 +245,8 @@ FwRules::parseProtoFile ( const std::string & protofile )
     if ( ! ifs )
         return false;
 
-    while ( std::getline(ifs, ln) ) {
+    while ( std::getline(ifs, ln) )
+    {
         StringUtils::trim(ln);
         StringUtils::stripComments(ln);
         StringUtils::replaceTabs(ln);
@@ -270,16 +280,14 @@ FwRules::PrintRule ( const FwRule & rule )
     else 
         str << "deny ";
 
-    str << CidrUtils::toString(rule.src) 
-        << " ";
+    str << rule.src.toString() << " ";
 
     if ( rule.srcport.ranged )
         str << rule.srcport.port << ":" << rule.srcport.port_high << " ";
     else
         str << rule.srcport.port << " ";
 
-    str << CidrUtils::toString(rule.dst)
-        << " ";
+    str << rule.dst.toString() << " ";
 
     if ( rule.dstport.ranged )
         str << rule.dstport.port << ":" << rule.dstport.port_high << " ";

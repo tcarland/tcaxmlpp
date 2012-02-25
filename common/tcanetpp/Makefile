@@ -9,8 +9,9 @@ endif
 
 NEED_SOCKET = 1
 NEED_LIBDL = 1
+
 ifdef USE_PTHREADS
-NEED_PTHREADS = 1
+  NEED_PTHREADS = 1
 endif
 
 #-------------------#
@@ -32,8 +33,7 @@ OBJS =		    src/SocketOption.o src/Socket.o src/BufferedSocket.o \
                     src/CircularBuffer.o src/Serializer.o \
 		    src/Whois.o src/EventManager.o \
 		    src/IpAddr.o src/AddrInfo.o \
-		    src/CidrUtils.o src/StringUtils.o \
-		    src/FileStat.o src/FileUtils.o \
+		    src/StringUtils.o src/FileStat.o src/FileUtils.o \
 		    src/LogFacility.o src/tcanetpp_random.o \
 		    src/patricia.o src/DeviceMap.o \
 		    src/NetworkDevice.o src/NetworkInterface.o
@@ -43,12 +43,9 @@ OBJS +=		    $(TH_OBJS)
 endif
 
 CMDBUF_OBJS =       src/CmdBuf.o
-TEST_OBJS = 	    src/pttest.o
-PFX_OBJS =  	    src/pfxtest.o
 
 BIN =		    ptest pfxtest
-ALL_OBJS =	    $(OBJS) $(TH_OBJS) $(TEST_OBJS) $(PFX_OBJS) $(PT_OBJS) \
-		    $(CMDBUF_OBJS)
+ALL_OBJS =	    $(OBJS) $(TH_OBJS) $(PT_OBJS) $(CMDBUF_OBJS)
 ALL_BINS = 	    $(BIN)
 
 

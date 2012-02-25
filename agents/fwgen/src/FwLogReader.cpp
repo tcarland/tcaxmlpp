@@ -24,7 +24,7 @@ FwLogReader::run()
     std::ifstream        ifs;
     std::ios::openmode   mode = std::ios::in;
 
-    char   line[BIGSTRLINE];
+    char   line[TCANET_BIGSTRLINE];
 
     if ( _tail )
         mode |= std::ios::ate;
@@ -43,7 +43,7 @@ FwLogReader::run()
 
     do 
     {
-        while ( ifs.getline(line, BIGSTRLINE) )
+        while ( ifs.getline(line, TCANET_BIGSTRLINE) )
         {
             FwLogEntry   fwe;
 
@@ -75,6 +75,11 @@ FwLogQueue*
 FwLogReader::getQueue()
 {
     return &this->_squeue;
+}
+void
+FwLogReader::setMatch ( const std::string & match )
+{
+    _match = match;
 }
 
 

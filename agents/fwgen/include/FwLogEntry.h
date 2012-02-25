@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "Prefix.hpp"
+#include "IpAddr.h"
 #include "tcanetpp_types.h"
 using namespace tcanetpp;
 
@@ -29,6 +29,7 @@ typedef std::vector<std::string>  StringFields;
 class FwLogEntry {
 
   public:
+
     std::string  host;
     std::string  date;
 
@@ -47,33 +48,37 @@ class FwLogEntry {
     std::string  absname;  // root metric name
     std::string  protom;   // protocol level stats
 
-    Prefix       pfxkey;
+    IpAddr       pfxkey;
     std::string  matchstr;
+
 
   public:
 
     FwLogEntry();
-    FwLogEntry ( const std::string & match );
+    FwLogEntry  ( const std::string & match );
+
     ~FwLogEntry() {}
+
 
     void          setMatch        ( const std::string & match );
     std::string   getMatch() const;
 
 
-  public: // ---------- static methods ------------- //
+  public:
+
+    // -------- static methods --------- //
 
     static bool   ParseLogEntry   ( const std::string & line,
                                     FwLogEntry        & fwe,
                                     bool                debug = false );
-
-    static void   SetHostname     ( FwLogEntry & fwe );
-
+    static void   SetHostname     ( FwLogEntry        & fwe );
     static void   SetDefaultMatch ( const std::string & match_ );
 
 
   private:
 
-    static void   SplitFieldValues ( StringFields      & fwv );
+    static void   SplitFieldValues ( StringFields     & fwv );
+
 
   private:
 

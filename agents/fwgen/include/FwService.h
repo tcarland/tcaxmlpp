@@ -12,8 +12,8 @@ namespace fwgen {
 class FwService;
 
 
-
 typedef std::map<int, FwService> FwSvcMap;
+
 
 
 class FwService {
@@ -34,8 +34,9 @@ class FwService {
     {}
 
 
-    static bool  ParseServices ( const std::string & svcfile, FwSvcMap & svcmap,
-    		                 bool  debug = false );
+    static bool  ParseServices ( const std::string & svcfile,
+                                 FwSvcMap          & svcmap,
+    		                 bool        debug = false );
 
 };
 

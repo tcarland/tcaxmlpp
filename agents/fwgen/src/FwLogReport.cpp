@@ -4,7 +4,7 @@
 #include "FwLogReport.h"
 
 #include "StringUtils.h"
-#include "CidrUtils.h"
+#include "IpAddr.h"
 #include "LogFacility.h"
 using namespace tcanetpp;
 
@@ -27,6 +27,7 @@ FwLogReport::FwLogReport ( const std::string & agent,
 {
     FwService::ParseServices(ETC_SERVICES, this->_svcMap);
 }
+
 
 FwLogReport::FwLogReport ( const std::string & config )
     : _fwCache(300, false),
@@ -95,7 +96,10 @@ FwLogReport::SendEntry ( FwLogEntry & fwe, const time_t & now )
         return;
     
     // first we aggregate to our default agg level
-    Prefix p = Prefix(CidrUtils::ToBasePrefix(CidrUtils::ToAddr(fwe.src), _masklen), _masklen);
+    IpAddr  p;
+    IpAddr::ToIpAddr(fwe.src, p);
+    p = IpAddr( IpAddr::ToBasePrefix(p.getPrefix(), _masklen ));
+    //Prefix p = Prefix(IpAddr::ToBasePrefix(IpAddr::pfwe.src), _masklen), _masklen);
 
     if ( _fwCache.longestMatch(p, fwec) ) 
     {

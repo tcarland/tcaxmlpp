@@ -37,10 +37,8 @@
 #endif
 
 #include "CidrUtils.h"
-#include "AddrInfo.h"
 #include "Socket.h"
 #include "StringUtils.h"
-#include "tcanetpp_random.h"
 
 
 namespace tcanetpp {
@@ -65,6 +63,7 @@ CidrUtils::ToString ( const ipv4addr_t & addr, uint8_t mb )
     char  cidr[INET4_CIDRSTRLEN];
 
     std::string  cidrStr = IpAddr::ntop(addr);
+
 #   ifdef WIN32
     ::_snprintf(cidr, INET4_CIDRSTRLEN, "%s%s%u", cidrStr.c_str(), "/", mb);
 #   else
@@ -142,24 +141,6 @@ CidrUtils::GetCidrRange ( uint8_t mb )
 
 //-------------------------------------------------------------------//
 
-uint8_t
-CidrUtils::SubnetValue ( ipv4addr_t addr, uint8_t subnet_pos )
-{
-    uint8_t   octets[4];
-    uint8_t  *ptr;
-
-    if ( subnet_pos > 4 )
-        return 0;
-
-    ptr  = (uint8_t*) &addr;
-
-    for ( int i = 0; i < 4; i++, ptr++ )
-	octets[i] = (*(uint8_t*)ptr);
-
-    return octets[subnet_pos - 1];
-}
-
-//-------------------------------------------------------------------//
 
 } //namespace
 

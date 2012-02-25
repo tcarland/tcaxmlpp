@@ -4,7 +4,6 @@
 #include <iostream>
 
 #include "StringUtils.h"
-#include "CidrUtils.h"
 using namespace tcanetpp;
 
 
@@ -34,7 +33,7 @@ FwVars::parse ( const std::string & varfile )
     std::string               ln, key, val;
     FwVarMap::iterator        vIter;
     std::string::size_type    indx = 0;
-    Prefix                    pfx;
+    IpAddr                    pfx;
 
     std::ifstream  ifn(varfile.c_str());
 
@@ -61,7 +60,7 @@ FwVars::parse ( const std::string & varfile )
 
         if ( val.compare("any") == 0 ) {
             pfx = Prefix(0,0);
-        } else if ( CidrUtils::StringToCidr(val, pfx) <= 0 ) {
+        } else if ( IpAddr::ToIpAddr(val, pfx) <= 0 ) {
             _errStr = "FwVars::parse() Error parsing address: " + val;
             return false;
         }
@@ -79,10 +78,10 @@ FwVars::parse ( const std::string & varfile )
 }
 
 
-Prefix
+IpAddr
 FwVars::find ( const std::string & name )
 {
-    Prefix   p;
+    IpAddr   p;
 
     FwVarMap::iterator  vIter = this->_varMap.find(name);
 
@@ -96,7 +95,7 @@ FwVars::find ( const std::string & name )
 
 
 bool
-FwVars::insert ( const std::string & name, Prefix & p )
+FwVars::insert ( const std::string & name, IpAddr & p )
 {
     if ( this->exists(name) )
         return false;
@@ -106,7 +105,7 @@ FwVars::insert ( const std::string & name, Prefix & p )
 }
 
 bool
-FwVars::insert ( const std::string & name, const Prefix & p )
+FwVars::insert ( const std::string & name, const IpAddr & p )
 {
     if ( this->exists(name) )
         return false;
@@ -116,11 +115,13 @@ FwVars::insert ( const std::string & name, const Prefix & p )
 }
 
 
-Prefix
+IpAddr
 FwVars::remove ( const std::string & name ) 
 {
-    Prefix             p;
-    FwVarMap::iterator vIter = this->_varMap.find(name);
+    IpAddr   p;
+    FwVarMap::iterator vIter;
+
+    vIter = this->_varMap.find(name);
 
     if ( vIter == this->end() )
         return p;

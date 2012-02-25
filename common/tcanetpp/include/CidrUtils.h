@@ -62,8 +62,6 @@ public:
         return CidrUtils::GetCidrRange(mb, subnet_pos);
     }
 
-    static uint8_t      SubnetValue     ( ipv4addr_t addr, uint8_t subnet_pos );
-
 
 };
 

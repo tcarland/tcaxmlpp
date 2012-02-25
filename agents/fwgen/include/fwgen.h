@@ -6,7 +6,7 @@
 #include <map>
 #include <string>
 
-#include "Prefix.hpp"
+#include "IpAddr.h"
 using namespace tcanetpp;
 
 
@@ -52,7 +52,7 @@ typedef std::map< std::string, uint16_t >   FwProtoMap;
 typedef struct FwDevicePort
 {
     std::string     portName;
-    Prefix          portAddr;
+    IpAddr          portAddr;
     bool            isExternal;
 
     FwDevicePort ( const std::string & portname = "" )
@@ -98,9 +98,9 @@ struct FwPort
 struct FwRule 
 {
     bool        permit;
-    Prefix      src;
+    IpAddr      src;
     FwPort      srcport;
-    Prefix      dst;
+    IpAddr      dst;
     FwPort      dstport;
     uint16_t    proto;
     bool        established;

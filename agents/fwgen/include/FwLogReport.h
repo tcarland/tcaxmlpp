@@ -18,6 +18,7 @@ namespace fwgen {
 
 
 typedef std::map<std::string, FwLogEntry>  FwMap;
+typedef tcanetpp::PrefixCache<FwLogEntry*> FwCache;
 
 
 class FwLogReport {
@@ -32,7 +33,9 @@ class FwLogReport {
 
     ~FwLogReport();
 
+
     int  FlushApi  ( const time_t & now );
+
     void SendEntry ( FwLogEntry & fwe, const time_t & now );
 
 
@@ -40,8 +43,7 @@ class FwLogReport {
 
     FwMap       _fwMap;
     FwSvcMap    _svcMap;
-
-    PrefixCache<FwLogEntry*>  _fwCache;
+    FwCache     _fwCache;
 
     TnmsAPI   * _api;
 

@@ -29,13 +29,13 @@ FwService::ParseServices ( const std::string & svcfile, FwSvcMap & svcmap, bool 
     }
 
 
-    char line[BIGSTRLINE];
+    char line[TCANET_BIGSTRLINE];
     std::string  svcline;
     int          indx;
 
     std::vector<std::string>  fields;
 
-    while ( ifs.getline(line, BIGSTRLINE) )
+    while ( ifs.getline(line, TCANET_BIGSTRLINE) )
     {
         svcline  = line;
 
