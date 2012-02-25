@@ -28,6 +28,8 @@
 #ifndef _TCANETPP_TYPES_H_
 #define _TCANETPP_TYPES_H_
 
+#include "tcanetpp_config.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -89,8 +91,10 @@ typedef struct in6_addr         in6addr_t;
 typedef uint32_t                ipv4addr_t;
 
 
-/** Structure defining an IPV4 Address and its mask
+/** Structure defining an IPV4 Address and its associated mask
  *  length in bits representing the a.b.c.d/mb cidr format.
+ *  This definition exists here vs _ip header for the
+ *  extern C support since it is used within the patricia.
  **/
 typedef struct ipv4cidr {
     ipv4addr_t   addr;

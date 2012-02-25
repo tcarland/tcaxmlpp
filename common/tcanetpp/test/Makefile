@@ -31,7 +31,7 @@ CIDR_OBJS=	cidrtest.o
 PT_OBJS=        
 PTT_OBJS=	pt_test.o
 
-BIN=		asnwho ipconvert client server cachetest pttest \
+BIN=		asnwho ipconvert client server cachetest pttest pfxtest \
 		strtest bufftest cidrtest packtest pingt gktrace filetest
 
 ALL_OBJS=	$(OBJS) $(ASOBJ) $(STROBJ) $(CBUFF_OBJS) $(CIDR_OBJS)
@@ -47,8 +47,10 @@ include ${TOPDIR}/tcamake/project_defs
 
 
 asnwho: $(ASOBJ)
+ifdef TNMS_DEBUG
 	$(CXX) -o $@ $(CFLAGS) $^ -ldl
 	@echo
+endif 
 
 pingt: ping.o
 	$(make-cxxbin-rule)

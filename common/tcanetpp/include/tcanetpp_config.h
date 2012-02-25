@@ -32,7 +32,7 @@
 #define TCANETPP_VERSION     "1.0.2"
 
 
-// for enabling widechar default
+// for enabling widechar support
 // comment to disable
 #define TCANETPP_WIDECHAR 1
 
