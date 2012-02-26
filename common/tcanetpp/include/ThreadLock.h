@@ -1,7 +1,7 @@
 /**
   * @file ThreadLock.h
   *
-  *   Threadlock provides a wrapper to a pthread conditional mutex.
+  *   Threadlock wraps a pthread conditional mutex.
   * 
   * Copyright (c) 2002,2008 Timothy Charlton Arland 
   * @author tca@charltontechnology.net
@@ -40,28 +40,21 @@ class ThreadLock;
 
 
 
-/**  Simple class to lock/unlock a mutex on construction/destruction
-  *  allowing for simple synchronization of a class method by simply
-  *  instantiating this object
- **/
 class ThreadAutoMutex {
 
   public:
 
-    ThreadAutoMutex ( ThreadLock * lock );
+    ThreadAutoMutex ( ThreadLock * lock, bool sync = true );
     virtual ~ThreadAutoMutex();
 
   private:
 
     ThreadLock *  _mutex;
+    bool          _sync;
 };
 
 
 
-/** A simple wrapper to a pthread mutex and conditional allowing
-  * us to create class or function level locking and conditional
-  * trylock/notify functionality.
- **/
 class ThreadLock {
 
   public:

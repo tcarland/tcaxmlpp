@@ -35,27 +35,6 @@ using namespace tcanetpp;
 namespace tcasqlpp {
 
 
-class DbPoolAutoMutex {
-    ThreadLock *  _mutex;
-    bool          _sync;
-
-  public:
-
-    DbPoolAutoMutex ( ThreadLock * lock, bool sync )
-        : _mutex(lock),
-          _sync(sync)
-    {
-        if ( _sync )
-            _mutex->lock();
-    }
-    virtual ~DbPoolAutoMutex()
-    {
-        if ( _sync )
-            _mutex->unlock();
-    }
-};
-
-
 
 SqlDbPool::SqlDbPool()
     : _sqlmaster(NULL),
@@ -126,7 +105,7 @@ bool
 SqlDbPool::SetSession ( SqlSessionInterface * master,
                         SqlFactoryInterface * factory )
 {
-    DbPoolAutoMutex       lock(&_mutex, _sync);
+    ThreadAutoMutex       lock(&_mutex, _sync);
     DbConnList::iterator  dIter;
 
     if ( _dbout.size() > 0 )
@@ -158,7 +137,7 @@ SqlDbPool::SetSession ( SqlSessionInterface * master,
 SqlSessionInterface*
 SqlDbPool::acquire()
 {
-    DbPoolAutoMutex lock(&_mutex, _sync);
+    ThreadAutoMutex lock(&_mutex, _sync);
     SqlSessionInterface * conn = NULL;
 
     if ( _dbin.empty() )
@@ -200,7 +179,7 @@ SqlDbPool::acquire()
 void
 SqlDbPool::release ( SqlSessionInterface * conn )
 {
-    DbPoolAutoMutex lock(&_mutex, _sync);
+    ThreadAutoMutex lock(&_mutex, _sync);
     DbConnList::iterator  dIter;
 
     dIter = find(_dbout.begin(), _dbout.end(), conn);
@@ -224,28 +203,28 @@ SqlDbPool::release ( SqlSessionInterface * conn )
 int
 SqlDbPool::connsAvailable()
 {
-    DbPoolAutoMutex lock(&_mutex, _sync);
+    ThreadAutoMutex lock(&_mutex, _sync);
     return _dbin.size();
 }
 
 int
 SqlDbPool::connsInUse()
 {
-    DbPoolAutoMutex lock(&_mutex, _sync);
+    ThreadAutoMutex lock(&_mutex, _sync);
     return _dbout.size();
 }
 
 int
 SqlDbPool::connsCreated()
 {
-    DbPoolAutoMutex lock(&_mutex, _sync);
+    ThreadAutoMutex lock(&_mutex, _sync);
     return _conncnt;
 }
 
 bool
 SqlDbPool::maxConnections ( int max )
 {
-    DbPoolAutoMutex lock(&_mutex, _sync);
+    ThreadAutoMutex lock(&_mutex, _sync);
 
     if ( max >= TCASQL_DBPOOL_MAX )
         return false;
@@ -267,7 +246,7 @@ SqlDbPool::maxConnections() const
 void
 SqlDbPool::minConnections ( int min )
 {
-    DbPoolAutoMutex lock(&_mutex, _sync);
+    ThreadAutoMutex lock(&_mutex, _sync);
     
     if ( min > _maxcnt ) 
         min = _maxcnt;
@@ -331,7 +310,7 @@ SqlDbPool::flush()
 {
     int  cleared = 0;
 
-    DbPoolAutoMutex lock(&_mutex, _sync);
+    ThreadAutoMutex lock(&_mutex, _sync);
 
     if ( _dbin.size() > (u_int) _mincnt ) {
         SqlSessionInterface * conn = _dbin.front();

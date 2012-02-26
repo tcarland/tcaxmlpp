@@ -36,16 +36,25 @@ extern "C" {
 
 namespace tcanetpp {
 
+
+
 /* ----------------------------------------------------------------------- */
-ThreadAutoMutex::ThreadAutoMutex ( ThreadLock * lock )
-    : _mutex(lock)
+/** Simple class to lock/unlock a mutex on construction/destruction
+  *  allowing for simple synchronization of a class method by simply
+  *  instantiating this object with the ThreadLock instance.
+ **/
+ThreadAutoMutex::ThreadAutoMutex ( ThreadLock * lock, bool sync )
+    : _mutex(lock),
+      _sync(sync)
 {
-    this->_mutex->lock();
+    if ( this->_sync )
+        this->_mutex->lock();
 }
 
 ThreadAutoMutex::~ThreadAutoMutex()
 {
-    this->_mutex->unlock();
+    if ( this->_sync )
+        this->_mutex->unlock();
 }
 
 /* ----------------------------------------------------------------------- */
