@@ -683,27 +683,6 @@ EventManager::TimevalDiff ( const timeval * t2, const timeval * t1, timeval * re
 
 //---------------------------------------------------------------//
 
-bool
-EventTimer::operator== ( const EventTimer & timer )
-{
-    return(this->evid == timer.evid);
-}
-
-
-bool
-EventTimer::operator< ( const EventTimer & timer )
-{
-    if ( this->evsec > 0 && this->evsec != timer.evsec )
-        return(this->evsec < timer.evsec);
-    return(this->evusec < timer.evusec);
-}
-
-
-bool
-EventIO::operator== ( const EventIO & io )
-{
-    return(this->evid == io.evid);
-}
 
 
 } // namespace 

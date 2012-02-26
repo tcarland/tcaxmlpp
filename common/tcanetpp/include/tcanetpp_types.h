@@ -37,6 +37,7 @@ extern "C" {
 #ifdef WIN32
 # include <Winsock2.h>
 # include <ws2tcpip.h>
+# include <time.h>
 #else
 # include <inttypes.h>
 # include <unistd.h>
@@ -44,6 +45,7 @@ extern "C" {
 # include <errno.h>
 # include <sys/types.h>
 # include <sys/socket.h>
+# include <sys/time.h>
 # include <netdb.h>
 #endif
 
@@ -89,6 +91,7 @@ typedef struct sockaddr_storage  sockaddr_t;
 typedef struct in_addr          inaddr_t;
 typedef struct in6_addr         in6addr_t;
 typedef uint32_t                ipv4addr_t;
+typedef uint64_t                evid_t;       // event registration id
 
 
 /** Structure defining an IPV4 Address and its associated mask

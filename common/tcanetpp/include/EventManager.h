@@ -31,9 +31,10 @@
 #include <set>
 #include <string>
 
-#include "tcanetpp_types.h"
-#include "EventHandlers.hpp"
 #include "Socket.h"
+#include "EventHandlers.hpp"
+#include "EventIO.hpp"
+#include "EventTimer.hpp"
 
 
 namespace tcanetpp {
@@ -51,75 +52,6 @@ namespace tcanetpp {
 #define NO_EVID     0 
 
 
-typedef uint64_t  evid_t;    // event registration id
-
-
-class EventManager;
-
-
-/**  A timer event within the EventManager is tracked by an instance of this
-  *  object. When the event fires, the handler associated with this event is 
-  *  provided a const pointer to this struct.
- **/
-struct EventTimer {
-    evid_t              evid;      // event id
-
-    EventManager*       evmgr;     // evmgr owning this event 
-    EventTimerHandler*  handler;   // event handler for this event.
-
-    uint32_t            count;     // number of times to fire event (0 == forever)
-    uint32_t            fired;     // number of times event has fired
-    long                evsec;     // event interval in seconds (if applicable).
-    long                evusec;    // event interval in microseconds (if applicable).
-    struct timeval      abstime;   // absolute timeval used to track event time
-    bool                absolute;  // boolean indicating a single shot event.
-    bool                enabled;   // boolean indicating whether event is active.
-     
-    EventTimer()
-        : evid(0),   evmgr(NULL), handler(NULL), 
-          count(0),  fired(0),    evsec(0), 
-          evusec(0), absolute(false), 
-          enabled(false) 
-    {}
-
-    bool operator== ( const EventTimer & timer );
-    bool operator<  ( const EventTimer & timer );
-};
-
-typedef std::map<evid_t, EventTimer>  EventTimerMap;
-
-
-
-/**  The EventIO struct represents an IO event. When an event is fired,
-  *  a const pointer to this struct is provided to the associated io 
-  *  event handler. ( see EventHandlers.h )
- **/
-struct EventIO {
-    evid_t             evid;      // event id
-
-    EventManager*      evmgr;     // evmgr owning this event (ie. this)
-    EventIOHandler*    handler;   // event handler for this event.
-
-    sockfd_t           sfd;       // event socket id
-    void*              rock;      // event object
-    struct timeval     abstime;   // time of event firing.
-    bool               enabled;   // boolean indicating whether event is valid.
-    bool               isServer;  // IO socket event is a server socket.
-
-    EventIO() 
-        : evid(0),    evmgr(NULL),    handler(NULL), 
-          rock(NULL), enabled(false), isServer(false)
-    {
-        Socket::ResetDescriptor(sfd);
-    }
-
-    bool operator== ( const EventIO & io );
-};
-
-typedef std::map<evid_t, EventIO>  EventIOMap;
-
-
-
 /**  The EventManager class provides an interface to using select for a
   *  variety of I/O and timer events.  By default the main loop will
   *  run endlessly until setAlarm() is called or if 'dieoff' is set true, 
@@ -127,6 +59,10 @@ typedef std::map<evid_t, EventIO>  EventIOMap;
   *  the system. 
  **/
 class EventManager {
+
+  public:
+    typedef std::map<evid_t, EventTimer>  EventTimerMap;
+    typedef std::map<evid_t, EventIO>     EventIOMap;
 
   public:
 

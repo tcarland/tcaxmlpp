@@ -28,14 +28,12 @@
 #ifndef _TCANETPP_EVENTHANDLERS_HPP_
 #define _TCANETPP_EVENTHANDLERS_HPP_
 
-#ifdef WIN32
-#include <time.h>
-#else
-#include <sys/time.h>
-#endif
+#include "tcanetpp_types.h"
+
 
 
 namespace tcanetpp {
+
 
 struct EventTimer;
 struct EventIO;
