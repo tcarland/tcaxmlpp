@@ -7,7 +7,7 @@
 #
 
 PNAME=${0##*\/}
-VERSION="1.15"
+VERSION="1.16"
 AUTHOR="tcarland@gmail.com"
 
 SYSHOME=""

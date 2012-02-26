@@ -24,12 +24,37 @@
 #define _TCASQLPP_SQLDBPOOL_CPP_
 
 #include <algorithm>
+#include <sstream>
 
 #include "SqlDbPool.h"
 #include "SqlSessionFactory.hpp"
 
+using namespace tcanetpp;
+
 
 namespace tcasqlpp {
+
+
+class DbPoolAutoMutex {
+    ThreadLock *  _mutex;
+    bool          _sync;
+
+  public:
+
+    DbPoolAutoMutex ( ThreadLock * lock, bool sync )
+        : _mutex(lock),
+          _sync(sync)
+    {
+        if ( _sync )
+            _mutex->lock();
+    }
+    virtual ~DbPoolAutoMutex()
+    {
+        if ( _sync )
+            _mutex->unlock();
+    }
+};
+
 
 
 SqlDbPool::SqlDbPool()
@@ -37,8 +62,8 @@ SqlDbPool::SqlDbPool()
       _sqlfactory(NULL),
       _sync(false),
       _conncnt(0),
-      _mincnt(MINIMUM_DB_CONNS),
-      _maxcnt(DEFAULT_MAX_CONNS),
+      _mincnt(TCASQL_DBPOOL_MIN),
+      _maxcnt(TCASQL_DBPOOL_DEF),
       _connavg(0)
 {}
 
@@ -48,8 +73,8 @@ SqlDbPool::SqlDbPool ( SqlSessionInterface * master, SqlFactoryInterface * facto
       _sqlfactory(factory),
       _sync(false),
       _conncnt(0),
-      _mincnt(MINIMUM_DB_CONNS),
-      _maxcnt(DEFAULT_MAX_CONNS),
+      _mincnt(TCASQL_DBPOOL_MIN),
+      _maxcnt(TCASQL_DBPOOL_DEF),
       _connavg(0)
 {}
 
@@ -64,28 +89,31 @@ SqlDbPool::SqlDbPool ( const std::string & dbname, const std::string & dbhost,
       _dbpass(dbpass),
       _dbport(dbport),
       _conncnt(0),
-      _mincnt(MINIMUM_DB_CONNS),
-      _maxcnt(DEFAULT_MAX_CONNS),
+      _mincnt(TCASQL_DBPOOL_MIN),
+      _maxcnt(TCASQL_DBPOOL_DEF),
       _connavg(0)
 {
+    _sqlfactory = new SqlSessionFactory();
     _sqlmaster  = (SqlSessionInterface*) new SqlSession(_dbname, _dbhost, 
                     _dbuser, _dbpass, _dbport);
-    _sqlfactory = new SqlSessionFactory();
 }
 
 
 SqlDbPool::~SqlDbPool()
 {
-    if ( this->connsInUse() > 0 )
-        _dbout.clear();  // leakage!
-
     DbConnList::iterator  dIter;
 
-    for ( dIter = _dbin.begin(); dIter != _dbin.end(); ++dIter )
+    for ( dIter = _dbin.begin(); dIter != _dbin.end(); ++dIter ) {
         if ( *dIter )
             delete *dIter;
-
+    }
     _dbin.clear();
+
+    for ( dIter = _dbout.begin(); dIter != _dbout.end(); ++dIter ) {
+        if ( *dIter )
+            delete *dIter;
+    }
+    _dbout.clear();
 
     if ( _sqlmaster )
         delete _sqlmaster;
@@ -94,14 +122,27 @@ SqlDbPool::~SqlDbPool()
 }
 
 
-void
-SqlDbPool::SetSessionFactory ( SqlSessionInterface * master, 
-                               SqlFactoryInterface * factory )
+bool
+SqlDbPool::SetSession ( SqlSessionInterface * master,
+                        SqlFactoryInterface * factory )
 {
+    DbPoolAutoMutex       lock(&_mutex, _sync);
+    DbConnList::iterator  dIter;
+
+    if ( _dbout.size() > 0 )
+        return false;
+
     if ( master ) {
         if ( _sqlmaster )
             delete _sqlmaster;
+
         _sqlmaster = master;
+
+        for ( dIter = _dbin.begin(); dIter != _dbin.end(); ++dIter ) {
+            if ( *dIter )
+                delete *dIter;
+        }
+        _dbin.clear();
     }
 
     if ( factory ) {
@@ -110,40 +151,47 @@ SqlDbPool::SetSessionFactory ( SqlSessionInterface * master,
         _sqlfactory = factory;
     }
 
-    return;
+    return true;
 }
 
 
 SqlSessionInterface*
 SqlDbPool::acquire()
 {
+    DbPoolAutoMutex lock(&_mutex, _sync);
     SqlSessionInterface * conn = NULL;
 
-    this->lock();
-   
     if ( _dbin.empty() )
-        this->createInstances();
+    {
+        if ( this->createInstances() == 0 ) {
+            _sqlerr = "Cannot create any more instances";
+            return conn;
+        }
+    }
 
     if ( ! _dbin.empty() ) {
         conn = _dbin.front();
         _dbin.pop_front();
     }
 
-    if ( conn != NULL ) {
+    if ( conn != NULL )
+    {
         if ( ! conn->isConnected() && ! conn->dbconnect() ) {
             _sqlerr = conn->sqlErrorStr();
             conn->dbclose();
+            _conncnt--;
             delete conn;
-            conn = NULL;
-        }
-    } else {
-        _sqlerr = "SqlDbPool::acquire() no more connections";
+            return NULL;
+        } else
+            _dbout.push_front(conn);
     }
-
-    if ( conn )
-        _dbout.push_front(conn);
-
-    this->unlock();
+    else
+    {
+        std::ostringstream ostr;
+        ostr << "SqlDbPool::acquire() no handles, "
+             <<  _dbout.size() << " in use, " << _conncnt << " created.";
+        _sqlerr.assign(ostr.str());
+    }
 
     return conn;
 }
@@ -152,9 +200,8 @@ SqlDbPool::acquire()
 void
 SqlDbPool::release ( SqlSessionInterface * conn )
 {
+    DbPoolAutoMutex lock(&_mutex, _sync);
     DbConnList::iterator  dIter;
-
-    this->lock();
 
     dIter = find(_dbout.begin(), _dbout.end(), conn);
 
@@ -163,14 +210,12 @@ SqlDbPool::release ( SqlSessionInterface * conn )
             conn->dbclose();
             delete conn;
         }
-        
     } else {
         _dbout.erase(dIter);
         _dbin.push_front(conn);
     }
 
     _conncnt = _dbin.size() + _dbout.size();
-    this->unlock();
 
     return;
 }
@@ -179,49 +224,37 @@ SqlDbPool::release ( SqlSessionInterface * conn )
 int
 SqlDbPool::connsAvailable()
 {
-    int cnt = 0;
-    this->lock();
-    cnt = _dbin.size();
-    this->unlock();
-    return(cnt);
+    DbPoolAutoMutex lock(&_mutex, _sync);
+    return _dbin.size();
 }
 
 int
 SqlDbPool::connsInUse()
 {
-    int conns = 0;
-    this->lock();
-    conns = _dbout.size();
-    this->unlock();
-    return conns;
+    DbPoolAutoMutex lock(&_mutex, _sync);
+    return _dbout.size();
 }
 
 int
 SqlDbPool::connsCreated()
 {
-    int conns = 0;
-    this->lock();
-    conns = _conncnt;
-    this->unlock();
-    return(conns);
+    DbPoolAutoMutex lock(&_mutex, _sync);
+    return _conncnt;
 }
 
 bool
 SqlDbPool::maxConnections ( int max )
 {
-    bool  result  = false;
+    DbPoolAutoMutex lock(&_mutex, _sync);
 
-    this->lock();
-    if ( max <= HARDMAX_DB_CONNS ) 
-    {
-        if ( max < _mincnt )
-            _mincnt = max;
-        _maxcnt = max;
-        result  = true;
-    }
-    this->unlock();
+    if ( max >= TCASQL_DBPOOL_MAX )
+        return false;
 
-    return result;
+    if ( max < _mincnt )
+        _mincnt = (int)(max * .05);
+    _maxcnt = max;
+
+    return true;
 }
 
 int
@@ -230,19 +263,19 @@ SqlDbPool::maxConnections() const
     return _maxcnt;
 }
 
+
 void
 SqlDbPool::minConnections ( int min )
 {
-    this->lock();
+    DbPoolAutoMutex lock(&_mutex, _sync);
     
     if ( min > _maxcnt ) 
         min = _maxcnt;
-    if ( _conncnt < min ) {
-        this->createInstances();
-    }
+
     _mincnt = min;
 
-    this->unlock();
+    if ( _conncnt < min )
+        this->createInstances();
 }
 
 int          
@@ -252,30 +285,34 @@ SqlDbPool::minConnections() const
 }
 
  
-void
+int
 SqlDbPool::createInstances()
 {
     SqlSessionInterface * conn = NULL;
 
-    if ( _conncnt >= _maxcnt )
-        return;
+    int cur = (int) _dbin.size() + _dbout.size();
+
+    if ( cur >= _maxcnt ) {
+        _sqlerr = "SqlDbPool::create() max instances reached.";
+        return 0;
+    }
     
     if ( _sqlmaster == NULL  ) {
-        _sqlerr = "SqlDbPool::createInstances() invalid master session";
-        return;
+        _sqlerr = "SqlDbPool::create() invalid master session";
+        return 0;
     }
     
     if ( _sqlfactory == NULL ) {
-        _sqlerr = "SqlDbPool::createInstances():invalid factory, using default";
+        _sqlerr = "SqlDbPool::create() using a default factory.";
         _sqlfactory = (SqlFactoryInterface*) new SqlSessionFactory();
     }
 
-    int num = (int) ((_maxcnt - _mincnt) * .05) / 2;
+    int num = (int) ((_maxcnt - _mincnt) * .05);
 
-    if ( num > _mincnt )
+    if ( num < _mincnt )
         num = _mincnt;
     else if ( num < 1 )
-        num = 1;
+        num = _mincnt;
 
     if ( (_conncnt + num) > _maxcnt )
         num = _maxcnt - _conncnt;
@@ -286,7 +323,7 @@ SqlDbPool::createInstances()
         _conncnt++;
     }
 
-    return;
+    return num;
 }
 
 int
@@ -294,7 +331,7 @@ SqlDbPool::flush()
 {
     int  cleared = 0;
 
-    this->lock();
+    DbPoolAutoMutex lock(&_mutex, _sync);
 
     if ( _dbin.size() > (u_int) _mincnt ) {
         SqlSessionInterface * conn = _dbin.front();
@@ -305,42 +342,15 @@ SqlDbPool::flush()
     }
     _conncnt -= cleared;
 
-    this->unlock();
-
     return cleared;
 }
 
-bool
+void
 SqlDbPool::implicitLock ( bool implicitLock )
 {
-#   ifdef WIN32
-    return false;
-#   else
     _sync = implicitLock;
-#   endif 
-    return true;
 }
     
-void
-SqlDbPool::lock()
-{
-#ifndef WIN32
-    if ( this->_sync )
-        this->_mutex.lock();
-#endif
-    return;
-}
-
-void
-SqlDbPool::unlock()
-{
-#ifndef WIN32
-    if ( this->_sync )
-        this->_mutex.unlock();
-#endif
-    return;
-}
-
 
 } // namespace
 

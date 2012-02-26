@@ -49,7 +49,7 @@ class ThreadAutoMutex {
   public:
 
     ThreadAutoMutex ( ThreadLock * lock );
-    ~ThreadAutoMutex();
+    virtual ~ThreadAutoMutex();
 
   private:
 

@@ -323,7 +323,7 @@ stop_process()
 
         if [ $retval -gt 0 ] ; then
             echo "  Sending SIGKILL"
-       	    kill -9 $PID
+       	    k=$(kill -9 $PID)
         else
             echo "  Process terminated"
         fi

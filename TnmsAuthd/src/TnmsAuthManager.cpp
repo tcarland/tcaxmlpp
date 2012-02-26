@@ -23,7 +23,7 @@ using namespace tcasqlpp;
 namespace tnmsauth {
 
 
-std::string TnmsAuthManager::_Version = "v0.190";
+std::string TnmsAuthManager::_Version = "v0.191";
 
 
 TnmsAuthManager::TnmsAuthManager ( const std::string & config ) 
@@ -201,7 +201,7 @@ bool
 TnmsAuthManager::parseConfig ( const std::string & cfg, const time_t & now )
 {
     TnmsConfigHandler  cfgmgr(cfg, TNMSAUTHD_CONFIG_ROOT);
-    std::string        prefix    = "tcanms";
+    std::string        prefix    = "";
     bool               reset     = false;
 
     if ( ! cfgmgr.parse() ) {
@@ -217,7 +217,7 @@ TnmsAuthManager::parseConfig ( const std::string & cfg, const time_t & now )
 
     TnmsConfig & config = cfgmgr.config;
 
-    prefix.append("/").append(config.agent_name);
+    prefix.append(config.agent_name);
     LogFacility::SetDefaultLogPrefix(prefix);
 
     if ( config.syslog ) {

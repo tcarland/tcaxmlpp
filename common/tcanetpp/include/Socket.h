@@ -65,7 +65,7 @@ typedef enum SocketType
 
 /**  SocketException class for fatal Socket class errors */
 class SocketException : public Exception {
-public:
+  public:
     SocketException ( const std::string & errstr ) 
         : Exception(errstr) {}
     virtual ~SocketException() throw() {}

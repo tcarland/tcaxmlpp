@@ -51,7 +51,7 @@ include $(TOPDIR)/tcamake/project_defs
 lib: arlib
 
 arlib: lib/libtcasqlpp.a
-solib: libtcasqlpp.so.1.1.19
+solib: libtcasqlpp.so.1.2.2
 
 
 lib/libtcasqlpp.a: $(OBJS)
@@ -60,7 +60,7 @@ lib/libtcasqlpp.a: $(OBJS)
 	$(make-lib-rule)
 	@echo
 
-libtcasqlpp.so.1.1.19: $(OBJS)
+libtcasqlpp.so.1.2.2: $(OBJS)
 	( $(MKDIR) lib )
 	( $(RM) $@ lib/libtcasqlpp.so )
 	$(make-so-rule)

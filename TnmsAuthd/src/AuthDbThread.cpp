@@ -13,7 +13,25 @@
 
 namespace tnmsauth {
 
+class DbAutoAcquire {
+    SqlDbPool *  _dbpool;
 
+  public:
+
+    SqlSessionInterface * sql;
+
+    explicit DbAutoAcquire ( SqlDbPool * dbpool )
+        : _dbpool(dbpool)
+    {
+        sql = _dbpool->acquire();
+    }
+
+    ~DbAutoAcquire()
+    {
+        if ( sql )
+            _dbpool->release(sql);
+    }
+};
 
 AuthDbThread::AuthDbThread ( AuthDbConfig & dbcfg, SqlSessionInterface * sql )
     : _dbpool(new tcasqlpp::SqlDbPool(sql, NULL)),
@@ -39,11 +57,12 @@ AuthDbThread::run()
     StringList  stales;
     time_t      now;
 
-    SqlSessionInterface * sql = _dbpool->acquire();
+    DbAutoAcquire db(_dbpool);
+    SqlSessionInterface * sql = db.sql;
 
     if ( sql == NULL )
     {
-        LogFacility::LogMessage("AuthDbThread::run() invalid DB handle: " 
+        LogFacility::LogMessage("AuthDbThread::run() error in dbpool: "
             + _dbpool->getErrorStr());
         return;
     }
@@ -64,7 +83,6 @@ AuthDbThread::run()
 
         sleep(2);
     }
-    _dbpool->release(sql);
 
     LogFacility::LogMessage("AuthDbThread finished.");
 
@@ -83,7 +101,10 @@ AuthDbThread::authenticate ( const std::string & username,
     bool      gotit  = false;
     int       retry  = 0;
 
-    SqlSessionInterface * sql = _dbpool->acquire();
+    //SqlSessionInterface * sql = _dbpool->acquire();
+    DbAutoAcquire db(_dbpool);
+    SqlSessionInterface * sql = db.sql;
+
     if ( sql == NULL ) {
         LogFacility::LogMessage("AuthDbThread::authenticate() invalid DB handle: " 
             + _dbpool->getErrorStr());
@@ -97,7 +118,7 @@ AuthDbThread::authenticate ( const std::string & username,
         userdb = this->queryUser(sql, username);
 
     if ( userdb == NULL ) {
-        _dbpool->release(sql);
+        //_dbpool->release(sql);
         return result;
     } else {
         userdb->last = now;
@@ -124,7 +145,7 @@ AuthDbThread::authenticate ( const std::string & username,
         LogFacility::LogMessage("AuthDb::authenticate() failed for " + username);
     }
 
-    _dbpool->release(sql);
+    //_dbpool->release(sql);
 
     return gotit;
 }
@@ -158,7 +179,9 @@ AuthDbThread::isAuthentic ( const std::string & username,
     bool result = false;
     TnmsDbUser * userdb = this->findUser(username);
     
-    SqlSessionInterface * sql = _dbpool->acquire();
+    //SqlSessionInterface * sql = _dbpool->acquire();
+    DbAutoAcquire db(_dbpool);
+    SqlSessionInterface * sql = db.sql;
 
     if ( sql == NULL ) {
         LogFacility::LogMessage("AuthDbThread::isAuthentic() invalid DB handle: " 
@@ -169,7 +192,7 @@ AuthDbThread::isAuthentic ( const std::string & username,
         userdb = this->queryUser(sql, username);
 
     if ( userdb == NULL ) {
-        _dbpool->release(sql);
+        //_dbpool->release(sql);
         return result;
     }
 
@@ -197,7 +220,7 @@ AuthDbThread::isAuthentic ( const std::string & username,
            << ipaddr << " = " << result;
     LogFacility::LogMessage(logmsg.str());
         
-    _dbpool->release(sql);
+    //_dbpool->release(sql);
 
     return result;
 }
@@ -506,7 +529,9 @@ AuthDbThread::queryUserConfig ( SqlSessionInterface * session, TnmsDbUser * user
 eAuthType
 AuthDbThread::dbAuthUser ( const std::string & username, const std::string & password )
 {
-    SqlSessionInterface * session = _dbpool->acquire();
+    DbAutoAcquire         db(_dbpool);
+    //SqlSessionInterface * session = _dbpool->acquire();
+    SqlSessionInterface * session = db.sql;
     eAuthType             result  = AUTH_NO_RESULT;
 
     if ( session == NULL ) {
@@ -539,7 +564,7 @@ AuthDbThread::dbAuthUser ( const std::string & username, const std::string & pas
             result = AUTH_INVALID;
     }
 
-    _dbpool->release(session);
+    //_dbpool->release(session);
 
     return result;
 }

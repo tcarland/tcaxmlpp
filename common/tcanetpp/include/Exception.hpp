@@ -44,7 +44,7 @@ class Exception : public std::runtime_error {
 public:
     
     explicit Exception ( const std::string & errstr )
-            : std::runtime_error(errstr)
+        : std::runtime_error(errstr)
     {}
     
     virtual ~Exception() throw() {}
