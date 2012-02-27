@@ -1,3 +1,9 @@
+/*
+ *  TnmsAuthRequest.cpp
+ *
+ *  Copyright(c) 2008,2009  Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
+ */
 #define _TNMSCORE_TNMSAUTHREQUEST_CPP_
 
 #include "TnmsAuthRequest.h"

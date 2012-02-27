@@ -1,4 +1,10 @@
-#define _TNMSD_TNMSCLIENT_CPP_
+/*
+ *  TnmsClient.h
+ *
+ *  Copyright(c) 2008, Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
+ */
+#define _TNMSCORE_TNMSCLIENT_CPP_
 
 #include "TnmsClient.h"
 
@@ -305,5 +311,5 @@ TnmsClient::getTree()
 } // namespace
 
 
-// _TNMSD_TNMSCLIENT_CPP_
+// _TNMSCORE_TNMSCLIENT_CPP_
 

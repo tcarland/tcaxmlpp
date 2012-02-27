@@ -1,4 +1,10 @@
-#define _TNMSD_TNMSTREE_CPP_
+/*
+ * TnmsTree.h
+ *
+ *  Copyright(c) 2008, 2009  Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
+ */
+#define _TNMSCORE_TNMSTREE_CPP_
 
 #include "LogFacility.h"
 using namespace tcanetpp;
@@ -700,4 +706,6 @@ TnmsTree::debugDump ( const std::string & name, StringList & strlist ) const
 
 
 } // namespace
+
+// _TNMSCORE_TNMSTREE_CPP_
 

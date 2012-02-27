@@ -1,3 +1,9 @@
+/*
+ *  TnmsAuthRequest.h
+ *
+ *  Copyright(c) 2008,2009  Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
+ */
 #ifndef _TNMSCORE_TNMSAUTHREQUEST_H_
 #define _TNMSCORE_TNMSAUTHREQUEST_H_
 

@@ -2,7 +2,7 @@
  *  TnmsMetric.h
  *
  *  Copyright(c) 2008,2009  Timothy Charlton Arland
- *  tcarland@gmail.com
+ *  Author: tca@charltontechnology.net
  */
 #ifndef _TNMSCORE_TNMSMETRIC_H_
 #define _TNMSCORE_TNMSMETRIC_H_

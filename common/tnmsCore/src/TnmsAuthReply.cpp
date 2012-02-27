@@ -1,3 +1,9 @@
+/*
+ *  TnmsAuthReply.cpp
+ *
+ *  Copyright(c) 2008,2009  Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
+ */
 #define _TNMSCORE_TNMSAUTHREPLY_CPP_
 
 #include "TnmsAuthReply.h"

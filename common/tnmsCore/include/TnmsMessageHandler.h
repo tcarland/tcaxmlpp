@@ -1,5 +1,11 @@
-#ifndef _TNMSD_TNMSMESSAGEHANDLER_H_
-#define _TNMSD_TNMSMESSAGEHANDLER_H_
+/*
+ *  TnmsMessageHandler.h
+ *
+ *  Copyright(c) 2008,2009  Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
+ */
+#ifndef _TNMSCORE_TNMSMESSAGEHANDLER_H_
+#define _TNMSCORE_TNMSMESSAGEHANDLER_H_
 
 #include "MessageHandler.hpp"
 
@@ -9,6 +15,7 @@ namespace tnmsCore {
 
 class TnmsTree;
 class TnmsClient;
+
 
 class TnmsMessageHandler : public MessageHandler {
 
@@ -46,5 +53,5 @@ class TnmsMessageHandler : public MessageHandler {
 
 } // namespace
 
-#endif  //  _TNMSD_TNMSMESSAGEHANDLER_H_
+#endif  //  _TNMSCORE_TNMSMESSAGEHANDLER_H_
 

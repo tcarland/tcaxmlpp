@@ -1,3 +1,9 @@
+/*
+ *  MessageHandler.hpp
+ *
+ *  Copyright(c) 2008,2009  Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
+ */
 #ifndef _TNSMCORE_MESSAGEHANDLER_H_
 #define _TNSMCORE_MESSAGEHANDLER_H_
 

@@ -1,3 +1,9 @@
+/*
+ *  HeirarchicalIntTree.hpp
+ *
+ *  Copyright(c) 2008,2009  Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
+ */
 #ifndef _TNMSCORE_HEIRARCHICALINTTREE_HPP_
 #define _TNMSCORE_HEIRARCHICALINTTREE_HPP_
 

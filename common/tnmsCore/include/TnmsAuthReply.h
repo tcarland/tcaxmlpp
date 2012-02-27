@@ -1,3 +1,9 @@
+/*
+ *  TnmsAuthReply.h
+ *
+ *  Copyright(c) 2008,2009  Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
+ */
 #ifndef _TNMSCORE_TNMSAUTHREPLY_H_
 #define _TNMSCORE_TNMSAUTHREPLY_H_
 

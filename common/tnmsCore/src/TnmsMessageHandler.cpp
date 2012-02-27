@@ -1,4 +1,10 @@
-#define _TNMSD_TNMSMESSAGEHANDLER_CPP_
+/*
+ *  TnmsMessageHandler.cpp
+ *
+ *  Copyright(c) 2008,2009  Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
+ */
+#define _TNMSCORE_TNMSMESSAGEHANDLER_CPP_
 
 #include "TnmsMessageHandler.h"
 #include "TnmsClient.h"
@@ -246,5 +252,5 @@ TnmsMessageHandler::LastMessageHandler ( int record_type )
 
 } // namespace
 
-// _TNMSD_TNMSMESSAGEHANDLER_CPP_
+// _TNMSCORE_TNMSMESSAGEHANDLER_CPP_
 

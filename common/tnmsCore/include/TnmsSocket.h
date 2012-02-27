@@ -1,8 +1,8 @@
 /*
- * TnmsSocket.h
+ *  TnmsSocket.h
  *
  *  Copyright(c) 2008, 2009  Timothy Charlton Arland
- *      Author: tca@charltontechnology.net
+ *  Author: tca@charltontechnology.net
  */
 #ifndef _TNMSCORE_TNMSSOCKET_H_
 #define _TNMSCORE_TNMSSOCKET_H_

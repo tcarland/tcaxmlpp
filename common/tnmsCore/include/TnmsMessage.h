@@ -1,8 +1,8 @@
 /*
- * TnmsMessage.h
+ *  TnmsMessage.h
  *
  *  Copyright(c) 2008, Timothy Charlton Arland
- *  tcarland@gmail.com
+ *  Author: tca@charltontechnology.net
  */
 #ifndef _TNMSCORE_TNMSMESSAGE_H_
 #define _TNMSCORE_TNMSMESSAGE_H_

@@ -1,3 +1,9 @@
+/*
+ *  TnmsConfig.h
+ *
+ *  Copyright(c) 2008, Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
+ */
 #ifndef _TNMSCORE_TNMSCONFIG_H_
 #define _TNMSCORE_TNMSCONFIG_H_
 

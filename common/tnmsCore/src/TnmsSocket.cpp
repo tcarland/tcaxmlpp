@@ -1,10 +1,10 @@
 /*
- * TnmsSocket.cpp
+ *  TnmsSocket.cpp
  *
  *  Copyright(c) 2008, 2009  Timothy Charlton Arland
- *      Author: tca@charltontechnology.net
+ *  Author: tca@charltontechnology.net
  */
-#define _SOURCE_TNMSSOCKET_CPP_
+#define _TNMSCORE_TNMSSOCKET_CPP_
 
 #include "TnmsSocket.h"
 
@@ -1588,4 +1588,5 @@ TnmsSocket::uncompress ( uint32_t size )
 
 } // namespace
 
+// _TNMSCORE_TNMSSOCKET_CPP_
 

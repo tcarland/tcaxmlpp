@@ -1,3 +1,9 @@
+/*
+ *  AuthClient.h
+ *
+ *  Copyright(c) 2008, Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
+ */
 #define _TNMSCORE_AUTHCLIENT_CPP_
 
 #include "tnmsCore.h"
@@ -394,4 +400,5 @@ AuthClient::setAuthServer ( const std::string & authsvr, uint16_t port )
 
 } // namespace
 
+// _TNMSCORE_AUTHCLIENT_CPP_
 

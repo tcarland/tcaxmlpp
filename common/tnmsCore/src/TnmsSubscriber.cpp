@@ -1,3 +1,9 @@
+/*
+ *  TreeSubscriber.cpp
+ *
+ *  Copyright(c) 2008,2009  Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
+ */
 #define _TNMSCORE_TNMSSUBSCRIBER_CPP_
 
 #include "TnmsSubscriber.h"

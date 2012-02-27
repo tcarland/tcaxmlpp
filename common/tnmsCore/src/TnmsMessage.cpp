@@ -1,3 +1,9 @@
+/*
+ *  TnmsMessage.h
+ *
+ *  Copyright(c) 2008, Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
+ */
 #define _TNMSCORE_TNMSMESSAGE_CPP_
 
 #include "TnmsMessage.h"

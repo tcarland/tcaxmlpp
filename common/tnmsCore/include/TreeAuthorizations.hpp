@@ -1,13 +1,11 @@
 /*
- * TreeAuthorizations.hpp
+ *  TreeAuthorizations.hpp
  *
- *  Created on: Oct 12, 2008
- *      Author: tca
+ *  Copyright(c) 2008,2009  Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
  */
-
-#ifndef _INCLUDE_TREEAUTHORIZATIONS_HPP_
-#define _INCLUDE_TREEAUTHORIZATIONS_HPP_
-
+#ifndef _TNMSCORE_TREEAUTHORIZATIONS_HPP_
+#define _TNMSCORE_TREEAUTHORIZATIONS_HPP_
 
 #include <list>
 #include <string>
@@ -86,4 +84,5 @@ struct AuthExcludeFunctor : public TreeAuthFunctor {
 
 } // namespace
 
-#endif /* _INCLUDE_TREEAUTHORIZATIONS_HPP_ */
+#endif /* _TNMSCORE_TREEAUTHORIZATIONS_HPP_ */
+

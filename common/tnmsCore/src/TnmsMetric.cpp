@@ -1,8 +1,8 @@
 /*
- * TnmsMetric.cpp
+ *  TnmsMetric.cpp
  *
- *  Created on: Oct 12, 2008
- *      Author: tca
+ *  Copyright(c) 2008,2009  Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
  */
 #define _TNMSCORE_TNMSMETRIC_CPP_
 

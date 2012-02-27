@@ -1,8 +1,8 @@
 /*
- * tnmsProtocol.h
+ *  tnmsProtocol.h
  *
  *  Copyright(c) 2008, 2009 Timothy C. Arland
- *      Author: tcarland@gmail.com
+ *  Author: tca@charltontechnology.net
  */
 #ifndef _TNMSCORE_TNMSPROTOCOL_H_
 #define _TNMSCORE_TNMSPROTOCOL_H_

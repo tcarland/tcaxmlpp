@@ -1,10 +1,11 @@
 /*
- * TnmsOid.h
+ *  TnmsOid.cpp
  *
  *  Copyright(c) 2008,2009  Timothy Charlton Arland
- *  tcarland@gmail.com
+ *  Author: tca@charltontechnology.net
  */
 #define _TNMSCORE_TNMSOID_CPP_
+
 #include <list>
 #include <cstdlib>
 

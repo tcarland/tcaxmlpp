@@ -1,3 +1,9 @@
+/*
+ *  AuthClient.h
+ *
+ *  Copyright(c) 2008, Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
+ */
 #ifndef _TNMSCORE_AUTHCLIENT_H_
 #define _TNMSCORE_AUTHCLIENT_H_
 
@@ -39,6 +45,7 @@ struct AuthAttempt
 
 typedef std::map<std::string, AuthAttempt>  AuthRequestMap;
 
+
 // ---------------------------------------------------------------------------------------
 
 class AuthMessageHandler : public MessageHandler {
@@ -56,6 +63,7 @@ class AuthMessageHandler : public MessageHandler {
 
     AuthClient *  _client;
 };
+
 
 // ---------------------------------------------------------------------------------------
 
@@ -77,8 +85,8 @@ class AuthIOHandler : public EventIOHandler {
     virtual bool        writeable       ( const EventIO & io );
 };
 
-// ---------------------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------------------
 
 class AuthClient : public TnmsClient {
 
@@ -90,11 +98,13 @@ class AuthClient : public TnmsClient {
     
     virtual ~AuthClient();
 
+
   public:   /* TnmsClient */
 
     virtual void   close();
 
     virtual void   AuthReplyHandler ( const TnmsAuthReply & reply );
+
 
   public:  /* AuthClient */
 

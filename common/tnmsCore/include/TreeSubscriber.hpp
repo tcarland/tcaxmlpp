@@ -1,11 +1,9 @@
-/**  
-  *  TreeSubscriber Interface
-  *
-  *     Acts as a metric queue of updates from the TnmsTree. 
-  *  On interval or processing of the tree, the TnmsTree::updateSubscribers
-  *  method will process the updates to all appropriate subscribers calling 
-  *  these three pure virtual methods of the corresponding subscriber instance.
- **/
+/*
+ *  TreeSubscriber.hpp
+ *
+ *  Copyright(c) 2008,2009  Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
+ */
 #ifndef _TNMSCORE_TREESUBSCRIBER_HPP_
 #define _TNMSCORE_TREESUBSCRIBER_HPP_
 
@@ -17,7 +15,13 @@ namespace tnmsCore {
 
 class TnmsTree;
 
-
+/**  TreeSubscriber
+  *
+  *     Acts as a metric queue for updates from the TnmsTree.
+  *  On interval or processing of the tree, the TnmsTree::updateSubscribers
+  *  method will process the updates to all appropriate subscribers calling
+  *  these three pure virtual methods of the corresponding subscriber instance.
+ **/
 class TreeSubscriber {
 
   public:

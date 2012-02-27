@@ -1,5 +1,11 @@
-#ifndef _TNMSD_TNMSCLIENT_H_
-#define _TNMSD_TNMSCLIENT_H_
+/*
+ *  TnmsClient.h
+ *
+ *  Copyright(c) 2008, Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
+ */
+#ifndef _TNMSCORE_TNMSCLIENT_H_
+#define _TNMSCORE_TNMSCLIENT_H_
 
 #include <set>
 
@@ -18,13 +24,16 @@ class TnmsClient : public TnmsSocket {
   public:
 
     TnmsClient ( TnmsTree * tree = NULL );
+
     TnmsClient ( TnmsTree * tree, AuthClient * auth,
-                 tcanetpp::BufferedSocket * sock, bool isAgent = false );
+                 tcanetpp::BufferedSocket    * sock,
+                 bool      isAgent  = false );
 
     virtual ~TnmsClient();
 
+
     // TnmsSocket
-    virtual int     send ( const time_t & now );
+    virtual int     send  ( const time_t & now );
     virtual void    close();
     virtual bool    login ( const std::string & name, const std::string & pw );
 
@@ -66,5 +75,5 @@ class TnmsClient : public TnmsSocket {
 
 } // namespace
 
-#endif  //  _TNMSD_TNMSCLIENT_H_
+#endif  // _TNMSCORE_TNMSCLIENT_H_
 

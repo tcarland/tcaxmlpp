@@ -1,3 +1,9 @@
+/*
+ *  TnmsConfig.cpp
+ *
+ *  Copyright(c) 2008, Timothy Charlton Arland
+ *  Author: tca@charltontechnology.net
+ */
 #define _TNMSCORE_TNMSCONFIG_CPP_
 
 
