@@ -85,7 +85,7 @@ TnmsAPI::remove ( const std::string & element_name )
   *  a non-string value type. The value provided to the api is 
   *  always an unsigned 64-bit integer, and any desired type 
   *  should simply be cast to this type which can be reinterpreted 
-  *  by the client based on @param type. 
+  *  by the client based on the given type value.
   *  The supported types are based on the enum tnmsCore::eValueType
   *  with the following types:
   *
@@ -110,18 +110,22 @@ TnmsAPI::update ( const std::string & element_name,
 }
 
 
-/**  Updates @param element_name to the provided string value */
+/**  Updates @param element_name to the provided string value
+  *  @param   now  is time the element consider the update.
+  *  @param  value is the string value for the given element
+ **/
 bool
-TnmsAPI::update ( const std::string   & element_name, 
-                    const time_t      & now, 
-                    const std::string & value ) 
+TnmsAPI::update ( const std::string & element_name,
+                  const time_t      & now,
+                  const std::string & value )
 {    
     return ( ((TnmsBase*)api)->update(element_name, now, value) );
 }
 
 
 /**  Update the atomic data element to be carried with the key/value 
-  *  pair defined by @param element_name
+  *  pair defined by @param element_name as the key, and
+  *  @param data a string container of the provided data.
  **/
 bool
 TnmsAPI::update ( const std::string  & element_name,
@@ -138,7 +142,9 @@ TnmsAPI::clear()
     return ( ((TnmsBase*)api)->clear() );
 }
 
-/**  Convenience method to set/change the running api config */
+/**  Convenience method to set/change the running api config
+  *  @param filename is the new config to use.
+ **/
 void
 TnmsAPI::set_config ( const std::string & filename ) 
 {

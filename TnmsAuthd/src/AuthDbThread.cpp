@@ -13,25 +13,27 @@
 
 namespace tnmsauth {
 
+
+
 class DbAutoAcquire {
-    SqlDbPool *  _dbpool;
-
+    SqlDbPool   *  _dbpool;
   public:
-
-    SqlSessionInterface * sql;
 
     explicit DbAutoAcquire ( SqlDbPool * dbpool )
         : _dbpool(dbpool)
     {
         sql = _dbpool->acquire();
     }
-
     ~DbAutoAcquire()
     {
         if ( sql )
             _dbpool->release(sql);
     }
+
+    SqlSessionInterface * sql;
 };
+
+
 
 AuthDbThread::AuthDbThread ( AuthDbConfig & dbcfg, SqlSessionInterface * sql )
     : _dbpool(new tcasqlpp::SqlDbPool(sql, NULL)),
@@ -101,13 +103,15 @@ AuthDbThread::authenticate ( const std::string & username,
     bool      gotit  = false;
     int       retry  = 0;
 
-    //SqlSessionInterface * sql = _dbpool->acquire();
-    DbAutoAcquire db(_dbpool);
-    SqlSessionInterface * sql = db.sql;
+    DbAutoAcquire           db(_dbpool);
+    SqlSessionInterface   * sql;
+    LogFacility::Message    msg;
+
+    sql = db.sql;
 
     if ( sql == NULL ) {
-        LogFacility::LogMessage("AuthDbThread::authenticate() invalid DB handle: " 
-            + _dbpool->getErrorStr());
+        msg << "AuthDbThread::authenticate() invalid DB handle: " << _dbpool->getErrorStr();
+        LogFacility::LogMessage(msg.str());
         return result;
     }
 
@@ -117,14 +121,11 @@ AuthDbThread::authenticate ( const std::string & username,
     if ( userdb == NULL )
         userdb = this->queryUser(sql, username);
 
-    if ( userdb == NULL ) {
-        //_dbpool->release(sql);
+    if ( userdb == NULL )
         return result;
-    } else {
-        userdb->last = now;
-    }
-     
-    result = this->authenticateUser(userdb, password);
+
+    userdb->last = now;
+    result       = this->authenticateUser(userdb, password);
 
     while ( result == AUTH_SUCCESS && retry++ < TICKET_MAX_RETRY )
     {
@@ -137,15 +138,18 @@ AuthDbThread::authenticate ( const std::string & username,
             break;
     }
 
+
+    msg << "AuthDb::authenticate(" << result << ")  '" << username << "' ";
+
     if ( gotit ) {
-        userdb->ticket = ticket;
+        userdb->ticket  = ticket;
         this->dbStoreTicket(sql, userdb);
-        LogFacility::LogMessage("AuthDb::authenticate() succeeded for " + username);
+        msg << "success.";
     } else {
-        LogFacility::LogMessage("AuthDb::authenticate() failed for " + username);
+        msg << "failure.";
     }
 
-    //_dbpool->release(sql);
+    LogFacility::LogMessage(msg.str());
 
     return gotit;
 }
@@ -176,11 +180,10 @@ AuthDbThread::isAuthentic ( const std::string & username,
                             const std::string & ipaddr,
                             TnmsAuthReply     & reply )
 {
-    bool result = false;
     TnmsDbUser * userdb = this->findUser(username);
-    
-    //SqlSessionInterface * sql = _dbpool->acquire();
-    DbAutoAcquire db(_dbpool);
+    bool         result = false;
+
+    DbAutoAcquire  db(_dbpool);
     SqlSessionInterface * sql = db.sql;
 
     if ( sql == NULL ) {
@@ -191,10 +194,8 @@ AuthDbThread::isAuthentic ( const std::string & username,
     if ( userdb == NULL )
         userdb = this->queryUser(sql, username);
 
-    if ( userdb == NULL ) {
-        //_dbpool->release(sql);
+    if ( userdb == NULL )
         return result;
-    }
 
     if ( userdb->isAgent ) 
         result = this->authenticateUser(userdb, ticket);
@@ -220,8 +221,6 @@ AuthDbThread::isAuthentic ( const std::string & username,
            << ipaddr << " = " << result;
     LogFacility::LogMessage(logmsg.str());
         
-    //_dbpool->release(sql);
-
     return result;
 }
 
@@ -530,7 +529,6 @@ eAuthType
 AuthDbThread::dbAuthUser ( const std::string & username, const std::string & password )
 {
     DbAutoAcquire         db(_dbpool);
-    //SqlSessionInterface * session = _dbpool->acquire();
     SqlSessionInterface * session = db.sql;
     eAuthType             result  = AUTH_NO_RESULT;
 
@@ -564,8 +562,6 @@ AuthDbThread::dbAuthUser ( const std::string & username, const std::string & pas
             result = AUTH_INVALID;
     }
 
-    //_dbpool->release(session);
-
     return result;
 }
 
@@ -573,7 +569,7 @@ AuthDbThread::dbAuthUser ( const std::string & username, const std::string & pas
 time_t
 AuthDbThread::dbGetRefresh ( SqlSessionInterface * session )
 {
-    SqlSession*  sql   = (SqlSession*) session;
+    SqlSession * sql   = (SqlSession*) session;
     Query        query = sql->newQuery();
     Result       res;
     Row          row;
@@ -601,7 +597,7 @@ AuthDbThread::dbGetRefresh ( SqlSessionInterface * session )
 void
 AuthDbThread::dbSetRefresh ( SqlSessionInterface * session, const time_t & now, bool insert )
 {
-    SqlSession*  sql   = (SqlSession*) session;
+    SqlSession * sql   = (SqlSession*) session;
     Query        query = sql->newQuery();
 
     if ( insert ) {
@@ -623,8 +619,8 @@ AuthDbThread::dbSetRefresh ( SqlSessionInterface * session, const time_t & now, 
 bool
 AuthDbThread::dbStoreTicket ( SqlSessionInterface * session, TnmsDbUser * user )
 {    
-    SqlSession*    sql   = (SqlSession*) session;
-    Query          query = sql->newQuery();
+    SqlSession * sql   = (SqlSession*) session;
+    Query        query = sql->newQuery();
 
     query << "INSERT INTO " << _authCfg.db_name << ".tickets (username, ticket, ipaddress) "
           << "VALUES (\"" << user->username << "\", \"" << sql->escapeString(user->ticket)
