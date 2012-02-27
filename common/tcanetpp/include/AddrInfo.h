@@ -6,7 +6,7 @@
   * means we avoid the issue of some fields varying slightly in
   * convention across platforms.
   *
-  * Copyright (c) 2010 Timothy Charlton Arland
+  * Copyright (c) 2012 Timothy Charlton Arland
   * @author tca@charltontechnology.net
   *
   * @section LICENSE

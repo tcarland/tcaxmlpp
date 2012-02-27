@@ -6,7 +6,7 @@
   * means we avoid the issue of some fields varying slightly in
   * convention across platforms.
   *
-  * Copyright (c) 2010 Timothy Charlton Arland
+  * Copyright (c) 2012 Timothy Charlton Arland
   * @author tca@charltontechnology.net
   *
   * @section LICENSE
@@ -46,8 +46,6 @@ namespace tcanetpp {
  *  0     16    32    48    64    80    96   112   128
  *  | 0000:0000 : 0000:0000 : 0000:0000 : 0000:0000 |
  *  |           |           |           |           |
- *     4 bytes     4 bytes     4 bytes     4 bytes  = 16 bytes
- *
  */
 
 class IpAddr;
