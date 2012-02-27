@@ -71,8 +71,10 @@ class FwLogEntry {
     static bool   ParseLogEntry   ( const std::string & line,
                                     FwLogEntry        & fwe,
                                     bool                debug = false );
+
     static void   SetHostname     ( FwLogEntry        & fwe );
-    static void   SetDefaultMatch ( const std::string & match_ );
+
+    static void   SetDefaultMatch ( const std::string & str );
 
 
   private:

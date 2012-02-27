@@ -20,8 +20,10 @@ namespace tnmsApi {
 #define HIGH_CHAR 126
 
 
+
 const
 std::string TnmsBase::ApiVersion = "1.22.1";
+
 
 
 template< typename Iterator, typename Value >
@@ -38,6 +40,7 @@ Iterator first_out_of_range( Iterator  begin,
 
     return end;
 };
+
 
 
 TnmsBase::TnmsBase ( const std::string & name )
@@ -57,6 +60,7 @@ TnmsBase::TnmsBase ( const std::string & name )
 {
 	_config.agent_name = name;
 }
+
 
 TnmsBase::TnmsBase ( const std::string & name,
                      const std::string & host,
@@ -290,11 +294,12 @@ TnmsBase::checkConfig ( const time_t & now )
             return TNMSERR_CONFIG;
         else if ( ! _conn->getConfig().empty() )
             this->_xmlConfig = _conn->getConfig();
+
         return this->reconfigure(now);
     }
     else if ( _xmlConfig.empty() ) 
     {
-        struct stat  configStat;
+        struct stat configStat;
 
         if ( ::stat(_configName.c_str(), &configStat) != 0 )
             return TNMSERR_CONFIG;
@@ -460,6 +465,7 @@ TnmsBase::reconfigure ( const time_t & now )
             _conn->close();
         }
     }
+
     _hostName           = clientnew.hostname;
     _hostPort           = clientnew.port;
     _holddown_interval  = clientnew.holddown_interval;
@@ -475,7 +481,7 @@ TnmsBase::reconfigure ( const time_t & now )
 void
 TnmsBase::openLog ( const std::string & logfile, const time_t & now )
 {
-    struct tm  * t   = ::localtime(&now);
+    struct tm  * t  = ::localtime(&now);
 
     if ( LogFacility::IsOpen() && _config.logfile.compare(logfile) == 0 )
     {
@@ -571,7 +577,6 @@ TnmsBase::flush_limit ( int max )
     _flushLimit = max;
 }
 
-
 int     
 TnmsBase::flush_limit() const
 {
@@ -650,43 +655,6 @@ TnmsBase::connected() const
         LogFacility::LogToStream(_logName, _logName, msg.str());
         return false;
     }
-*/
-
-/*
-#ifdef USE_OIDS 
-    //  Now to dynamically create new oids
-    TnmsOid      newOid;
-    TnmsMetric * rootMetric = nodelist.front()->getParent()->getValue();
-    TnmsMetric * metric     = node->getValue();
-
-    if ( rootMetric.getElementOid().lastValue() == 0 ) {
-        // error determining Oid
-        return false;
-    }
-
-    OidList  oidlist = rootMetric.getElementOid().getOidList(); // intentional copy
-    MetricTree::BranchNodeList::iterator   nIter;
-
-    for ( nIter = nodelist.begin(); nIter != nodelist.end(); ++nIter ) {
-        TnmsMetric * nodemetric = (*nIter)->getValue();
-        nodemetric.lastId++;
-        oidlist.push_back(nodemetric.lastId);
-        newOid = TnmsOid(oidlist);
-        std::cout << "New oid " << newOid.toString() << " for " 
-            << (*nIter)->getAbsoluteName() << std::endl;
-        nodemetric.metric = TnmsMetric((*nIter)->getAbsoluteName(), newOid);
-    }
-
-    // Now that our parents have oids, we create the leaf oid 
-    metric.lastId++;
-    oidlist.push_back(metric.lastId);
-
-    newOid = TnmsOid(oidlist);
-    metric.metric = TnmsMetric(node->getAbsoluteName(), newOid);
-
-    std::cout << "New oid " << newOid.toString() << " for " 
-        << node->getAbsoluteName() << std::endl;
-#endif 
 */
 
 

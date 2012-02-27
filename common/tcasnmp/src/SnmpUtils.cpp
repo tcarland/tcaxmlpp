@@ -219,6 +219,43 @@ SnmpUtils::GetCDPNeighbors ( SnmpSession * session, DeviceSet & devlist )
 }
 
 
+/*
+#ifdef USE_OIDS
+    //  Now to dynamically create new oids
+    TnmsOid      newOid;
+    TnmsMetric * rootMetric = nodelist.front()->getParent()->getValue();
+    TnmsMetric * metric     = node->getValue();
+
+    if ( rootMetric.getElementOid().lastValue() == 0 ) {
+        // error determining Oid
+        return false;
+    }
+
+    OidList  oidlist = rootMetric.getElementOid().getOidList(); // intentional copy
+    MetricTree::BranchNodeList::iterator   nIter;
+
+    for ( nIter = nodelist.begin(); nIter != nodelist.end(); ++nIter ) {
+        TnmsMetric * nodemetric = (*nIter)->getValue();
+        nodemetric.lastId++;
+        oidlist.push_back(nodemetric.lastId);
+        newOid  = TnmsOid(oidlist);
+        std::cout << "New oid " << newOid.toString() << " for "
+            << (*nIter)->getAbsoluteName() << std::endl;
+        nodemetric.metric = TnmsMetric((*nIter)->getAbsoluteName(), newOid);
+    }
+
+    // Now that our parents have oids, we create the leaf oid
+    metric.lastId++;
+    oidlist.push_back(metric.lastId);
+
+    newOid = TnmsOid(oidlist);
+    metric.metric = TnmsMetric(node->getAbsoluteName(), newOid);
+
+    std::cout << "New oid " << newOid.toString() << " for "
+        << node->getAbsoluteName() << std::endl;
+#endif
+*/
+
 }  // namespace
 
 //  _TCASNMP_SNMPUTILS_CPP_ 

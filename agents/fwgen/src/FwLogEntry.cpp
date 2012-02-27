@@ -92,11 +92,11 @@ FwLogEntry::ParseLogEntry ( const std::string & line, FwLogEntry & fwe, bool deb
         }
 
         if ( debug ) {
-	        std::cout << fwe.date << " " << fwe.host << " FW: IN="
-                  << fwe.inf << " OUT=" << fwe.outf << " SRC=" 
-                  << fwe.src << " DST=" << fwe.dst << " PROTO=" 
-                  << fwe.proto  << " SPT=" << fwe.spt << " DPT=" 
-                  << fwe.dpt << std::endl;
+            std::cout << fwe.date  << " "     << fwe.host << " FW: IN="
+                      << fwe.inf   << " OUT=" << fwe.outf << " SRC=" 
+                      << fwe.src   << " DST=" << fwe.dst  << " PROTO=" 
+                      << fwe.proto << " SPT=" << fwe.spt  << " DPT=" 
+                      << fwe.dpt   << std::endl;
         }
     } else
         return false;

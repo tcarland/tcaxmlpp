@@ -54,6 +54,7 @@ class TnmsBase {
                         const std::string & data );
 
     void    clear();
+
     
     /*  Attributes */
 
@@ -115,8 +116,10 @@ class TnmsBase {
     time_t               _reconnect_interval;
     time_t               _reconfig;
     time_t               _reconfig_interval;
+
     int                  _flushLimit;
     int                  _today;
+
     bool                 _subscribed;
     bool                 _debug;
 

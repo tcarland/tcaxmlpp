@@ -8,6 +8,7 @@
 namespace tnmsApi {
 
 
+
 /**  Constructor for instantiating a new agent(api) instance*/
 TnmsAPI::TnmsAPI ( const std::string & agent_name ) 
 {
@@ -18,6 +19,7 @@ TnmsAPI::TnmsAPI ( const std::string & agent_name )
 
     api = (void*) new TnmsBase(agentName);
 }
+
 
 /**  Constructor for instantiating a new agent(api) instance
   * to the provided server host:port.
@@ -32,7 +34,6 @@ TnmsAPI::TnmsAPI ( const std::string & agent_name,
 {
     api = (void*) new TnmsBase(agent_name, host_name, host_port);
 }
-
 
 
 TnmsAPI::~TnmsAPI()
@@ -79,6 +80,7 @@ TnmsAPI::remove ( const std::string & element_name )
 {
     return ( ((TnmsBase*)api)->remove(element_name) );
 }
+
 
 /**@
   *  Update an element where the @param element_name represents
@@ -142,6 +144,7 @@ TnmsAPI::clear()
     return ( ((TnmsBase*)api)->clear() );
 }
 
+
 /**  Convenience method to set/change the running api config
   *  @param filename is the new config to use.
  **/
@@ -173,6 +176,7 @@ TnmsAPI::holddown_interval()
     return ( ((TnmsBase*)api)->holddown_interval() );
 }
 
+
 /** Interval to delay reconnect attempts */
 void
 TnmsAPI::reconnect_interval ( time_t secs ) 
@@ -194,13 +198,11 @@ TnmsAPI::max_messages ( int max )
     return ( ((TnmsBase*)api)->flush_limit(max) );
 }
 
-
 int
 TnmsAPI::max_messages() 
 {
     return ( ((TnmsBase*)api)->flush_limit() );
 }
-
 
 void
 TnmsAPI::set_debug ( bool d )
@@ -208,13 +210,11 @@ TnmsAPI::set_debug ( bool d )
     return ( ((TnmsBase*)api)->set_debug(d) );
 }
 
-
 void
 TnmsAPI::set_syslog ( int facility )
 {
     return ( ((TnmsBase*)api)->set_syslog(facility) );
 }
-
 
 void
 TnmsAPI::set_logfile ( const std::string & logfilename )
@@ -222,13 +222,11 @@ TnmsAPI::set_logfile ( const std::string & logfilename )
     return ( ((TnmsBase*)api)->set_logfile(logfilename) );
 }
 
-
 bool
 TnmsAPI::need_flush() 
 {
     return ( ((TnmsBase*)api)->need_flush() );
 }
-
 
 size_t
 TnmsAPI::flushsize() 
