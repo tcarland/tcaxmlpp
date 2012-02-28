@@ -1,10 +1,7 @@
 /**
-  * @file Addrinfo.cpp
+  * @file AddrInfo.cpp
   *
-  * These are defined within this library to avoid having to
-  * use platform specific defines for various headers. This also
-  * means we avoid the issue of some fields varying slightly in
-  * convention across platforms.
+  * For handling struct addrinfo and getaddrinfo/getnameinfo
   *
   * Copyright (c) 2010 Timothy Charlton Arland
   * @author tca@charltontechnology.net

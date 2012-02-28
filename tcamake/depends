@@ -78,11 +78,11 @@ endif
 
 ifdef NEED_TCAXMLPP
 ifdef TCAMAKE_PROJECT
-    TCAXML_HOME = $(TOPDIR)/common/tcaxmlpp
-    INCLUDES   += -I$(TCAXML_HOME)/include
+  TCAXML_HOME = $(TOPDIR)/common/tcaxmlpp
+  INCLUDES   += -I$(TCAXML_HOME)/include
 else
-    TCAXML_HOME = /usr
-    INCLUDES   += -I$(TCAXML_HOME)/include/tcaxmlpp
+  TCAXML_HOME = /usr
+  INCLUDES   += -I$(TCAXML_HOME)/include/tcaxmlpp
 endif
 LFLAGS     += -L$(TCAXML_HOME)/lib
 LIBS       += -ltcaxmlpp
@@ -90,19 +90,19 @@ endif
 
 ifdef NEED_TCANETPP_INCLUDE
 ifdef TCAMAKE_PROJECT
-    INCLUDES += -I$(TOPDIR)/common/tcanetpp/include
+  INCLUDES += -I$(TOPDIR)/common/tcanetpp/include
 else
-    INCLUDES += -I/usr/include/tcanetpp
+  INCLUDES += -I/usr/include/tcanetpp
 endif
 endif
 
 ifdef NEED_TCANETPP
 ifdef TCAMAKE_PROJECT
-    TCANETPP_HOME = $(TOPDIR)/common/tcanetpp
-    INCLUDES     += -I$(TCANETPP_HOME)/include
+  TCANETPP_HOME = $(TOPDIR)/common/tcanetpp
+  INCLUDES     += -I$(TCANETPP_HOME)/include
 else
-    TCANETPP_HOME = /usr
-    INCLUDES     += -I$(TCANETPP_HOME)/include/tcanetpp
+  TCANETPP_HOME = /usr
+  INCLUDES     += -I$(TCANETPP_HOME)/include/tcanetpp
 endif
 LFLAGS       += -L$(TCANETPP_HOME)/lib
 LIBS         += -ltcanetpp
@@ -110,11 +110,11 @@ endif
 
 ifdef NEED_TCACMDBUF
 ifdef TCAMAKE_PROJECT
-    TCANETPP_HOME = $(TOPDIR)/common/tcanetpp
-    INCLUDES     += -I$(TCANETPP_HOME)/include
+  TCANETPP_HOME = $(TOPDIR)/common/tcanetpp
+  INCLUDES     += -I$(TCANETPP_HOME)/include
 else
-    TCANETPP_HOME = /usr
-    INCLUDES     += -I$(TCANETPP_HOME)/include/tcanetpp
+  TCANETPP_HOME = /usr
+  INCLUDES     += -I$(TCANETPP_HOME)/include/tcanetpp
 endif
 LFLAGS       += -L$(TCANETPP_HOME)/lib
 LIBS         += -lcmdbuf
@@ -123,11 +123,11 @@ endif
 
 ifdef NEED_TCASQLPP
 ifdef TCAMAKE_PROJECT
-    TCASQL_HOME = $(TOPDIR)/common/tcasqlpp
-    INCLUDES   += -I$(TCASQL_HOME)/include
+  TCASQL_HOME = $(TOPDIR)/common/tcasqlpp
+  INCLUDES   += -I$(TCASQL_HOME)/include
 else
-    TCASQL_HOME = /usr
-    INCLUDES   += -I$(TCASQL_HOME)/include/tcasqlpp
+  TCASQL_HOME = /usr
+  INCLUDES   += -I$(TCASQL_HOME)/include/tcasqlpp
 endif
 LFLAGS     += -L$(TCASQL_HOME)/lib
 LIBS       += -ltcasqlpp
@@ -135,11 +135,11 @@ endif
 
 ifdef NEED_TCASNMP
 ifdef TCAMAKE_PROJECT
-    TCASNMP_HOME = $(TOPDIR)/common/tcasnmp
-    INCLUDES  += -I$(TCASNMP_HOME)/include
+  TCASNMP_HOME = $(TOPDIR)/common/tcasnmp
+  INCLUDES  += -I$(TCASNMP_HOME)/include
 else
-    TCASNMP_HOME = /usr
-    INCLUDES  += -I$(TCASNMP_HOME)/include/tcasnmp
+  TCASNMP_HOME = /usr
+  INCLUDES  += -I$(TCASNMP_HOME)/include/tcasnmp
 endif
 LFLAGS    += -L$(TCASNMP_HOME)/lib
 LIBS      += -ltcasnmp
@@ -180,7 +180,12 @@ endif
 
 ifdef NEED_GSOAP
 GSOAP_DIR = $(TOPDIR)/common/ext/gsoap-2.7.14/gsoap
-GSOAP_BIN = $(GSOAP_DIR)/bin/linux386
+ifeq ($(TCA_PORT_OS), "Darwin")
+  GSOAP_BIN = $(GSOAP_DIR)/bin/macosx
+endif
+ifeq ($(TCA_PORT_OS), "Linux")
+  GSOAP_BIN = $(GSOAP_DIR)/bin/linux386
+endif
 INCLUDES += -I${GSOAP_DIR}
 endif
 

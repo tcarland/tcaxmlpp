@@ -1,5 +1,5 @@
 /**  
-  * @file random.c
+  * @file tcanetpp_random.c
   *   Random number wrapper
   *
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
