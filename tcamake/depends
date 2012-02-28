@@ -180,12 +180,8 @@ endif
 
 ifdef NEED_GSOAP
 GSOAP_DIR = $(TOPDIR)/common/ext/gsoap-2.7.14/gsoap
-ifeq ($(TCA_PORT_OS), "Darwin")
-  GSOAP_BIN = $(GSOAP_DIR)/bin/macosx
-endif
-ifeq ($(TCA_PORT_OS), "Linux")
-  GSOAP_BIN = $(GSOAP_DIR)/bin/linux386
-endif
+#GSOAP_BIN = $(GSOAP_DIR)/bin/macosx
+GSOAP_BIN = $(GSOAP_DIR)/bin/linux386
 INCLUDES += -I${GSOAP_DIR}
 endif
 
