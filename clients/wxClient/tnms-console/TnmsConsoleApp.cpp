@@ -69,6 +69,8 @@ TnmsConsoleApp::resize()
     _consPanel->erase();
     _consPanel->moveWindow(consy, 0);
 
+    HexApp::resize();
+
     return;
 }
 
@@ -188,7 +190,7 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
     ts  = now;
 
     // CREATE
-    if ( cmd.compare("create") == 0 )
+    if ( cmd.compare("create") == 0 )  // CREATE
     {   // create instance
         if ( cmdlist.size() < 3 ) {
             msg << "Error: invalid syntax ";
@@ -220,6 +222,8 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
             return false;
         }
 
+        msg << "API instance created: '" << agentname << "'";
+
         _showI  = insertR.first;
         _prompt = "[tnms : " + _showI->first + "]> ";
     } 
@@ -248,10 +252,15 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
     }
     else if ( cmd.compare("list") == 0 )   // LIST
     {
-        _mainPanel->addText("TnmsAPI List:");
-        for ( aIter = _apis.begin(); aIter != _apis.end(); ++aIter ) 
-            _mainPanel->addText(aIter->first);
         _mainPanel->addText(" --- ", HEX_GREEN, HEX_DIM);
+        _mainPanel->addText("TnmsAPI List:");
+        for ( aIter = _apis.begin(); aIter != _apis.end(); ++aIter )
+        {
+            std::ostringstream  sstr;
+            sstr << "  '" << aIter->first << "' : " 
+                 << aIter->second->get_agentname();
+            _mainPanel->addText(sstr.str());
+        }
     }
     else if ( cmd.compare("set") == 0 )  // SET
     {
@@ -403,6 +412,7 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
             msg << "no connection ";
             //continue;
         }
+
         _prompt = "[tnms : " + _showI->first + "]> ";
     }
     else if ( (cmd.compare("help") == 0) || (cmd.compare("?") == 0) )
@@ -462,11 +472,13 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
     {
         _mainPanel->clear();
     }
-    else if ( cmd.compare("version") == 0 )
+    else if ( cmd.compare("version") == 0 
+           || cmd.compare("about") == 0 )
     {
         std::string  hexv = "libhexes version: ";
         hexv.append(LIBHEXES_VERSION);
-        _mainPanel->addText("tnms-console version: 0.12");
+        hexv.append("  tnms-console version: ");
+        hexv.append(TNMSCONSOLE_VERSION);
         _mainPanel->addText(hexv);
     }
     else 
@@ -475,7 +487,7 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
     }
 
     if ( ! msg.str().empty() )
-        _mainPanel->addText(msg.str());
+        _statPanel->addText(msg.str());
             
     return true;
 }
@@ -495,8 +507,7 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
 
     cmd = cmdlist.at(1);
 
-    //  New Client
-    if ( cmd.compare("new") == 0 ) 
+    if ( cmd.compare("new") == 0 )  // NEW
     {
         if ( cmdlist.size() < 5 )
         {
@@ -511,10 +522,10 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
         uint16_t port = StringUtils::fromString<uint16_t>(val);
         
         if ( ! this->createClient(tag, name, port) )
-            _statPanel->addText("Failed to create new client");
+            _statPanel->addText("  client not yet connected.");
 
-    } // Delete Client
-    else if ( StringUtils::startsWith(cmd, "del") )
+    } 
+    else if ( StringUtils::startsWith(cmd, "del") )  // DELETE
     {
          _statPanel->addText(" client delete");
 
@@ -532,8 +543,8 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
         if ( cmdlist.size() > 3 && cmdlist.at(2).compare("subs") == 0 )
         {
 
-            tag    = cmdlist.at(3);
-            cIter  = _clients.find(tag);
+            tag   = cmdlist.at(3);
+            cIter = _clients.find(tag);
 
             if ( cIter == _clients.end() )
                 return;
@@ -541,12 +552,14 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
             SubscriptionList  &  subs = cIter->second->getSubscriptionList();
             SubscriptionList::iterator sIter;
 
+            _mainPanel->addText(" --- ", HEX_GREEN, HEX_DIM);
             _mainPanel->addText("Subscription List for " + cIter->second->getHostStr());
             for ( sIter = subs.begin(); sIter != subs.end(); ++sIter )
                 _mainPanel->addText("  Sub> " + sIter->getElementName());
         }
         else
         {
+            _mainPanel->addText(" --- ", HEX_GREEN, HEX_DIM);
             _mainPanel->addText("Current clients:");
             for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter )
             {
@@ -569,9 +582,10 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
             _statPanel->addText("Syntax error in client subscribe");
             return;
         }
-        tag    = cmdlist.at(2);
-        name   = cmdlist.at(3);
-        cIter  = _clients.find(tag);
+        tag   = cmdlist.at(2);
+        name  = cmdlist.at(3);
+        cIter = _clients.find(tag);
+
         if ( cIter != _clients.end() ) {
             cIter->second->subscribe(name);
             _statPanel->addText("client subscribe " + name);
@@ -584,9 +598,9 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
             return;
         }
 
-        tag    = cmdlist.at(2);
-        name   = cmdlist.at(3);
-        cIter  = _clients.find(tag);
+        tag   = cmdlist.at(2);
+        name  = cmdlist.at(3);
+        cIter = _clients.find(tag);
 
         _statPanel->addText("client unsubscribe");
         if ( cIter != _clients.end() )
@@ -611,11 +625,16 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
         TnmsTree::StringList::iterator sIter;
         TnmsTree * tree = _mtree->acquireTree();
 
+        if ( tree == NULL )
+            return;
+
         tree->debugDump(name, strlist);
 
         _mainPanel->addText("dump " + name);
         for ( sIter = strlist.begin(); sIter != strlist.end(); ++sIter )
             _mainPanel->addText(*sIter);
+
+        _mtree->releaseTree();
     }
     else if ( cmd.compare("show") == 0 ) 
     {
@@ -655,25 +674,25 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
 bool
 TnmsConsoleApp::createClient ( const std::string & name, const std::string & host, uint16_t port )
 {
-    TnmsTree   * tree   = _mtree->acquireTree();
-
+    TnmsTree   * tree;
+    TnmsClient * client;
+    bool         con;
+    
+    tree   = _mtree->acquireTree();
     if ( tree == NULL )
         return false;
 
-    TnmsClient * client = new TnmsClient(tree);
-
-    if ( client->openConnection(host, port) < 0 )
-        return false;
-
-    _mtree->releaseTree();
+    client = new TnmsClient(tree);
+    con    = client->openConnection(host, port);
 
     client->setClientLogin("tnms-console", "tnmsconsole11b");
-
     _clients[name] = client;
-    _iomgr->addClient(client);
     _statPanel->addText("Created new client: " + client->getHostStr());
 
-    return true;
+    _mtree->releaseTree();
+    _iomgr->addClient(client);
+
+    return con;
 }
 
 
@@ -726,8 +745,7 @@ TnmsConsoleApp::sendAPIUpdates ( TnmsAPI * api, const time_t & now )
     if ( api == NULL )
         return -1;
 
-    //LogFacility::LogMessage("Sending API updates");
-    //LogFacility::Message  logmsg;
+    _statPanel->addText("Sending API updates");
     std::ostringstream  logmsg;
     
     do {
@@ -772,7 +790,8 @@ TnmsConsoleApp::sendAPIUpdates ( TnmsAPI * api, const time_t & now )
             errcnt++;
         } else {
             if ( ! conn )
-                logmsg << "  Connected.";
+                logmsg << "API instance " << api->get_agentname()
+                       << " is connected.";
             conn = true;
         }
     } while ( (retval > 0 && errcnt < MAX_SENDERR_CNT) );

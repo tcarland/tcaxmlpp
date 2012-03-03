@@ -17,6 +17,7 @@ extern "C" {
 #include <sys/times.h>
 #endif
 
+
 #include "HexApp.h"
 using namespace hexes;
 
@@ -37,8 +38,9 @@ using namespace tnmsClient;
 
 namespace tnmsConsole {
 
-#define MAX_SENDERR_CNT  5
 
+#define MAX_SENDERR_CNT     5
+#define TNMSCONSOLE_VERSION "v0.211"
 
 typedef std::map<std::string, TnmsAPI*>    ApiMap;
 typedef ApiMap::iterator                   ApiIter;
