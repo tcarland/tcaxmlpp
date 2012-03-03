@@ -34,6 +34,7 @@ namespace hexes {
 
 bool HexApp::_NCURSES_INIT = false;
 
+
 //----------------------------------------------------------------//
 
 HexApp::HexApp()

@@ -32,6 +32,7 @@ extern "C" {
 #include <stdio.h>
 }
 #include <cctype>
+#include <iomanip>
 
 #include "StringUtils.h"
 #include "tcanetpp_types.h"
@@ -47,7 +48,8 @@ StringUtils::MAXLINE = TCANET_BIGSTRLINE;
 // ----------------------------------------------------------------------
 
 /**@{  Indicates whether a given string starts or ends with the provided 
-  *    prefix or suffix, respectively.  */
+  *    prefix or suffix, respectively.
+ **/
 bool
 StringUtils::startsWith ( const std::string & str, const std::string & prefix )
 {
@@ -89,8 +91,8 @@ StringUtils::endsWith ( const std::string & str, const std::string & suffix )
 
 
 // ----------------------------------------------------------------------
-/**  Returns a string representing the character at the provided index. */
 
+/**  Returns a string representing the character at the provided index. */
 std::string
 StringUtils::charAt ( const std::string & str, size_t index )
 {
@@ -98,8 +100,8 @@ StringUtils::charAt ( const std::string & str, size_t index )
 }
 
 // ----------------------------------------------------------------------
-/**@{   Indicates string equality with or without considering case */
 
+/**@{   Indicates string equality with or without considering case */
 bool
 StringUtils::equals ( const std::string & strA, const std::string & strB )
 {
@@ -120,10 +122,10 @@ StringUtils::equalsIgnoreCase ( const std::string & strA, const std::string & st
 /*@}*/
 
 // ----------------------------------------------------------------------
+
 /**@{  Returns the first (or last) index of @param match in the given string,
   *    @param str or a negative value if no match.
  **/
-
 int
 StringUtils::indexOf ( const std::string & str, const std::string & match )
 {
@@ -168,8 +170,8 @@ StringUtils::lastIndexOf ( const std::string & str, const std::string & match, s
 /*@}*/
 
 // ----------------------------------------------------------------------
-/**@{  Transforms the provided string.  */
 
+/**@{  Transforms the provided string.  */
 std::string
 StringUtils::toLowerCase ( const std::string & str )
 {
@@ -209,8 +211,8 @@ StringUtils::toUpperCase ( std::string & str )
 /*@}*/
 
 // ----------------------------------------------------------------------
-/**  Converts the provided buffer to a human readable, formatted hex string */
 
+/**  Converts the provided buffer to a human readable, formatted hex string */
 std::string
 StringUtils::toHexString ( const uint8_t * buf, size_t len, size_t offset )
 {
@@ -233,6 +235,7 @@ StringUtils::toHexString ( const uint8_t * buf, size_t len, size_t offset )
         rt  = ::snprintf(hx, lt, "%02x ", *ptr++);
         hx += rt;
         lt -= rt;
+
         if ( i == 7 ) {
             rt = ::snprintf(hx, lt, " ");
             hx += rt;
@@ -262,10 +265,11 @@ StringUtils::toHexString ( const uint8_t * buf, size_t len, size_t offset )
     
     for ( i = 0; i < len; ++i )
     {
-        if ( isprint(*ptr) )
+        if ( ::isprint(*ptr) ) {
             rt  = ::snprintf(hx, lt, "%c", *ptr);
-        else
+        } else {
             rt  = ::snprintf(hx, lt, ".");
+        }
 
         hx += rt;
         lt -= rt;
@@ -279,8 +283,8 @@ StringUtils::toHexString ( const uint8_t * buf, size_t len, size_t offset )
 
 
 // ----------------------------------------------------------------------
-/**@{  Trims the whitespace at the front and back of the string. */
 
+/**@{  Trims the whitespace at the front and back of the string. */
 std::string
 StringUtils::trim ( const std::string & str )
 {
@@ -302,6 +306,7 @@ StringUtils::trim ( std::string & str )
 
 
 // ----------------------------------------------------------------------
+
 /**@{
   *  Strips all occurances of one string from another string.
   *  @param str is the provided string on which to operate.
@@ -370,9 +375,8 @@ StringUtils::replaceTabs ( std::string & strline )
 // ----------------------------------------------------------------------
 //   Widechar support for the same methods including conversion from 
 //   wide to narrow/ascii and back.
-
-
 #ifdef TCANETPP_WIDECHAR
+
 
 extern "C" {
 # include <wchar.h>
@@ -577,7 +581,6 @@ StringUtils::strip ( std::wstring & str, wchar_t c )
 /**  Strips inline comments from a given string line. Valid inline or 
   *  to end of line comments are '#', ';', and '//'
  **/
-
 void
 StringUtils::stripComments ( std::wstring & wstrline )
 {
@@ -608,10 +611,9 @@ StringUtils::replaceTabs ( std::wstring & wstrline )
     return;
 }
 
-
 // ----------------------------------------------------------------------
-/**@{  Provides conversion between ascii and wide strings  */
 
+/**@{  Provides conversion between ascii and wide strings  */
 std::wstring
 StringUtils::ctowstr ( const std::string & str )
 {

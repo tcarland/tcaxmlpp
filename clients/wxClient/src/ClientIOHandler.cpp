@@ -15,6 +15,7 @@ ClientIOHandler::ClientIOHandler ( ClientTreeMutex * tree )
     : _mtree(tree)
 {}
 
+
 ClientIOHandler::~ClientIOHandler() {}
 
 
@@ -88,6 +89,7 @@ ClientIOHandler::timeout ( const EventTimer & timer )
     return;
 }
 
+
 void
 ClientIOHandler::addClient (TnmsClient * client )
 {
@@ -130,6 +132,7 @@ ClientIOHandler::handle_read ( const EventIO & io )
     
     return;
 }
+
 
 void
 ClientIOHandler::handle_write ( const EventIO & io )
@@ -205,7 +208,6 @@ ClientIOHandler::handle_destroy ( const EventIO & io )
 
     return;
 }
-
 
 
 bool

@@ -58,7 +58,7 @@ TnmsBase::TnmsBase ( const std::string & name )
       _debug(false)
 
 {
-	_config.agent_name = name;
+    _config.agent_name = name;
 }
 
 
@@ -79,7 +79,7 @@ TnmsBase::TnmsBase ( const std::string & name,
       _subscribed(false),
       _debug(false)
 {
-	_config.agent_name = name;
+    _config.agent_name = name;
 }
 
 
@@ -623,6 +623,14 @@ TnmsBase::flushsize() const
 {
     return _conn->txBytesBuffered();
 }
+
+
+std::string
+TnmsBase::get_agentname() const 
+{
+    return _config.agent_name;
+}
+
 
 bool
 TnmsBase::connected() const

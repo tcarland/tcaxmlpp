@@ -63,7 +63,7 @@ namespace hexes {
 class HexPanel;
 
 
-#define LIBHEXES_VERSION "v0.114"
+#define LIBHEXES_VERSION  "v0.115"
 
 
 typedef std::vector<HexPanel*>            PanelStack;

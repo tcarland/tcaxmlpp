@@ -234,6 +234,11 @@ TnmsAPI::flushsize()
     return ( ((TnmsBase*)api)->flushsize() );
 }
 
+std::string
+TnmsAPI::get_agentname() const
+{
+    return ( ((TnmsBase*)api)->get_agentname() );
+}
 
 }  // namespace
 

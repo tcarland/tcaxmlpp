@@ -24,11 +24,7 @@
 							<tool id="org.eclipse.cdt.build.core.settings.holder.libs.712253218" name="holder for library settings" superClass="org.eclipse.cdt.build.core.settings.holder.libs"/>
 							<tool id="org.eclipse.cdt.build.core.settings.holder.1037015402" name="Assembly" superClass="org.eclipse.cdt.build.core.settings.holder">
 								<option id="org.eclipse.cdt.build.core.settings.holder.undef.incpaths.834323776" name="Undefined Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.undef.incpaths" valueType="undefIncludePath">
-									<listOptionValue builtIn="false" value="/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.5/include/g++-v4/x86_64-pc-linux-gnu"/>
-									<listOptionValue builtIn="false" value="/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.5/include"/>
-									<listOptionValue builtIn="false" value="/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.5/include-fixed"/>
-									<listOptionValue builtIn="false" value="/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.5/include/g++-v4/backward"/>
-									<listOptionValue builtIn="false" value="/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.5/include/g++-v4"/>
+									<listOptionValue builtIn="false" value="/home/tca/src/ratnest-hg/devbranch/tnms/common/tcanetpp/include"/>
 								</option>
 								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.487325398" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
 									<listOptionValue builtIn="false" value="../include"/>
@@ -40,11 +36,7 @@
 									<listOptionValue builtIn="false" value="../include"/>
 								</option>
 								<option id="org.eclipse.cdt.build.core.settings.holder.undef.incpaths.32924077" name="Undefined Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.undef.incpaths" valueType="undefIncludePath">
-									<listOptionValue builtIn="false" value="/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.5/include/g++-v4/x86_64-pc-linux-gnu"/>
-									<listOptionValue builtIn="false" value="/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.5/include"/>
-									<listOptionValue builtIn="false" value="/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.5/include-fixed"/>
-									<listOptionValue builtIn="false" value="/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.5/include/g++-v4/backward"/>
-									<listOptionValue builtIn="false" value="/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.5/include/g++-v4"/>
+									<listOptionValue builtIn="false" value="/home/tca/src/ratnest-hg/devbranch/tnms/common/tcanetpp/include"/>
 								</option>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.489203918" languageId="org.eclipse.cdt.core.g++" languageName="GNU C++" sourceContentType="org.eclipse.cdt.core.cxxSource,org.eclipse.cdt.core.cxxHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
@@ -130,6 +122,10 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="tcanetpp.null.1784566088" name="tcanetpp"/>
 	</storageModule>
+	<storageModule moduleId="refreshScope" versionNumber="1">
+		<resource resourceType="PROJECT" workspacePath="/tcanetpp"/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile"/>
 		<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile">
@@ -345,11 +341,7 @@
 			</profile>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="0.1311033198.1280043821.510472030.946203081">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile"/>
 		</scannerConfigBuildInfo>
 	</storageModule>
-	<storageModule moduleId="refreshScope" versionNumber="1">
-		<resource resourceType="PROJECT" workspacePath="/tcanetpp"/>
-	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>

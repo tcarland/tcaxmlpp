@@ -73,6 +73,8 @@ class DLLOPT TnmsAPI {
     void    set_syslog  ( int facility );
     void    set_logfile ( const std::string & logfilename );
 
+    std::string get_agentname() const;
+
     bool    need_flush();
     size_t  flushsize();
 

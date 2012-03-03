@@ -663,10 +663,9 @@ TnmsTree::debugDump ( const std::string & name ) const
 
     BreadthOrdering  flattenedTree;
     _tree->depthFirstTraversal(node, flattenedTree);
-
-    std::list<TnmsTree::Node*>::iterator nIter;
     LogFacility::LogMessage("TnmsTree::debugDump() for " + name);
     
+    std::list<TnmsTree::Node*>::iterator nIter;
     for ( nIter = flattenedTree.nodes.begin(); nIter != flattenedTree.nodes.end(); ++nIter ) 
     {
         LogFacility::Message  msg;
@@ -682,16 +681,30 @@ TnmsTree::debugDump ( const std::string & name ) const
 void
 TnmsTree::debugDump ( const std::string & name, StringList & strlist ) const
 {
-    Node * node = _tree->find(name);
+    BreadthOrdering  flattenedTree;
 
-    if ( node == NULL )
-        return;
+    if ( name.empty() ) 
+    {
+        NodeChildMap &   roots = _tree->getRoots();
+        NodeChildMap::iterator    rootI;
 
-    BreadthOrdering flattenedTree;
-    _tree->depthFirstTraversal(node, flattenedTree);
+        if ( roots.empty() )
+            return;
+    
+        for ( rootI = roots.begin(); rootI != roots.end(); ++rootI )
+            _tree->depthFirstTraversal( rootI->second, flattenedTree );
+    }
+    else 
+    {
+        Node * node = _tree->find(name);
+
+        if ( node == NULL )
+            return;
+
+        _tree->depthFirstTraversal(node, flattenedTree);
+    }
 
     std::list<TnmsTree::Node*>::iterator  nIter;
-
     for ( nIter = flattenedTree.nodes.begin(); nIter != flattenedTree.nodes.end(); ++nIter )
     {
         LogFacility::Message msg;

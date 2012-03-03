@@ -44,22 +44,23 @@ namespace tcanetpp {
 
 #ifndef WIN32
 # ifdef PTHREADS
-tcanetpp::ThreadLock   LogFacility::_Lock       = tcanetpp::ThreadLock();
+tcanetpp::ThreadLock   LogFacility::_Lock      = tcanetpp::ThreadLock();
 # endif
 #endif
 
-LogFacility::StreamMap LogFacility::_StreamMap  = LogFacility::StreamMap();
-time_t                 LogFacility::_LogTime    = 0;
-bool                   LogFacility::_Init       = false;
-bool                   LogFacility::_InitLock   = false;
-bool                   LogFacility::_TryLock    = false;
-bool                   LogFacility::_Syslog     = false;
-bool                   LogFacility::_Broadcast  = false;
-bool                   LogFacility::_Enabled    = false;
-bool                   LogFacility::_Debug      = false;
-std::string            LogFacility::_LogName    = "";
-std::string            LogFacility::_LogPrefix  = "";
-std::string            LogFacility::_LogTimeStr = "";
+LogFacility::StreamMap LogFacility::_StreamMap = LogFacility::StreamMap();
+
+time_t         LogFacility::_LogTime    = 0;
+bool           LogFacility::_Init       = false;
+bool           LogFacility::_InitLock   = false;
+bool           LogFacility::_TryLock    = false;
+bool           LogFacility::_Syslog     = false;
+bool           LogFacility::_Broadcast  = false;
+bool           LogFacility::_Enabled    = false;
+bool           LogFacility::_Debug      = false;
+std::string    LogFacility::_LogName    = "";
+std::string    LogFacility::_LogPrefix  = "";
+std::string    LogFacility::_LogTimeStr = "";
 
 
 // ----------------------------------------------------------------------
@@ -325,6 +326,8 @@ LogFacility::GetDebug()
 {
     return LogFacility::_Debug;
 }
+
+// ----------------------------------------------------------------------
 
 bool
 LogFacility::IsOpen()

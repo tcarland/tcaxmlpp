@@ -69,45 +69,49 @@ class HexString {
     virtual ~HexString();
 
 
-    virtual void  operator=   ( const HexString   & hexstr );
-    virtual void  operator=   ( const std::string & str );
-    virtual bool  operator==  ( const HexString   & hexstr );
+    virtual void        operator=   ( const HexString   & hexstr );
+    virtual void        operator=   ( const std::string & str );
+    virtual bool        operator==  ( const HexString   & hexstr );
 
 
-    virtual HexString& append ( const std::string & str );
-    virtual HexString& append ( const HexString & hexstr );
-    virtual HexString& append ( size_type count, char ch );
-    virtual HexString& assign ( const std::string & str );
-    virtual HexString& assign ( const HexString   & str );
-    virtual HexString& assign ( size_type count, char ch );
-    virtual HexString& erase  ( size_type from, size_type to = std::string::npos );
-    virtual iterator   erase  ( iterator start, iterator end );
-    virtual size_t     length() const;
-    virtual bool       empty()  const;
+    virtual HexString&  append      ( const HexString & hexstr );
+    virtual HexString&  append      ( const std::string & str );
+    virtual HexString&  append      ( size_type count, char ch );
+
+    virtual HexString&  assign      ( const HexString   & str );
+    virtual HexString&  assign      ( const std::string & str );
+    virtual HexString&  assign      ( size_type count, char ch );
+
+    virtual iterator    erase       ( iterator   start, iterator end );
+    virtual HexString&  erase       ( size_type  from,
+                                      size_type  to = std::string::npos );
+
+    virtual size_t      length() const;
+    virtual bool        empty()  const;
 
 
-    std::string&       str();
-    const std::string& str()    const;
+    std::string&        str();
+    const std::string&  str()    const;
 
     /* some other obvious accessor's despite our attributes being public */
-    int                getColor()      const { return color; }
-    int                getAttributes() const { return attributes; }
-    int                getAlignment()  const { return alignment; }
-    int                getWrap()       const { return wrap; }
+    int                 getColor()      const { return color; }
+    int                 getAttributes() const { return attributes; }
+    int                 getAlignment()  const { return alignment; }
+    int                 getWrap()       const { return wrap; }
 
 
   public:
 
-    static bool        CharIsVisible ( char ch );
+    static bool         CharIsVisible ( char ch );
 
-    static int         IndexOf       ( const std::string & str,
-                                       const std::string & match,
-                                       size_t from );
+    static int          IndexOf       ( const std::string & str,
+                                        const std::string & match,
+                                        size_t from );
 
     template< typename OutputIterator_ >
-    static inline void Split         ( const std::string  & str,
-                                       const char           delimiter,
-                                       OutputIterator_      outI )
+    static inline void  Split         ( const std::string  & str,
+                                        const char           delimiter,
+                                        OutputIterator_      outI )
     {
         std::string::size_type  begin = 0, end = 0;
         while ( (begin = str.find_first_not_of(delimiter, begin)) != std::string::npos )
@@ -120,7 +124,7 @@ class HexString {
     }
 
     template<typename T>
-    static inline std::string ToString  ( const T & a )
+    static inline std::string ToString ( const T & a )
     {
         std::stringstream  stream;
         stream << a;
@@ -128,7 +132,7 @@ class HexString {
     }
 
     template<typename T>
-    static inline  T    FromString      ( const std::string & str )
+    static inline  T    FromString     ( const std::string & str )
     {
         T target = T();
         std::stringstream stream(str);
@@ -144,7 +148,7 @@ class HexString {
     int          alignment;
     bool         wrap;
 
-  //protected:
+  protected:
 
     std::string  _str;
 };

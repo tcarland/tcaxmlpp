@@ -79,6 +79,8 @@ class TnmsBase {
     bool    need_flush() const;
     size_t  flushsize() const;
 
+    std::string get_agentname() const;
+
     static 
     const std::string&  Version();
 

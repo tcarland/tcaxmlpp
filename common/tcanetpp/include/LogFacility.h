@@ -217,13 +217,13 @@ private:
     typedef std::map<std::string, LogStream>    StreamMap;
 
 
-    static StreamMap             _StreamMap;
-
 #   ifndef WIN32
 #   ifdef PTHREADS
     static tcanetpp::ThreadLock  _Lock;
 #   endif
 #   endif
+
+    static StreamMap             _StreamMap;
 
     static std::string           _LogName;
     static std::string           _LogPrefix;

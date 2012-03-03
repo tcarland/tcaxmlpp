@@ -313,32 +313,28 @@ Socket::listen()
 int
 Socket::connect()
 {
-    char  serr[ERRORSTRLEN];
-
     if ( _socktype != SOCKTYPE_CLIENT )
-	return -1;
+        return -1;
 	
     if ( _connected )
-	return 1;
+        return 1;
 
     if ( ! Socket::IsValidDescriptor(_fd) )
         this->init(_block);
 
     if ( ::connect(_fd, (struct sockaddr*) &_sock, sizeof(_sock)) < 0 ) 
     {
+
 #       ifdef WIN32
-    	
         int  err = WSAGetLastError();
-        
+
         if ( err == WSAEWOULDBLOCK || err == WSAEALREADY || err == WSAEINVAL ) {
             return 0;
         } else if ( err == WSAEISCONN ) {
             _connected = true;
             return 1;
         }
-        
 #       else
-        
         if ( errno == EINPROGRESS )
             return 0;
         else if ( errno == ECONNREFUSED )
@@ -346,14 +342,15 @@ Socket::connect()
         else 
             _errstr = "Socket::connect() Error in connect attempt";
 
+        char  serr[ERRORSTRLEN];
+
         if ( strerror_r(errno, serr, ERRORSTRLEN) == 0 )
             _errstr = serr;
-        
 #     endif
 
         return -1;
     } else {
-    	_connected = true;
+        _connected = true;
     }
 
     return 1;
@@ -447,11 +444,11 @@ Socket::accept ( SocketFactory & factory )
     }
     else if ( _proto == SOCKET_UDP )
     {
-    	client = factory(_fd, csock, _socktype, _proto);
+        client = factory(_fd, csock, _socktype, _proto);
     }
 
     if ( !_block )
-    	Socket::Unblock(client);
+        Socket::Unblock(client);
 
     return client;
 }
@@ -471,7 +468,7 @@ Socket::isConnected()
 #   else
 
     if ( !_connected || _proto == IPPROTO_UDP )
-    	return _connected;
+        return _connected;
 
     pollfd  wset;
     char    serr[ERRORSTRLEN];
@@ -480,14 +477,13 @@ Socket::isConnected()
     wset.events = POLLOUT | POLLERR;
 
     if ( poll(&wset, 1, 0) < 0 ) {
-
-	if ( errno == EINTR )
-	    return true;
+        if ( errno == EINTR )
+            return true;
 
         if ( strerror_r(errno, serr, ERRORSTRLEN) == 0 )
             _errstr = serr;
 	
-	return false;
+        return false;
     }
 
     return true;
@@ -549,7 +545,7 @@ Socket::read ( void * vptr, size_t n )
     ssize_t    rd  = 0;
 
     if ( _proto == IPPROTO_UDP && ! _connected ) {
-    	rd  = this->readFrom(vptr, n, csock);
+        rd  = this->readFrom(vptr, n, csock);
     } else {
         rd = this->nreadn(vptr, n);
     }
@@ -609,7 +605,6 @@ Socket::getSocketOption ( SocketOption opt )
 int
 Socket::setSocketOption ( int level, int optname, int optval )
 {
-    char       serr[ERRORSTRLEN];
     socklen_t  len;
 
     len = (socklen_t) sizeof(int);
@@ -623,6 +618,7 @@ Socket::setSocketOption ( int level, int optname, int optval )
         return -1;
     }
 #   else
+    char   serr[ERRORSTRLEN];
     if ( ::setsockopt(_fd, level, optname, (const void*) &optval, len) < 0 ) {
         // could test for EOPNOTSUPP here
         if ( ::strerror_r(errno, serr, ERRORSTRLEN) == 0 )
@@ -754,7 +750,7 @@ Socket::Unblock ( Socket * s )
 #   else
     
     int flags = fcntl(s->getDescriptor(), F_GETFL, 0);
-    fcntl(s->getDescriptor(), F_SETFL, flags | O_NONBLOCK);
+    ::fcntl(s->getDescriptor(), F_SETFL, flags | O_NONBLOCK);
 
 #   endif
 
@@ -776,7 +772,7 @@ Socket::Block ( Socket * s )
 #   else 
     
     int  flags  = fcntl(s->getDescriptor(), F_GETFL, 0);
-    fcntl(s->getDescriptor(), F_SETFD, flags & ~O_NONBLOCK);
+    ::fcntl(s->getDescriptor(), F_SETFD, flags & ~O_NONBLOCK);
 
 #   endif
 
@@ -903,7 +899,6 @@ void
 Socket::InitializeSocket ( sockfd_t & fd, int socktype, int proto ) 
     throw ( SocketException )
 {
-    char   serr[ERRORSTRLEN];
     std::string errstr = "Socket::initSocket() Fatal Error ";
 
     if ( socktype > SOCKTYPE_NONE && socktype < SOCKTYPE_RAW )
@@ -927,6 +922,8 @@ Socket::InitializeSocket ( sockfd_t & fd, int socktype, int proto )
 #       ifdef WIN32
         errstr.append(": Failed to initialize socket");
 #       else
+
+        char   serr[ERRORSTRLEN];
         if ( errno == EACCES || errno == EPERM ) {
             errstr.append("EACCES: Permission denied");
         } else if ( errno == EAFNOSUPPORT ) {
@@ -934,7 +931,7 @@ Socket::InitializeSocket ( sockfd_t & fd, int socktype, int proto )
         } else if ( errno == EINVAL ) {
             errstr.append("EINVAL: Unknown protocol or PF not supported");
         } else {
-            strerror_r(errno, serr, ERRORSTRLEN);
+            ::strerror_r(errno, serr, ERRORSTRLEN);
             errstr.append(serr);
         }
 #     	endif
