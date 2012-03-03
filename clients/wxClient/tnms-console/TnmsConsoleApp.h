@@ -40,7 +40,7 @@ namespace tnmsConsole {
 
 
 #define MAX_SENDERR_CNT     5
-#define TNMSCONSOLE_VERSION "v0.211"
+#define TNMSCONSOLE_VERSION "v0.212"
 
 typedef std::map<std::string, TnmsAPI*>    ApiMap;
 typedef ApiMap::iterator                   ApiIter;

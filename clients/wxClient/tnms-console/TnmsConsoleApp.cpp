@@ -111,6 +111,7 @@ TnmsConsoleApp::run()
     this->setFocus(_consPanel);
     this->print(0, 1, _title, HEX_GREEN, HEX_BOLD);
     this->setCursor(0);
+    this->DisplayHelp();
 
     curp    = this->getPanel();
     conin   = (LineInputHandler*) _consPanel->getInputHandler();
@@ -171,6 +172,7 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
     std::string   cmd, name, desc, agentname, cfgfile;
     uint64_t      val = 0;
     time_t        now, ts;
+    int           ret = 0;
  
     std::ostringstream        msg;
     std::vector<std::string>  cmdlist;
@@ -179,10 +181,13 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
     StringUtils::split(cmdstr, ' ', std::back_inserter(cmdlist));
     //_statPanel->addText(cmdstr);
 
+    if ( cmdlist.size() > 0 ) {
+        if ( cmdlist.at(0).compare("api") == 0 )
+            cmdlist.erase(cmdlist.begin());
+    }
     if ( cmdlist.size() > 0 )
         cmd = cmdlist.at(0);
-    else
-        cmd = "";
+
 
     StringUtils::toLowerCase(cmd);
 
@@ -407,11 +412,8 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
             return false;
         }
 
-        int ret = 0;
-        if ( (ret = this->sendAPIUpdates(_showI->second, now)) != 0 ) {
+        if ( (ret = this->sendAPIUpdates(_showI->second, now)) != 0 )
             msg << "no connection ";
-            //continue;
-        }
 
         _prompt = "[tnms : " + _showI->first + "]> ";
     }
@@ -479,6 +481,7 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
         hexv.append(LIBHEXES_VERSION);
         hexv.append("  tnms-console version: ");
         hexv.append(TNMSCONSOLE_VERSION);
+        _mainPanel->addText(" --- ", HEX_GREEN, HEX_DIM);
         _mainPanel->addText(hexv);
     }
     else 
@@ -509,8 +512,7 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
 
     if ( cmd.compare("new") == 0 )  // NEW
     {
-        if ( cmdlist.size() < 5 )
-        {
+        if ( cmdlist.size() < 5 ) {
             _statPanel->addText("Syntax error in client command");
             return;
         }
@@ -636,7 +638,8 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
 
         _mtree->releaseTree();
     }
-    else if ( cmd.compare("show") == 0 ) 
+    else if ( cmd.compare("show") == 0
+           || cmd.compare("get") == 0 ) 
     {
         if ( cmdlist.size() < 3 )
             return;
@@ -715,6 +718,7 @@ TnmsConsoleApp::removeClient ( const std::string & name )
 void
 TnmsConsoleApp::startClientProcessing()
 {
+    _statPanel->addText("(Re)starting client processing.");
     _mtree->notifyAll();
 }
 
@@ -722,6 +726,7 @@ TnmsConsoleApp::startClientProcessing()
 void
 TnmsConsoleApp::stopClientProcessing()
 {
+    _statPanel->addText("Halting client processing.");
     _mtree->lock();
 }
 
@@ -745,20 +750,20 @@ TnmsConsoleApp::sendAPIUpdates ( TnmsAPI * api, const time_t & now )
     if ( api == NULL )
         return -1;
 
-    _statPanel->addText("Sending API updates");
+    _statPanel->addText("Sending API updates.");
     std::ostringstream  logmsg;
     
     do {
 #       ifndef WIN32
         struct tms  clocktms;
         clock_t     clk1, clk2;
-        clk1 = times(&clocktms);
+        clk1 = ::times(&clocktms);
 #       endif
 
         retval = api->send(now);
 
 #       ifndef WIN32
-        clk2 = times(&clocktms);
+        clk2 = ::times(&clocktms);
         if ( retval == 0 )
             logmsg << "send() took " << (clk2 - clk1) << " tick(s)";
 #       endif
