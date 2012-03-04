@@ -58,13 +58,15 @@ extern "C" {
 #include "LineOutputHandler.h"
 
 
+
+#define LIBHEXES_VERSION  "v0.210"
+
+
+
 namespace hexes {
 
+
 class HexPanel;
-
-
-#define LIBHEXES_VERSION  "v0.115"
-
 
 typedef std::vector<HexPanel*>            PanelStack;
 typedef std::map<std::string, HexPanel*>  PanelMap;

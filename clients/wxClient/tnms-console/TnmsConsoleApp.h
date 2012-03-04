@@ -40,7 +40,7 @@ namespace tnmsConsole {
 
 
 #define MAX_SENDERR_CNT     5
-#define TNMSCONSOLE_VERSION "v0.212"
+#define TNMSCONSOLE_VERSION "v0.213"
 
 typedef std::map<std::string, TnmsAPI*>    ApiMap;
 typedef ApiMap::iterator                   ApiIter;
@@ -102,7 +102,7 @@ class TnmsConsoleApp : public hexes::HexApp {
     ClientMap           _clients;
 
     std::string         _title, _prompt;
-    bool                _alarm, _stop, _wincmd;
+    bool                _alarm, _stop;
     int                 _tht, _mainht, _statht, _consht;
 
 };

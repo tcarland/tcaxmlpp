@@ -363,8 +363,8 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
         desc = cmdlist.at(2);
         
         if ( StringUtils::startsWith(desc, "\"") ) {
-            if ( ! GetQuotedString(2, cmdlist, desc) ) {
-                msg << "Error: invalid syntax";
+            if ( ! TnmsConsoleApp::GetQuotedString(2, cmdlist, desc) ) {
+                msg << "Error: invalid syntax.";
                 _statPanel->addText(msg.str());
                 return false;
             }
@@ -496,6 +496,8 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
 }
 
 
+// CLIENT 
+//
 void
 TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
 {
@@ -540,7 +542,7 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
 
         this->removeClient(tag);
     } 
-    else if ( cmd.compare("list") == 0 ) 
+    else if ( cmd.compare("list") == 0 )  // LIST
     {
         if ( cmdlist.size() > 3 && cmdlist.at(2).compare("subs") == 0 )
         {
@@ -578,7 +580,7 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
                 _mainPanel->addText( " -- no clients --");
         }
     }
-    else if ( StringUtils::startsWith(cmd, "sub") )
+    else if ( StringUtils::startsWith(cmd, "sub") )  // SUBSCRIBE
     {
         if ( cmdlist.size() < 4 ) {
             _statPanel->addText("Syntax error in client subscribe");

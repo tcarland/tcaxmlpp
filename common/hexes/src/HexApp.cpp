@@ -237,8 +237,16 @@ HexApp::setFocusPrev()
 
 //----------------------------------------------------------------//
 
-/** Creates a new HexPanel and add its to the PanelStack. If no
-  * 'top' or focused panel is set, the HexPanel is set as top panel.
+/**  Creates a new HexPanel. If no 'top' or focused panel is set, 
+  *  the HexPanel is set as the top panel.
+  *
+  *  @param title  is the window title of the panel.
+  *  @param height is the window height. This should not be greater
+  *   than HexApp::height().
+  *  @param width  is the width of the window that should not be
+  *   greater than HexApp::width().
+  *  @param starty is the starting line number of the window.
+  *  @param startx is the starting column number of the window.
  **/
 HexPanel*
 HexApp::createPanel ( const std::string & title, 
@@ -248,12 +256,11 @@ HexApp::createPanel ( const std::string & title,
     HexPanel * p = NULL;
     PanelMap::iterator pIter;
 
-    pIter = _panels.find(title);
-    if ( pIter != _panels.end() ) {
+    if ( (pIter = _panels.find(title)) != _panels.end() )
         return p;
-    }
 
-    p = new HexPanel(title, height, width, starty, startx);
+    p  = new HexPanel(title, height, width, starty, startx);
+
     p->setPanelId(_pstack.size());
     p->setTextColor(_txtColor);
     p->setBorderColor(_bdrColor);
@@ -319,10 +326,11 @@ HexApp::getPanel ( const std::string & title )
 }
 
 
-/** Removes the panel identified by @param title and returns 
-  * the pointer to the corresponding HexPanel. HexApp will no 
-  * longer track the panel object and it will not be free'd by
-  * the HexApp instance. Returns NULL if no such panel exists.
+/**  Removes the panel identified by @param title and 
+  *  returns the pointer to the corresponding HexPanel. 
+  *  HexApp will no longer track the panel object and it 
+  *  will not be destroyed by the HexApp instance. 
+  *  Returns NULL if no such panel exists.
  **/
 HexPanel*
 HexApp::removePanel ( const std::string & title )
@@ -354,18 +362,20 @@ HexApp::removePanel ( const std::string & title )
     return panel;
 }
 
-/**  Removes and destroys(free) the HexPanel instance identified 
-  *  by @param title. Return false if no such panel exists.
+/**  Removes and destroys the HexPanel instance identified 
+  *  by @param title. 
+  *  Returns false if no such panel exists.
  **/
 bool
 HexApp::destroyPanel ( const std::string & title )
 {
     HexPanel * panel = NULL;
-    PanelMap::iterator pIter;
     int id;
 
-    pIter = _panels.find(title);
-    if ( pIter == _panels.end() )
+    PanelMap::iterator   pIter;
+    PanelStack::iterator sIter;
+
+    if ( (pIter = _panels.find(title)) == _panels.end() )
         return false;
 
     panel = pIter->second;
@@ -377,7 +387,6 @@ HexApp::destroyPanel ( const std::string & title )
     if ( id > 0 )
         id--;
 
-    PanelStack::iterator sIter;
     for ( sIter = _pstack.begin()+id; sIter != _pstack.end(); ++sIter, ++id )
         (*sIter)->setPanelId(id);
 
@@ -444,12 +453,16 @@ HexApp::setCursor ( int state )
 
 //----------------------------------------------------------------//
 
+/**  Returns a boolean indicating whether the underlying terminal
+  *  supports colors.
+ **/
 bool
 HexApp::hasColor() const
 {
     return _hasColor;
 }
 
+/**  Adds a color pair to the existing color map */
 int
 HexApp::addColorPair ( int fgcolor, int bgcolor )
 {
@@ -464,6 +477,9 @@ HexApp::addColorPair ( int fgcolor, int bgcolor )
 
 //----------------------------------------------------------------//
 
+/**  Print functions print directly to the app bypassing any of 
+  *  the HexPanel printing controls.
+ **/
 int
 HexApp::print ( int y, int x, const std::string & str )
 {
@@ -509,6 +525,7 @@ HexApp::setBorderActiveColor ( int color )
 
 //----------------------------------------------------------------//
 
+/**  Internal Library initialization (static) */
 void
 HexApp::InitCurses ( bool termRaw, bool echo )
 {
@@ -534,7 +551,7 @@ HexApp::InitCurses ( bool termRaw, bool echo )
     return;
 }
 
-/* initiate default color map */
+/** Initiates default color map */
 void
 HexApp::InitColors()
 {
@@ -550,6 +567,7 @@ HexApp::InitColors()
 
 //----------------------------------------------------------------//
 
+/**  Returns the library version string */
 std::string
 HexApp::Version()
 {
