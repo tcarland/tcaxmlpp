@@ -111,7 +111,7 @@ HexStringField::append ( const std::string & str )
     return *this;
 }
 
-/* this is fun */
+
 HexString&
 HexStringField::append ( size_t count, char ch )
 {
@@ -120,7 +120,7 @@ HexStringField::append ( size_t count, char ch )
 
     std::string::size_type  indx, cnt;
 
-    indx = _curLen; // intentionally eos
+    indx = _curLen;     // intentionally eos
     cnt  = _maxLen - _curLen;
 
     if ( count < cnt ) // write what we can
@@ -138,7 +138,7 @@ HexStringField::assign ( const HexString & str )
     return this->assign(str.str());
 }
 
-/* wheee */
+
 HexString&
 HexStringField::assign ( const std::string & str )
 {
@@ -153,6 +153,7 @@ HexStringField::assign ( const std::string & str )
 
     return *this;
 }
+
 
 HexString&
 HexStringField::assign ( size_t count, char ch )

@@ -33,6 +33,9 @@
 namespace hexes {
 
 
+/** A derivitive of HexPanel, the HexDialog class represents 
+  * a modal, popup dialog window.
+ **/
 class HexDialog : public HexPanel {
 
   public:
@@ -60,8 +63,8 @@ class HexDialog : public HexPanel {
 
   protected:
 
-    void    initDialog();
-    size_t  getLongestLine();
+    void         initDialog();
+    size_t       getLongestLine();
 
 
   private:

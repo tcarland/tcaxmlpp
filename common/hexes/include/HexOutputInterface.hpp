@@ -29,6 +29,11 @@ namespace hexes {
 
 class HexPanel;
 
+/**  Triggered by a draw event from HexApp, the derived 
+  *  method is generally called for each HexPanel of the 
+  *  application to allow each panel to control its own
+  *  output.
+ **/
 class HexOutputInterface {
   public:
     virtual ~HexOutputInterface() {}

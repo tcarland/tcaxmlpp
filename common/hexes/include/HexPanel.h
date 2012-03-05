@@ -53,7 +53,12 @@ typedef hexes::HexStringList      TextList;
 
 
 
-
+/**  A factory class for creating specialized HexPanel objects.
+  *  This can be used by any specialized panel based objects 
+  *  that wish to create their own panels. An example of this 
+  *  is the HexPanelStack widget that represents a single 
+  *  stack of panels.
+ **/
 class HexPanelFactory {
   public:
     HexPanelFactory ( HexPanel * parent );
@@ -66,7 +71,9 @@ class HexPanelFactory {
 };
 
 
-
+/**  HexPanel represents a single panel instance from the ncurses 
+  *  'libpanel' library.
+ **/
 class HexPanel {
 
   public:

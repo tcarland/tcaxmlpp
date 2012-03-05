@@ -29,7 +29,11 @@ namespace hexes {
 
 class HexPanel;
 
-
+/**  Defines a simple interface for handling input data from 
+  *  a hex application. Input on a panel will cause the 
+  *  derived method to be called with the HexPanel that 
+  *  caught the input, and the character given.
+ **/
 class HexInputInterface {
   public:
     virtual ~HexInputInterface() {}

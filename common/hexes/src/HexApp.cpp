@@ -362,8 +362,8 @@ HexApp::removePanel ( const std::string & title )
     return panel;
 }
 
-/**  Removes and destroys the HexPanel instance identified 
-  *  by @param title. 
+/**  Removes and destroys the HexPanel instance identified by
+  *  @param title  the title of the HexPanel to be removed.
   *  Returns false if no such panel exists.
  **/
 bool

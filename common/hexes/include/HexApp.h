@@ -46,7 +46,6 @@ extern "C" {
 #undef erase
 #endif
 
-
 #include "HexAttributes.hpp"
 #include "HexPosition.hpp"
 #include "HexString.h"
@@ -59,12 +58,10 @@ extern "C" {
 
 
 
-#define LIBHEXES_VERSION  "v0.210"
-
-
-
 namespace hexes {
 
+
+#define LIBHEXES_VERSION  "v0.210"
 
 class HexPanel;
 
@@ -74,13 +71,12 @@ typedef std::list<std::string>            StringList;
 
 
 
-/**  Provides the frontend to a 'Hexes' application. HexApp is the
-  * entry point to wrapping the libncurses/libpanel libraries for
-  * the spawning and control of windows/panels. While the base
-  * HexWindow and HexPanel objects can be used directly, if
-  * desired, the HexApp class provides a convenient mechanism
-  * for tracking and managing panels.
-  *
+/**  Provides the frontend to a 'Hexes' application. HexApp is
+  * the entry point to wrapping the ncurses/panel libraries for 
+  * the spawning and control of curses windows/panels. While the
+  * base HexWindow and HexPanel objects can be used directly,
+  * the HexApp class provides the means for managing the 
+  * respective app's panels.
  **/
 class HexApp {
 

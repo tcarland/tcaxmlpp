@@ -19,8 +19,8 @@
   * License along with libhexes.  
   * If not, see <http://www.gnu.org/licenses/>.
  **/
-/**
 
+/**
   @mainpage   libhexes
 
 @section overview Overview:
@@ -49,5 +49,5 @@ Simply run 'make documentation' to generate the html docs.
    Uses a custom build environment I call 'tcamake' to control dependencies. 
 Running 'make' should suffice on supported platforms.
 
-
+*/
 

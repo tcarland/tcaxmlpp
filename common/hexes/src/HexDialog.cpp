@@ -158,7 +158,7 @@ HexDialog::getResult()
 
 /** By default, the dialog will exit on the first character
   * input. By setting this option to false, the dialog will
-  * persist for string input until a carriage return <CR> 
+  * persist for string input until a carriage return '<CR>' 
   * is encountered.
  **/
 void

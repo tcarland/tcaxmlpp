@@ -109,18 +109,21 @@ HexWindow::clearBorder()
 
 //----------------------------------------------------------------//
 
+/** Erases the window making it invisible */
 void
 HexWindow::erase()
 {
     ::werase(_win);
 }
 
+/** Returns the current width of the window */
 int
 HexWindow::width()
 {
     return this->_width;
 }
 
+/** Returns the current height of the window */
 int
 HexWindow::height()
 {
@@ -193,6 +196,7 @@ HexWindow::maxColumns()
     return this->maxX();
 }
 
+/**  Returns the current window cursor position */
 HexPosition
 HexWindow::currentPosition()
 {
@@ -202,12 +206,20 @@ HexWindow::currentPosition()
     return p;
 }
 
+/**  Moves the cursor position within the current window.
+  *  The position is relative to the upper left corner 
+  *  of the window considered (0, 0).
+  *  Returns 0 on success or an ERR value upon failure.
+ **/
 int
 HexWindow::move ( int y, int x )
 {
     return(::wmove(_win, y, x));
 }
 
+/**  Moves the window so that the upper left corner of
+  *  the window starts at the provided coordinates.
+ **/
 int
 HexWindow::moveWindow ( int starty, int startx )
 {
@@ -216,6 +228,7 @@ HexWindow::moveWindow ( int starty, int startx )
     return(::mvwin(_win, starty, startx));
 }
 
+/**  Resizes the window to the provided height and width. */
 void
 HexWindow::resize ( int height, int width )
 {

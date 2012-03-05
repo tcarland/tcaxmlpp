@@ -36,14 +36,14 @@ lib: arlib
 
 arlib: lib/libhexes.a
 
-solib: libhexes.so.0.0.1
+solib: libhexes.so.0.2.1
 
 lib/libhexes.a: $(OBJS)
 	( $(MKDIR) lib )
 	$(make-lib-rule)
 	@echo
 
-libhexes.so.0.0.1: $(OBJS)
+libhexes.so.0.2.1: $(OBJS)
 	( $(MKDIR) lib )
 	( $(RM) $@ lib/libhexes.so )
 	$(make-so-rule)
@@ -78,7 +78,7 @@ test-clean:
 	@echo
 
 
-distclean: clean libclean test-clean
+distclean: clean libclean test-clean doc-clean
 	$(RM) $(ALL_BINS)
 	@echo
 

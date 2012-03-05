@@ -36,10 +36,14 @@ namespace hexes {
  * a curses 'WINDOW'. Why not always use a panel for any and all windows?
  * I see no disadvantages to doing so, since panels simply allow for 
  * window manipulation.
- * Initial logic was building a library that might be functional without
- * libpanel.
- *
+ * Initial logic was building the library that could be functional 
+ * without libpanel.
  */
+
+/**  Provides an Object-oriented interface to a ncurses window. This
+  *  class is generally not used directly but is used by HexPanel 
+  *  for interacting with the underlying panel window.
+ **/
 class HexWindow {
 
     friend class HexPanel;
