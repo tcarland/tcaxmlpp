@@ -5,6 +5,7 @@
 #include <list>
 
 #include "TnmsConsoleApp.h"
+#include "ClientSubscriber.h"
 
 #include "StringUtils.h"
 using namespace tcanetpp;
@@ -127,7 +128,8 @@ TnmsConsoleApp::run()
         cmd = "";
         ch  = this->poll();
 
-        while ( ! conin->isReady() ) {
+        while ( ! conin->isReady() ) 
+        {
             this->draw();
             ch = this->poll();
 
@@ -474,8 +476,7 @@ TnmsConsoleApp::processCmd ( const std::string & cmdstr )
     {
         _mainPanel->clear();
     }
-    else if ( cmd.compare("version") == 0 
-           || cmd.compare("about") == 0 )
+    else if ( cmd.compare("version") == 0 || cmd.compare("about") == 0 )
     {
         std::string  hexv = "libhexes version: ";
         hexv.append(LIBHEXES_VERSION);
@@ -592,6 +593,10 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
 
         if ( cIter != _clients.end() ) {
             cIter->second->subscribe(name);
+            TnmsTree * tree = _mtree->acquireTree();
+            if ( tree )
+                tree->subscribe(name, (TreeSubscriber*) _mtree->subscriber());
+            _mtree->releaseTree();
             _statPanel->addText("client subscribe " + name);
         }
     }
@@ -609,6 +614,11 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
         _statPanel->addText("client unsubscribe");
         if ( cIter != _clients.end() )
             cIter->second->unsubscribe(name);
+        TnmsTree * tree = _mtree->acquireTree();
+        if ( tree )
+            tree->subscribe(name, (TreeSubscriber*) _mtree->subscriber());
+        _mtree->releaseTree();
+
     }
     else if ( cmd.compare("browse") == 0 ) 
     {
@@ -675,6 +685,58 @@ TnmsConsoleApp::processClientCmd ( CommandList & cmdlist )
 
     return;
 }
+
+
+void
+TnmsConsoleApp::processUpdates ( bool silent )
+{
+    ClientSubscriber * sub = _mtree->subscriber();
+    std::ostringstream msg;
+    
+    if ( sub == NULL || ! sub->haveUpdates() )
+        return;
+
+    if ( ! sub->lock() )
+        return;
+
+    TreeUpdateSet & adds = sub->adds;
+    TreeUpdateSet::iterator  nIter;
+
+    for ( nIter = adds.begin(); nIter != adds.end(); )
+    {
+        TnmsTree::Node * node = *nIter;
+
+        if ( node->getValue().erase ) {
+            adds.erase(nIter++);
+            continue;
+        }
+
+        _statPanel->addText("  Add: " + node->getAbsoluteName());
+
+        adds.erase(nIter++);
+    }
+
+    TreeRemoveSet & removes = sub->removes;
+    TreeRemoveSet::iterator  rIter;
+    for ( rIter = removes.begin(); rIter != removes.end(); ) 
+    {
+        _statPanel->addText("  Remove: " + *rIter);
+        removes.erase(rIter++);
+    }
+
+    TreeUpdateSet & updates = sub->updates;
+    for ( nIter = updates.begin(); nIter != updates.end(); ) 
+    {
+        TnmsTree::Node * node = *nIter;
+        _statPanel->addText("  Update: " + node->getAbsoluteName());
+        updates.erase(nIter++);
+    }
+
+    sub->unlock();
+
+    return;
+}
+
 
 bool
 TnmsConsoleApp::createClient ( const std::string & name, const std::string & host, uint16_t port )

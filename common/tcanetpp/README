@@ -34,22 +34,23 @@ necessarily networking specific, but are included for convenience.
 heart provides an Object-Oriented Socket class that wraps the core 
 stdlib socket functions as well as Winsock2 providing a 
 cross-platform implementation. The goal of the overall library, is 
-to provide core network functionality based soley on berkely sockets,
-libc, and libstdc++, with no other external dependencies (with the 
+to provide core network functionality based completely on berkely 
+sockets, libc, and libstdc++, with no other dependencies (with the 
 exception of pthreads for the Thread-related classes).
 
 Additional classes that are provided include: 
-    containters, (patricia/radix tree, hashmap, a circular buffer),
-    an event library, 
-    an Object-Oriented interface for pthreads, 
-    CIDR functions for manipulating IP Addresses,
-    a thread-safe logging facility,
-    network device management.
+    Containers: patricia/radix tree, hashmap, circular buffer, 
+      synchronized queue.
+    An event management class for handling both IO and timers, 
+    An Object-Oriented interface for pthreads, 
+    IP functions for manipulating IPv4 and IPv6 Addresses,
+    A thread-safe logging facility,
+    Network Device objects.
 
 The library has few external dependencies outside of libc. The project can
 build individual libraries consisting of just the sub-components, or a 
 single, encompassing lib of 'libtcanetpp'. The pthreads library is used for 
-the Thread classes. 
+the only for the Thread related classes. 
 
 @section docs Documentation:
   The library is being documented in an API format via doxygen. 

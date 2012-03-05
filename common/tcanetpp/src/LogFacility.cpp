@@ -279,9 +279,12 @@ LogFacility::SetEnabled ( const std::string & logname, bool enabled )
 
 
 /**  There are two conditions under which this function can fail. If
- *   the underlying mutex fails or the @param logname as provided does
+ *   the underlying mutex fails or the logname as provided does
  *   not exist. For this reason, the actual boolean indicating whether
  *   an existing stream is 'enabled' is a pass-by-value parameter.
+ *   @param logname  is the name of the log stream in question.
+ *   @param enabled  is a boolean reference that is set to the 
+ *   current condition of the provided logstream.
  */
 bool
 LogFacility::GetEnabled ( const std::string & logname, bool & enabled )
@@ -329,6 +332,9 @@ LogFacility::GetDebug()
 
 // ----------------------------------------------------------------------
 
+/** Returns a boolean indicating the current status of the 
+  * LogFacility by ensuring that active log streams exist.
+ **/
 bool
 LogFacility::IsOpen()
 {
@@ -354,6 +360,10 @@ LogFacility::IsOpen()
     return open;
 }
 
+/**  Returns a boolean indicating the log stream status.
+  *  @param logname  is the logname key representing a
+  *  current logstream within the LogFacility.
+ **/
 bool
 LogFacility::IsOpen ( const std::string & logname ) 
 {

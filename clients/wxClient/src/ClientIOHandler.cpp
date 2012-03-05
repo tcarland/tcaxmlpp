@@ -68,9 +68,7 @@ ClientIOHandler::timeout ( const EventTimer & timer )
             }
         }
 
-        rd = client->receive(now);
-        
-        if ( rd < 0 ) {
+        if ( (rd = client->receive(now)) < 0 ) {
             LogFacility::LogMessage("ClientIOHandler error in receive() from client " 
                 + client->getHostStr());
             client->close();

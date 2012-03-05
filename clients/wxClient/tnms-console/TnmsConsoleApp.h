@@ -69,6 +69,7 @@ class TnmsConsoleApp : public hexes::HexApp {
 
     bool          processCmd       ( const std::string & cmd );
     void          processClientCmd ( CommandList & cmdlist );
+    void          processUpdates   ( bool silent = false );
 
     void          startClientProcessing();
     void          stopClientProcessing();

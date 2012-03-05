@@ -82,11 +82,12 @@ class TnmsWxTreeCtl : public wxControl {
     TnmsMetric    GetItemMetric   ( wxTreeItemId   & id );
 
 
-    int           Subscribe       ( const std::string & name, TreeSubscriber * sub );
-    int           Unsubscribe     ( const std::string & name, TreeSubscriber * sub );
+    int           Subscribe       ( const std::string & name, 
+                                    TreeSubscriber    * sub );
+    int           Unsubscribe     ( const std::string & name, 
+                                    TreeSubscriber    * sub );
 
     void          DoResize();
-
 
     void          Sync();
 

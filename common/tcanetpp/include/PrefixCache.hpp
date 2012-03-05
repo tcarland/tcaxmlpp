@@ -212,8 +212,11 @@ class PrefixCache {
     }
 
 
-    /**  Expires any entries that are older than the given @param now. 
-     *  The cache entries removed are provided in the @param  itemlist.
+    /**  Expires any entries that are older than the given time.
+     *   @param now  is the expire time to use when determining 
+     *   what elements should be considered stale.
+     *   @param itemlist  is a reference to a list of cache items
+     *   that is populated with all removed items considered stale.
      **/
     int  expireStale ( const time_t & now, ValueList & itemlist )
     {

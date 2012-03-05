@@ -318,9 +318,11 @@ pt_insert ( ptNode_t * head, cidr_t cidr, void * rock )
 }
 
 
-/**  Searches the trie for the @param cidr. Returns 1 if the
+/**  Searches the trie for the ip prefix. Returns 1 if the
   *  provided key has an exact match in the trie or 0 if it
   *  does not exist. (pt_match is usually a better usage choice)
+  *  @param head  is a pointer to patricia node to check.
+  *  @param cidr  is the IP Prefix to check.
  **/
 int
 pt_exists ( ptNode_t * head, cidr_t cidr )
@@ -336,8 +338,9 @@ pt_exists ( ptNode_t * head, cidr_t cidr )
 }
 
 
-/**  Function to provide an exact match to the provided key
-  *  @param cidr.
+/**  Function to provide an exact match to the provided key.
+  *  @param head  is the node from which to match. 
+  *  @param cidr  is the IP Prefix to match.
   *  Returns the associated void*, or NULL if there is no match.
  **/
 void*
@@ -375,8 +378,10 @@ pt_matchLongest ( ptNode_t * head, cidr_t cidr )
     return rock;
 }
 
-/**  Removes the provided @param cidr from the trie
-  *  returning the associated user data as void*.
+/**  Removes the provided IP Prefix from the trie
+  *  returning the associated user data as a void*.
+  *  @param head  is the root node from which to remove.
+  *  @param cidr  is the IP Prefix to remove.
  **/
 void*
 pt_remove ( ptNode_t * head, cidr_t cidr )

@@ -23,7 +23,7 @@ namespace tnmsClient {
 
 
 std::string
-TnmsWxClientMain::_Version = "0.3.41";
+TnmsWxClientMain::_Version = "0.4.1";
 
 // ----------------------------------------------------------------------
 
@@ -55,7 +55,7 @@ TnmsWxClientMain::OnInit()
 
     _iomgr->start();
 
-    _mframe = new ClientFrame(wxT("TnmsWxClientMain"), _mtree, _iomgr);
+    _mframe = new ClientFrame(wxT("TnmsWxClient"), _mtree, _iomgr);
     _mframe->Show(true);
 
     return true;
