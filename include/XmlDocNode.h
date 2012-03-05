@@ -6,7 +6,10 @@
 
 namespace tcaxmlpp {
 
-
+/** Specialized XmlNodeFactory for creating XmlNode
+  * objects that contain a reference to the parent
+  * XmlDocument.
+ **/
 class XmlDocNodeFactory : public XmlNodeFactory {
     XmlDocument * _doc;
   public:
@@ -22,6 +25,9 @@ class XmlDocNodeFactory : public XmlNodeFactory {
 };
 
 
+/** A sepecialized XmlNode object that holds a reference 
+  * to its parent document.
+ **/
 class XmlDocNode : public XmlNode {
 
   public:
