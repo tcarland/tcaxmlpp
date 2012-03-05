@@ -1,10 +1,8 @@
 /**
   * @file IpAddr.cpp
   *
-  * These are defined within this library to avoid having to
-  * use platform specific defines for various headers. This also
-  * means we avoid the issue of some fields varying slightly in
-  * convention across platforms.
+  * Class for holding a struct sockaddr for representing either
+  * an IPv4 or IPv6 address.
   *
   * Copyright (c) 2010 Timothy Charlton Arland
   * @author tca@charltontechnology.net
@@ -35,7 +33,6 @@
 
 #ifndef WIN32
 # include <arpa/inet.h>
-# include <netinet/ether.h>
 #endif
 
 #include "IpAddr.h"

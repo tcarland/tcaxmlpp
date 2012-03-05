@@ -38,8 +38,10 @@
 // ----------------------------------------------------------------------
 //   IPV6 Address
 
-/**  IPv6 address. We redefine this as two uint64's to
-  *  allow for object comparison.
+/**  An IPv6 address. We redefine 'in6addr_t' as two uint64's
+  *  adding comparators. It's also a convenient way of
+  *  handling, manipulating, or representing ipv6 addresses
+  *  in various network programming scenarios.
  **/
 typedef struct ipv6addr {
     uint64_t  a;
