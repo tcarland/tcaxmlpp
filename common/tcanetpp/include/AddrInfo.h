@@ -70,14 +70,14 @@ class AddrInfo {
 
     bool        isValid() const;
 
-
     addrinfo*   begin();
     addrinfo*   next();
     addrinfo*   get();
 
     sockaddr_t* getAddr();
     sockaddr_t* getSockAddr() { return this->getAddr(); }
-
+    size_t      getAddrLen() const;
+    size_t      getAddrlen() const { return this->getAddrLen(); }
 
     bool        setFlags    ( int flags );
     int         getFlags()  const;
@@ -91,8 +91,6 @@ class AddrInfo {
     int         getProtocol() const;
     bool        setProtocol ( int proto );
 
-    size_t      getAddrLen() const;
-    size_t      getAddrlen() const { return this->getAddrLen(); }
     char*       getCanonName() const;
 
     int         getError() const;
