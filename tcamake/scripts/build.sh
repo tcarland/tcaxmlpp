@@ -8,7 +8,7 @@
 #
 
 PNAME=${0##*\/}
-VERSION="1.14"
+VERSION="1.15"
 AUTHOR="tcarland@gmail.com"
 
 PARENT=".."
@@ -31,8 +31,8 @@ usage()
     echo ""
     echo "Usage: $PNAME [command] {option} "
     echo ""
-    echo "   [command] :  a standard 'make' target (eg. all, clean, etc) "
-    echo "                or one of the following commands."
+    echo "   [command] :  a standard 'make' target or one of the "
+    echo "                following commands."
     echo ""
     echo "       'dist' [path] <dryrun> "
     echo "                  : requires a valid path as {option}"
@@ -48,7 +48,7 @@ usage()
     echo " soft links. Any unrecognized commands are passed through"
     echo " to 'make'."
     echo " Additional project links can be defined by setting the "
-    echo " envvar TCAMAKE_BUILD_LINKS to the list of relative paths"
+    echo " var TCAMAKE_BUILD_LINKS to the list of relative paths"
     echo " from TOPDIR.";
     echo ""
     echo "  $PNAME: Version: $VERSION by $AUTHOR"
@@ -155,6 +155,11 @@ doDist()
         return 0
     fi
 
+    if [ -n "$dryrun" ]; then
+        echo "  Dry run enabled."
+        options="${options}${DRYRUN}"
+    fi
+
     dstpath="${target}/${pname}"
 
     if [ -e $dstpath ]; then
@@ -170,10 +175,6 @@ doDist()
                 return 0
                 ;;
         esac
-    fi
-
-    if [ -n "$dryrun" ]; then
-        options="${options}${DRYRUN}"
     fi
 
     echo "$RSYNC $options ./ $dstpath"
