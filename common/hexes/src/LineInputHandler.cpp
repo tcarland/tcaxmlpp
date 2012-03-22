@@ -149,6 +149,7 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
     return ch;
 }
 
+/** Returns the string value of the current input line */
 std::string&
 LineInputHandler::getLine()
 {
@@ -156,24 +157,35 @@ LineInputHandler::getLine()
 }
 
 bool
-LineInputHandler::isReady()
+LineInputHandler::isReady() const
 {
     return _isReady;
 }
 
+/** Returns the current value of the 'echo' boolean */
 bool
-LineInputHandler::echo()
+LineInputHandler::echo() const
 {
     return _echo;
 }
 
-
+/** Sets the echo boolean determining whether input characters
+  * should be echo'ed to the panel
+ **/
 void
 LineInputHandler::setEcho ( bool echo )
 {
     _echo = echo;
 }
 
+/**  Returns the current prompt or input prefix string */
+std::string
+LineInputHandler::prefix() const
+{
+    return _prompt;
+}
+
+/**  Sets an input prefix or prompt */
 void
 LineInputHandler::setPrefix ( const std::string & prefix )
 {
@@ -192,6 +204,15 @@ LineInputHandler::setParse ( bool parse )
     _parse = parse;
 }
 
+/** Returns the number of lines that can be stored as history */
+int
+LineInputHandler::history() const
+{
+    return _lines;
+}
+
+
+/** Set the number of lines to be stored as history */
 void
 LineInputHandler::keepHistory ( int lines )
 {

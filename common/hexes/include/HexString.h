@@ -32,18 +32,15 @@
 namespace hexes {
 
 
-/**  The HexString class simply wraps a stdc++ string object
-  *  associating some of our needed HexApp attributes such as
-  *  color and attributes from curses, alignment and wrap
-  *  functionality used by HexPanel and others.
+/**  The HexString class wraps a c++ string object
+  *  associating some HexApp attributes such as color
+  *  and attributes from curses, as well as alignment
+  *  and wrap behavior used by HexPanel.
   *
-  *  Originally, the string impl here was more complex with
-  *  an interface defined to allow for proper inheritance,
-  *  however this was deemed to heavy and the interface was
-  *  dropped. The functions marked virtual are a result of
-  *  this, but we saw no harm in allowing this to be
-  *  extended despite the limitations of not having a
-  *  proper interface so they remain virtual.
+  *  Originally, the string implementation was more complex
+  *  with an interface defined to allow for proper inheritance,
+  *  however this was deemed too heavy and the interface was
+  *  dropped.
  */
 class HexString {
 
@@ -93,7 +90,7 @@ class HexString {
     std::string&        str();
     const std::string&  str()    const;
 
-    /* some other obvious accessor's despite our attributes being public */
+    /* some obvious accessor's despite our attributes being public */
     int                 getColor()      const { return color; }
     int                 getAttributes() const { return attributes; }
     int                 getAlignment()  const { return alignment; }

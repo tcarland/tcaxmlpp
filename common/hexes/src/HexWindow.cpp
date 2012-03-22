@@ -234,10 +234,12 @@ HexWindow::resize ( int height, int width )
 {
     this->_height = height;
     this->_width  = width;
-    ::wresize(_win, height, width);
-    // TODO: this needs to be fixed.
+
     if ( this->curY() > height || this->curX() > width )
         this->move(height, width);
+
+    ::wresize(_win, height, width);
+
     return;
 }
 
@@ -362,8 +364,7 @@ HexWindow::wrap()
 
 //----------------------------------------------------------------//
 
-// TODO: this should assert that the window ptr is not 
-// NULL or throw
+
 WINDOW* 
 HexWindow::CreateWindow ( int height, int width, 
                           int starty, int startx )

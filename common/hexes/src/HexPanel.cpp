@@ -172,6 +172,9 @@ HexPanel::resize ( int height, int width )
 
 //----------------------------------------------------------------//
 
+/**@{
+  *  Sets or retrieves the Panel's Input/Output handlers.
+ **/
 void
 HexPanel::setOutputHandler ( HexOutputInterface * output )
 {
@@ -199,6 +202,7 @@ HexPanel::getInputHandler()
 {
     return _input;
 }
+/*@}*/
 
 //----------------------------------------------------------------//
 
@@ -415,7 +419,7 @@ HexPanel::setText ( const HexString & hexstr )
 }
 /*@}*/
 
-/**  Clears the internal TextList */
+/**@{  Clears the internal TextList */
 void
 HexPanel::clearText()
 {
@@ -427,6 +431,7 @@ HexPanel::clear()
 {
     return this->clearText();
 }
+/*@}*/
 
 //----------------------------------------------------------------//
 
@@ -486,7 +491,7 @@ HexPanel::setTextColor ( int colorIndex )
 }
 
 //----------------------------------------------------------------//
-//
+
 void
 HexPanel::setAttribute ( int attr )
 {
@@ -516,36 +521,65 @@ HexPanel::setDrawTitle ( bool title )
     this->_drawTitle = title;
 }
 
+/** Returns a boolean indicating whether the border will
+  * be drawn on a draw() event.
+ **/
 bool
 HexPanel::getDrawBorder() const
 {
     return this->_drawBorder;
 }
 
+/** Returns a boolean indicating whether the panel title will
+  * be displayed on a draw() event.
+ **/
 bool
 HexPanel::getDrawTitle() const
 {
     return this->_drawTitle;
 }
 
+/** Sets the visible (ie. cosmetic) window title.
+  * Note that this may differ from the name given to
+  * identify the window within the application.
+  * @param hexstr  is a HexString that will become the
+  * new window title.
+ **/
 void
 HexPanel::setWindowTitle ( HexString & hexstr )
 {
     _winTitle = hexstr;
 }
 
+/** Sets the visible (ie. cosmetic) window title.
+  * Note that this may differ from the name given to
+  * identify the window within the application.
+  * @param str  is the string that will become the new
+  *   window title.
+  * @param color  is the color value to be applied to
+  *   the string.
+  * @param attr   is the attribute value to be applied
+  *   to the string.
+ **/
 void
 HexPanel::setWindowTitle ( const std::string & str, int color, int attr )
 {
     _winTitle = HexString(str, color, attr);
 }
 
+/** Returns the current window title. Note that this may
+  * or may not differ from the 'panel name'.
+ **/
 HexString&
 HexPanel::getWindowTitle()
 {
     return this->_winTitle;
 }
 
+/** Returns the current panel name. Note that this is
+  * panel identifier not to be confused with the window
+  * title.
+ **/
 const std::string&
 HexPanel::getPanelName() const
 {
@@ -587,6 +621,9 @@ HexPanel::enableScroll ( bool scroll, int lines )
     return true;
 }
 
+/** Sets the max number of scrollback lines.
+  * @param lines is the number of scrollback lines to allow.
+ **/
 bool
 HexPanel::setMaxLines ( int lines )
 {
@@ -738,6 +775,7 @@ HexPanel::moveWindow ( int starty, int startx )
 
 //----------------------------------------------------------------//
 
+/*  Internal panel initialization. */
 void
 HexPanel::initPanel()
 {

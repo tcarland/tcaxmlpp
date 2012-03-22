@@ -49,14 +49,16 @@ TestHexApp::resize()
 
     res << "ht = " << ht << " wd = " << wd;
     statPanel->addText(res.str());
-    res.seekp(std::ios::beg);
 
+    res.seekp(std::ios::beg);
     res << "mainPanel: " << _mainheight << ", " << wd << ", 0, 0";
     statPanel->addText(res.str());
+
     res.seekp(std::ios::beg);
     res << "statPanel: " << _statheight << ", " << wd << ", " 
         << statstarty << ", 0";
     statPanel->addText(res.str());
+
     res.seekp(std::ios::beg);
     res << "conPanel: " << _conheight << ", " << wd << ", " 
         << constarty << ", 0";

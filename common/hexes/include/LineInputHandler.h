@@ -30,12 +30,13 @@
 
 #include "HexInputInterface.hpp"
 
+
 namespace hexes {
 
 
-#define HEXES_MAXINPUTLEN 2048
-#define HEXES_MAXBUFLEN   1024
-#define HEXES_DEFBUFLEN   25
+#define HEXES_MAXINPUTLEN  2048
+#define HEXES_MAXBUFLEN    1024
+#define HEXES_DEFBUFLEN    25
 
 
 /**  Specialized class for handling input as lines.
@@ -56,12 +57,18 @@ class LineInputHandler : public HexInputInterface {
 
     std::string& getLine();
 
-    bool         isReady();
-    bool         echo();
+    bool         isReady() const;
 
+    bool         echo() const;
     void         setEcho     ( bool echo );
+
+    int          history() const;
     void         keepHistory ( int lines );
+
+    std::string  prefix() const;
     void         setPrefix   ( const std::string & prompt );
+
+    bool         parse() const;
     void         setParse    ( bool parse );
 
   protected:

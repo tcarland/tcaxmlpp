@@ -66,6 +66,7 @@ class HexStringField : public HexString {
 
   protected:
 
+    char    _fld;
     size_t  _maxLen;
     size_t  _curLen;
     

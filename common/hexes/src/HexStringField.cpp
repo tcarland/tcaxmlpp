@@ -32,14 +32,18 @@ namespace hexes {
 
 
 HexStringField::HexStringField ( size_t max_len )
-    : _maxLen(max_len),
+    : _fld('_'),
+      _maxLen(max_len),
       _curLen(0)
 {
-    _str.append(max_len, '_');
+    _str.append(max_len, _fld);
 }
+
 
 HexStringField::HexStringField ( const HexString & str, size_t max_len )
-    : HexString(str)
+    : HexString(str),
+      _fld('_'),
+      _maxLen(max_len)
 {
     size_t   fill = 0;
     if ( str.length() > max_len )
@@ -47,11 +51,14 @@ HexStringField::HexStringField ( const HexString & str, size_t max_len )
     else
         fill = max_len - str.length();
 
-    _str.append(fill, '_');
+    _curLen = _str.length();
+    _str.append(fill, _fld);
 }
+
 
 HexStringField::HexStringField ( const std::string & str, size_t max_len )
-    : HexString(str)
+    : HexString(str),
+      _maxLen(max_len)
 {
     size_t   fill = 0;
     if ( str.length() > max_len )
@@ -59,8 +66,10 @@ HexStringField::HexStringField ( const std::string & str, size_t max_len )
     else
         fill = max_len - str.length();
 
-    _str.append(fill, '_');
+    _curLen = _str.length();
+    _str.append(fill, _fld);
 }
+
 
 HexStringField::~HexStringField()
 {}
@@ -107,6 +116,7 @@ HexStringField::append ( const std::string & str )
         s.erase(_maxLen - this->length());
 
     _str.replace(indx, _str.length(), s);
+    _curLen += s.length();
 
     return *this;
 }
@@ -127,6 +137,7 @@ HexStringField::append ( size_t count, char ch )
         cnt = count;
 
     _str.replace(indx, 1, cnt, ch);
+    _curLen += cnt;
 
     return *this;
 }
@@ -143,12 +154,15 @@ HexString&
 HexStringField::assign ( const std::string & str )
 {
     std::string s = str;
+    size_t   fill = 0;
 
     if ( s.length() > _maxLen )
         s.erase(_maxLen);
     else if ( s.length() < _maxLen )
-        s.append((_maxLen - s.length()), '_');
+        fill = _maxLen - s.length();
 
+    _curLen = s.length();
+    s.append(fill, _fld);
     _str.assign(s);
 
     return *this;
@@ -158,21 +172,32 @@ HexStringField::assign ( const std::string & str )
 HexString&
 HexStringField::assign ( size_t count, char ch )
 {
+    size_t fill = 0;
+    size_t cnt  = count;
+
+    if ( cnt > _maxLen )
+        cnt = _maxLen;
+
+    fill  = _maxLen - cnt;
+    _curLen = cnt;
     _str.assign(count, ch);
+    _str.append(fill, _fld);
+
     return *this;
 }
+
 
 HexString&
 HexStringField::erase ( size_type from, size_type to )
 {
-    _str.replace(from, (to-from), 1, '_');
+    _str.replace(from, (to-from), 1, _fld);
     return *this;
 }
 
 HexString::iterator
 HexStringField::erase ( HexString::iterator start, HexString::iterator end )
 {
-    _str.replace(start, end, 1, '_');
+    _str.replace(start, end, 1, _fld);
     start--;
     return start;
 }

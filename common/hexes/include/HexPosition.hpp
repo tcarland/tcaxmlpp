@@ -1,5 +1,5 @@
 /**
-  * @file HexPosition.h
+  * @file HexPosition.hpp
   *
   * Copyright (c) 2011 Timothy Charlton Arland
   * @author tca@charltontechnology.net

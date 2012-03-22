@@ -281,6 +281,9 @@ HexApp::createPanel ( const std::string & title,
   *  the HexApp instance will 'own' the panel, calling the 
   *  proper I/O events on draw() and poll(), and free the 
   *  object accordingly on destruction.
+  *  @param panel is a pointer to a HexPanel object.
+  *  Returns false if the object is not valid or a panel of
+  *  the same name already exists.
  **/
 bool
 HexApp::addPanel ( HexPanel * panel )
@@ -306,7 +309,10 @@ HexApp::addPanel ( HexPanel * panel )
 }
 
 /**  Returns the HexPanel pointer for the given title, or
-  *  NULL if no such title exists
+  *  NULL if no such title exists. If no title is given,
+  *  the current focused panel is returned.
+  *  @param title is the window title to be retrieved or
+  *  empty for the current top panel.
  **/
 HexPanel*
 HexApp::getPanel ( const std::string & title )
@@ -326,11 +332,12 @@ HexApp::getPanel ( const std::string & title )
 }
 
 
-/**  Removes the panel identified by @param title and 
-  *  returns the pointer to the corresponding HexPanel. 
-  *  HexApp will no longer track the panel object and it 
-  *  will not be destroyed by the HexApp instance. 
+/**  Removes a panel and returns a pointer to the
+  *  corresponding HexPanel object.  HexApp will no
+  *  longer track the panel object and it will not be
+  *  destroyed by the HexApp instance.
   *  Returns NULL if no such panel exists.
+  *  @param  title is the window title to be removed.
  **/
 HexPanel*
 HexApp::removePanel ( const std::string & title )
@@ -418,6 +425,10 @@ HexApp::destroyPanels()
 
 //----------------------------------------------------------------//
 
+/**@{
+  *  Returns the current window dimensions width/height as
+  *  requested.
+ **/
 int
 HexApp::getMaxWidth()
 {
@@ -441,9 +452,11 @@ HexApp::getMaxHeight()
 {
     return this->height();
 }
+/*@}*/
 
 /** Sets the cursor state to invisible, normal or very visible
   * for state equal to 0, 1, or 2 respectively.
+  * @param state  is the state value to be set.
  **/
 int
 HexApp::setCursor ( int state )
@@ -462,7 +475,10 @@ HexApp::hasColor() const
     return _hasColor;
 }
 
-/**  Adds a color pair to the existing color map */
+/**  Adds a color pair to the existing color map.
+  *  @param fgcolor  is the color value to set the foreground.
+  *  @param bgcolor  is the color value to set the background.
+ **/
 int
 HexApp::addColorPair ( int fgcolor, int bgcolor )
 {
@@ -499,6 +515,7 @@ HexApp::print ( int y, int x, const std::string & str, int color, int attr )
 //----------------------------------------------------------------//
 
 /** Sets the default colors for window text and borders */
+/*@{*/
 void
 HexApp::setTextColor ( int color )
 {
@@ -522,6 +539,7 @@ HexApp::setBorderActiveColor ( int color )
         return;
     _bfgColor = color;
 }
+/*@}*/
 
 //----------------------------------------------------------------//
 

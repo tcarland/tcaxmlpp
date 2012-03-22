@@ -26,10 +26,7 @@
 @section overview Overview:
 
   'libhexes' attempts to provide a simple, lightweight C++ object-oriented 
-approach to developing with the ncurses library.  This was created initially to 
-allow for easily adding curses support to existing c++ console applications. 
-This includes an already mature event manager from libtcanet, however libhexes 
-doesn't specifically depend on any given event management.
+approach to developing with the ncurses library. 
 
   While initially concerned with the running or wrapping of ncurses within a 
 C++ application, libhexes is very slim in that not many additional 'widgets' 

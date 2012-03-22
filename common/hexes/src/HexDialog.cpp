@@ -121,20 +121,20 @@ HexDialog::showDialog()
             {
                 if ( _echochar > 0 )   // echo masking char instead of input
                 {
-                    inl.str().assign("");
+                    inl.assign("");
                     if ( ln.length() > 0 ) {
-	                inl.str().assign("*");
-                        inl.str().append((ln.length() - 1), '*');
+	                inl.assign("*");
+                        inl.append(ln.length(), _echochar);
                     }
                 }
                 else
                 {
-	            inl.str().assign(ln);
+	            inl.assign(ln);
 	        }
 
                 // draw remaining field underscore
                 int cnt = _rescnt - ln.length();
-                inl.str().append(cnt, '_');
+                inl.append(cnt, '_');
             }
         }
 
