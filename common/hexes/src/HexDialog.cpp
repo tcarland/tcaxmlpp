@@ -25,6 +25,7 @@
 #define _HEXES_HEXDIALOG_CPP_
 
 #include "HexDialog.h"
+#include "HexStringField.h"
 
 
 namespace hexes {
@@ -99,9 +100,12 @@ HexDialog::showDialog()
         if ( echo )
         {
             TextList    & tlist = this->getTextList();
-            HexString   & inl   = tlist.back();
             std::string & ln    = cinput->getLine();
             int  indx           = ln.length() - 1;
+
+            HexStringField  inl(tlist.back(), _rescnt);
+
+            tlist.pop_back();
 
             if ( indx < 0 )
                 indx = 0;
@@ -120,22 +124,11 @@ HexDialog::showDialog()
             else if ( ch == 127 )      // if bksp/del
             {
                 if ( _echochar > 0 )   // echo masking char instead of input
-                {
-                    inl.assign("");
-                    if ( ln.length() > 0 ) {
-	                inl.assign("*");
-                        inl.append(ln.length(), _echochar);
-                    }
-                }
+                    inl.assign(ln.length(), _echochar);
                 else
-                {
 	            inl.assign(ln);
-	        }
-
-                // draw remaining field underscore
-                int cnt = _rescnt - ln.length();
-                inl.append(cnt, '_');
             }
+            tlist.push_back(inl);
         }
 
         this->redraw();
@@ -189,9 +182,9 @@ HexDialog::setMaxInput ( int count )
 }
 
 
-/**  Internal function to initiate the dialog dimensions and 
-  *  location if the dialog is dynamically sized.
- **/
+/*  Internal function to initiate the dialog dimensions and
+ *  location if the dialog is dynamically sized.
+ */
 void
 HexDialog::initDialog()
 {
@@ -201,11 +194,7 @@ HexDialog::initDialog()
     w = this->getLongestLine();
 
     if ( _echo ) {
-        HexString   hexstr;
-        std::string & line = hexstr.str();
-        if ( _rescnt == 0 )
-            _rescnt = w;
-        line.append(_rescnt, '_');
+        HexStringField   hexstr(_rescnt);
         hexstr.alignment = HEX_ALIGN_CENTER;
         this->addText(hexstr);
         h += 1;

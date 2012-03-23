@@ -62,6 +62,7 @@ class HexStringField : public HexString {
                                      size_type  to = std::string::npos );
 
     virtual size_t      length() const;
+    virtual size_t      max_length() const;
 
 
   protected:

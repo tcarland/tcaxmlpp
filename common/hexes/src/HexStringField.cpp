@@ -95,7 +95,13 @@ HexStringField::operator= ( const std::string & str )
 size_t
 HexStringField::length() const
 {
-    return _str.length();
+    return _curLen;
+}
+
+size_t
+HexStringField::max_length() const
+{
+    return _maxLen;
 }
 
 
@@ -193,6 +199,7 @@ HexStringField::erase ( size_type from, size_type to )
     _str.replace(from, (to-from), 1, _fld);
     return *this;
 }
+
 
 HexString::iterator
 HexStringField::erase ( HexString::iterator start, HexString::iterator end )

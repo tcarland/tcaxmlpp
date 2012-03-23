@@ -33,6 +33,7 @@
 namespace hexes {
 
 
+
 /** A derivitive of HexPanel, the HexDialog class represents 
   * a modal, popup dialog window.
  **/
