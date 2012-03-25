@@ -33,7 +33,6 @@ namespace hexes {
 
 
 
-
 /**  Provides an Object-oriented interface to a ncurses window. This
   *  class is generally not used directly but is used by HexPanel 
   *  for interacting with the underlying panel window.

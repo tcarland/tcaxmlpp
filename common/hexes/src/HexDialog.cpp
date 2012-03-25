@@ -114,6 +114,7 @@ HexDialog::showDialog()
             {
                 if ( _echochar > 0 )
                     ch = _echochar;
+
                 if ( ln.length() < (size_t) _rescnt ) {
                     inl.str().replace(indx, 1, 1, ch);
                 } else if ( echo ) {   // catch = length and stop echo
@@ -128,6 +129,7 @@ HexDialog::showDialog()
                 else
 	            inl.assign(ln);
             }
+
             tlist.push_back(inl);
         }
 
@@ -142,7 +144,7 @@ HexDialog::showDialog()
 }
 
 
-/** Returns any string results related to dialog input */
+/** Returns the string result (if applicable) related to dialog input */
 std::string
 HexDialog::getResult()
 {
@@ -152,7 +154,8 @@ HexDialog::getResult()
 /** By default, the dialog will exit on the first character
   * input. By setting this option to false, the dialog will
   * persist for string input until a carriage return '<CR>' 
-  * is encountered.
+  * is encountered, with the result stored in the dialog to
+  * be accessed via getResult().
  **/
 void
 HexDialog::setCharOnly ( bool chin )
@@ -216,6 +219,7 @@ HexDialog::initDialog()
     return;
 }
 
+/* Determines the longest width line of the dialog. */
 size_t
 HexDialog::getLongestLine()
 {

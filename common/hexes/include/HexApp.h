@@ -35,7 +35,7 @@ extern "C" {
 }
 
 // functions timeout, erase, clear, etc., are macros that cause
-// namespace collisions so we remap them. we also use the equivalent
+// namespace collisions so we re-map them. we also use the equivalent
 // wtimeout/werase functions instead. Consider adding box() and move()
 #ifdef timeout
 #define curs_timeout timeout
@@ -61,7 +61,7 @@ extern "C" {
 namespace hexes {
 
 
-#define LIBHEXES_VERSION  "v0.213"
+#define LIBHEXES_VERSION  "v0.214"
 
 class HexPanel;
 
@@ -71,12 +71,12 @@ typedef std::list<std::string>            StringList;
 
 
 
-/**  Provides the frontend to a 'Hexes' application. HexApp is
-  * the entry point to wrapping the ncurses/panel libraries for 
-  * the spawning and control of curses windows/panels. While the
-  * base HexWindow and HexPanel objects can be used directly,
-  * the HexApp class provides the means for managing the 
-  * respective app's panels.
+/** Provides the front-end to a 'Hexes' application. HexApp is
+  * the entry point to wrapping the ncurses/panel library for
+  * the spawning and control of curses based windows/panels. While
+  * the base HexWindow and HexPanel objects can be used directly,
+  * the HexApp class provides a means for managing the application's
+  * respective panels.
  **/
 class HexApp {
 

@@ -32,16 +32,11 @@
 namespace hexes {
 
 
-/**  The HexString class wraps a c++ string object
+/**  The HexString class wraps a c++ string object while
   *  associating some HexApp attributes such as color
-  *  and attributes from curses, as well as alignment
+  *  and style attributes from curses, as well as alignment
   *  and wrap behavior used by HexPanel.
-  *
-  *  Originally, the string implementation was more complex
-  *  with an interface defined to allow for proper inheritance,
-  *  however this was deemed too heavy and the interface was
-  *  dropped.
- */
+ **/
 class HexString {
 
   public:
@@ -105,6 +100,9 @@ class HexString {
                                         const std::string & match,
                                         size_t from );
 
+    /**  Static split function for splitting a string into many parts
+      *  based on the provided delimiting character.
+     **/
     template< typename OutputIterator_ >
     static inline void  Split         ( const std::string  & str,
                                         const char           delimiter,
@@ -120,6 +118,7 @@ class HexString {
         return;
     }
 
+    /**  Converts the provided abstract type to a string */
     template<typename T>
     static inline std::string ToString ( const T & a )
     {
@@ -128,6 +127,9 @@ class HexString {
         return stream.str();
     }
 
+    /** Converts a string to the requested abstract type.
+      * ie.  int a = HexString::FromString<int>(mystr);
+     **/
     template<typename T>
     static inline  T    FromString     ( const std::string & str )
     {

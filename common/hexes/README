@@ -28,9 +28,9 @@
   'libhexes' attempts to provide a simple, lightweight C++ object-oriented 
 approach to developing with the ncurses library. 
 
-  While initially concerned with the running or wrapping of ncurses within a 
+  While initially concerned with the wrapping of ncurses within a 
 C++ application, libhexes is very slim in that not many additional 'widgets' 
-have been created at this time.
+have been created.
 
 
 @section docs Documentation:
