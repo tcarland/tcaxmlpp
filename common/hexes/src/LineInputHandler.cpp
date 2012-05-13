@@ -52,11 +52,14 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
     if ( ! _parse )
         return ch;
 
-    if ( _isReady ) {
+    if ( _isReady )
+    {
         if ( ! _line.empty() ) {
             _history.push_back(_line);
+
             while ( _history.size() > _lines )
                 _history.erase(_history.begin());
+
             _line.clear();
         }
         _isReady = false;
@@ -80,19 +83,19 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
         if ( _history.empty() || _hindx == 0 )
             return ch;
 
-        if ( _hindx == _history.size() && ! _line.empty() ) {
+        if ( _hindx == _history.size() && ! _line.empty() )
             _history.push_back(_line);
-        }
 
         _hindx--;
 
         TextList  & txtlist = p->getTextList();
         HexString & curline = txtlist.back();
-        if ( ! _prompt.empty() ) {
+
+        if ( ! _prompt.empty() )
             curline.str().assign(_prompt);
-        } else {
+        else
             curline.str() = "";
-        }
+
         curline.str().append(_history.at(_hindx));
         _line.assign(_history.at(_hindx));
     }
@@ -102,11 +105,11 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
 
         TextList  & txtlist = p->getTextList();
         HexString & curline = txtlist.back();
-        if ( ! _prompt.empty() ) {
+
+        if ( ! _prompt.empty() )
             curline.str().assign(_prompt);
-        } else {
+        else
             curline.str() = "";
-        }
 
         if ( _hindx < _history.size() ) {
             curline.append(_history.at(_hindx));
@@ -132,7 +135,9 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
     {
         if ( _line.length() >= (size_t) _maxlen )
             return ch;
-        if ( _echo ) {
+
+        if ( _echo )
+        {
             TextList & txtlist = p->getTextList();
             if ( txtlist.size() == 0 ) {
                 std::string  f = "";
@@ -143,6 +148,7 @@ LineInputHandler::handleInput ( HexPanel * p, int ch )
 	        curline.append(1, ch);
             }
         }
+
         _line.append(1, ch);
     }
 
