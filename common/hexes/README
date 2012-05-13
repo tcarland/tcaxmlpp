@@ -1,6 +1,6 @@
-/** $Id: README,v 1.0 2011/05/04 18:56:00 tca Exp $
+/** $Id: README,v 1.0 2011/05/04 18:56:00 tca $
   *
-  * Copyright (c) 2011 Timothy Charlton Arland 
+  * Copyright (c) 2011,2012 Timothy Charlton Arland 
   * @author tca@charltontechnology.net
   * 
   * @section LICENSE
@@ -25,17 +25,18 @@
 
 @section overview Overview:
 
-  'libhexes' attempts to provide a simple, lightweight C++ object-oriented 
-approach to developing with the ncurses library. 
+  'libhexes' attempts to provide a object-oriented (C++) approach to 
+developing with the ncurses library. 
 
-  While initially concerned with the wrapping of ncurses within a 
-C++ application, libhexes is very slim in that not many additional 'widgets' 
-have been created.
+  While initially, development was concerned with wrapping the ncurses 
+and libpanel API within C++ objects for direct use in a C++ application, 
+libhexes is still quite slim with very few 'widgets' having yet been 
+created.
 
 
 @section docs Documentation:
-  The library API is available in html format generated via 'doxygen' (required 
-  for this operation).
+  The library API is available in html format generated via 'doxygen' 
+(required for this operation).
 
 Simply run 'make documentation' to generate the html docs.
 
@@ -43,8 +44,8 @@ Simply run 'make documentation' to generate the html docs.
 @section build Build:
 
  Unix/Linux:
-   Uses a custom build environment I call 'tcamake' to control dependencies. 
-Running 'make' should suffice on supported platforms.
+   Libhexes uses a custom build environment called 'tcamake' to control 
+dependencies.  Running 'make' should suffice on supported platforms.
 
 */
 

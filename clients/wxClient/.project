@@ -3,6 +3,7 @@
 	<name>wxClient</name>
 	<comment></comment>
 	<projects>
+		<project>libhexes</project>
 		<project>TnmsApi</project>
 	</projects>
 	<buildSpec>

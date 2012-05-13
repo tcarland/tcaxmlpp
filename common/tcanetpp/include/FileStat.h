@@ -52,7 +52,7 @@ class FileStat {
 
   public:
 
-    FileStat ( const std::string & filename) 
+    FileStat ( const std::string & filename ) 
         throw ( Exception );
 
     virtual ~FileStat();
