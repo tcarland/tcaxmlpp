@@ -92,7 +92,7 @@ class XmlDocument {
   public:
 
     XmlDocument();
-    XmlDocument    ( const char * xmlblob, size_t len );
+    XmlDocument    ( const char * xmlfrag, size_t len );
     XmlDocument    ( const std::string & filename, bool create = false );
 
     virtual  ~XmlDocument();

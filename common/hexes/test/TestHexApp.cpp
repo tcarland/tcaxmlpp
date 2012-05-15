@@ -1,6 +1,7 @@
 #define _HEXES_TESTHEXAPP_CPP_
 
 #include <unistd.h>
+#include <iostream>
 #include <sstream>
 #include <iomanip>
 

@@ -59,7 +59,7 @@ TnmsConfigHandler::parse()
     if ( _isXML )
         result = doc.readMemory(_xmlcfg.c_str(), _xmlcfg.length());
     else
-        result = doc.initDocument(_xmlcfg);
+        result = doc.initDocument(_xmlcfg, false);
 
     if ( ! result ) {
         _errstr = doc.getErrorStr();

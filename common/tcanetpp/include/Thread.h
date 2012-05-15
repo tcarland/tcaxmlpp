@@ -79,13 +79,12 @@ class Thread {
 
 
     virtual void        finished();
+    virtual void        setAlarm();
+
+    bool                isRunning();
 
     void                threadName ( const std::string & name );
     const std::string&  threadName() const;
-
-
-    bool                isRunning();
-    virtual void        setAlarm();
 
 
   protected:

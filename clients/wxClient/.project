@@ -5,6 +5,7 @@
 	<projects>
 		<project>libhexes</project>
 		<project>TnmsApi</project>
+		<project>tnmsCore</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

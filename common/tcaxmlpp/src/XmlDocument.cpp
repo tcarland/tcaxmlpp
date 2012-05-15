@@ -38,7 +38,7 @@ bool
 XmlDocument::_Libinit = false;
 
 const char*
-XmlDocument::_Version = "1.3.7";
+XmlDocument::_Version = "1.3.8";
 
 //-------------------------------------------------------------//
 
@@ -64,7 +64,7 @@ XmlDocument::XmlDocument()
 }
 
 
-XmlDocument::XmlDocument ( const char * xml_fragment, size_t len )
+XmlDocument::XmlDocument ( const char * xmlfrag, size_t len )
     : _doc(NULL),
       _root(NULL),
       _nodeFactory(new DefNodeFactory()),
@@ -73,7 +73,7 @@ XmlDocument::XmlDocument ( const char * xml_fragment, size_t len )
     if ( ! XmlDocument::_Libinit )
         XmlDocument::LibInit();
 
-    this->readMemory(xml_fragment, len);
+    this->readMemory(xmlfrag, len);
 }
 
 
