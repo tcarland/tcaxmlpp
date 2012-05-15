@@ -27,6 +27,10 @@
 #ifndef _TCAXMLPLUS_XMLNODE_H_
 #define _TCAXMLPLUS_XMLNODE_H_
 
+#include <list>
+#include <map>
+#include <string>
+
 #include "XmlDocument.h"
 
 
