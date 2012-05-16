@@ -2,25 +2,26 @@
 #
 #   Build script for projects that may wish to be extracted or 
 #   distributed individually from the overall workspace. 
-#   Primarily meant for 'build.sh dist' for creating a distribution
-#   copy without source control metadata and including the custom
-#   build/make environment
+#   Primarily created for making project distributions via the 'build.sh dist' command.
 #
 
 PNAME=${0##*\/}
-VERSION="1.15"
+VERSION="1.16"
 AUTHOR="tcarland@gmail.com"
 
 PARENT=".."
-TOPDIR="."
 
 LINKLIST="tcamake"
-BUILDDEF="build_defs"
+TMDEPFILE="tcamake_depends"
 DODIST=0
 RSYNC="rsync"
 OPTIONS="-avL --delete --exclude=.cvs --exclude=.svn --exclude=.hg "
 DRYRUN="--dry-run"
 retval=0
+
+if [ -z "$TOPDIR" ]; then
+    TOPDIR="."
+fi
 
 if [ -n "$TCAMAKE_BUILD_LINKS" ]; then
     LINKLIST="$TCAMAKE_BUILD_LINKS $LINKLIST"
@@ -67,7 +68,7 @@ findTopDirectory()
     while [ $retval -eq 0 ]
     do
         curdir="${PWD}"
-        result=`find . -name "$BUILDDEF"`
+        result=`find . -name "$TMDEPFILE"`
         if [ -n "$result" ]; then
             retval=1
         fi
@@ -90,7 +91,7 @@ findTopDirectory()
         return 0
     fi
 
-    echo "  Project root set to '$TOPDIR'"
+    echo "  <tcamake> project root set to '$TOPDIR'"
 
     return 1
 }
@@ -103,6 +104,7 @@ clearLinks()
             unlink $lf
         fi
     done
+
     return 1
 }
 
@@ -111,7 +113,7 @@ makeLinks()
 {
     local dryrun=$1
 
-    echo "  Making links: $LINKLIST "
+    echo "  <tcamake> generating links: $LINKLIST "
     
     for lf in $LINKLIST; do
         if [ -n "$dryrun" ]; then
@@ -120,6 +122,7 @@ makeLinks()
             ln -s "$TOPDIR/$lf"
         fi
     done
+
     return 1
 }
 
@@ -228,18 +231,19 @@ case "$1" in
 esac
 
 echo ""
-echo "  Building in $PWD..."
+echo "  $PNAME running in '$PWD'"
 
 findTopDirectory
 retval=$?
 
 if [ $retval -eq 0 ]; then
-    echo "Failed to find project root directory"
+    echo "$PNAME Failed to find the 'tcamake' workspace root directory"
     exit 1
 fi
 
 
 clearLinks
+
 makeLinks
 
 if [ $DODIST -eq 0 ]; then

@@ -41,6 +41,6 @@
 #
 
 include $(TOPDIR)/tcamake/environment
-include $(TOPDIR)/tcamake/depends
+include $(TOPDIR)/tcamake/tcamake_depends
 
 

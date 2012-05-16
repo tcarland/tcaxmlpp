@@ -1,0 +1,61 @@
+# tcamake_depends
+#
+#  Global defines and compile options
+#
+
+ifndef TCAMAKE_DEPENDS
+TCAMAKE_DEPENDS=1
+endif
+
+#-------------------------------------------------------------------------
+
+RM = rm -rf
+CP = cp
+MKDIR = mkdir -p
+RSYNC = rsync -av
+RDIST = rsync -avL --delete --exclude=.cvs --exclude=.svn --exclude=.hg
+
+CXX = g++
+CC = gcc
+
+ifndef OPT_FLAGS
+OPT_FLAGS = -O2
+endif
+
+ifndef CPPFLAGS
+CPPFLAGS = -Wall ${INCLUDES} ${MACROS}
+endif
+
+ifndef CPPFLAGS_THR
+CPPFLAGS_THR	= -DUSE_PTHREADS
+endif
+
+ifndef CFLAGS
+CFLAGS = $(OPT_FLAGS)
+else
+CFLAGS += $(OPT_FLAGS)
+endif
+
+ifdef L_OBJS
+ALL_OBJS += $(L_OBJS)
+ifdef L_TARGET
+LIBS += $(L_TARGET)
+endif
+endif
+
+ifdef T_TARGETS
+ALL_OBJS += $(T_TARGETS:=.o)
+ALL_BINS += $(T_TARGETS)
+endif
+
+ifdef TXX_TARGETS
+ALL_OBJS += $(TXX_TARGETS:=.o)
+ALL_BINS += $(TXX_TARGETS)
+endif
+
+#-------------------------------------------------------------------------
+# Do not edit below this line
+ifndef TCAMAKE_PROJECT_DEPENDS
+include $(TOPDIR)/tcamake/depends
+endif
+
