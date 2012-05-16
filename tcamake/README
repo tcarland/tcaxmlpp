@@ -1,6 +1,6 @@
 tcamake
 
-Auther: tcarland@gmail.com
+Author:  tcarland@gmail.com
 Version: 20081030
 
 Overview:
@@ -23,7 +23,7 @@ for very large projects.
 the dependencies of projects within the build system. It does not determine 
 compiler capabilities and library function checks like the Gnu autotools. 
 If needed, individual (sub)projects could still choose to incorporate 
-GNU autoconf. 
+GNU autoconf if needed. 
 
 
 
@@ -52,62 +52,67 @@ Makefile installed by using the init script 'tcamake_init_project.sh'.
 
 A given build environment could potentially have more than one top-level 
 directory. Each top-level is essentially a Makefile that includes 
-'./tcamake/builddefs'. This simply allows some global project settings
+'./tcamake/build_defs'. This simply allows some global project settings
 that sublevel Makefiles might need. 
 
-The define 'TCAMAKE_PROJECT' should be set in the users environment when 
-working with the full repository. This can be used by sub-level 
-Makefiles to determine the context from which it is called. If an individual
-project is then exported, the Makefile would default to ./tcamake instead of
-TOPDIR.  This might sound confusing and can be pretty much ignored anyway.
+The define 'TCAMAKE_PROJECT' reflects that a tcamake build repository
+exists which can be used by sub-level Makefiles that wish to distinguish 
+between build environments versus full distribution. The goal of this 
+feature is to allow a standalone distribution expect to find common
+libraries that might exist elsewhere in a build environment to be 
+found in './common/' instead. 
 
 
-The Files:
+The Makefile hierarchy includes the following files:
 
-  depends
-         Defines all of our project dependencies. Generally, this is 
-        the only file that ever needs updating. Since the dependencies 
-        generate our INCLUDE and LIB variables, order is important. 
-        Generally, the order should sort from projects with the most 
-        dependencies to projects with the least dependencies.
+  'build_defs'
+      This is included once by the top-level or 'root' build Makefile.
 
-  builddefs 
-         This is included once by the top-level or root Makefile.
+'project_defs'
+    This is the Makefile 'include' entry-point included by the sub-level, 
+    project Makefiles. It pulls in both the dependencies and platform 
+    environment via 'depends' and 'environment' respectively. 
 
-  projectdefs
-         This is included by the sub-level or project Makefiles 
-        and pulls in the needed environment dependencies.
+'depends'
+    The primary file for defining all of our project dependencies. 
+    This is the only file that would need updating. Since these deps 
+    generate our INCLUDE and LIB variables, order can be important. 
+    Ideally, the order should sort projects with the most 
+    dependencies before projects with the least dependencies.
 
-  autodepend
-         Defines our dependency and build commands, included by depends.
-        This file should NOT need to be modified.
+'autodepend'
+    The internal file for defining the build commands and should
+    automatically be the last thing included by 'depends'.
+    This file should NOT need to be modified.
 
-  environment
-         This is included at each level by the projectdefs to initiate the 
-        desired compiler flags and other platform specific macros.
-        This file should NOT need to be modified other than to add new 
-        dependencies or platform profiles.
+'environment'
+    This is included automatically for each project by 'project_defs' 
+    to initiate the platform's desired compiler flags and other 
+    platform specific macros.
+    This file should NOT need to be modified other than to add new 
+    dependencies or platform environment profiles.
 
 
 Scripts:
 
-    A few scripts are provided for convenience, but are in reality a bit silly.
+  A few scripts exist here that are, in reality, a bit silly. They
+make use of the Makefile templates found in the 'tcamake/template' 
+directory which do serve as good examples.
 
-    build.sh:  Some projects within the workspace may wish to be 
-      exported or built independently of the workspace. This script
-      will assist in creating a distribution of a subproject that 
-      includes 'tcamake', or simply allows for building the project
-      directly where TOPDIR may not be accurate. Note that the script
-      does not currently consider other project references when exporting 
-      a distribution and is primarily intended for standalone projects
-      within the workspace
+'build.sh'
+    Some projects within the workspace may wish to be exported or built 
+    independently of the workspace. This script will assist in creating a 
+    distribution of a sub-project that links needed dependencies such
+    'tcamake' itself or common libs. Alternatively, it simply allows 
+    for building a project while overriding TOPDIR.
 
-    tcamake_init_project.sh:  Used to inititiate a new project within the 
-      workspace, providing a base Makefile template.
+'tcamake_init_project.sh'
+    Used to inititiate a new project within the workspace, providing 
+    a base Makefile template.
 
-    tcamake_init_workspace.sh: Used to create a new workspace using the 
-      workspace template from the tcamake project from which the 
-      script was called.
+'tcamake_init_workspace.sh'
+    Used to create a new workspace using the workspace template from 
+    the tcamake project from which the script was called.
 
 
 

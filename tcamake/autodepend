@@ -15,9 +15,10 @@ DEPFILES = $(ALL_OBJS:.o=.d) $(ALL_BINS:=.bd)
 -include $(DEPFILES) *.d *.bd /dev/null
 
 #
+#
 # How to make .o's from src files.
 #
-# SUNPRO_DEPENDENCIES is an undocumented environment var consulted
+# SUNPRO_DEPENDENCIES is an undocumented environment variable consulted
 # by GNU and Sun compilers to generate a file containing file dependencies.
 # It is of the form "OUTPUTFILE DEPFILE(S)" where OUTPUTFILE is where to
 # write the deps, and DEPFILE(S) is what to put before the colon.
@@ -99,12 +100,14 @@ makebindep-cmd = \
 	done; \
 	echo $@: $$DEPS | sed 's,/usr/lib/[^ ]* ,,g;s,/usr/local/lib/[^ ]* ,,g;s,/usr/X11R6/lib/[^ ]* ,,g' > $@.bd
 
+
+#
+#   primary build commands
 make-cbin-rule = $(CC) -o $@ $(CFLAGS) $^ $(LFLAGS) $(LIBS)
-
 make-cxxbin-rule = $(CXX) -o $@ $(CFLAGS) $^ $(LFLAGS) $(LIBS)
-
 make-so-rule = $(CC) -shared -o $@ $(CCSHARED) $(CFLAGS) $^ $(LFLAGS) $(LIBS); $(makebindep-cmd)
 make-lib-rule = ld -r -o $@ $^; $(makebindep-cmd)
+
 
 ifdef L_TARGET
 $(L_TARGET): $(L_OBJS)

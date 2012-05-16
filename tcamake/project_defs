@@ -1,7 +1,10 @@
-# tcamake/builddefs - includes the dependency and platform macros.
-# This should be included by sub-level Makefiles.
+# tcamake/project_defs
+#   A complete 'Makefile' build environment for including needed
+#   platform dependencies.
 #
-# $(TOPDIR) must be set by source Makefile
+# This file should be included by a project or any sub-level Makefiles.
+#
+# $(TOPDIR) must be set by the source Makefile.
 #
 # Definitions provided by Makefile before including this file.
 #
@@ -39,4 +42,5 @@
 
 include $(TOPDIR)/tcamake/environment
 include $(TOPDIR)/tcamake/depends
+
 

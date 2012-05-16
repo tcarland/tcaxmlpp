@@ -50,7 +50,7 @@ ALL_BINS += $(TXX_TARGETS)
 endif
 
 #-------------------------------------------------------------------------
-#   Define requirements below
+#   Defined requirements below
 #-------------------------------------------------------------------------
 
 ifdef NEED_LIBPCAP
@@ -152,7 +152,9 @@ LFLAGS   += -L$(HEXESHOME)/lib
 LIBS     += -lhexes
 endif
 
+#-------------------------------------------------------------------------
 # Tnms libs
+#-------------------------------------------------------------------------
 
 ifdef NEED_TNMSAPI
 TNMSAPI  = $(TOPDIR)/TnmsApi
@@ -176,7 +178,9 @@ LFLAGS     += -L$(TNMSSESSION)/lib
 LIBS       += -ltnmsSession
 endif
 
+#-------------------------------------------------------------------------
 # externals
+#-------------------------------------------------------------------------
 
 ifdef NEED_GSOAP
 GSOAP_DIR = $(TOPDIR)/common/ext/gsoap-2.7.14/gsoap
