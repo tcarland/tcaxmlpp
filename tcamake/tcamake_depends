@@ -1,6 +1,8 @@
-# tcamake_depends
 #
-#  Global defines and compile options
+#  tcamake_depends
+#
+#  Global compile options and defines. Pulls in project 
+#  defines via 'depends'
 #
 
 ifndef TCAMAKE_DEPENDS
