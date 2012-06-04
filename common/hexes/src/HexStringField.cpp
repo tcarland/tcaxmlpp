@@ -30,6 +30,9 @@
 namespace hexes {
 
 
+//TODO: need display field length vs. max accepted.
+//      scrolling within field
+
 
 HexStringField::HexStringField ( size_t max_len )
     : _fld('_'),

@@ -1,4 +1,4 @@
-/** $Id: README,v 1.0 2011/05/04 18:56:00 tca $
+/** $Id: hexes README 1.0 2011/05/04 18:56:00 tca $
   *
   * Copyright (c) 2011,2012 Timothy Charlton Arland 
   * @author tca@charltontechnology.net
@@ -25,13 +25,22 @@
 
 @section overview Overview:
 
-  'libhexes' attempts to provide a object-oriented (C++) approach to 
-developing with the ncurses library. 
+  'libhexes' is a C++ library that attempts to provide an object-oriented 
+approach to developing with the ncurses C library. 
 
-  While initially, development was concerned with wrapping the ncurses 
-and libpanel API within C++ objects for direct use in a C++ application, 
-libhexes is still quite slim with very few 'widgets' having yet been 
-created.
+  The initial library development was concerned primarily with wrapping 
+the ncurses and panel API within convenient C++ objects for simplified 
+use in cplusplus applications and very few 'widgets' having been created.
+The framework is focusing on application interaction and specialization 
+to simplify working with the terminal I/O where apps can easily design 
+their own widgets. 
+
+  At this time, there still needs to be much work put into underlying 
+terminal I/O features and widgets for items like dropdown menus, radio boxes, 
+etc.
+
+   Hexes or 'libhexes' does rely and require both libncurses and the 
+libpanel curses extension. 
 
 
 @section docs Documentation:

@@ -39,9 +39,9 @@ namespace hexes {
 #define HEXES_DEFBUFLEN    25
 
 
-/**  Specialized class for handling input as lines.
+/**  A specialized class for handling input as lines.
   *  As input is provided, it is appended to a string until
-  *  a carriage return is detected, at  which point the
+  *  a carriage return is detected, at which point the
   *  input will be considered ready for consumption.
  **/
 class LineInputHandler : public HexInputInterface {

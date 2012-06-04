@@ -30,8 +30,8 @@
 namespace hexes {
 
 
-/**  A custom HexString class that creates an entry field for a
-  *  string and displays '_' as the field for the given length.
+/**  A specialized HexString class that creates an input field for 
+  *  a string and displays '_' as the field for the given length.
   *
   *  TODO:  Allow field to have title like USER: ______
   *         support scrolling within the field for longer strings.

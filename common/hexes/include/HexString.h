@@ -32,10 +32,9 @@
 namespace hexes {
 
 
-/**  The HexString class wraps a c++ string object while
-  *  associating some HexApp attributes such as color
-  *  and style attributes from curses, as well as alignment
-  *  and wrap behavior used by HexPanel.
+/**  The HexString class wraps the STL string object while
+  *  associating some HexApp attributes such as color, style,
+  *  alignment, and wrap behavior.
  **/
 class HexString {
 

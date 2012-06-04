@@ -29,10 +29,11 @@ namespace hexes {
 
 class HexPanel;
 
-/**  Triggered by a draw event from HexApp, the derived 
+/**  Defines the hexes interface for handling output from a curses  
+  *  window. Triggered by a draw event from HexApp, the derived 
   *  method is generally called for each HexPanel of the 
-  *  application to allow each panel to control its own
-  *  output.
+  *  application to allow each panel and underlying window to 
+  *  control its own output behavior.
  **/
 class HexOutputInterface {
   public:

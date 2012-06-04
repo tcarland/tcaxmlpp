@@ -33,10 +33,10 @@ namespace hexes {
 class HexPanel;
 
 
-/**  The LineOutputHandler class provides an output handler
-  *  for handling output considerate of newlines and line
-  *  length given the parameter width for ensuring proper
-  *  line wrap.
+/**  A specialized class for handling output as lines. 
+  *  Basically, our output is considerate of newlines and line
+  *  lengths using a panel's given 'width' parameter for 
+  *  ensuring proper line wrap.
  */
 class LineOutputHandler : public HexOutputInterface {
   public:

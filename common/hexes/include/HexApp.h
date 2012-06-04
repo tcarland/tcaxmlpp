@@ -34,9 +34,10 @@ extern "C" {
 #include <ncurses.h>
 }
 
-// functions timeout, erase, clear, etc., are macros that cause
-// namespace collisions so we re-map them. we also use the equivalent
-// wtimeout/werase functions instead. Consider adding box() and move()
+// functions timeout, erase, clear, etc., are ncurse macros that cause
+// annoying namespace collisions so we re-map them. we also use the 
+// equivalent wtimeout/werase functions instead. 
+// TODO: Consider adding box() and move()
 #ifdef timeout
 #define curs_timeout timeout
 #undef timeout
@@ -61,7 +62,7 @@ extern "C" {
 namespace hexes {
 
 
-#define LIBHEXES_VERSION  "v0.214"
+#define LIBHEXES_VERSION  "v0.215"
 
 class HexPanel;
 
@@ -71,11 +72,11 @@ typedef std::list<std::string>            StringList;
 
 
 
-/** Provides the front-end to a 'Hexes' application. HexApp is
+/** Provides the primary front-end to a 'Hexes' application. HexApp is
   * the entry point to wrapping the ncurses/panel library for
   * the spawning and control of curses based windows/panels. While
   * the base HexWindow and HexPanel objects can be used directly,
-  * the HexApp class provides a means for managing the application's
+  * the HexApp class provides a means for managing all of the application's
   * respective panels.
  **/
 class HexApp {
