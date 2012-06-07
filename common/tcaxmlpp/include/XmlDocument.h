@@ -55,7 +55,7 @@ class XmlAttribute;
 
 
 #define DEFAULT_ROOT_TAGNAME "tcaxmlpp"
-#define DEFAULT_ROOT_VERSION "2.1"
+#define DEFAULT_ROOT_VERSION "1.1"
 #define MAX_ERR_LINE 256
 
 

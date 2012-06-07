@@ -38,7 +38,7 @@ include $(TOPDIR)/tcamake/project_defs
 lib: arlib
 
 arlib: lib/libtcaxmlpp.a
-solib: libtcaxmlpp.so.1.0.1
+solib: libtcaxmlpp.so.1.0.3
 
 lib/libtcaxmlpp.a: $(OBJS)
 	@echo $(OBJS)
@@ -46,7 +46,7 @@ lib/libtcaxmlpp.a: $(OBJS)
 	ld -r -o $@ $(OBJS) $(LFLAGS)
 	@echo
 
-libtcaxmlpp.so.1.0.1: $(OBJS)
+libtcaxmlpp.so.1.0.3: $(OBJS)
 	$(make-so-rule)
 	$(RM) lib/$@ lib/libtcaxmlpp.so
 	( mkdir -p lib; mv $@ lib/; \

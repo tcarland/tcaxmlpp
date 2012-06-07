@@ -111,7 +111,7 @@ XmlNode::recursiveWalk()
     xmlNodePtr  chld;
 
     for ( chld = _node->children; chld; chld = chld->next )
-        this->addNode(new XmlNode(this, chld));
+        this->addNode(new XmlNode(this, chld, true));
 
     return;
 }
@@ -185,6 +185,9 @@ XmlNode::getErrorStr()
     return _errStr;
 }
 
+/** Finds the first node named 'nodename' and with the given
+  * attribute/value pair if provided.
+ **/
 XmlNode*
 XmlNode::findNode ( const std::string & nodename,
 		    const std::string & attrkey, const std::string & attrval )
@@ -201,6 +204,32 @@ XmlNode::findNode ( const std::string & nodename,
     node = *nIter;
 
     return node;
+}
+
+/** Finds returns a list of all nodes with the given name and optionally
+  * just nodes with the given attribute key.
+ **/
+XmlNodeList
+XmlNode::findNodes ( const std::string & nodename, const std::string & attrkey )
+{
+    XmlNodeList nodes;
+    XmlNodeIter nIter;
+    XmlNode   * node = NULL;
+
+    for ( nIter = _kids.begin(); nIter != _kids.end(); ++nIter )
+    {
+        node = (XmlNode*) *nIter;
+
+        if ( node && node->getNodeName().compare(nodename) == 0 )
+        {
+            if ( attrkey.empty() )
+                nodes.push_back(node);
+            else if ( node->hasAttr(attrkey) )
+                nodes.push_back(node);
+        }
+    }
+
+    return nodes;
 }
 
 
