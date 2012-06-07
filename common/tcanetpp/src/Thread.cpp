@@ -145,6 +145,39 @@ Thread::threadName() const
 
 /* -------------------------------------------------------------- */
 
+bool
+Thread::setAffinity ( long cpu )
+{
+    long maxcpus = Thread::MaxCPUs();
+
+    if ( cpu < 0 || cpu > maxcpus ) {
+        _serr = "Invalid CPU Affinity";
+        return false;
+    }
+
+    cpu_set_t mask;
+    CPU_ZERO(&mask);
+    CPU_SET(cpu, &mask);
+
+    if ( ::pthread_setaffinity_np(_tid, sizeof(mask), &mask) == -1 ) {
+        _serr = "Error setting thread CPU Affinity for " + _threadName;
+        return false;
+    }
+
+    return true;
+}
+
+bool
+Thread::getAffinity ( cpu_set_t & cpus )
+{
+    CPU_ZERO(&cpus);
+    if ( ::pthread_getaffinity_np(_tid, sizeof(cpus), &cpus) == 0 )
+        return true;
+    return false;
+}
+
+/* -------------------------------------------------------------- */
+
 /**  Indicates whether the thread is currently in the run state. */
 bool
 Thread::isRunning()
@@ -162,8 +195,32 @@ Thread::setAlarm()
     _Alarm = true;
 }
 
+/**  Yields the thread by calling the pthread 'sched_yield()' function. This
+ *   method is protected and may only be called internally by the derived
+ *   object.
+ **/
+void
+Thread::yield()
+{
+    ::sched_yield();
+}
 
-/**  The private, thread entry function used as the entry point for 
+
+void
+Thread::finished()
+{
+    this->_running = false;
+}
+
+const std::string&
+Thread::getErrorStr() const
+{
+    return _serr;
+}
+
+/* -------------------------------------------------------------- */
+
+/**  The thread entry function used as the entry point for
  *   all new threads.
  **/
 void*
@@ -181,21 +238,10 @@ Thread::ThreadEntry ( void* arg )
     return((void*)t);
 }
 
-/**  Yields the thread by calling the pthread 'sched_yield()' function. This 
- *   method is protected and may only be called internally by the derived 
- *   object.
- **/
-void
-Thread::yield()
+long
+Thread::MaxCPUs()
 {
-    ::sched_yield();
-}
-
-
-void
-Thread::finished()
-{
-    this->_running = false;
+    return(::sysconf(_SC_NPROCESSORS_CONF));
 }
 
 /* -------------------------------------------------------------- */

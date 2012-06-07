@@ -56,7 +56,11 @@ int main ( int argc, char ** argv )
             enode->getAttr("name").c_str());
     } else
         printf("Failed to find client node\n");
+    
+    XmlNodeList nodes;
 
+    nodes = tnode->findNodes("client");
+    printf("Found %lu nodes looking for <client>\n", nodes.size());
 
     XmlDocument newdoc;
     newdoc.setDebug(true);

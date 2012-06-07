@@ -29,6 +29,7 @@
 
 extern "C" {
 # include <pthread.h>
+# include <sched.h>
 # include <time.h>
 }
 #include <string>
@@ -86,11 +87,14 @@ class Thread {
     void                threadName ( const std::string & name );
     const std::string&  threadName() const;
 
-
-  protected:
+    bool                setAffinity ( long cpu );
+    bool                getAffinity ( cpu_set_t & cpus );
 
     void                yield();
 
+    const std::string&  getErrorStr() const;
+
+    static long         MaxCPUs();
 
   private:
 

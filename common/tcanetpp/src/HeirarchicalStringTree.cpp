@@ -3,6 +3,12 @@
 
 #include "StringUtils.h"
 
+// not common to split template declarations and implementation
+// and it requires including the source within the header which
+// pisses off the Eclipse CDT, so this is just to make Eclipse happy.
+#ifndef _TCANETPP_HEIRARCHICALSTRINGTREE_HPP_
+#include "HeirarchicalStringTree.hpp"
+#endif
 
 namespace tcanetpp {
 

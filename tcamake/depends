@@ -211,6 +211,11 @@ LIB_DL ?= -ldl
 LIBS   += $(LIB_DL)
 endif
 
+ifdef NEED_LIBRT
+LIB_RT ?= -lrt
+LIBS   += $(LIB_RT)
+endif
+
 ifdef NEED_SOCKET
 LIBS   += $(LIB_SOCKET) $(LIB_NSL)
 endif
