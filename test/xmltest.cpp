@@ -34,6 +34,30 @@ int main ( int argc, char ** argv )
     printf("new doc: \n%s\n", ndoc.NodeToString(ndoc.getRootNode()).c_str());
     ndoc.writeFile("xmltestout.xml");
 
+    // find a specific node
+    //
+    printf("Find A node:\n");
+    XmlNode * tnode = root->findNode("tnmsd");
+    XmlNode * cnode = tnode->findNode("client", "name", "server_a");
+    if ( cnode ) {
+        printf("  Found node: %s : %s\n", cnode->getNodeName().c_str(),
+            cnode->getAttr("name").c_str());
+    }
+    XmlNode * dnode = tnode->findNode("client", "name");
+    if ( dnode ) {
+        printf("  Found node: %s : %s\n", dnode->getNodeName().c_str(),
+            dnode->getAttr("name").c_str());
+    } else
+        printf("Failed to find client name node\n");
+
+    XmlNode * enode = tnode->findNode("client");
+    if ( enode ) {
+        printf("  Found node: %s : %s\n", enode->getNodeName().c_str(),
+            enode->getAttr("name").c_str());
+    } else
+        printf("Failed to find client node\n");
+
+
     XmlDocument newdoc;
     newdoc.setDebug(true);
 

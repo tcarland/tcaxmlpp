@@ -99,6 +99,8 @@ class XmlNode {
     XmlNode*	   findNode          ( const std::string & nodename,
                                        const std::string & attrkey = "", 
                                        const std::string & attrval = "" );
+    XmlNodeList    findNodes         ( const std::string & nodename,
+                                       const std::string & attrkey = "" );
 
     void           setDebug          ( bool d );
     void           printNode         ( bool recursive = false );
@@ -197,6 +199,16 @@ class XmlNode {
         {}
 
         bool operator() ( const XmlNode * node );
+    };
+
+    class FindXmlNodesByName {
+    public:
+        std::string  name;
+        XmlNodeList  nodes;
+        explicit FindXmlNodesByName ( const std::string & name_ )
+            : name(name_)
+        {}
+
     };
 
 
