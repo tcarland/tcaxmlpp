@@ -26,10 +26,10 @@
 
 extern "C" {
 # include <strings.h>
-# include <stdio.h>
 # include <errno.h>
 }
 
+#include <cstdlib>
 #include <sstream>
 
 #include "Thread.h"
@@ -45,22 +45,30 @@ Thread::Thread()
     : _Alarm(false),
       _running(false),
       _detach(false),
-      _tid(0)
-{}
+      _tid(0),
+      _stack(NULL)
+{
+    ::pthread_attr_init(&_attr);
+}
 
 
 Thread::Thread ( bool detach )
     : _Alarm(false),
       _running(false),
       _detach(detach),
-      _tid(0)
-{}
+      _tid(0),
+      _stack(NULL)
+{
+    ::pthread_attr_init(&_attr);
+}
 
 
 Thread::~Thread()
 {
     if ( _tid != 0 )
 	this->stop();
+    if ( _stack )
+        ::free(_stack);
 }
 
 /* -------------------------------------------------------------- */
@@ -72,10 +80,21 @@ Thread::~Thread()
 void
 Thread::start() throw ( ThreadException )
 {
+    size_t stksz = 0;
+
     if ( _tid != 0 )
 	throw ThreadException("Thread::start() id non-zero, already started?");
 
-    if ( ::pthread_create(&_tid, NULL, Thread::ThreadEntry, (void*)this) != 0 ) {
+    if ( ! this->getStackSize(stksz) )
+        throw ThreadException(_serr);
+
+    if ( stksz < THREAD_STACKSIZE_MIN ) {
+        stksz = THREAD_STACKSIZE_MIN;
+        if ( ! this->setStackSize(stksz) )
+            throw ThreadException(_serr);
+    }
+
+    if ( ::pthread_create(&_tid, &_attr, Thread::ThreadEntry, (void*)this) != 0 ) {
         std::ostringstream  serr;
         serr << "Thread::start() pthread_create error: " << errno;
         _serr = serr.str();
@@ -205,6 +224,49 @@ Thread::yield()
     ::sched_yield();
 }
 
+/* -------------------------------------------------------------- */
+
+bool
+Thread::setStackSize ( size_t stksz )
+{
+    void * stack;
+
+    if ( this->isRunning() ) {
+        _serr  = "Thread is already running.";
+        return false;
+    }
+
+    if ( stksz < THREAD_STACKSIZE_MIN )
+        stksz = THREAD_STACKSIZE_MIN;
+
+    stack = ::malloc(stksz);
+    if ( stack == NULL ) {
+        _serr  = "Error in malloc().";
+        return false;
+    }
+
+    if ( ::pthread_attr_setstack(&_attr, stack, stksz) != 0 ) {
+        _serr = "Error in pthread_attr_setstack().";
+        return false;
+    }
+
+    return true;
+}
+
+bool
+Thread::getStackSize ( size_t & stksz )
+{
+    void * stack;
+
+    if ( ::pthread_attr_getstack(&_attr, &stack, &stksz) != 0 ) {
+        _serr = "Error in pthread_attr_getstack().";
+        return false;
+    }
+
+    return true;
+}
+
+/* -------------------------------------------------------------- */
 
 void
 Thread::finished()

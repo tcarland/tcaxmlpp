@@ -39,12 +39,17 @@
 
 namespace tcanetpp {
 
+#define MSEC_PER_SEC 1000
+#define USEC_PER_SEC 1000000
+#define NSEC_PER_SEC 1000000000
 
 // macros for normalizing event time units
-#define sectoevu(x)  (x * 1000000)
-#define msectoevu(x) (x * 1000)
-#define evutosec(x)  (x / 1000000)
+#define sectoevu(x)  (x * USEC_PER_SEC)
+#define msectoevu(x) (x * MSEC_PER_SEC)
+#define nsectoevu(x) (x / 1000)
+#define evutosec(x)  (x / USEC_PER_SEC)
 #define evutomsec(x) (x / 1000)
+#define evutonsec(x) (x * 1000)
 
 
 #define DEFAULT_EVU 500000   // default select timeout
@@ -112,14 +117,23 @@ class EventManager {
 
     static int           GetTimeOfDay   ( timeval * t );
 
-    static float         TimevalToMs    ( const timeval * tv );
+    static float         TimevalToMs    ( const timeval  * tv );
 
-    static float         TimevalDiffMs  ( const timeval * t2, 
-                                          const timeval * t1 );
+    static float         TimevalDiffMs  ( const timeval  * t2,
+                                          const timeval  * t1 );
 
-    static void          TimevalDiff    ( const timeval * t2, 
-                                          const timeval * t1, 
-                                          timeval * result );
+    static void          TimevalDiff    ( const timeval  * t2,
+                                          const timeval  * t1,
+                                          timeval        * result );
+
+    static void          TimespecDiff   ( const timespec * t2,
+                                          const timespec * t1,
+                                          timespec       * result );
+    static int64_t       TimespecDiffNS ( const timespec * t2,
+                                          const timespec * t1 );
+
+    static void          TimespecNorm   ( timespec       * ts );
+    static void          NanoSleep      ( long val );
 
 
   protected:

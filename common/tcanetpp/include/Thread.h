@@ -40,6 +40,9 @@ extern "C" {
 namespace tcanetpp {
 
 
+#define THREAD_STACKSIZE_MIN 16384
+
+
 /** 
   *  ThreadException class.  
  **/
@@ -87,6 +90,9 @@ class Thread {
     void                threadName ( const std::string & name );
     const std::string&  threadName() const;
 
+    bool                setStackSize ( size_t stksz );
+    bool                getStackSize ( size_t & stksz );
+
     bool                setAffinity ( long cpu );
     bool                getAffinity ( cpu_set_t & cpus );
 
@@ -113,6 +119,8 @@ class Thread {
   private:
 
     pthread_t           _tid;
+    pthread_attr_t      _attr;
+    void*               _stack;
 
 };
 

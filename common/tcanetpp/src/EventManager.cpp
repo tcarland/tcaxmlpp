@@ -30,6 +30,7 @@ extern "C" {
 #ifndef WIN32
 # include <sys/select.h>
 # include <unistd.h>
+# include <time.h>
 #endif
 }
 #include <algorithm>
@@ -672,7 +673,10 @@ EventManager::TimevalDiffMs ( const timeval * t2, const timeval * t1 )
 void
 EventManager::TimevalDiff ( const timeval * t2, const timeval * t1, timeval * result )
 {
-    result->tv_sec  = t2->tv_sec - t1->tv_sec;
+    if ( t2 == NULL || t1 == NULL || result == NULL )
+        return;
+
+    result->tv_sec  = t2->tv_sec  - t1->tv_sec;
     result->tv_usec = t2->tv_usec - t1->tv_usec;
     if ( result->tv_usec < 0 ) {
         --result->tv_sec;
@@ -681,6 +685,69 @@ EventManager::TimevalDiff ( const timeval * t2, const timeval * t1, timeval * re
 }
 
 
+//---------------------------------------------------------------//
+
+
+void
+EventManager::TimespecDiff ( const timespec * t2, const timespec * t1,
+                             timespec * result )
+{
+    if ( t2 == NULL || t1 == NULL || result == NULL )
+        return;
+
+    result->tv_sec  = t2->tv_sec  - t1->tv_sec;
+    result->tv_nsec = t2->tv_nsec - t1->tv_nsec;
+    EventManager::TimespecNorm(result);
+
+    return;
+}
+
+int64_t
+EventManager::TimespecDiffNS ( const timespec * t2, const timespec * t1 )
+{
+    int64_t diff;
+
+    diff  = NSEC_PER_SEC * (int64_t)((int) t2->tv_sec - (int) t1->tv_sec);
+    diff += ((int) t2->tv_nsec - (int) t1->tv_nsec);
+
+    return diff;
+}
+
+void
+EventManager::TimespecNorm ( timespec * ts )
+{
+    if ( ts == NULL )
+        return;
+
+    while ( ts->tv_nsec >= NSEC_PER_SEC )
+    {
+        ts->tv_sec++;
+        ts->tv_nsec -= NSEC_PER_SEC;
+    }
+    return;
+}
+
+void
+EventManager::NanoSleep ( long val )
+{
+    struct timespec ts, rem;
+    int    r;
+
+    ts.tv_sec  = 0;
+    ts.tv_nsec = val;
+    EventManager::TimespecNorm(&ts);
+
+    r = ::nanosleep(&ts, &rem);
+    if ( r == 0 )
+        return;
+
+    while ( errno == EINTR ) {
+        ts = rem;
+        errno = ::nanosleep(&ts, &rem);
+    }
+
+    return;
+}
 //---------------------------------------------------------------//
 
 
