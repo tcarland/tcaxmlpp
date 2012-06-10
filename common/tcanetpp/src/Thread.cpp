@@ -65,6 +65,7 @@ Thread::Thread ( bool detach )
 
 Thread::~Thread()
 {
+    ::pthread_attr_destroy(&_attr);
     if ( _tid != 0 )
 	this->stop();
     if ( _stack )
@@ -164,39 +165,6 @@ Thread::threadName() const
 
 /* -------------------------------------------------------------- */
 
-bool
-Thread::setAffinity ( long cpu )
-{
-    long maxcpus = Thread::MaxCPUs();
-
-    if ( cpu < 0 || cpu > maxcpus ) {
-        _serr = "Invalid CPU Affinity";
-        return false;
-    }
-
-    cpu_set_t mask;
-    CPU_ZERO(&mask);
-    CPU_SET(cpu, &mask);
-
-    if ( ::pthread_setaffinity_np(_tid, sizeof(mask), &mask) == -1 ) {
-        _serr = "Error setting thread CPU Affinity for " + _threadName;
-        return false;
-    }
-
-    return true;
-}
-
-bool
-Thread::getAffinity ( cpu_set_t & cpus )
-{
-    CPU_ZERO(&cpus);
-    if ( ::pthread_getaffinity_np(_tid, sizeof(cpus), &cpus) == 0 )
-        return true;
-    return false;
-}
-
-/* -------------------------------------------------------------- */
-
 /**  Indicates whether the thread is currently in the run state. */
 bool
 Thread::isRunning()
@@ -264,6 +232,132 @@ Thread::getStackSize ( size_t & stksz )
     }
 
     return true;
+}
+
+/* -------------------------------------------------------------- */
+
+bool
+Thread::setAffinity ( long cpu )
+{
+    long maxcpus = Thread::MaxCPUs();
+
+    if ( cpu < 0 || cpu > maxcpus ) {
+        _serr = "Invalid CPU Affinity";
+        return false;
+    }
+
+    cpu_set_t mask;
+    CPU_ZERO(&mask);
+    CPU_SET(cpu, &mask);
+
+    if ( ::pthread_setaffinity_np(_tid, sizeof(mask), &mask) == -1 ) {
+        _serr = "Error setting thread CPU Affinity for " + _threadName;
+        return false;
+    }
+
+    return true;
+}
+
+bool
+Thread::getAffinity ( cpu_set_t & cpus )
+{
+    CPU_ZERO(&cpus);
+    if ( ::pthread_getaffinity_np(_tid, sizeof(cpus), &cpus) == 0 )
+        return true;
+    return false;
+}
+
+//#if defined (_POSIX_THREAD_PRIORITY_SCHEDULING)
+
+int
+Thread::getMinPriority ( int policy )
+{
+    return(::sched_get_priority_min(policy));
+}
+
+int
+Thread::getMaxPriority ( int policy )
+{
+    return(::sched_get_priority_max(policy));
+}
+
+bool
+Thread::setScheduler ( int policy )
+{
+    int err = 0;
+
+    if ( (err = ::pthread_attr_setschedpolicy(&_attr, policy)) != 0 ) {
+        _serr = "Error in pthread_attr_setschedpolicy.";
+        if ( err == EINVAL || err == ENOTSUP )
+            _serr.append(" Invalid value in policy.");
+        return false;
+    }
+
+    if ( (err = this->setInheritSched(PTHREAD_EXPLICIT_SCHED)) != 0 ) {
+        _serr = "Error setting explicit thread scheduler.";
+        return false;
+    }
+
+    return true;
+}
+
+int
+Thread::getScheduler()
+{
+    int policy = 0;
+
+    if ( ::pthread_attr_getschedpolicy(&_attr, &policy) != 0 )
+        return 0;
+
+    return policy;
+}
+
+bool
+Thread::setPriority ( int prio )
+{
+    struct sched_param param;
+    if ( ::pthread_attr_getschedparam(&_attr, &param) != 0 )
+        return false;
+
+    param.sched_priority = prio;
+
+    if ( ::pthread_attr_setschedparam(&_attr, &param) != 0 )
+        return false;
+
+    return true;
+}
+
+int
+Thread::getPriority()
+{
+    int prio = 0;
+    struct sched_param  param;
+
+    if ( ::pthread_attr_getschedparam(&_attr, &param) != 0 )
+        return -1;
+
+    prio = param.sched_priority;
+
+    return prio;
+}
+
+bool
+Thread::setInheritSched ( int inherit )
+{
+    if ( ::pthread_attr_setinheritsched(&_attr, inherit) != 0 )
+        return false;
+    return true;
+}
+
+int
+Thread::getInheritSched()
+{
+    int inherit = -1;
+
+    if ( ::pthread_attr_getinheritsched(&_attr, &inherit) != 0 )
+        return -1;
+
+    return inherit;
 }
 
 /* -------------------------------------------------------------- */

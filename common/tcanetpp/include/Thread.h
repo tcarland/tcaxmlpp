@@ -86,6 +86,7 @@ class Thread {
     virtual void        setAlarm();
 
     bool                isRunning();
+    void                yield();
 
     void                threadName ( const std::string & name );
     const std::string&  threadName() const;
@@ -96,7 +97,16 @@ class Thread {
     bool                setAffinity ( long cpu );
     bool                getAffinity ( cpu_set_t & cpus );
 
-    void                yield();
+    /* scheduling parameters */
+    int                 getMinPriority  ( int policy );
+    int                 getMaxPriority  ( int policy );
+    bool                setScheduler    ( int policy );
+    int                 getScheduler();
+    bool                setPriority     ( int prio );
+    int                 getPriority();
+    bool                setInheritSched ( int inherit = PTHREAD_INHERIT_SCHED );
+    int                 getInheritSched();
+
 
     const std::string&  getErrorStr() const;
 
@@ -120,6 +130,7 @@ class Thread {
 
     pthread_t           _tid;
     pthread_attr_t      _attr;
+    struct sched_param  _param;
     void*               _stack;
 
 };
