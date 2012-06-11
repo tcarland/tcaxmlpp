@@ -95,8 +95,8 @@ class Thread {
     bool                setStackSize    ( size_t stksz );
     bool                getStackSize    ( size_t & stksz );
 
-    bool                setCPUAffinity  ( long cpu );
-    bool                getCPUAffinity  ( cpu_set_t & cpus );
+    bool                setCpuAffinity  ( long cpu );
+    bool                getCpuAffinity  ( cpu_set_t & cpus );
 
     /* scheduling parameters */
     int                 getMinPriority  ( int policy );

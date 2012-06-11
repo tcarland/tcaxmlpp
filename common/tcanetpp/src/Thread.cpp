@@ -238,7 +238,7 @@ Thread::getStackSize ( size_t & stksz )
 
 
 bool
-Thread::setCPUAffinity ( long cpu )
+Thread::setCpuAffinity ( long cpu )
 {
     long maxcpus = Thread::MaxCPUs();
     int  err     = 0;
@@ -268,7 +268,7 @@ Thread::setCPUAffinity ( long cpu )
 }
 
 bool
-Thread::getCPUAffinity ( cpu_set_t & cpus )
+Thread::getCpuAffinity ( cpu_set_t & cpus )
 {
     CPU_ZERO(&cpus);
     if ( ::pthread_getaffinity_np(_tid, sizeof(cpus), &cpus) )
