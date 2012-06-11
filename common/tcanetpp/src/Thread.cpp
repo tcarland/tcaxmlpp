@@ -213,7 +213,7 @@ Thread::setStackSize ( size_t stksz )
         return false;
     }
 
-    if ( ::pthread_attr_setstack(&_attr, stack, stksz) != 0 ) {
+    if ( ::pthread_attr_setstack(&_attr, stack, stksz) ) {
         _serr = "Error in pthread_attr_setstack().";
         return false;
     }
@@ -226,7 +226,7 @@ Thread::getStackSize ( size_t & stksz )
 {
     void * stack;
 
-    if ( ::pthread_attr_getstack(&_attr, &stack, &stksz) != 0 ) {
+    if ( ::pthread_attr_getstack(&_attr, &stack, &stksz) ) {
         _serr = "Error in pthread_attr_getstack().";
         return false;
     }
@@ -238,7 +238,7 @@ Thread::getStackSize ( size_t & stksz )
 
 
 bool
-Thread::setAffinity ( long cpu )
+Thread::setCPUAffinity ( long cpu )
 {
     long maxcpus = Thread::MaxCPUs();
     int  err     = 0;
@@ -257,7 +257,7 @@ Thread::setAffinity ( long cpu )
     else
         err = ::pthread_attr_setaffinity_np(&_attr, sizeof(mask), &mask);
 
-    if ( err != 0 ) {
+    if ( err ) {
         _serr = "Error setting thread CPU Affinity for " + _threadName;
         if ( err == EINVAL )
             _serr.append(" invalid parameter to pthread_setaffinity_np()");
@@ -268,12 +268,12 @@ Thread::setAffinity ( long cpu )
 }
 
 bool
-Thread::getAffinity ( cpu_set_t & cpus )
+Thread::getCPUAffinity ( cpu_set_t & cpus )
 {
     CPU_ZERO(&cpus);
-    if ( ::pthread_getaffinity_np(_tid, sizeof(cpus), &cpus) == 0 )
-        return true;
-    return false;
+    if ( ::pthread_getaffinity_np(_tid, sizeof(cpus), &cpus) )
+        return false;
+    return true;
 }
 
 /* -------------------------------------------------------------- */
@@ -302,7 +302,7 @@ Thread::setScheduler ( int policy, int prio )
 
     if ( this->isRunning() )
     {
-        if ( ! ::pthread_setschedparam(_tid, policy, &param) )
+        if ( ::pthread_setschedparam(_tid, policy, &param) )
             return false;
     }
     else
@@ -316,6 +316,11 @@ Thread::setScheduler ( int policy, int prio )
     return true;
 }
 
+/** Sets the scheduling policy of this thread. Standard pthread
+ *  policies are SCHED_FIFO, SCHED_RR, or SCHED_OTHER.
+ *  Note that SCHED_OTHER may not make use of priority
+ *  since the true scheduling policy is intentionally undefined.
+ */
 bool
 Thread::setScheduler ( int policy )
 {
@@ -326,14 +331,14 @@ Thread::setScheduler ( int policy )
         return this->setScheduler(policy, prio);
     }
 
-    if ( (err = ::pthread_attr_setschedpolicy(&_attr, policy)) != 0 ) {
+    if ( (err = ::pthread_attr_setschedpolicy(&_attr, policy)) ) {
         _serr = "Error in pthread_attr_setschedpolicy.";
         if ( err == EINVAL || err == ENOTSUP )
             _serr.append(" Invalid value in policy.");
         return false;
     }
 
-    if ( (err = this->setInheritSched(PTHREAD_EXPLICIT_SCHED)) != 0 ) {
+    if ( ! this->setInheritSched(PTHREAD_EXPLICIT_SCHED) ) {
         _serr = "Error setting explicit thread scheduler.";
         return false;
     }
@@ -341,12 +346,13 @@ Thread::setScheduler ( int policy )
     return true;
 }
 
+/** Returns the int value of this thread scheduling policy. */
 int
 Thread::getScheduler()
 {
     int policy = 0;
 
-    if ( ::pthread_attr_getschedpolicy(&_attr, &policy) != 0 )
+    if ( ::pthread_attr_getschedpolicy(&_attr, &policy) )
         return 0;
 
     return policy;
@@ -354,6 +360,9 @@ Thread::getScheduler()
 
 /* -------------------------------------------------------------- */
 
+/** Sets the thread priority to the provided integer.
+ *  This implies that we may be using realtime scheduling, which
+ *  can be very dangerous */
 bool
 Thread::setPriority ( int prio )
 {
@@ -364,12 +373,12 @@ Thread::setPriority ( int prio )
         return this->setScheduler(policy, prio);
     }
 
-    if ( ! ::pthread_attr_getschedparam(&_attr, &param) )
+    if ( ::pthread_attr_getschedparam(&_attr, &param) )
         return false;
 
     param.sched_priority = prio;
 
-    if ( ! ::pthread_attr_setschedparam(&_attr, &param) )
+    if ( ::pthread_attr_setschedparam(&_attr, &param) )
         return false;
 
     return true;
@@ -381,8 +390,8 @@ Thread::getPriority()
     int prio = 0;
     struct sched_param  param;
 
-    if ( ! ::pthread_attr_getschedparam(&_attr, &param) )
-        return -1;
+    if ( ::pthread_attr_getschedparam(&_attr, &param) )
+        return prio;
 
     prio = param.sched_priority;
 
@@ -391,10 +400,34 @@ Thread::getPriority()
 
 /* -------------------------------------------------------------- */
 
+/**  Set the Thread's contention scope, PTHREAD_SCOPE_PROCESS or
+ *   PTHREAD_SCOPE_SYSTEM.
+ */
+bool
+Thread::setScope ( int scope )
+{
+    if ( ::pthread_attr_setscope(&_attr, scope) )
+        return false;
+
+    return true;
+}
+
+int
+Thread::getScope()
+{
+    int scope = 0;
+
+    if ( ::pthread_attr_getscope(&_attr, &scope) )
+        return 0;
+
+    return scope;
+}
+/* -------------------------------------------------------------- */
+
 bool
 Thread::setInheritSched ( int inherit )
 {
-    if ( ! ::pthread_attr_setinheritsched(&_attr, inherit) )
+    if ( ::pthread_attr_setinheritsched(&_attr, inherit) )
         return false;
     return true;
 }
@@ -402,10 +435,10 @@ Thread::setInheritSched ( int inherit )
 int
 Thread::getInheritSched()
 {
-    int inherit = -1;
+    int inherit = 0;
 
-    if ( ! ::pthread_attr_getinheritsched(&_attr, &inherit) )
-        return -1;
+    if ( ::pthread_attr_getinheritsched(&_attr, &inherit) )
+        return 0;
 
     return inherit;
 }

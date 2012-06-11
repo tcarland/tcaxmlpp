@@ -75,27 +75,28 @@ class Thread {
 
     virtual void        run ( void ) = 0;
 
-
     virtual void        init() {}
+    virtual void        finished();
+    virtual void        setAlarm();
+
 
     void                start() throw ( ThreadException );
     void                stop()  throw ( ThreadException );
 
 
-    virtual void        finished();
-    virtual void        setAlarm();
-
     bool                isRunning();
     void                yield();
 
-    void                threadName ( const std::string & name );
+    void                threadName      ( const std::string & name );
     const std::string&  threadName() const;
 
-    bool                setStackSize ( size_t stksz );
-    bool                getStackSize ( size_t & stksz );
+    const std::string&  getErrorStr() const;
 
-    bool                setAffinity ( long cpu );
-    bool                getAffinity ( cpu_set_t & cpus );
+    bool                setStackSize    ( size_t stksz );
+    bool                getStackSize    ( size_t & stksz );
+
+    bool                setCPUAffinity  ( long cpu );
+    bool                getCPUAffinity  ( cpu_set_t & cpus );
 
     /* scheduling parameters */
     int                 getMinPriority  ( int policy );
@@ -109,14 +110,16 @@ class Thread {
     bool                setPriority     ( int prio );
     int                 getPriority();
 
+    bool                setScope        ( int scope );
+    int                 getScope();
+
     bool                setInheritSched ( int inherit = PTHREAD_INHERIT_SCHED );
     int                 getInheritSched();
 
 
-    const std::string&  getErrorStr() const;
-
     static long         MaxCPUs();
     static std::string  GetSchedulerPolicyName ( Thread * t );
+
 
   private:
 
