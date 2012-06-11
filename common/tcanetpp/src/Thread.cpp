@@ -41,16 +41,6 @@ namespace tcanetpp {
 
 /* -------------------------------------------------------------- */
 
-Thread::Thread()
-    : _Alarm(false),
-      _running(false),
-      _detach(false),
-      _tid(0),
-      _stack(NULL)
-{
-    ::pthread_attr_init(&_attr);
-}
-
 
 Thread::Thread ( bool detach )
     : _Alarm(false),

@@ -68,8 +68,7 @@ class Thread {
 
   public:
 
-    Thread();
-    Thread ( bool detach );
+    Thread ( bool detach = false );
     virtual ~Thread();
 
 
