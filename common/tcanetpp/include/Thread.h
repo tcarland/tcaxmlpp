@@ -100,10 +100,15 @@ class Thread {
     /* scheduling parameters */
     int                 getMinPriority  ( int policy );
     int                 getMaxPriority  ( int policy );
+
+    bool                setScheduler    ( int policy, int prio );
+
     bool                setScheduler    ( int policy );
     int                 getScheduler();
+
     bool                setPriority     ( int prio );
     int                 getPriority();
+
     bool                setInheritSched ( int inherit = PTHREAD_INHERIT_SCHED );
     int                 getInheritSched();
 
@@ -111,6 +116,7 @@ class Thread {
     const std::string&  getErrorStr() const;
 
     static long         MaxCPUs();
+    static std::string  GetSchedulerPolicyName ( Thread * t );
 
   private:
 

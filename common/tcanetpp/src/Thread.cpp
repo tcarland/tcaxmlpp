@@ -236,10 +236,12 @@ Thread::getStackSize ( size_t & stksz )
 
 /* -------------------------------------------------------------- */
 
+
 bool
 Thread::setAffinity ( long cpu )
 {
     long maxcpus = Thread::MaxCPUs();
+    int  err     = 0;
 
     if ( cpu < 0 || cpu > maxcpus ) {
         _serr = "Invalid CPU Affinity";
@@ -250,8 +252,15 @@ Thread::setAffinity ( long cpu )
     CPU_ZERO(&mask);
     CPU_SET(cpu, &mask);
 
-    if ( ::pthread_setaffinity_np(_tid, sizeof(mask), &mask) == -1 ) {
+    if ( this->isRunning() )
+        err = ::pthread_setaffinity_np(_tid, sizeof(mask), &mask);
+    else
+        err = ::pthread_attr_setaffinity_np(&_attr, sizeof(mask), &mask);
+
+    if ( err != 0 ) {
         _serr = "Error setting thread CPU Affinity for " + _threadName;
+        if ( err == EINVAL )
+            _serr.append(" invalid parameter to pthread_setaffinity_np()");
         return false;
     }
 
@@ -267,6 +276,7 @@ Thread::getAffinity ( cpu_set_t & cpus )
     return false;
 }
 
+/* -------------------------------------------------------------- */
 //#if defined (_POSIX_THREAD_PRIORITY_SCHEDULING)
 
 int
@@ -281,10 +291,40 @@ Thread::getMaxPriority ( int policy )
     return(::sched_get_priority_max(policy));
 }
 
+/* -------------------------------------------------------------- */
+
+bool
+Thread::setScheduler ( int policy, int prio )
+{
+    struct sched_param param;
+
+    param.sched_priority = prio;
+
+    if ( this->isRunning() )
+    {
+        if ( ! ::pthread_setschedparam(_tid, policy, &param) )
+            return false;
+    }
+    else
+    {
+        if ( ! this->setPriority(prio) )
+            return false;
+        if ( ! this->setScheduler(policy) )
+            return false;
+    }
+
+    return true;
+}
+
 bool
 Thread::setScheduler ( int policy )
 {
     int err = 0;
+
+    if ( this->isRunning() ) {
+        int prio = this->getPriority();
+        return this->setScheduler(policy, prio);
+    }
 
     if ( (err = ::pthread_attr_setschedpolicy(&_attr, policy)) != 0 ) {
         _serr = "Error in pthread_attr_setschedpolicy.";
@@ -312,16 +352,24 @@ Thread::getScheduler()
     return policy;
 }
 
+/* -------------------------------------------------------------- */
+
 bool
 Thread::setPriority ( int prio )
 {
     struct sched_param param;
-    if ( ::pthread_attr_getschedparam(&_attr, &param) != 0 )
+
+    if ( this->isRunning() ) {
+        int policy = this->getScheduler();
+        return this->setScheduler(policy, prio);
+    }
+
+    if ( ! ::pthread_attr_getschedparam(&_attr, &param) )
         return false;
 
     param.sched_priority = prio;
 
-    if ( ::pthread_attr_setschedparam(&_attr, &param) != 0 )
+    if ( ! ::pthread_attr_setschedparam(&_attr, &param) )
         return false;
 
     return true;
@@ -333,7 +381,7 @@ Thread::getPriority()
     int prio = 0;
     struct sched_param  param;
 
-    if ( ::pthread_attr_getschedparam(&_attr, &param) != 0 )
+    if ( ! ::pthread_attr_getschedparam(&_attr, &param) )
         return -1;
 
     prio = param.sched_priority;
@@ -341,10 +389,12 @@ Thread::getPriority()
     return prio;
 }
 
+/* -------------------------------------------------------------- */
+
 bool
 Thread::setInheritSched ( int inherit )
 {
-    if ( ::pthread_attr_setinheritsched(&_attr, inherit) != 0 )
+    if ( ! ::pthread_attr_setinheritsched(&_attr, inherit) )
         return false;
     return true;
 }
@@ -354,7 +404,7 @@ Thread::getInheritSched()
 {
     int inherit = -1;
 
-    if ( ::pthread_attr_getinheritsched(&_attr, &inherit) != 0 )
+    if ( ! ::pthread_attr_getinheritsched(&_attr, &inherit) )
         return -1;
 
     return inherit;
@@ -362,12 +412,20 @@ Thread::getInheritSched()
 
 /* -------------------------------------------------------------- */
 
+/** Abstract finished() implementation that sets the Thread's
+ *  'running' boolean as indicated in a call to Thread::isRunning().
+ *  Derived objects that wish to extend the finished function should
+ *  consider this, or ensure that this base method is still called.
+ */
 void
 Thread::finished()
 {
     this->_running = false;
 }
 
+/**  Returns the last known error's string value, set by many methods
+ *   that simply indicate boolean or integer result status.
+ */
 const std::string&
 Thread::getErrorStr() const
 {
@@ -394,10 +452,27 @@ Thread::ThreadEntry ( void* arg )
     return((void*)t);
 }
 
+/* -------------------------------------------------------------- */
+
+/**  Return the number of available system cpu's determined by
+ *   sysconf(_SC_NPROCESSORS_CONF)
+ */
 long
 Thread::MaxCPUs()
 {
     return(::sysconf(_SC_NPROCESSORS_CONF));
+}
+
+/**  Returns a string name of the provided Thread's configured scheduler */
+std::string
+Thread::GetSchedulerPolicyName ( Thread * t )
+{
+    int  policy = t->getScheduler();
+
+    return( (policy == SCHED_FIFO)  ? std::string("SCHED_FIFO") :
+            (policy == SCHED_RR)    ? std::string("SCHED_RR") :
+            (policy == SCHED_OTHER) ? std::string("SCHED_OTHER") :
+            std::string("???") );
 }
 
 /* -------------------------------------------------------------- */
