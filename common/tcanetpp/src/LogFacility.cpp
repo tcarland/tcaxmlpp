@@ -85,6 +85,15 @@ LogFacility::InitThreaded ( bool trylock )
 
 // ----------------------------------------------------------------------
 
+/**  Opens a new logstream to the given logfile.
+  *  @param logname  is the log name key used to identify the associated
+  *   and underlying log stream.
+  *  @param prefix   is a log prefix automatically prepended to any 
+  *   messages sent to the log stream.
+  *  @param filename is the path and name of the logfile to create.
+  *  @param append   is a boolean indicating whether an existing file 
+  *   of the same name should be appended or truncated.
+ */
 bool
 LogFacility::OpenLogFile ( const std::string & logname, 
                            const std::string & prefix,
@@ -120,7 +129,7 @@ LogFacility::OpenLogFile ( const std::string & logname,
 
 // ----------------------------------------------------------------------
 
-
+/**  Opens the syslog facility for log messages. */
 bool
 LogFacility::OpenSyslog ( const std::string & prefix, int facility )
 {
@@ -141,7 +150,9 @@ LogFacility::OpenSyslog ( const std::string & prefix, int facility )
 
 // ----------------------------------------------------------------------
 
-
+/**@{
+  *   Creates a new log stream identified by the provided logname
+ **/
 bool
 LogFacility::OpenLogStream ( const std::string & logname, const std::string & prefix, std::ostream * stream )
 {
@@ -149,16 +160,15 @@ LogFacility::OpenLogStream ( const std::string & logname, const std::string & pr
 }
 
 
-// ----------------------------------------------------------------------
-
-
 bool
 LogFacility::AddLogStream ( const std::string & logname, const std::string & prefix, std::ostream * stream )
 {
     bool result = false;
 
-    if ( stream == NULL ||  ! LogFacility::Lock() )
+    if ( stream == NULL ||  ! LogFacility::Lock() ) {
+        // set logerr
         return result;
+    }
 
     StreamMap::iterator  sIter = LogFacility::_StreamMap.find(logname);
 
@@ -173,8 +183,12 @@ LogFacility::AddLogStream ( const std::string & logname, const std::string & pre
 
     return result;
 }
+/*@}*/
 
-
+/**  Removes and returns a pointer to the logstream identified by the 
+  *  given logstream. If @param del is true, NULL is returned and the 
+  *  associated logstream is free'd.
+ **/
 std::ostream*
 LogFacility::RemoveLogStream ( const std::string & logname, bool del )
 {
@@ -478,7 +492,7 @@ LogFacility::LogToAllStreams ( const std::string & entry, bool newline )
 
 // ----------------------------------------------------------------------
 
-
+/**  Send a log message to a specific logstream */
 void
 LogFacility::LogToStream ( const std::string & logname, 
                            const std::string & entry,
@@ -515,6 +529,7 @@ LogFacility::LogToStream ( const std::string & logname,
 
 // ----------------------------------------------------------------------
 
+/**  Closes and removes all log streams */
 void
 LogFacility::CloseLogFacility()
 {
@@ -522,7 +537,7 @@ LogFacility::CloseLogFacility()
     LogFacility::RemoveLogStreams(false);
 }
 
-
+/**  Closes the syslog facility if enabled */
 void
 LogFacility::CloseSyslog()
 {
@@ -537,7 +552,10 @@ LogFacility::CloseSyslog()
     return;
 }
 
-
+/** Closes the log stream associated with the given logname. If 
+  * @param del is true, the logstream is deleted and NULL is returned;
+  * otherwise the associated logstream pointer is returned.
+ **/
 std::ostream*
 LogFacility::CloseLogFile ( const std::string & logname, bool del )
 {
@@ -561,12 +579,14 @@ LogFacility::CloseLogFile ( const std::string & logname, bool del )
 
 // ----------------------------------------------------------------------
 
+/**  Sets a default log prefix to use with any stream that has none set*/
 void
 LogFacility::SetDefaultLogPrefix ( const std::string & prefix )
 {
     LogFacility::_LogPrefix = prefix;
 }
 
+/**  Sets the log prefix for the given 'logname' */
 void
 LogFacility::SetLogPrefix ( const std::string & logname, const std::string & prefix )
 {
@@ -582,6 +602,7 @@ LogFacility::SetLogPrefix ( const std::string & logname, const std::string & pre
     return;
 }
 
+/**  Returns the configured log prefix for the given 'logname' */
 std::string
 LogFacility::GetLogPrefix ( const std::string & logName )
 {
@@ -602,6 +623,9 @@ LogFacility::GetLogPrefix ( const std::string & logName )
     return prefix;
 }
 
+/**  Sets the default log stream to use for log messages 
+  *  (when no logname is provided to LogMessage()).
+ **/
 bool
 LogFacility::SetDefaultLogName ( const std::string & logName )
 {
@@ -613,6 +637,7 @@ LogFacility::SetDefaultLogName ( const std::string & logName )
     return true;
 }
 
+/**  Returns the name of the current default log stream */
 std::string
 LogFacility::GetDefaultLogName()
 {
@@ -669,6 +694,9 @@ LogFacility::RotateLogFile ( const std::string & logName, const time_t & now )
 
 // ----------------------------------------------------------------------
 
+/**  Determines whether the log timestamp should be displayed for the 
+  *  given logname.
+ **/
 bool
 LogFacility::ShowLogTime ( const std::string & logname, bool showTime )
 {
@@ -685,6 +713,10 @@ LogFacility::ShowLogTime ( const std::string & logname, bool showTime )
     return true;
 }
 
+/**  Sets the current time to be used for timestamped log messages.
+  *  This should be set regularily by an applications main loop as 
+  *  the LogFacility will not update the current time automatically.
+ **/
 void
 LogFacility::SetLogTime ( const time_t & now )
 {
@@ -699,6 +731,7 @@ LogFacility::SetLogTime ( const time_t & now )
     return;
 }
 
+/**  Returns the current set log time */
 time_t
 LogFacility::GetLogTime()
 {
@@ -714,6 +747,7 @@ LogFacility::GetLogTime()
 
 // ----------------------------------------------------------------------
 
+/**  Converts the provided time_t into a user-readable time string */
 std::string
 LogFacility::GetTimeString ( const time_t & now )
 {
@@ -735,6 +769,7 @@ LogFacility::GetTimeString ( const time_t & now )
 
 // ----------------------------------------------------------------------
 
+/**  Returns the current day of year */
 int
 LogFacility::GetDayOfYear ( const time_t & now )
 {
@@ -749,6 +784,9 @@ LogFacility::GetDayOfYear ( const time_t & now )
 
 // ----------------------------------------------------------------------
 
+/** Sends an initialization string to the provided logname used internally
+  * by the LogFacility when a new log stream is created.
+ **/
 void
 LogFacility::InitLogMessage ( const std::string & logname )
 {
