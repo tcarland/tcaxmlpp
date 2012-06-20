@@ -283,27 +283,33 @@ Thread::getMaxPriority ( int policy )
 
 /* -------------------------------------------------------------- */
 
-bool
+int
 Thread::setScheduler ( int policy, int prio )
 {
     struct sched_param param;
+    int    err = 0;
 
     param.sched_priority = prio;
 
     if ( this->isRunning() )
     {
-        if ( ::pthread_setschedparam(_tid, policy, &param) )
-            return false;
+        if ( (err = ::pthread_setschedparam(_tid, policy, &param)) != 0 ) {
+            _serr = "Error in pthread_setschedparam";
+	    if ( err == EINVAL )
+                _serr.append(": Invalid policy or prio won't apply to this policy.");
+	    else if ( err == EPERM )
+                _serr.append(": Invalid permissions to set policy/prio.");
+        }
     }
     else
     {
-        if ( ! this->setPriority(prio) )
-            return false;
-        if ( ! this->setScheduler(policy) )
-            return false;
+        err = this->setSchedulerAttr(policy);
+        if ( ! err )
+            err = this->setPriorityAttr(prio);
     }
 
-    return true;
+
+    return err;
 }
 
 /** Sets the scheduling policy of this thread. Standard pthread
@@ -311,41 +317,50 @@ Thread::setScheduler ( int policy, int prio )
  *  Note that SCHED_OTHER may not make use of priority
  *  since the true scheduling policy is intentionally undefined.
  */
-bool
-Thread::setScheduler ( int policy )
+int
+Thread::setSchedulerAttr ( int policy )
 {
     int err = 0;
 
     if ( this->isRunning() ) {
-        int prio = this->getPriority();
-        return this->setScheduler(policy, prio);
+        _serr = "Thread already running";
+        return 1;
     }
 
-    if ( (err = ::pthread_attr_setschedpolicy(&_attr, policy)) ) {
-        _serr = "Error in pthread_attr_setschedpolicy.";
+    if ( (err = ::pthread_attr_setschedpolicy(&_attr, policy)) != 0 ) {
+        _serr = "Thread::setSchedulerAttr() error in pthread_attr_setschedpolicy.";
         if ( err == EINVAL || err == ENOTSUP )
             _serr.append(" Invalid value in policy.");
-        return false;
+        return err;
     }
 
     if ( ! this->setInheritSched(PTHREAD_EXPLICIT_SCHED) ) {
-        _serr = "Error setting explicit thread scheduler.";
-        return false;
+        _serr = "Thread::setSchedulerAttr() error setting explicit thread scheduler.";
+        return 1;
     }
 
-    return true;
+    return err;
 }
 
 /** Returns the int value of this thread scheduling policy. */
 int
-Thread::getScheduler()
+Thread::getScheduler ( int & policy, int & prio )
 {
-    int policy = 0;
+    int err  = 0;
+    struct sched_param param;
 
-    if ( ::pthread_attr_getschedpolicy(&_attr, &policy) )
-        return 0;
+    if ( this->isRunning() ) {
+        err = ::pthread_getschedparam(_tid, &policy, &param);
+        if ( err == 0 )
+            prio = param.sched_priority;
+    } else {
+        err  = ::pthread_attr_getschedpolicy(&_attr, &policy);
+        if ( err )
+            return err;
+        err = this->getPriorityAttr(prio);
+    }
 
-    return policy;
+    return err;
 }
 
 /* -------------------------------------------------------------- */
@@ -353,39 +368,31 @@ Thread::getScheduler()
 /** Sets the thread priority to the provided integer.
  *  This implies that we may be using realtime scheduling, which
  *  can be very dangerous */
-bool
-Thread::setPriority ( int prio )
+int
+Thread::setPriorityAttr ( int prio )
 {
     struct sched_param param;
 
     if ( this->isRunning() ) {
-        int policy = this->getScheduler();
-        return this->setScheduler(policy, prio);
+        _serr = "Thread already running";
+        return 1;
     }
-
-    if ( ::pthread_attr_getschedparam(&_attr, &param) )
-        return false;
 
     param.sched_priority = prio;
 
-    if ( ::pthread_attr_setschedparam(&_attr, &param) )
-        return false;
-
-    return true;
+    return(::pthread_attr_setschedparam(&_attr, &param));
 }
 
 int
-Thread::getPriority()
+Thread::getPriorityAttr ( int & prio )
 {
-    int prio = 0;
+    int    err  = 0;
     struct sched_param  param;
 
-    if ( ::pthread_attr_getschedparam(&_attr, &param) )
-        return prio;
+    if ( (err = ::pthread_attr_getschedparam(&_attr, &param)) == 0 )
+        prio = param.sched_priority;
 
-    prio = param.sched_priority;
-
-    return prio;
+    return err;
 }
 
 /* -------------------------------------------------------------- */
@@ -490,7 +497,9 @@ Thread::MaxCPUs()
 std::string
 Thread::GetSchedulerPolicyName ( Thread * t )
 {
-    int  policy = t->getScheduler();
+    int  policy, prio;
+
+    t->getScheduler(policy, prio);
 
     return( (policy == SCHED_FIFO)  ? std::string("SCHED_FIFO") :
             (policy == SCHED_RR)    ? std::string("SCHED_RR") :

@@ -101,13 +101,13 @@ class Thread {
     int                 getMinPriority  ( int policy );
     int                 getMaxPriority  ( int policy );
 
-    bool                setScheduler    ( int policy, int prio );
+    int                 setScheduler    ( int policy, int prio );
 
-    bool                setScheduler    ( int policy );
-    int                 getScheduler();
+    int                 setSchedulerAttr( int policy );
+    int                 getScheduler    ( int & policy, int & prio );
 
-    bool                setPriority     ( int prio );
-    int                 getPriority();
+    int                 setPriorityAttr ( int prio );
+    int                 getPriorityAttr ( int & prio );
 
     bool                setScope        ( int scope );
     int                 getScope();
