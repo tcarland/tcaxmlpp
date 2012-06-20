@@ -475,7 +475,6 @@ Thread::ThreadEntry ( void* arg )
     if ( t == NULL )
         return NULL;
 
-    t->init();
     t->run();
     t->finished();
 
