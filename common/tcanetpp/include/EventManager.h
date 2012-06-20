@@ -115,7 +115,10 @@ class EventManager {
  
   public:
 
-    static int           GetTimeOfDay   ( timeval * t );
+    /**  static functions for manipulating <time.h> struct timeval.
+      *  using ::gettimeofday()
+     **/
+    static int           GetTimeOfDay   ( timeval        * tv );
 
     static float         TimevalToMs    ( const timeval  * tv );
 
@@ -124,16 +127,27 @@ class EventManager {
 
     static void          TimevalDiff    ( const timeval  * t2,
                                           const timeval  * t1,
-                                          timeval        * result );
+                                          timeval  * result );
 
-    static void          TimespecDiff   ( const timespec * t2,
-                                          const timespec * t1,
-                                          timespec       * result );
-    static int64_t       TimespecDiffNS ( const timespec * t2,
-                                          const timespec * t1 );
+    static void          TimevalNorm    ( timeval  * tv );
 
-    static void          TimespecNorm   ( timespec       * ts );
-    static void          NanoSleep      ( long val );
+
+    /**  static functions for manipulating <time.h> struct timespec
+      *  using ::clock_gettime()
+     **/
+    static int           GetTimeOfClock     ( int clkid, timespec * ts );
+    static int           GetClockResolution ( int clkid, timespec * ts );
+
+    static void          TimespecDiff       ( const timespec * t2,
+                                              const timespec * t1,
+                                              timespec  * result );
+
+    static int64_t       TimespecDiffNS    ( const timespec * t2,
+                                             const timespec * t1 );
+
+    static void          TimespecNorm      ( timespec   * ts );
+    static void          NanoSleep         ( int clkid, uint64_t & ns );
+    static void          NanoSleep         ( uint64_t & ns );
 
 
   protected:
@@ -141,10 +155,8 @@ class EventManager {
     void                 verifyTimers();
     void                 checkTimers    ( const timeval    & now );
     void                 checkMinTimer  ( const EventTimer & timer );
-
-    void                 destroyEvent   ( EventTimer & timer );
-    void                 destroyEvent   ( EventIO    & io );
-
+    void                 destroyEvent   ( EventTimer       & timer );
+    void                 destroyEvent   ( EventIO          & io );
     evid_t               getNewEventId();
 
 

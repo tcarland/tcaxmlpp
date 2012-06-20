@@ -638,24 +638,27 @@ EventManager::getNewEventId()
 
 /* TODO: move this to ::clock_gettime. */
 int
-EventManager::GetTimeOfDay ( timeval * t )
+EventManager::GetTimeOfDay ( timeval * tv )
 {
     int r = 0;
     // TODO: fix WIN32
 #   ifdef WIN32
     t->tv_sec = (long) ::time(NULL);
 #   else
-    r = ::gettimeofday(t, 0);
+    r = ::gettimeofday(tv, 0);
 #   endif
     return r;
 }
 
 
+// TODO: should diff in ms need to be a float? why not int64? double?
+// Addl. Note: the float was for ease of transmission and size.
 float
 EventManager::TimevalToMs ( const timeval * tv )
 {
     return( ((float)tv->tv_sec * 1000.0F) + ((float)tv->tv_usec / 1000.0F) );
 }
+
 
 float
 EventManager::TimevalDiffMs ( const timeval * t2, const timeval * t1 )
@@ -678,15 +681,47 @@ EventManager::TimevalDiff ( const timeval * t2, const timeval * t1, timeval * re
 
     result->tv_sec  = t2->tv_sec  - t1->tv_sec;
     result->tv_usec = t2->tv_usec - t1->tv_usec;
-    if ( result->tv_usec < 0 ) {
+
+    if ( result->tv_usec <= 0 )
+    {
         --result->tv_sec;
-        result->tv_usec += 1000000;
+        result->tv_usec += USEC_PER_SEC;
     }
+
+    return;
+}
+
+
+void
+EventManager::TimevalNorm ( struct timeval * tv )
+{
+    if ( tv == NULL )
+        return;
+
+    while ( tv->tv_usec >= USEC_PER_SEC )
+    {
+        tv->tv_sec++;
+        tv->tv_usec -= USEC_PER_SEC;
+    }
+
+    return;
 }
 
 
 //---------------------------------------------------------------//
 
+
+int
+EventManager::GetTimeOfClock ( int clkid, timespec * ts )
+{
+    return( ::clock_gettime(clkid, ts) );
+}
+
+int
+EventManager::GetClockResolution ( int clkid, timespec * ts )
+{
+    return( ::clock_getres(clkid, ts) );
+}
 
 void
 EventManager::TimespecDiff ( const timespec * t2, const timespec * t1,
@@ -707,8 +742,8 @@ EventManager::TimespecDiffNS ( const timespec * t2, const timespec * t1 )
 {
     int64_t diff;
 
-    diff  = NSEC_PER_SEC * (int64_t)((int) t2->tv_sec - (int) t1->tv_sec);
-    diff += ((int) t2->tv_nsec - (int) t1->tv_nsec);
+    diff  = NSEC_PER_SEC * (int64_t)((int)t2->tv_sec - (int)t1->tv_sec);
+    diff += ( (int)t2->tv_nsec - (int)t1->tv_nsec );
 
     return diff;
 }
@@ -728,26 +763,35 @@ EventManager::TimespecNorm ( timespec * ts )
 }
 
 void
-EventManager::NanoSleep ( long val )
+EventManager::NanoSleep ( int clkid, uint64_t & ns )
 {
     struct timespec ts, rem;
-    int    r;
+    int    err;
 
     ts.tv_sec  = 0;
-    ts.tv_nsec = val;
+    ts.tv_nsec = ns;
+
     EventManager::TimespecNorm(&ts);
 
-    r = ::nanosleep(&ts, &rem);
-    if ( r == 0 )
+    err = ::clock_nanosleep(clkid, 0, &ts, &rem);
+
+    if ( err == 0 )
         return;
 
-    while ( errno == EINTR ) {
-        ts = rem;
-        errno = ::nanosleep(&ts, &rem);
+    while ( err == EINTR ) {
+        ts   = rem;
+        err  = ::clock_nanosleep(clkid, 0, &ts, &rem);
     }
 
     return;
 }
+
+void
+EventManager::NanoSleep ( uint64_t & ns )
+{
+    EventManager::NanoSleep(CLOCK_MONOTONIC, ns);
+}
+
 //---------------------------------------------------------------//
 
 
