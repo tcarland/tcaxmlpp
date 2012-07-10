@@ -1,5 +1,5 @@
 /** 
-  * @file CmdBuf.h
+  * @file CmdBuffer.h
   *
   * Copyright (c) 2002 Timothy Charlton Arland 
   * @author  tca@charltontechnology.net
@@ -22,8 +22,8 @@
   * License along with tcanetpp.  
   * If not, see <http://www.gnu.org/licenses/>.
  **/
-#ifndef _TCANETPP_CMDBUF_H_
-#define _TCANETPP_CMDBUF_H_
+#ifndef _TCANETPP_CMDBUFFER_H_
+#define _TCANETPP_CMDBUFFER_H_
 
 #include <iostream>
 #include <string>
@@ -31,55 +31,76 @@
 
 #if defined __GNUC__ && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
 # include <ext/stdio_filebuf.h>
-using __gnu_cxx::stdio_filebuf;
+//using __gnu_cxx::stdio_filebuf;
 #endif
+
+
+
+#define DEFAULT_CMDBUF_SIZE  256
+#define MINIMUM_CMDBUF_SIZE  16
+#define MAXIMUM_CMDBUF_SIZE  16384
 
 
 namespace tcanetpp {
 
 
-#define DEFAULT_CMDBUF_SIZE  64
-#define MINIMUM_CMDBUF_SIZE  2
-#define MAXIMUM_CMDBUF_SIZE  1024
+typedef __gnu_cxx::stdio_filebuf<char>  StreamBuffer;
+typedef std::vector<std::string>        StringBuffer;
 
 
 
 /**  Provides a simpler wrapper to the gnu_cxx:stdio_filebuf interface
   *  offering the buffering system file io such as stdout, for parsing. 
  **/
-class CmdBuf {
+class CmdBuffer {
 
   public:
 
-    CmdBuf();
-    CmdBuf ( size_t bufsize );
+    class CmdBufferExeption : public tcanetpp::Exception {
+      public:
+        virtual ~CmdBufferException() {}
+    };
 
-    virtual ~CmdBuf();
+  public:
 
-    bool        Open        ( const char * cmdstr );
-    void        Close();
+    CmdBuffer ( size_t bufsize = DEFAULT_CMDBUF_SIZE ) throw ( CmdBufferException )
 
-    bool        isOpen();
-    bool        haveData();
-    bool        hasData()   { return this->haveData(); }
+    CmdBuffer ( const std::string & cmd, size_t bufsize = DEFAULT_CMDBUF_SIZE )
+        throw ( CmdBufferException );
 
-    bool        putLine     ( const std::string & line );
-    std::string getLine();
-    void        getAllLines ( std::vector<std::string> & lines );
+    virtual ~CmdBuffer();
+
+
+    bool         Open              ( const std::string & cmd );
+    void         Close();
+
+
+    bool         putLine           ( const std::string & line );
+    std::string  getLine();
+    void         getAllLines       ( StringBuffer      & lines );
+
+    bool         isOpen()   const;
+    bool         haveData() const;
+    bool         hasData()  const  { return this->haveData(); }
+
+    std::string  getErrorStr() const;
 
 
   private:
 
     stdio_filebuf<char>*       _cmdbuf;
-    std::streamsize            _bufsize;
     FILE*                      _file;
+    std::streamsize            _bufsize;
+
+    std::string                _cmd;
+    std::string                _errstr;
     bool                       _init;
 
-    static const char*         _endline;
+    static const char*         _eol;
 };
 
 
 } // namespace
 
 
-#endif // _TCANETPP_CMDBUF_H_
+#endif // _TCANETPP_CMDBUFFER_H_
