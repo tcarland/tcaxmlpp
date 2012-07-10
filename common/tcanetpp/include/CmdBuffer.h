@@ -34,11 +34,12 @@
 //using __gnu_cxx::stdio_filebuf;
 #endif
 
+#include "Exception.hpp"
 
 
-#define DEFAULT_CMDBUF_SIZE  256
-#define MINIMUM_CMDBUF_SIZE  16
-#define MAXIMUM_CMDBUF_SIZE  16384
+#define DEFAULT_CMDBUFFER_SIZE  256
+#define MINIMUM_CMDBUFFER_SIZE  16
+#define MAXIMUM_CMDBUFFER_SIZE  16384
 
 
 namespace tcanetpp {
@@ -56,16 +57,17 @@ class CmdBuffer {
 
   public:
 
-    class CmdBufferExeption : public tcanetpp::Exception {
+    class CmdBufferException : public Exception {
       public:
-        virtual ~CmdBufferException() {}
+        CmdBufferException ( const std::string & errstr );
+        virtual ~CmdBufferException() throw () {}
     };
 
   public:
 
-    CmdBuffer ( size_t bufsize = DEFAULT_CMDBUF_SIZE ) throw ( CmdBufferException )
+    CmdBuffer ( size_t bufsize = DEFAULT_CMDBUFFER_SIZE ) throw ( CmdBufferException );
 
-    CmdBuffer ( const std::string & cmd, size_t bufsize = DEFAULT_CMDBUF_SIZE )
+    CmdBuffer ( const std::string & cmd, size_t bufsize = DEFAULT_CMDBUFFER_SIZE )
         throw ( CmdBufferException );
 
     virtual ~CmdBuffer();
@@ -83,20 +85,25 @@ class CmdBuffer {
     bool         haveData() const;
     bool         hasData()  const  { return this->haveData(); }
 
+    std::string  getCommand() const;
     std::string  getErrorStr() const;
+
+    char         getEOL() const;
+    void         setEOL ( char eol );
 
 
   private:
 
-    stdio_filebuf<char>*       _cmdbuf;
+    StreamBuffer*              _cmdbuf;
     FILE*                      _file;
     std::streamsize            _bufsize;
 
     std::string                _cmd;
     std::string                _errstr;
+    char                       _eol;
     bool                       _init;
 
-    static const char*         _eol;
+    static const char*          EOL;
 };
 
 

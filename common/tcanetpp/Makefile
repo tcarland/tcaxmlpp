@@ -28,7 +28,9 @@ INCLUDES =	    -Iinclude
 LIBS =
 
 PT_OBJS =           src/patricia.o
-TH_OBJS = 	    src/Thread.o src/ThreadLock.o  src/ThreadMutexPool.o
+TH_OBJS = 	    src/Thread.o src/ThreadLock.o src/ThreadMutexPool.o
+CMDBUF_OBJS =       src/CmdBuffer.o
+
 OBJS =		    src/SocketOption.o src/Socket.o src/BufferedSocket.o \
                     src/CircularBuffer.o src/Serializer.o \
 		    src/Whois.o src/EventManager.o \
@@ -42,7 +44,6 @@ ifdef USE_PTHREADS
 OBJS +=		    $(TH_OBJS)
 endif
 
-CMDBUF_OBJS =       src/CmdBuf.o
 
 BIN =		    ptest pfxtest
 ALL_OBJS =	    $(OBJS) $(TH_OBJS) $(PT_OBJS) $(CMDBUF_OBJS)
@@ -63,8 +64,10 @@ solib: libtcanetpp.so.1.0.3
 
 libtcapt: lib/libtcapt.a
 
-cmdbuf: libcmdbuf
+cmdbuffer: cmdbuf
+cmdbuf:    libcmdbuf
 libcmdbuf: lib/libcmdbuf.a
+
 
 lib/libtcapt.a: ${PT_OBJS}
 	( $(MKDIR) lib )

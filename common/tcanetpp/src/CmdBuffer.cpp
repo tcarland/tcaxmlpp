@@ -31,29 +31,36 @@ namespace tcanetpp {
 
 
 const char*
-CmdBuffer::_eol = "\n";
+CmdBuffer::EOL = "\n";
+
+
+CmdBuffer::CmdBufferException::CmdBufferException ( const std::string & errstr )
+    : Exception(errstr)
+{}
 
 
 
-CmdBuffer::CmdBuffer ( size_t bufsize )
+CmdBuffer::CmdBuffer ( size_t bufsize ) throw ( CmdBufferException )
     : _cmdbuf(NULL),
       _file(NULL),
       _bufsize(bufsize),
+      _eol(*CmdBuffer::EOL),
       _init(false)
 {
-    if ( bufsize < MINIMUM_CMDBUF_SIZE || bufsize > MAXIMUM_CMDBUF_SIZE )
+    if ( bufsize < MINIMUM_CMDBUFFER_SIZE || bufsize > MAXIMUM_CMDBUFFER_SIZE )
         throw ( CmdBufferException("CmdBuffer error, buffersize out of bounds") );
 }
 
 
-CmdBuffer::CmdBuffer ( const std::string & cmd, size_t bufsize ) throw ( Exception )
+CmdBuffer::CmdBuffer ( const std::string & cmd, size_t bufsize ) throw ( CmdBufferException )
     : _cmdbuf(NULL),
       _file(NULL),
       _bufsize(bufsize),
       _cmd(cmd),
+      _eol(*CmdBuffer::EOL),
       _init(false)
 {
-    if ( bufsize < MINIMUM_CMDBUF_SIZE || bufsize > MAXIMUM_CMDBUF_SIZE )
+    if ( bufsize < MINIMUM_CMDBUFFER_SIZE || bufsize > MAXIMUM_CMDBUFFER_SIZE )
         throw ( CmdBufferException("CmdBuffer error, buffersize out of bounds") );
     if ( ! this->Open(cmd) )
         throw ( CmdBufferException(this->_errstr) );
@@ -78,13 +85,14 @@ CmdBuffer::Open ( const std::string & cmd )
         this->Close();
 
     if ( (f = ::popen(cmd.c_str(), "r")) == NULL ) {
-        _errstr = "Cmdbuf::Open() error in popen, failed to open pipe stream";
+        _errstr = "CmdBuffer::Open() error in popen, failed to open pipe stream";
         return false;
     }
 
-    _cmdbuf = new stdio_filebuf<char>(f, std::ios_base::in, _bufsize);
+    _cmdbuf = new StreamBuffer(f, std::ios_base::in, _bufsize);
 
     if ( ! _cmdbuf->is_open() ) {
+        _errstr = "CmdBuffer::Open() error in is_open()";
         delete _cmdbuf;
         delete f;
     } else {
@@ -103,6 +111,7 @@ CmdBuffer::Close()
         _cmdbuf->close();
         ::pclose(_file);
         delete _cmdbuf;
+        _cmdbuf = NULL;
     }
 
     _init = false;
@@ -112,7 +121,7 @@ CmdBuffer::Close()
 
 
 bool
-CmdBuffer::isOpen()
+CmdBuffer::isOpen() const
 {
     if ( _init )
         return _cmdbuf->is_open();
@@ -122,7 +131,7 @@ CmdBuffer::isOpen()
 
 
 bool
-CmdBuffer::haveData()
+CmdBuffer::haveData() const
 {
     if ( ! _init )
         return false;
@@ -140,7 +149,7 @@ CmdBuffer::getLine()
     char        ch;
     std::string line = "";
 
-    while ( _cmdbuf->sgetc() != EOF && (ch = _cmdbuf->sbumpc()) != *_endline )
+    while ( _cmdbuf->sgetc() != EOF && (ch = _cmdbuf->sbumpc()) != _eol )
         line += ch;
 
     return line;
@@ -148,7 +157,7 @@ CmdBuffer::getLine()
 
 
 void
-CmdBuffer::getAllLines ( std::vector<std::string> & lines )
+CmdBuffer::getAllLines ( StringBuffer & lines )
 {
     std::string line = "";
     
@@ -158,7 +167,8 @@ CmdBuffer::getAllLines ( std::vector<std::string> & lines )
     if ( ! _init )
         return;
 
-    while ( this->haveData() ) {
+    while ( this->haveData() ) 
+    {
         line = this->getLine();
         lines.push_back(line);
     }
@@ -178,6 +188,30 @@ CmdBuffer::putLine ( const std::string & line )
         return true;
 
     return true;
+}
+
+std::string
+CmdBuffer::getCommand() const
+{
+    return _cmd;
+}
+
+std::string
+CmdBuffer::getErrorStr() const
+{
+    return _errstr;
+}
+
+char
+CmdBuffer::getEOL() const
+{
+    return _eol;
+}
+
+void
+CmdBuffer::setEOL ( char eol )
+{
+    _eol = eol;
 }
 
 
