@@ -9,6 +9,9 @@ NEED_LIBXML2 = 1
 NEED_OPENSSL = 1
 NEED_GSOAP = 1
 
+ifdef USE_LIBRT
+NEED_LIBRT = 1
+endif
 ifdef USE_MYSQL
 NEED_MYSQL = 1
 endif

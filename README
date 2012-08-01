@@ -18,7 +18,7 @@ net-snmp
 Installation:
 -------------
 
-1. First build the source tree. The install requires the source 
+1. First build the source tree. The install requires that the source 
    package is first built AND cleaned, so run 
     $ make && make clean 
    as a user who has local write privileges.

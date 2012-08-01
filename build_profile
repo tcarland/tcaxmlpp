@@ -3,6 +3,7 @@ export PROFILE="tnms-release"
 
 export USE_PTHREADS=1
 export USE_MYSQL=1
+export USE_LIBRT=1
 export TNMS_DEBUG=
 
 export TNMS_PREFIX=/opt/tnms

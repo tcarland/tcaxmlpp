@@ -135,6 +135,7 @@ class EventManager {
     /**  static functions for manipulating <time.h> struct timespec
       *  using ::clock_gettime()
      **/
+#ifdef USE_LIBRT
     static int           GetTimeOfClock     ( int clkid, timespec * ts );
     static int           GetClockResolution ( int clkid, timespec * ts );
 
@@ -148,7 +149,7 @@ class EventManager {
     static void          TimespecNorm      ( timespec   * ts );
     static void          NanoSleep         ( int clkid, uint64_t & ns );
     static void          NanoSleep         ( uint64_t & ns );
-
+#endif
 
   protected:
 

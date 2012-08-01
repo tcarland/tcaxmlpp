@@ -214,6 +214,7 @@ endif
 ifdef NEED_LIBRT
 LIB_RT ?= -lrt
 LIBS   += $(LIB_RT)
+CFLAGS += -DUSE_LIBRT
 endif
 
 ifdef NEED_SOCKET

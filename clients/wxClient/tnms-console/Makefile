@@ -7,6 +7,10 @@ NEED_TNMSAPI = 1
 NEED_NCURSES = 1
 NEED_HEXES = 1
 
+ifdef USE_LIBRT
+NEED_LIBRT = 1
+endif
+
 ifdef TNMS_DEBUG
 OPT_FLAGS= 	-g
 endif

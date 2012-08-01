@@ -1,7 +1,5 @@
 # Makefile
 #
-#
-
 ifdef TCAMAKE_PROJECT
     TOPDIR = ../..
 else
@@ -13,6 +11,10 @@ NEED_SOCKET = 1
 NEED_TNMSCORE = 1
 NEED_ZLIB = 1
 NEED_LIBXML2 = 1
+
+ifdef USE_LIBRT
+NEED_LIBRT = 1
+endif
 
 ifdef TNMS_DEBUG
 OPT_FLAGS= 	-g

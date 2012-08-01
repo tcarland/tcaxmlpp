@@ -5,6 +5,10 @@ NEED_ZLIB = 1
 NEED_LIBXML2 = 1
 NEED_TNMSAPI = 1
 
+ifdef USE_LIBRT
+NEED_LIBRT = 1
+endif
+
 ifdef TNMS_DEBUG
 OPT_FLAGS= 	-g
 endif

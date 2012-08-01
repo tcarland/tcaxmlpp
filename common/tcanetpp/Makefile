@@ -1,6 +1,5 @@
 # Makefile for tcanetpp
 #
-#
 ifdef TCAMAKE_PROJECT
   TOPDIR = ../..
 else
@@ -10,8 +9,11 @@ endif
 NEED_SOCKET = 1
 NEED_LIBDL = 1
 
+ifdef USE_LIBRT
+NEED_LIBRT = 1
+endif
 ifdef USE_PTHREADS
-  NEED_PTHREADS = 1
+NEED_PTHREADS = 1
 endif
 
 #-------------------#

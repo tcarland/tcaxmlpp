@@ -709,7 +709,7 @@ EventManager::TimevalNorm ( struct timeval * tv )
 
 
 //---------------------------------------------------------------//
-
+#ifdef USE_LIBRT
 
 int
 EventManager::GetTimeOfClock ( int clkid, timespec * ts )
@@ -791,6 +791,7 @@ EventManager::NanoSleep ( uint64_t & ns )
 {
     EventManager::NanoSleep(CLOCK_MONOTONIC, ns);
 }
+#endif
 
 //---------------------------------------------------------------//
 
