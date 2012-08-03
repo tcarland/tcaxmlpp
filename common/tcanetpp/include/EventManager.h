@@ -43,6 +43,10 @@ namespace tcanetpp {
 #define USEC_PER_SEC 1000000
 #define NSEC_PER_SEC 1000000000
 
+#define DEFAULT_EVU  500000   // default select timeout
+#define MAX_FDVAL    1024000  // max file descriptors
+#define NO_EVID      0
+
 // macros for normalizing event time units
 #define sectoevu(x)  (x * USEC_PER_SEC)
 #define msectoevu(x) (x * MSEC_PER_SEC)
@@ -51,10 +55,6 @@ namespace tcanetpp {
 #define evutomsec(x) (x / 1000)
 #define evutonsec(x) (x * 1000)
 
-
-#define DEFAULT_EVU 500000   // default select timeout
-#define MAX_FDVAL   1024000  // max file descriptors
-#define NO_EVID     0 
 
 
 /**  The EventManager class provides an interface to using select for a

@@ -636,7 +636,6 @@ EventManager::getNewEventId()
 }
 
 
-/* TODO: move this to ::clock_gettime. */
 int
 EventManager::GetTimeOfDay ( timeval * tv )
 {
