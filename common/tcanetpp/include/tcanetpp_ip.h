@@ -8,7 +8,7 @@
   * convention across platforms.
   *
   * Copyright (c) 2010 Timothy Charlton Arland
-  * @author tca@charltontechnology.net
+  * @author  tcarland@gmail.com
   *
   * @section LICENSE
   *

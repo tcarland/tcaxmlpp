@@ -4,7 +4,7 @@
   *  Base Exception class used and thrown by the tcanetpp library.
   *
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *

@@ -4,7 +4,7 @@
   *   Class for handling multiplexing data I/O and timer events.
   *
   * Copyright (c) 2004 Timothy Charlton Arland 
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *

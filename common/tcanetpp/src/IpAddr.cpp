@@ -5,7 +5,7 @@
   * an IPv4 or IPv6 address.
   *
   * Copyright (c) 2010 Timothy Charlton Arland
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *
@@ -128,6 +128,9 @@ IpAddr::operator< ( const IpAddr & ipaddr ) const
 
 //-------------------------------------------------------------------//
 
+/**  Returns a boolean indicating if the underlying IP is an
+  *  IPV4 address.
+ **/
 bool
 IpAddr::ipv4() const
 {
@@ -136,6 +139,9 @@ IpAddr::ipv4() const
     return false;
 }
 
+/**  Returns a boolean indicating if the underlying IP is an
+  *  IPV6 address.
+ **/
 bool
 IpAddr::ipv6() const
 {
@@ -152,6 +158,10 @@ IpAddr::getAddr() const
     return this->getAddr6();
 }
 
+/*@{*/
+/** Returns the IPV4 address, if applicable, of the underlying
+  * sockaddr. Returns 0 if the address family is for IPV6.
+ **/
 ipv4addr_t
 IpAddr::getAddr4() const
 {
@@ -167,6 +177,17 @@ IpAddr::getAddr4() const
     return addr;
 }
 
+ipv4addr_t
+IpAddr::getPrefix() const
+{
+    return this->getAddr4();
+}
+/*@}*/
+
+/*@{*/
+/** Returns the IPV6 address, if applicable, of the underlying
+  * sockaddr. Returns 0 if the address family is for IPV4.
+ **/
 ipv6addr_t
 IpAddr::getAddr6() const
 {
@@ -182,18 +203,15 @@ IpAddr::getAddr6() const
     return addr;
 }
 
-ipv4addr_t
-IpAddr::getPrefix() const
-{
-    return this->getAddr4();
-}
 
 ipv6addr_t
 IpAddr::getPrefix6() const
 {
     return this->getAddr6();
 }
+/*@}*/
 
+/** Returns the mask length in bits of the IP address */
 uint8_t
 IpAddr::getPrefixLen() const
 {
@@ -216,6 +234,7 @@ IpAddr::getSockAddr() const
 
 //-------------------------------------------------------------------//
 
+/*  Returns the string representation of the IP Address */
 std::string
 IpAddr::toString() const
 {
@@ -229,6 +248,9 @@ IpAddr::toString() const
     return ipstr;
 }
 
+/** Returns a boolean indicating whether the IP Address is
+  * a loopback address i
+ **/
 bool
 IpAddr::isLoopback() const
 {
@@ -238,6 +260,10 @@ IpAddr::isLoopback() const
     return IpAddr::IsLoopback(this->getAddr6());
 }
 
+/**  Legacy method for returning a cidr_t object for IPV4. Note
+  *  that the cidr address could be 0 if the underlying IP address is
+  *  an IPV6 address.
+ **/
 cidr_t
 IpAddr::getCidr() const
 {
@@ -248,6 +274,7 @@ IpAddr::getCidr() const
 }
 
 //-------------------------------------------------------------------//
+//  Static Functions
 //-------------------------------------------------------------------//
 
 

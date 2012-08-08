@@ -4,7 +4,7 @@
   *   A thread-safe wrapper to the STL queue.
   *  
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *
@@ -31,6 +31,7 @@ extern "C" {
 # include <errno.h>
 }
 #include <queue>
+
 
 #include "ThreadLock.h"
 

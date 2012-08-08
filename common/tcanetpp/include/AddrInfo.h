@@ -4,7 +4,7 @@
   * For handling struct addrinfo and getaddrinfo/getnameinfo
   *
   * Copyright (c) 2012 Timothy Charlton Arland
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *
@@ -37,6 +37,11 @@
 namespace tcanetpp {
 
 
+/**  The AddrInfo class provides a convenient object for
+  *  creating and manipulating struct addrinfo objects
+  *  including some static methods for wrapping calls to
+  *  the system getaddrinfo and getnameinfo functions.
+ **/
 class AddrInfo {
 
   public:

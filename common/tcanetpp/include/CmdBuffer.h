@@ -2,7 +2,7 @@
   * @file CmdBuffer.h
   *
   * Copyright (c) 2002 Timothy Charlton Arland 
-  * @author  tca@charltontechnology.net
+  * @author  tcarland@gmail.com
   *
   * @section LICENSE
   *

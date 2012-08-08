@@ -6,7 +6,7 @@
   *  file logging, or stdc++ iostream*
   *
   * Copyright (c) 2004,2008 Timothy Charlton Arland 
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *

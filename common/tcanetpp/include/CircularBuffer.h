@@ -8,7 +8,7 @@
   *  should be used with caution.
   *
   * Copyright (c) 2001 Timothy Charlton Arland 
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *

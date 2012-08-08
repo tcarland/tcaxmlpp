@@ -5,7 +5,7 @@
   * an IPv4 or IPv6 address.
   *
   * Copyright (c) 2012 Timothy Charlton Arland
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *
@@ -53,6 +53,9 @@ typedef std::set<IpAddr>     IpAddrSet;
 typedef std::vector<IpAddr>  IpAddrList;
 
 
+/**  Provides a seamless interaction with an underlying sockaddr
+  *  supporting both IPV4 and IPV6 addresses.
+ */
 class IpAddr {
 
   public:

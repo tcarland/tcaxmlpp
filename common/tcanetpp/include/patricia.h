@@ -10,7 +10,7 @@
   * to properly synchronize function calls.
   *
   * Copyright (c) 2002,2008 Timothy Charlton Arland 
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *

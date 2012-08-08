@@ -1,8 +1,8 @@
 /** 
   * @file HashMap.hpp
   *
-  *   A wrapper to the SGI hash_map<> class that 
-  * provides a default hasher implementation for using string keys.
+  *   A wrapper to the SGI hash_map<> class that provides a
+  * default hasher implementation for using string keys.
   * As of the time of this writing, the hash_map implementation is 
   * not yet a part of the C++ standard library. This implementation 
   * relies on the original SGI hash_map, which is still provided with 
@@ -11,7 +11,7 @@
   * non-Gnu stdc++)
   *  
   * Copyright (c) 2002,2008,2009 Timothy Charlton Arland 
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *

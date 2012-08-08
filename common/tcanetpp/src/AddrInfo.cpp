@@ -4,7 +4,7 @@
   * For handling struct addrinfo and getaddrinfo/getnameinfo
   *
   * Copyright (c) 2010 Timothy Charlton Arland
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *
@@ -54,7 +54,7 @@ AddrInfo::AddrInfoFactory AddrInfo::factory;
 AddrInfo*
 AddrInfo::AddrInfoFactory::operator() ( struct addrinfo * ai )
 {
-    return new AddrInfo(ai);
+    return(new AddrInfo(ai));
 }
 
 
@@ -111,19 +111,22 @@ AddrInfo::begin()
 addrinfo*
 AddrInfo::next()
 {
-    if ( _nxt == NULL )
-        _nxt = _ai;
-    else
+    if ( _nxt != NULL )
         _nxt = _nxt->ai_next;
+
     return _nxt;
 }
 
+/** Returns a pointer to the underlying struct addrinfo */
 addrinfo*
 AddrInfo::get()
 {
     return _ai;
 }
 
+/** Returns the IP address of the underlying addrinfo
+  *  as a struct sockaddr .
+ **/
 sockaddr_t*
 AddrInfo::getAddr()
 {
@@ -132,6 +135,9 @@ AddrInfo::getAddr()
     return NULL;
 }
 
+/** Returns the currently configured flags for the
+  * underlying struct addrinfo.
+ **/
 int
 AddrInfo::getFlags() const
 {
@@ -140,6 +146,7 @@ AddrInfo::getFlags() const
     return 0;
 }
 
+/** Set the flags for the addrinfo. */
 bool
 AddrInfo::setFlags ( int flags )
 {
@@ -150,6 +157,7 @@ AddrInfo::setFlags ( int flags )
     return false;
 }
 
+/** Returns the address family value */
 int
 AddrInfo::getFamily() const
 {
@@ -158,6 +166,7 @@ AddrInfo::getFamily() const
     return 0;
 }
 
+/** Sets the address family of the underlying addrinfo object */
 bool
 AddrInfo::setFamily ( int family )
 {
@@ -186,6 +195,7 @@ AddrInfo::setSocktype ( int type )
     return false;
 }
 
+/** Returns the protocol set within the struct sockaddr. */
 int
 AddrInfo::getProtocol() const
 {
@@ -194,6 +204,7 @@ AddrInfo::getProtocol() const
     return 0;
 }
 
+/** Sets the addrinfo protocol */
 bool
 AddrInfo::setProtocol ( int proto )
 {
@@ -204,6 +215,7 @@ AddrInfo::setProtocol ( int proto )
     return false;
 }
 
+/** Returns the ai_addrlen of the underlying struct addrinfo */
 size_t
 AddrInfo::getAddrLen() const
 {
@@ -212,6 +224,7 @@ AddrInfo::getAddrLen() const
     return 0;
 }
 
+/** Returns the canonical name if applicable, or NULL if not set */
 char*
 AddrInfo::getCanonName() const
 {
@@ -229,7 +242,10 @@ AddrInfo::getError() const
 // ----------------------------------------------------------------------
 // static factory methods
 
-
+/**  Static functions that performs getaddrinfo and returns a pointer to
+  *  a newly allocated AddrInfo object.
+  * @{
+ **/
 AddrInfo*
 AddrInfo::GetAddrInfo ( const std::string & host, const std::string & svc )
 {
@@ -255,8 +271,12 @@ AddrInfo::GetAddrInfo ( const std::string & host, uint16_t port )
 
     return AddrInfo::GetAddrInfo(host, svc);
 }
+/*@}*/
 
-
+/**  Static wrapper function to getaddrinfo. Returns 0 on success
+  *  or non-zero error code.
+ **/
+/*@{*/
 int
 AddrInfo::GetAddrInfo ( const std::string & host,
                         const addrinfo    * hints,
@@ -282,12 +302,15 @@ AddrInfo::GetAddrInfo ( const std::string & host, const std::string & svc,
 
     return(::getaddrinfo(hostname, service, hints, res));
 }
-
+/*@}*/
 
 
 // ----------------------------------------------------------------------
 
-
+/** Static functions that wrap getnameinfo for reverse lookups.
+  * Returns 0 on success or non-zero error-code indicating failure.
+ **/
+/*@{*/
 int
 AddrInfo::GetNameInfo ( const ipv4addr_t  & addr,
                         std::string       & result,
@@ -342,7 +365,7 @@ AddrInfo::GetNameInfo ( const sockaddr    * sock,
 
     return res;
 }
-
+/*@}*/
 
 // ----------------------------------------------------------------------
 
@@ -371,6 +394,7 @@ AddrInfo::GetHostName ( const ipv4addr_t & addr )
     AddrInfo::GetNameInfo(addr, host, 0);
     return host;
 }
+
 
 /**  First attempts to convert the provided string
   *  to an ipv4 address, or upon failure, will
