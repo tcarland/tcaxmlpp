@@ -2,7 +2,7 @@
   * @file HexAttributes.h
   *
   * Copyright (c) 2011 Timothy Charlton Arland
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *
@@ -77,7 +77,7 @@ enum HexCursor {
 
 // some input values for convenience
 enum HexInputKey {
-    HEX_KEY_NONE = 0,
+    HEX_KEY_NONE   = 0,
     HEX_KEY_WINDOW = 23
 };
 

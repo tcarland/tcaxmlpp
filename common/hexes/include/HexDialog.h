@@ -2,7 +2,7 @@
   * @file HexDialog.h
   *
   * Copyright (c) 2011 Timothy Charlton Arland
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *

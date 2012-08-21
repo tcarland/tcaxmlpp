@@ -43,7 +43,8 @@ typedef std::vector<Prefix>  PrefixList;
   *  format IP Address and its associated mask length. The class 
   *  is used with the tcanetpp library and provides convenient 
   *  sorting and equality operators for use with the Standard 
-  *  Template Library.
+  *  Template Library. This legacy class supports IPv4 only,
+  *  use the IpAddr class for both IPv4 and IPv6 support.
  **/
 class Prefix {
 

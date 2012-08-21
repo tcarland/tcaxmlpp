@@ -2,7 +2,7 @@
   * @file HexApp.cpp
   *
   * Copyright (c) 2011 Timothy Charlton Arland
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *
@@ -37,6 +37,9 @@ bool HexApp::_NCURSES_INIT = false;
 
 //----------------------------------------------------------------//
 
+/** Constructor to initialize the Hex Application and the underlying
+  * ncurses library.
+ **/
 HexApp::HexApp()
     : _curPanel(NULL),
       _colorIndex(0),
@@ -281,6 +284,7 @@ HexApp::createPanel ( const std::string & title,
   *  the HexApp instance will 'own' the panel, calling the 
   *  proper I/O events on draw() and poll(), and free the 
   *  object accordingly on destruction.
+  *
   *  @param panel is a pointer to a HexPanel object.
   *  Returns false if the object is not valid or a panel of
   *  the same name already exists.
@@ -311,6 +315,7 @@ HexApp::addPanel ( HexPanel * panel )
 /**  Returns the HexPanel pointer for the given title, or
   *  NULL if no such title exists. If no title is given,
   *  the current focused panel is returned.
+  *
   *  @param title is the window title to be retrieved or
   *  empty for the current top panel.
  **/
@@ -337,6 +342,7 @@ HexApp::getPanel ( const std::string & title )
   *  longer track the panel object and it will not be
   *  destroyed by the HexApp instance.
   *  Returns NULL if no such panel exists.
+  *
   *  @param  title is the window title to be removed.
  **/
 HexPanel*

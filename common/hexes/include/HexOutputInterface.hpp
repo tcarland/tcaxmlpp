@@ -2,7 +2,7 @@
   * @file HexOutputInterface.h
   *
   * Copyright (c) 2011 Timothy Charlton Arland
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *
@@ -25,9 +25,11 @@
 #ifndef _HEXES_HEXOUTPUTINTERFACE_HPP_
 #define _HEXES_HEXOUTPUTINTERFACE_HPP_
 
+
 namespace hexes {
 
 class HexPanel;
+
 
 /**  Defines the hexes interface for handling output from a curses  
   *  window. Triggered by a draw event from HexApp, the derived 
@@ -41,6 +43,7 @@ class HexOutputInterface {
 
     virtual int handleOutput ( HexPanel * panel ) = 0;
 };
+
 
 } // namespace 
 

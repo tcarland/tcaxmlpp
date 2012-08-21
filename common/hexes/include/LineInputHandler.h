@@ -2,7 +2,7 @@
   * @file LineInputHandler.h
   *
   * Copyright (c) 2011 Timothy Charlton Arland
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *
@@ -49,10 +49,11 @@ class LineInputHandler : public HexInputInterface {
   public:
 
     LineInputHandler ( int maxlength = HEXES_MAXINPUTLEN );
-
     virtual ~LineInputHandler();
 
+
     virtual int  handleInput ( HexPanel * p, int ch );
+
 
     std::string& getLine();
 

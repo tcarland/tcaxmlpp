@@ -2,7 +2,7 @@
   * @file HexWindow.h
   *
   * Copyright (c) 2011 Timothy Charlton Arland
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *
@@ -33,9 +33,9 @@ namespace hexes {
 
 
 
-/**  Provides an Object-oriented interface to a ncurses window. This
+/**  Provides an object-oriented interface to a ncurses window. This
   *  class is generally not used directly but is used by HexPanel 
-  *  for interacting with the underlying panel window.
+  *  for interacting with the underlying window object.
  **/
 class HexWindow {
 
@@ -70,10 +70,12 @@ class HexWindow {
 
     int            startY();
     int            startX();
+
     int            currentRow();
     int            currentColumn();
     int            curY();
     int            curX();
+
     HexPosition    currentPosition();
 
     int            maxColumns();
@@ -85,9 +87,11 @@ class HexWindow {
     int            moveWindow ( int starty, int startx );
     void           resize     ( int height, int width );
 
+
   protected:
 
     int            wrap();
+
 
     static int     LastIndexOf  ( const std::string & str, 
                                   const std::string & match,

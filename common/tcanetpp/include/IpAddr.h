@@ -53,6 +53,9 @@ typedef std::set<IpAddr>     IpAddrSet;
 typedef std::vector<IpAddr>  IpAddrList;
 
 
+/**  The IpAddr class provides an abstraction of a
+  *  sockaddr_t supporting both IPv4 and IPv6 addresses.
+ */
 class IpAddr {
 
   public:

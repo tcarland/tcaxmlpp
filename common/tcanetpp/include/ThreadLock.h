@@ -39,7 +39,11 @@ namespace tcanetpp {
 class ThreadLock;
 
 
-
+/**  Provides a convenient method for synchronizing a function by
+  *  creating an instance of this class on the stack with the
+  *  given mutex to lock which will automatically unlock the
+  *  mutex at the end of function life (stack destruction)
+ **/
 class ThreadAutoMutex {
 
   public:
@@ -54,7 +58,9 @@ class ThreadAutoMutex {
 };
 
 
-
+/**  The ThreadLock class provides a convenient wrapper to
+  *  a pthread mutex.
+ */
 class ThreadLock {
 
   public:
