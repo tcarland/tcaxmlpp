@@ -2,7 +2,7 @@
   * @file HexString.h
   *
   * Copyright (c) 2011 Timothy Charlton Arland
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *
@@ -32,7 +32,7 @@
 namespace hexes {
 
 
-/**  The HexString class wraps the STL string object while
+/**  The HexString class wraps a STL string object while
   *  associating some HexApp attributes such as color, style,
   *  alignment, and wrap behavior.
  **/
@@ -42,6 +42,7 @@ class HexString {
 
     typedef std::string::iterator  iterator;
     typedef std::string::size_type size_type;
+
 
   public:
 
@@ -91,7 +92,8 @@ class HexString {
     int                 getWrap()       const { return wrap; }
 
 
-  public:
+  public:   /* static functions for manipulating strings */
+
 
     static bool         CharIsVisible ( char ch );
 

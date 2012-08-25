@@ -100,7 +100,7 @@ class StringUtils {
 
 
     /*  Note: the to/fromString functions do NOT work with (u)int8_t 
-     *  types since these are often typedef'd from (unsigned)char 
+     *  types since these are typedef'd from an unsigned char
      *  and thus get manipulated differently by stringstream.
      */
     template<typename T>
@@ -156,8 +156,8 @@ class StringUtils {
 
 #ifdef TCANETPP_WIDECHAR
 // ----------------------------------------------------------------------
-//  The same interface is provided for wide chars and is enabled by the
-//  following compile-time definition.
+//  The same interface is provided for wide chars and is enabled by a
+//  compile-time definition.
 
     static bool          equals           ( const std::wstring & wstrA, 
                                             const std::wstring & wstrB );
@@ -200,6 +200,7 @@ class StringUtils {
 
     static std::wstring  ctowstr          ( const std::string  & wstr );
     static std::string   wtocstr          ( const std::wstring & wstr );
+
 
     template<typename T>
     static inline std::wstring toWString   ( const T & a )

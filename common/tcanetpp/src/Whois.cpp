@@ -72,6 +72,7 @@ Whois::init ( const std::string & host, uint16_t port )
 
     IpAddrList   addrs;
     AddrInfo::GetAddrList(host, addrs);
+
     if ( addrs.empty() ) { // error
         _errstr = "GetHostAddrList failed to resolve any addresses";
         return;

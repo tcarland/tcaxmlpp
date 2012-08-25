@@ -1,7 +1,7 @@
-/** @file
+/**
+  * @file EventManager.h
   * 
-  * EventManager
-  *   Class for handling multiplexing data I/O and timer events.
+  * The EventManager class for multiplexing I/O and timer events.
   *
   * Copyright (c) 2004 Timothy Charlton Arland 
   * @author tcarland@gmail.com
@@ -133,7 +133,7 @@ class EventManager {
 
 
     /**  static functions for manipulating <time.h> struct timespec
-      *  using ::clock_gettime()
+      *  using ::clock_gettime() from librt
      **/
 #ifdef USE_LIBRT
     static int           GetTimeOfClock     ( int clkid, timespec * ts );
@@ -150,6 +150,7 @@ class EventManager {
     static void          NanoSleep         ( int clkid, uint64_t & ns );
     static void          NanoSleep         ( uint64_t & ns );
 #endif
+
 
   protected:
 

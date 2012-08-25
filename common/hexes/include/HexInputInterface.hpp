@@ -2,7 +2,7 @@
   * @file HexInputInterface.h
   *
   * Copyright (c) 2011 Timothy Charlton Arland
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *
@@ -25,9 +25,11 @@
 #ifndef _HEXES_HEXINPUTINTERFACE_HPP_
 #define _HEXES_HEXINPUTINTERFACE_HPP_
 
+
 namespace hexes {
 
 class HexPanel;
+
 
 /**  Defines the hexes interface for handling input from 
   *  a curses window. Input on a given panel will cause the 
@@ -37,7 +39,6 @@ class HexPanel;
 class HexInputInterface {
   public:
     virtual ~HexInputInterface() {}
-
 
     virtual int handleInput ( HexPanel * panel, int ch ) = 0;
 

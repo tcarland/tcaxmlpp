@@ -2,7 +2,7 @@
   * @file HexPosition.hpp
   *
   * Copyright (c) 2011 Timothy Charlton Arland
-  * @author tca@charltontechnology.net
+  * @author tcarland@gmail.com
   *
   * @section LICENSE
   *
@@ -29,7 +29,7 @@
 namespace hexes {
 
 
-/**  Represents a X, Y pair of screen coordinates */
+/**  Represents a pair of X, Y screen coordinates */
 typedef struct HexPosition {
     int  row;  // y
     int  col;  // x
@@ -41,6 +41,9 @@ typedef struct HexPosition {
     HexPosition ( int y, int x ) 
         : row(y), col(x) 
     {}
+
+    int x() { return col; }
+    int y() { return row; }
 
 } hexPos_t;
 
