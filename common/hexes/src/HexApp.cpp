@@ -65,7 +65,7 @@ HexApp::~HexApp()
 //----------------------------------------------------------------//
 
 /**  Detects whether the application has been resized by comparing
-  * the current height/width to the tracked values.
+  *  the current height/width to the tracked values.
  **/
 bool
 HexApp::resized()
@@ -81,8 +81,8 @@ HexApp::resized()
     return resized;
 }
 
-/**  Initiates a redraw event for all panels and calls the underlying ncurses/panel
-  *  update functions.
+/**  Initiates a (re)draw event for all panels and calls the underlying
+  *  panel update functions.
  **/
 int
 HexApp::draw()
@@ -169,7 +169,7 @@ HexApp::poll()
     return r;
 }
 
-/** Sets I/O timeout delay in milliseconds */
+/** Sets the I/O timeout delay in milliseconds */
 void
 HexApp::timeout ( int delay_ms )
 {

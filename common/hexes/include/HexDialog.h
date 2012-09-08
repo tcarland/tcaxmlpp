@@ -34,7 +34,7 @@ namespace hexes {
 
 
 
-/** A derivative of HexPanel, the HexDialog class represents
+/** Derived from HexPanel, the HexDialog class represents
   * a modal, pop-up dialog window.
  **/
 class HexDialog : public HexPanel {

@@ -170,6 +170,7 @@ class HexPanel {
 
     void                setFocus();
     void                unsetFocus();
+    bool			    hasFocus() const;
 
     int                 getTextColor();
     void                setTextColor   ( int colorIndex );

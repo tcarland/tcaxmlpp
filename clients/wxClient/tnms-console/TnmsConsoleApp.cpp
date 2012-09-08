@@ -17,6 +17,7 @@ namespace tnmsConsole {
 
 struct NodeDumpPredicate {
     std::list<TnmsTree::Node*> nodes;
+
     void operator() ( TnmsTree::Node * node )
     {
         nodes.push_front(node);
@@ -91,6 +92,7 @@ TnmsConsoleApp::run()
 
     _prompt    = "[tnms]> ";
     _title     = " tnms-console ";
+
     _mainPanel = this->createPanel("main", (this->height() - statht - conht - 1), this->width(), 1, 0);
     _statPanel = this->createPanel("status", statht, this->width(), (this->height() - statht - conht), 0);
     _consPanel = this->createPanel("console", conht, this->width(), (this->height() - conht), 0);
@@ -915,6 +917,7 @@ TnmsConsoleApp::DisplayHelp()
     _mainPanel->addText(" client show   [name]               =  display the current metric for 'name' ");
 }
 
+
 bool
 TnmsConsoleApp::GetQuotedString ( size_t indx, CommandList & cmdlist, std::string & str )
 {
@@ -955,6 +958,8 @@ TnmsConsoleApp::GetQuotedString ( size_t indx, CommandList & cmdlist, std::strin
     return valid;
 }
 
+
 }  // namespace
 
 
+// _TNMSCONSOLE_TNMSCONSOLEAPP_CPP_

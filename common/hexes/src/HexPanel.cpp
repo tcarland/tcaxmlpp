@@ -221,12 +221,14 @@ HexPanel::hide()
 
 //----------------------------------------------------------------//
 
+/** Erases all contents of the window */
 void
 HexPanel::erase()
 {
     this->_hwin->erase();
 }
 
+/** Forces a refresh of the underlying window */
 void
 HexPanel::refresh()
 {
@@ -277,12 +279,14 @@ HexPanel::curX()
     return this->_hwin->curX();
 }
 
+/** Returns the maximum allowed Y coordinate of the window */
 int
 HexPanel::maxY()
 {
     return this->_hwin->maxY();
 }
 
+/** Returns the maximum allowed X coordinate of the window */
 int
 HexPanel::maxX()
 {
@@ -306,6 +310,12 @@ void
 HexPanel::unsetFocus()
 {
     _focus = false;
+}
+
+bool
+HexPanel::hasFocus() const
+{
+	return this->_focus;
 }
 
 //----------------------------------------------------------------//
