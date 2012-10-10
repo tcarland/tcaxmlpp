@@ -38,6 +38,9 @@
 								<option id="org.eclipse.cdt.build.core.settings.holder.undef.incpaths.32924077" name="Undefined Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.undef.incpaths" valueType="undefIncludePath">
 									<listOptionValue builtIn="false" value="/home/tca/src/ratnest-hg/devbranch/tnms/common/tcanetpp/include"/>
 								</option>
+								<option id="org.eclipse.cdt.build.core.settings.holder.symbols.338735996" superClass="org.eclipse.cdt.build.core.settings.holder.symbols" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="USE_LIBRT=1"/>
+								</option>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.489203918" languageId="org.eclipse.cdt.core.g++" languageName="GNU C++" sourceContentType="org.eclipse.cdt.core.cxxSource,org.eclipse.cdt.core.cxxHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
 							<tool id="org.eclipse.cdt.build.core.settings.holder.2097314064" name="GNU C" superClass="org.eclipse.cdt.build.core.settings.holder">
@@ -100,6 +103,9 @@
 								</option>
 								<option id="org.eclipse.cdt.build.core.settings.holder.undef.incpaths.1541769464" name="Undefined Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.undef.incpaths" valueType="undefIncludePath">
 									<listOptionValue builtIn="false" value="/home/tca/src/hg/devbranch/tcanms/common/tcanetpp/include"/>
+								</option>
+								<option id="org.eclipse.cdt.build.core.settings.holder.symbols.1687766490" superClass="org.eclipse.cdt.build.core.settings.holder.symbols" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="USE_LIBRT=1"/>
 								</option>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.815846154" languageId="org.eclipse.cdt.core.g++" languageName="GNU C++" sourceContentType="org.eclipse.cdt.core.cxxSource,org.eclipse.cdt.core.cxxHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
