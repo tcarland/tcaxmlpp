@@ -143,22 +143,22 @@ class EventManager {
                                               const timespec * t1,
                                               timespec  * result );
 
-    static int64_t       TimespecDiffNS    ( const timespec * t2,
-                                             const timespec * t1 );
+    static int64_t       TimespecDiffNS     ( const timespec * t2,
+                                              const timespec * t1 );
 
-    static void          TimespecNorm      ( timespec   * ts );
-    static void          NanoSleep         ( int clkid, uint64_t & ns );
-    static void          NanoSleep         ( uint64_t & ns );
+    static void          TimespecNorm       ( timespec   * ts );
+    static void          NanoSleep          ( int clkid, uint64_t & ns );
+    static void          NanoSleep          ( uint64_t & ns );
 #endif
 
 
   protected:
 
     void                 verifyTimers();
-    void                 checkTimers    ( const timeval    & now );
-    void                 checkMinTimer  ( const EventTimer & timer );
-    void                 destroyEvent   ( EventTimer       & timer );
-    void                 destroyEvent   ( EventIO          & io );
+    void                 checkTimers        ( const timeval    & now );
+    void                 checkMinTimer      ( const EventTimer & timer );
+    void                 destroyEvent       ( EventTimer       & timer );
+    void                 destroyEvent       ( EventIO          & io );
     evid_t               getNewEventId();
 
 
