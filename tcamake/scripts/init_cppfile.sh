@@ -2,16 +2,15 @@
 #
 #       init_cppfile.sh
 #
-#   creates a template source file with ifndef/define declarations
-#   and namespace declarations, if provided.
-
-
-VERSION="1.2"
+#   Creates a template source file with ifndef/define declarations
+#   and namespace declarations, if applicable.
+#
+VERSION="1.31"
 AUTHOR="tcarland@gmail.com"
 PNAME=${0##*\/}
 
+FILENAMES=
 SOURCENAME=
-NAMESPACE=
 EXT=
 DEFNAME=
 CLASS=1
@@ -30,8 +29,8 @@ usage()
     echo "Usage: $PNAME [-hCV] -n <namespace>  sourcefile"
     echo ""
     echo "    --help      | -h        : Show usage info and exit"
-    echo "    --noclass   | -C        : Do not autogenerate cpp class"
-    echo "    --namespace | -n <name> : Creates namespace tags accordingly"
+    echo "    --noclass   | -C        : Do not autogenerate cpp class header"
+    echo "    --namespace | -n <name> : Creates namespace declaration"
     echo "    --version   | -V        : Show version info and exit"
     echo ""
     version
@@ -51,8 +50,7 @@ setSourceName()
 
 setDefineName()
 {
-    local filename=$1
-    local namespace=$2
+    local namespace=$1
     local def=
     local Sr=
     local Nr=
@@ -75,10 +73,18 @@ setDefineName()
 createHeader()
 {
     local filename=$1
-    local namespace=$2
+    local srcname=$2
+    local define=$3
+    local namespace=$4
 
-    echo "#ifndef $DEFNAME" > $filename
-    echo "#define $DEFNAME" >> $filename
+    echo "/**" > $filename
+    echo "  * @file ${filename} " >> $filename
+    echo "  * @author " >> $filename
+    echo "  * " >> $filename
+    echo " **/" >> $filename
+
+    echo "#ifndef $define" >> $filename
+    echo "#define $define" >> $filename
     echo "" >> $filename
 
     if [ -n "$namespace" ]; then
@@ -91,13 +97,13 @@ createHeader()
 
     if [ -n "$CLASS" ]; then
         echo "" >> $filename
-        echo "class ${SOURCENAME} {" >> $filename
+        echo "class ${srcname} {" >> $filename
         echo "" >> $filename
         echo "  public:" >> $filename
         echo "" >> $filename
-        echo "    ${SOURCENAME}();" >> $filename
+        echo "    ${srcname}();" >> $filename
         echo "" >> $filename
-        echo "    ~${SOURCENAME}();" >> $filename
+        echo "    ~${srcname}();" >> $filename
         echo "" >> $filename
         echo "};" >> $filename
         echo "" >> $filename
@@ -111,15 +117,23 @@ createHeader()
     fi
 
     echo "" >> $filename
-    echo "#endif  // $DEFNAME" >> $filename
+    echo "#endif  // $define" >> $filename
 }
 
 createSource()
 {
     local filename=$1
-    local namespace=$2
+    local srcname=$2
+    local define=$3
+    local namespace=$4
 
-    echo "#define $DEFNAME" > $filename
+    echo "/**" > $filename
+    echo "  * @file ${filename} " >> $filename
+    echo "  * @author " >> $filename
+    echo "  * " >> $filename
+    echo " **/" >> $filename
+
+    echo "#define $define" > $filename
     echo "" >> $filename
     echo "" >> $filename
 
@@ -133,11 +147,11 @@ createSource()
 
     if [ -n "$CLASS" ]; then
         echo "" >> $filename
-        echo "${SOURCENAME}::${SOURCENAME}()" >> $filename
+        echo "${srcname}::${srcname}()" >> $filename
         echo "{" >> $filename
         echo "}" >> $filename
         echo "" >> $filename
-        echo "${SOURCENAME}::~${SOURCENAME}()" >> $filename
+        echo "${srcname}::~${srcname}()" >> $filename
         echo "{" >> $filename
         echo "}" >> $filename
         echo "" >> $filename
@@ -153,7 +167,7 @@ createSource()
 
     echo "" >> $filename
 
-    echo "// $DEFNAME" >> $filename
+    echo "// $define" >> $filename
 }
 
 
@@ -161,12 +175,15 @@ createSource()
 # --------------------------
 #  MAIN
 
-filename=
+fname=
 namespace=
-
 
 while [ $# -gt 0 ]; do
     case "$1" in
+        -a|--author)
+            shift
+            AUTHOR=$1
+            ;;
         -C|--noclass)
             CLASS=
             ;;
@@ -183,46 +200,49 @@ while [ $# -gt 0 ]; do
             exit 0
             ;;
         *)
-            filename=$1
+            FILENAMES="$FILENAMES $1"
             ;;
     esac
     shift
 done
 
 
-if [ -z "$filename" ]; then
+if [ -z "$FILENAMES" ]; then
     usage
     exit 0
 fi
 
-if [ -e $filename ]; then
-    echo "File '$filename' already exists. Overwrite? (y/n)"
-    read reply
+for fname in $FILENAMES; do
 
-    case "$reply" in
-        "y" | "Y" | "yes" | "YES")
-            echo "Overwriting $filename"
-            ;;
-        *)
-            echo "Aborting."
-            exit 0
-            ;;
-    esac
-else
-    echo "Generating source file $filename"
-fi
+    if [ -e $fname ]; then
+        echo "File '$fname' already exists. Overwrite? (y/n)"
+        read reply
 
-setSourceName $filename
-setDefineName $filename $namespace
+        case "$reply" in
+            "y" | "Y" | "yes" | "YES")
+                echo "Overwriting $fname"
+                ;;
+            *)
+                echo "Aborting."
+                exit 0
+                ;;
+        esac
+    else
+        echo "Generating source file $fname"
+    fi
 
-#echo "File: $filename  Sourcename: $SOURCENAME"
+    setSourceName $fname
+    setDefineName $namespace
 
-testext=${EXT%c*}
-if [ -n "$testext" ]; then
-    createHeader $filename $namespace
-else 
-    createSource $filename $namespace
-fi
+    testext=${EXT%c*}
+
+    if [ -n "$testext" ]; then
+        createHeader $fname $SOURCENAME $DEFNAME $namespace
+    else 
+        createSource $fname $SOURCENAME $DEFNAME $namespace
+    fi
+
+done
 
 
 exit 0
