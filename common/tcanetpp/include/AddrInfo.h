@@ -61,14 +61,10 @@ class AddrInfo {
 
     AddrInfo ( const std::string & name, 
                const std::string & service = "" );
-
+    
+    AddrInfo ( struct addrinfo   * ai );
 
     virtual ~AddrInfo();
-
-
-  protected:
-
-    AddrInfo ( struct addrinfo   * ai );
 
 
   public:

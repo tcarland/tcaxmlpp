@@ -92,6 +92,8 @@ class BufferedSocket : public Socket {
     virtual ssize_t  read  ( void * vptr, size_t n );
     virtual ssize_t  write ( const void * vptr, size_t n );
     
+    virtual ssize_t  bufferData();
+    
     /*  BufferedSocket methods  */
 
     virtual ssize_t  flush(); 
@@ -123,7 +125,6 @@ class BufferedSocket : public Socket {
   protected:
 
     virtual ssize_t  bufferedWrite ( const void * vptr, size_t n );
-    virtual ssize_t  bufferData();
 
     
   protected:

@@ -105,6 +105,10 @@ BufferedSocket::~BufferedSocket()
 
 // ----------------------------------------------------------------------
 
+/** Initialized the BufferedSocket object by creating the underlying socket
+  * descriptor and configuring the blocking of the socket. Additionally, 
+  * a BufferedSocket object sets the receive buffer 64k bytes.
+ **/
 int
 BufferedSocket::init ( bool block )
 {
@@ -115,6 +119,10 @@ BufferedSocket::init ( bool block )
 
 // ----------------------------------------------------------------------
 
+/** Reads at most n bytes from the socket and writes to the provided 
+  * buffer. Returns the number of bytes read, or 0 if blocked, or a 
+  * negative value indicating a read error.
+ **/
 ssize_t
 BufferedSocket::read ( void * vptr, size_t n )
 {
@@ -136,6 +144,7 @@ BufferedSocket::write ( const void * vptr, size_t n )
 
 // ----------------------------------------------------------------------
 
+/**  Clears the internal buffers */
 void
 BufferedSocket::clear()
 {
@@ -146,6 +155,7 @@ BufferedSocket::clear()
 
 // ----------------------------------------------------------------------
 
+/** Closes the socket */
 void
 BufferedSocket::close()
 {
@@ -155,6 +165,11 @@ BufferedSocket::close()
 
 // ----------------------------------------------------------------------
 
+/** Flushes the write buffer, if applicable, of any data still waiting 
+  * to be sent, returning the number of bytes successfully flushed, 0 if 
+  * there was no data to flush, or a negative value indicating a write 
+  * error.
+ **/
 ssize_t
 BufferedSocket::flush()
 {
@@ -163,7 +178,7 @@ BufferedSocket::flush()
     ssize_t  wtn, r;
 
     if ( !_wbx || _wbuffer->readAvailable() == 0 )
-        return 1;
+        return 0;
 
     do {
         rptr = _wbuffer->getReadPtr(&size);
@@ -185,6 +200,9 @@ BufferedSocket::flush()
 
 // ----------------------------------------------------------------------
 
+/**  Returns the number of bytes available for reading from the internal
+  *  buffer.
+ **/
 size_t
 BufferedSocket::dataAvailable()
 {
@@ -193,6 +211,7 @@ BufferedSocket::dataAvailable()
 
 // ----------------------------------------------------------------------
 
+/**  Returns the number of bytes still buffered for writing. */
 size_t
 BufferedSocket::flushAvailable()
 {
@@ -320,6 +339,11 @@ BufferedSocket::bufferedWrite ( const void *vptr, size_t n )
 
 // ----------------------------------------------------------------------
 
+/** Performs a continuous read of the socket buffering data in the 
+  * internal read buffer until a read block occurs or the buffer is full.
+  * Returns the number of bytes read, 0 if blocked, or a negative 
+  * indicating a read error.
+ **/
 ssize_t
 BufferedSocket::bufferData()
 {
