@@ -222,7 +222,7 @@ int main ( int argc, char **argv )
         if ( fwrep )
             fwrep->FlushApi(now);        
         
-        // wtf is this?? clear this up
+        // TODO: clean this up
         if ( ! tail && ! fwreader->isRunning() && queue->size() == 0 ) 
         {
             LogFacility::LogMessage("Full pass completed, switching to tail mode");
