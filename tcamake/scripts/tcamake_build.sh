@@ -16,7 +16,7 @@ LINKLIST="tcamake"
 TMDEPFILE="tcamake_depends"
 DODIST=0
 RSYNC="rsync"
-OPTIONS="-avL --delete --exclude=.cvs --exclude=.svn --exclude=.hg "
+OPTIONS="-avL --delete --exclude=.cvs --exclude=.svn --exclude=.hg --exclude=.git "
 DRYRUN="--dry-run"
 retval=0
 
