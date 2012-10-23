@@ -98,7 +98,7 @@ FwLogReport::SendEntry ( FwLogEntry & fwe, const time_t & now )
     // first we aggregate to our default agg level
     IpAddr  p;
     IpAddr::ToIpAddr(fwe.src, p);
-    p = IpAddr( IpAddr::ToBasePrefix(p.getPrefix(), _masklen ));
+    p = IpAddr( IpAddr::ToBasePrefix(p.getPrefix(), _masklen) );
     //Prefix p = Prefix(IpAddr::ToBasePrefix(IpAddr::pfwe.src), _masklen), _masklen);
 
     if ( _fwCache.longestMatch(p, fwec) ) 

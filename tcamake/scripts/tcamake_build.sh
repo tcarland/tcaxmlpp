@@ -2,11 +2,12 @@
 #
 #   Build script for projects that may wish to be extracted or 
 #   distributed individually from the overall workspace. 
-#   Primarily created for making project distributions via the 'build.sh dist' command.
+#   Primarily created for making project distributions via the 
+#   'build.sh dist' command.
 #
 
 PNAME=${0##*\/}
-VERSION="1.16"
+VERSION="1.17"
 AUTHOR="tcarland@gmail.com"
 
 PARENT=".."
@@ -15,7 +16,7 @@ LINKLIST="tcamake"
 TMDEPFILE="tcamake_depends"
 DODIST=0
 RSYNC="rsync"
-OPTIONS="-avL --delete --exclude=.cvs --exclude=.svn --exclude=.hg "
+OPTIONS="-avL --delete --exclude=.cvs --exclude=.svn --exclude=.hg --exclude=.git "
 DRYRUN="--dry-run"
 retval=0
 
@@ -30,7 +31,7 @@ fi
 usage()
 {
     echo ""
-    echo "Usage: $PNAME [command] {option} "
+    echo "Usage: $PNAME [command] {args} "
     echo ""
     echo "   [command] :  a standard 'make' target or one of the "
     echo "                following commands."
@@ -44,12 +45,12 @@ usage()
     echo "       'show'     : shows the determined project root and "
     echo "                     what links would be created. (dry run) "
     echo ""
-    echo " Summary: creates a complete distribution directory that"
+    echo " Summary: Creates a complete distribution directory that"
     echo " includes required project paths by creating temporary "
     echo " soft links. Any unrecognized commands are passed through"
     echo " to 'make'."
     echo " Additional project links can be defined by setting the "
-    echo " var TCAMAKE_BUILD_LINKS to the list of relative paths"
+    echo " EnvVar TCAMAKE_BUILD_LINKS to the list of relative paths"
     echo " from TOPDIR.";
     echo ""
     echo "  $PNAME: Version: $VERSION by $AUTHOR"
