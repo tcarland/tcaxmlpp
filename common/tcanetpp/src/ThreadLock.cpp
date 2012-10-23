@@ -91,7 +91,7 @@ int
 ThreadLock::lock()
 {
     if ( ::pthread_mutex_lock(&_mutex) != 0 )
-	return -1;
+        return -1;
     return 1;
 }
 
@@ -109,9 +109,9 @@ ThreadLock::tryLock()
     status = ::pthread_mutex_trylock(&_mutex);
 
     if ( status == EBUSY )
-	return 0;
+        return 0;
     else if ( status != 0 )
-	return -1;
+        return -1;
     return 1;
 }
 
@@ -134,7 +134,7 @@ int
 ThreadLock::wait()
 {
     if ( ::pthread_cond_wait(&_items, &_mutex) != 0 )
-	return -1;
+        return -1;
     return 1;
 }
 
@@ -151,7 +151,7 @@ ThreadLock::waitFor ( time_t seconds)
     int    status;
 
     if ( seconds < 1 )
-	return 0;
+        return 0;
 
     ::memset(&to, 0, sizeof(to));
 

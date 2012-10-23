@@ -345,18 +345,18 @@ NetworkDevice::setDevice ( const std::string & host )
 
     // check for a hostaddr in string format
     if (  IpAddr::pton(host, addr) == 1 ) {
-	return this->setDevice(addr);
-	
+        return this->setDevice(addr);
+        
     //  this is very CDP specific which often returns 'serial_num (host)'
     } else if ( (indx = StringUtils::indexOf(host, "(")) > 0 ) {
-	_serial     = host.substr(0, indx);
-	_deviceName = host.substr((indx + 1), host.length());
-	
-	if ( (endx = StringUtils::indexOf(_deviceName, ")")) > 0 )
-	    _deviceName.erase(endx);
+        _serial     = host.substr(0, indx);
+        _deviceName = host.substr((indx + 1), host.length());
+        
+        if ( (endx = StringUtils::indexOf(_deviceName, ")")) > 0 )
+            _deviceName.erase(endx);
 
     } else {
-	_deviceName = host;
+        _deviceName = host;
     }
 
     // resolve hostname if we don't have ip yet
@@ -375,7 +375,7 @@ NetworkDevice::setDevice ( const IpAddr & addr )
     AddrInfo::GetNameInfo((const sockaddr*) addr.getSockAddr(), sizeof(sockaddr_t), _deviceName, 0);
 
     if ( _deviceName.empty() ) {
-	_deviceName = _deviceAddr.toString();
+        _deviceName = _deviceAddr.toString();
         return false;
     }
 
@@ -442,17 +442,17 @@ NetworkDevice::SetDeviceVersion ( NetworkDevice & dev, const std::string & desc 
     StringUtils::split(desc, '\n', std::back_inserter(stok));
     
     if ( stok.size() >= 2 ) {
-	vs   = stok[1];
-	stok.clear();
-	
-	StringUtils::split(vs, ',', std::back_inserter(stok));
-	vs = "";
-	if ( stok.size() >= 2 ) {
-	    vs   = stok[0];
-	    ver  = stok[1];
-	}
+        vs   = stok[1];
+        stok.clear();
+        
+        StringUtils::split(vs, ',', std::back_inserter(stok));
+        vs = "";
+        if ( stok.size() >= 2 ) {
+            vs   = stok[0];
+            ver  = stok[1];
+        }
     } else {
-	ver  = desc;
+        ver  = desc;
     }
 
     StringUtils::trim(ver);

@@ -202,10 +202,10 @@ Socket::Socket ( sockfd_t & fd, sockaddr_t & csock, SocketType type, int protoco
     {
         sockaddr_in * sock;
         sock     = (sockaddr_in*) &csock;
-	_port    = ntohs(sock->sin_port);
-	_addrstr = IpAddr::ntop(sock->sin_addr.s_addr);
-	_hoststr = _addrstr;
-	_hoststr.append("/:").append(StringUtils::toString(_port));
+        _port    = ntohs(sock->sin_port);
+        _addrstr = IpAddr::ntop(sock->sin_addr.s_addr);
+        _hoststr = _addrstr;
+        _hoststr.append("/:").append(StringUtils::toString(_port));
     }
     else if ( _sock.ss_family == AF_INET6 )
     {
@@ -214,7 +214,7 @@ Socket::Socket ( sockfd_t & fd, sockaddr_t & csock, SocketType type, int protoco
         _port    = ntohs(sock->sin6_port);
         _addrstr = IpAddr::ntop(sock->sin6_addr);
         _hoststr = _addrstr;
-	_hoststr.append("/:").append(StringUtils::toString(_port));
+        _hoststr.append("/:").append(StringUtils::toString(_port));
     }
 }
 
@@ -240,7 +240,7 @@ Socket::init ( bool block )
     }
       
     if ( _socktype == SOCKTYPE_SERVER ) {
-    	this->setSocketOption(SocketOption::SetReuseAddr(1));
+            this->setSocketOption(SocketOption::SetReuseAddr(1));
         
         if ( ! this->bind() )
             return -1;
@@ -268,20 +268,20 @@ Socket::bind()
     int   r = 0;
 
     if ( _socktype < SOCKTYPE_SERVER || _bound || ! Socket::IsValidDescriptor(_fd) ) {
-    	_errstr = "Socket::bind() socket is not initialized";
+            _errstr = "Socket::bind() socket is not initialized";
         return r;
     }
         
     r = ::bind(_fd, (struct sockaddr*) &_sock, sizeof(struct sockaddr));
     
     if ( r != 0 ) {
-	_errstr = "Socket::bind() Failed to bind";
-	
+        _errstr = "Socket::bind() Failed to bind";
+        
 #   ifndef WIN32
-	if ( strerror_r(errno, serr, ERRORSTRLEN) == 0 )
+        if ( strerror_r(errno, serr, ERRORSTRLEN) == 0 )
             _errstr = serr;
 #   endif
-	
+        
         return -1;
     }
     
@@ -315,7 +315,7 @@ Socket::connect()
 {
     if ( _socktype != SOCKTYPE_CLIENT )
         return -1;
-	
+        
     if ( _connected )
         return 1;
 
@@ -430,7 +430,7 @@ Socket::accept ( SocketFactory & factory )
     sockfd_t     cfd;
 
     if ( _socktype < SOCKTYPE_SERVER )
-    	return NULL;
+            return NULL;
 
     len = sizeof(csock);
     ::memset(&csock, 0, len);
@@ -438,7 +438,7 @@ Socket::accept ( SocketFactory & factory )
     if ( _proto == SOCKET_TCP )
     {
         if ( (cfd = ::accept(_fd, (struct sockaddr*) &csock, &len)) < 0 )
-        	return NULL;
+                return NULL;
 
         client = factory(cfd, csock, _socktype, _proto);
     }
@@ -482,7 +482,7 @@ Socket::isConnected()
 
         if ( strerror_r(errno, serr, ERRORSTRLEN) == 0 )
             _errstr = serr;
-	
+        
         return false;
     }
 
@@ -820,14 +820,14 @@ Socket::nwriten ( const void * vptr, size_t n )
 
 #           ifdef WIN32
 
-	    int err = WSAGetLastError();
+            int err = WSAGetLastError();
             if ( err == WSAEINTR )
                 nwritten = 0;
             else if ( err == WSAEWOULDBLOCK )
                 return(n-nleft);
             else
                 return -1;
-		
+                
 #         else
 
             if ( errno == EINTR )
@@ -836,7 +836,7 @@ Socket::nwriten ( const void * vptr, size_t n )
                 return(n-nleft);
             else
                 return -1;
-		
+                
 #         endif
         }
         nleft -= nwritten;
@@ -860,17 +860,17 @@ Socket::nreadn ( void * vptr, size_t n )
 
     while ( nleft > 0 ) {
         if ( (nread = ::recv(_fd, ptr, nleft, 0)) < 0 ) {
-	    
+            
 #         ifdef WIN32
-        	
-	    int err = WSAGetLastError();
+                
+            int err = WSAGetLastError();
             if ( err == WSAEINTR ) 
                 nread = 0;
             else if ( err == WSAEWOULDBLOCK )
                 return(n-nleft);
             else
                 return -1;
-		
+                
 #         else
             
             if ( errno == EINTR )
@@ -934,7 +934,7 @@ Socket::InitializeSocket ( sockfd_t & fd, int socktype, int proto )
             ::strerror_r(errno, serr, ERRORSTRLEN);
             errstr.append(serr);
         }
-#     	endif
+#       endif
 
         throw SocketException(errstr);
     }

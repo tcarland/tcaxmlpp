@@ -106,7 +106,7 @@ class DeviceMap {
     std::string                  _groupName;
     uint32_t                     _groupId;
     
-    bool   	                 _debug;
+    bool                         _debug;
 };
 
 }  // namespace

@@ -55,7 +55,7 @@ DeviceMap::find ( const IpAddr & addr )
     DeviceMap::iterator   dIter;
 
     if ( (dIter = _devMap.find(addr)) != _devMap.end() )
-	device = dIter->second;
+        device = dIter->second;
 
     return device;
 }
@@ -69,10 +69,10 @@ DeviceMap::insert ( const IpAddr & addr )
     DeviceMap::iterator   dIter;
     
     if ( (dIter = _devMap.find(addr)) == _devMap.end() ) {
-	dev = new NetworkDevice(addr);
-	dev->readCommunity(_snmpro);
-	dev->writeCommunity(_snmprw);
-	_devMap[dev->addr()] = dev;
+        dev = new NetworkDevice(addr);
+        dev->readCommunity(_snmpro);
+        dev->writeCommunity(_snmprw);
+        _devMap[dev->addr()] = dev;
     }
 
     return dev;
@@ -87,7 +87,7 @@ DeviceMap::insert ( const NetworkDevice & device )
 
     if ( (dIter = _devMap.find(device.addr())) == _devMap.end() ) {
         dev = new NetworkDevice(device);
-	_devMap[device.addr()] = dev;
+        _devMap[device.addr()] = dev;
     }
 
     return dev;
@@ -100,9 +100,9 @@ DeviceMap::insert ( NetworkDevice * device )
     DeviceMap::iterator  dIter;
 
     if ( (dIter = _devMap.find(device->addr())) == _devMap.end() )
-	_devMap[device->addr()] = device;
+        _devMap[device->addr()] = device;
     else
-	return false;
+        return false;
 
     return true;
 }
@@ -116,8 +116,8 @@ DeviceMap::remove ( const IpAddr & addr )
     DeviceMap::iterator  dIter;
 
     if ( (dIter = _devMap.find(addr)) != _devMap.end() ) {
-	device = (NetworkDevice*) dIter->second;
-	_devMap.erase(dIter);
+        device = (NetworkDevice*) dIter->second;
+        _devMap.erase(dIter);
     }
 
     return device;
@@ -129,7 +129,7 @@ bool
 DeviceMap::exists ( const IpAddr & addr )
 {
     if ( this->find(addr) )
-	return true;
+        return true;
 
     return false;
 }
@@ -149,8 +149,8 @@ DeviceMap::clear()
     DeviceMap::iterator dIter;
 
     for ( dIter = _devMap.begin(); dIter != _devMap.end(); dIter++ )
-	if ( dIter->second )
-	    delete dIter->second;
+        if ( dIter->second )
+            delete dIter->second;
 
     _devMap.clear();
     return;

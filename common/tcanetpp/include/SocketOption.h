@@ -39,7 +39,7 @@ namespace tcanetpp {
   * through use of the static factory methods.
  **/
 class SocketOption {
-	
+
 public:
     
     SocketOption();
@@ -83,11 +83,11 @@ public:
 
 protected:
 
-    std::string     	_namestr;
+    std::string         _namestr;
     int                 _level;
     int                 _optid;
-    int             	_optval;
-	
+    int                 _optval;
+
 };
 
 } // namespace

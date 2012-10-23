@@ -55,7 +55,7 @@ PT_new ( cidr_t     cidr,
     np = (ptNode_t*) malloc (sizeof(ptNode_t));
 
     if ( np == NULL )
-	return np;
+        return np;
 
     np->key   = cidr.addr;
     np->bit   = bit;
@@ -66,7 +66,7 @@ PT_new ( cidr_t     cidr,
     memset(np->rocks, 0, sizeof(np->rocks));
 
     if ( rock )
-	np->rocks[cidr.mb] = rock;
+        np->rocks[cidr.mb] = rock;
 
     return np;
 }
@@ -80,17 +80,17 @@ PT_visitR ( ptNode_t * node, int bit, nodeHandler_t handler )
 
     if ( node->bit <= bit ) 
     {
-	for ( i = 0; i < PT_MASKLEN; i++ ) 
+        for ( i = 0; i < PT_MASKLEN; i++ ) 
         {
-	    if ( (node->rocks[i]) && handler ) {
-		handler(node->key, i, node->rocks[i]);
-	    }
-	}
+            if ( (node->rocks[i]) && handler ) {
+                handler(node->key, i, node->rocks[i]);
+            }
+        }
     } 
     else 
     {
-	PT_visitR(node->llink, node->bit, handler);
-	PT_visitR(node->rlink, node->bit, handler);
+        PT_visitR(node->llink, node->bit, handler);
+        PT_visitR(node->rlink, node->bit, handler);
     }
     return;
 }
@@ -102,13 +102,13 @@ PT_visitR_node ( ptNode_t * node, int bit, pvtNodeHandler_t handler )
 {
     if ( node->bit <= bit ) 
     {
-	if ( handler ) 
-	    handler(node);
+        if ( handler ) 
+            handler(node);
     } 
     else 
     {
-	PT_visitR_node(node->llink, node->bit, handler);
-	PT_visitR_node(node->rlink, node->bit, handler);
+        PT_visitR_node(node->llink, node->bit, handler);
+        PT_visitR_node(node->rlink, node->bit, handler);
     }
     return;
 }
@@ -119,10 +119,10 @@ static ptNode_t*
 PT_searchR ( ptNode_t * node, ipv4addr_t key, int bit )
 {
     if ( node->bit <= bit )
-	return node;
+        return node;
 
     if ( PT_GETBIT(key, node->bit) == 0 )
-	return PT_searchR(node->llink, key, node->bit);
+        return PT_searchR(node->llink, key, node->bit);
     
     return PT_searchR(node->rlink, key, node->bit);
 }
@@ -140,23 +140,23 @@ PT_insertR ( ptNode_t * head,
 
     if ( (head->bit >= bit) || (head->bit <= p->bit) ) 
     {
-	node = PT_new(cidr, bit, 0, 0, rock);
+        node = PT_new(cidr, bit, 0, 0, rock);
 
-	if ( PT_GETBIT(cidr.addr, bit) ) {
-	    node->llink = head;
-	    node->rlink = node;
-	} else {
-	    node->llink = node;
-	    node->rlink = head;
-	}
+        if ( PT_GETBIT(cidr.addr, bit) ) {
+            node->llink = head;
+            node->rlink = node;
+        } else {
+            node->llink = node;
+            node->rlink = head;
+        }
 
-	return node;
+        return node;
     }
 
     if ( PT_GETBIT(cidr.addr, head->bit) == 0 ) {
-	head->llink = PT_insertR(head->llink, cidr, bit, head, rock);
+        head->llink = PT_insertR(head->llink, cidr, bit, head, rock);
     } else {
-	head->rlink = PT_insertR(head->rlink, cidr, bit, head, rock);
+        head->rlink = PT_insertR(head->rlink, cidr, bit, head, rock);
     }
 
     return head;
@@ -171,15 +171,15 @@ PT_removeR ( ptNode_t * node, cidr_t cidr, int bit )
 
     if ( node->bit <= bit ) 
     {
-	if ( node->key == cidr.addr && node->rocks[cidr.mb] ) {
-	    rock = node->rocks[cidr.mb];
-	    node->rocks[cidr.mb] = NULL;
-	}
-	return rock;
+        if ( node->key == cidr.addr && node->rocks[cidr.mb] ) {
+            rock = node->rocks[cidr.mb];
+            node->rocks[cidr.mb] = NULL;
+        }
+        return rock;
     }
     
     if ( PT_GETBIT(cidr.addr, node->bit) == 0 )
-	return PT_removeR(node->llink, cidr, node->bit);
+        return PT_removeR(node->llink, cidr, node->bit);
 
     return PT_removeR(node->rlink, cidr, node->bit);
 }
@@ -192,20 +192,20 @@ PT_freeNodesR ( ptNode_t * head, ptNode_t * node, int bit, nodeHandler_t handler
     int i;
 
     if ( node->bit <= bit )
-	return;
+        return;
 
     PT_freeNodesR(head, node->llink, node->bit, handler);
     PT_freeNodesR(head, node->rlink, node->bit, handler);
 
     if ( node != head ) 
     {
-	for ( i = 0; i < PT_MASKLEN; i++ ) 
+        for ( i = 0; i < PT_MASKLEN; i++ ) 
         {
-	    if ( node->rocks[i] && handler )
-		handler(node->key, i, node->rocks[i]);
-	}
-	free(node);
-	freecnt++;
+            if ( node->rocks[i] && handler )
+                handler(node->key, i, node->rocks[i]);
+        }
+        free(node);
+        freecnt++;
     }
 
     return;
@@ -235,13 +235,13 @@ PT_searchLongHandler ( ptNode_t * node )
     
     for ( i = 0; i < (PT_MASKLEN + 1); i++ ) 
     {
-	if ( node->rocks[i] && PT_basePrefix(searchCidr.addr, i) == node->key )  
+        if ( node->rocks[i] && PT_basePrefix(searchCidr.addr, i) == node->key )  
         {
-	    if ( i > resultCidr.mb ) {
-		resultCidr.addr = node->key;
-		resultCidr.mb   = i;
-	    }
-	}
+            if ( i > resultCidr.mb ) {
+                resultCidr.addr = node->key;
+                resultCidr.mb   = i;
+            }
+        }
     }
     return;
 }
@@ -261,7 +261,7 @@ static void
 PT_countRocksHandler ( ipv4addr_t addr, uint16_t mb, void * rock )
 {
     if ( rock )
-	ptsize++;
+        ptsize++;
     return;
 }
 
@@ -281,8 +281,8 @@ pt_init()
     head = PT_new(cidr, -1, NULL, NULL, NULL);
 
     if ( head != NULL ) {
-	head->llink = head;
-	head->rlink = head;
+        head->llink = head;
+        head->rlink = head;
     }
 
     memset(&searchCidr, 0, sizeof(cidr_t));
@@ -304,16 +304,16 @@ pt_insert ( ptNode_t * head, cidr_t cidr, void * rock )
 
     if ( cidr.addr != node->key ) 
     {
-	result = 1;
-	for ( bit = 0; PT_GETBIT(cidr.addr,bit) == PT_GETBIT(node->key, bit); bit++ );
-	head->llink = PT_insertR(head->llink, cidr, bit, head, rock);
+        result = 1;
+        for ( bit = 0; PT_GETBIT(cidr.addr,bit) == PT_GETBIT(node->key, bit); bit++ );
+        head->llink = PT_insertR(head->llink, cidr, bit, head, rock);
     } 
     else if ( ! node->rocks[cidr.mb] )
     {
-	result = 1;
-	node->rocks[cidr.mb] = rock;
+        result = 1;
+        node->rocks[cidr.mb] = rock;
     }
-	
+        
     return result;
 }
 
@@ -332,7 +332,7 @@ pt_exists ( ptNode_t * head, cidr_t cidr )
     node = PT_searchR(head->llink, cidr.addr, -1);
 
     if ( node->key == cidr.addr && (node->rocks[cidr.mb]) )
-	return 1;
+        return 1;
 
     return 0;
 }
@@ -352,7 +352,7 @@ pt_match ( ptNode_t * head, cidr_t cidr )
     node = PT_searchR(head->llink, cidr.addr, -1);
 
     if ( node->key == cidr.addr && (node->rocks[cidr.mb]) )
-	rock = node->rocks[cidr.mb];
+        rock = node->rocks[cidr.mb];
 
     return rock;
 }
@@ -373,7 +373,7 @@ pt_matchLongest ( ptNode_t * head, cidr_t cidr )
     PT_visitR_node(head->llink, -1, &PT_searchLongHandler);
 
     if ( resultCidr.addr > 0 )
-	rock = pt_match(head, resultCidr);
+        rock = pt_match(head, resultCidr);
 
     return rock;
 }
@@ -399,7 +399,7 @@ void
 pt_visit ( ptNode_t * head, nodeHandler_t handler )
 {
     if ( head->llink != NULL )
-	PT_visitR(head->llink, -1, handler);
+        PT_visitR(head->llink, -1, handler);
 }
 
 /**  Visits nodes of the trie in order */
@@ -419,9 +419,9 @@ pt_nodes ( ptNode_t * head )
     nodecnt = 0;
     
     if ( head->llink != NULL ) {
-	PT_visitR_node(head->llink, -1, &PT_countNodesHandler);
+        PT_visitR_node(head->llink, -1, &PT_countNodesHandler);
     } else {
-	return -1;
+        return -1;
     }
     
     return nodecnt;

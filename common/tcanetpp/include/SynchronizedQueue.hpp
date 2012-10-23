@@ -59,7 +59,7 @@ template<class ValueType> class SynchronizedQueue {
     {
         if ( this->size() == _maxSize || _mutex.lock() < 0 )
             return 0;
-	
+
         _queue.push(object);
         _mutex.unlock();
 
@@ -69,14 +69,14 @@ template<class ValueType> class SynchronizedQueue {
 
     int  pop ( ValueType & object )
     {
-	if ( this->size() == 0 || _mutex.lock() < 0 )
+        if ( this->size() == 0 || _mutex.lock() < 0 )
             return 0;
 
-	object = _queue.front();
-	_queue.pop();
-	_mutex.unlock();
+        object = _queue.front();
+        _queue.pop();
+        _mutex.unlock();
 
-	return 1;
+        return 1;
     }
 
     
@@ -99,17 +99,17 @@ template<class ValueType> class SynchronizedQueue {
 
     int  lock()
     {
-    	return _mutex.lock();
+        return _mutex.lock();
     }
 
     int  unlock()
     {
-    	return _mutex.unlock();
+        return _mutex.unlock();
     }
 
     int  notify()
     {
-    	return _mutex.notify();
+        return _mutex.notify();
     }
 
 

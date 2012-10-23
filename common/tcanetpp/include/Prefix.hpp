@@ -70,8 +70,8 @@ class Prefix {
 
     Prefix ( const Prefix & p ) 
     {
-	_pfx.addr = p.getPrefix();
-	_pfx.mb   = p.getPrefixLen();
+        _pfx.addr = p.getPrefix();
+        _pfx.mb   = p.getPrefixLen();
     }
 
     virtual ~Prefix() {}
@@ -109,7 +109,7 @@ class Prefix {
 
   protected:
 
-    cidr_t	_pfx;
+    cidr_t      _pfx;
 
 };
 

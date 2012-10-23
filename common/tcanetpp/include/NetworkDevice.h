@@ -117,18 +117,18 @@ class NetworkDevice {
 
     IfList              _ifv;
 
-    IpAddr 		_deviceAddr;
+    IpAddr              _deviceAddr;
     int                 _deviceId;
-    std::string	        _deviceName;
+    std::string         _deviceName;
     
-    std::string	        _readComm;
-    std::string	        _writeComm;
-    std::string	        _version;
-    std::string	        _sysDescr;
-    std::string	        _model;      
-    std::string	        _location;
-    std::string	        _serial;
-    std::string	        _errStr;
+    std::string         _readComm;
+    std::string         _writeComm;
+    std::string         _version;
+    std::string         _sysDescr;
+    std::string         _model;      
+    std::string         _location;
+    std::string         _serial;
+    std::string         _errStr;
 
     int                 _status;
     bool                _pollable;

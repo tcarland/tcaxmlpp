@@ -464,17 +464,17 @@ IpAddr::RandomPrefix ( ipv4addr_t agg, uint8_t masklen )
     uint8_t     octets[4];
 
     if ( tcanet_seeded() == 0 )
-	tcanet_seed();
+        tcanet_seed();
 
     blksz = IpAddr::GetCidrRange(masklen, &pos);
 
     if ( pos > 0 ) // adjust for octet array
-	pos--;
+        pos--;
 
     ptr   = (uint8_t*) &agg;
 
     for ( int i = 0; i < 4; i++, ptr++ )
-	octets[i] = (*(uint8_t*)ptr);
+        octets[i] = (*(uint8_t*)ptr);
 
     subnet      = octets[pos];
     subval      = (int) tcanet_randomValue( (double)blksz );

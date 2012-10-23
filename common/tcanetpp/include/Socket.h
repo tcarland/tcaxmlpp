@@ -198,7 +198,7 @@ class Socket {
                                    sockaddr_t & csock );
             
     
-  public:	
+  public:
     
     static void         Block    ( Socket           * s );
     static void         Unblock  ( Socket           * s );
@@ -221,9 +221,9 @@ class Socket {
     
   protected:
     
-    std::string	            _addrstr;
-    std::string	            _hoststr;
-    std::string	            _errstr;
+    std::string            _addrstr;
+    std::string            _hoststr;
+    std::string            _errstr;
     
     
   private:

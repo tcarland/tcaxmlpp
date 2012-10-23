@@ -57,7 +57,7 @@ Thread::~Thread()
 {
     ::pthread_attr_destroy(&_attr);
     if ( _tid != 0 )
-	this->stop();
+        this->stop();
     if ( _stack )
         ::free(_stack);
 }
@@ -74,7 +74,7 @@ Thread::start() throw ( ThreadException )
     size_t stksz = 0;
 
     if ( _tid != 0 )
-	throw ThreadException("Thread::start() id non-zero, already started?");
+        throw ThreadException("Thread::start() id non-zero, already started?");
 
     if ( ! this->getStackSize(stksz) )
         throw ThreadException(_serr);
@@ -89,7 +89,7 @@ Thread::start() throw ( ThreadException )
         std::ostringstream  serr;
         serr << "Thread::start() pthread_create error: " << errno;
         _serr = serr.str();
-	throw ThreadException(_serr);
+        throw ThreadException(_serr);
     }
 
     _running = true;
@@ -97,7 +97,7 @@ Thread::start() throw ( ThreadException )
     if ( _threadName.empty() ) {
         std::ostringstream  name;
         name << "Thread_" << _tid; // pthread_self()
-	_threadName = name.str();
+        _threadName = name.str();
     }
 
     if ( _detach )
@@ -115,7 +115,7 @@ void
 Thread::stop() throw ( ThreadException )
 {
     if ( _tid == 0 )
-	return;
+        return;
 
     this->setAlarm();
 
@@ -124,7 +124,7 @@ Thread::stop() throw ( ThreadException )
         serr << "Thread::stop() pthread_join error: "
              << _threadName << " : " << errno;
         _serr = serr.str();
-	throw ThreadException(_serr);
+        throw ThreadException(_serr);
     }
 
     _tid     = 0;
@@ -295,9 +295,9 @@ Thread::setScheduler ( int policy, int prio )
     {
         if ( (err = ::pthread_setschedparam(_tid, policy, &param)) != 0 ) {
             _serr = "Error in pthread_setschedparam";
-	    if ( err == EINVAL )
+            if ( err == EINVAL )
                 _serr.append(": Invalid policy or prio won't apply to this policy.");
-	    else if ( err == EPERM )
+            else if ( err == EPERM )
                 _serr.append(": Invalid permissions to set policy/prio.");
         }
     }

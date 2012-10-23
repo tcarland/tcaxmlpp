@@ -197,18 +197,18 @@ class PrefixCache {
     bool refresh ( IpAddr & p, time_t & now )
     {
         TimerSetIter  timer;
-    	CacheItem    *ci  = this->_pt->exactMatch(p);
+        CacheItem    *ci  = this->_pt->exactMatch(p);
 
-    	if ( NULL == ci || ci.getPrefix().getPrefix() == 0 )
+        if ( NULL == ci || ci.getPrefix().getPrefix() == 0 )
             return false;
 
         timer = ci->getTimer();
-    	ci->setExpireTime(now + _cacheTimeout);
-    	_timers.erase(timer);
-    	timer = _timers.insert(CachePair(ci->getExpireTime(), ci));
-    	ci->setTimer(timer);
+        ci->setExpireTime(now + _cacheTimeout);
+        _timers.erase(timer);
+        timer = _timers.insert(CachePair(ci->getExpireTime(), ci));
+        ci->setTimer(timer);
 
-    	return true;
+        return true;
     }
 
 

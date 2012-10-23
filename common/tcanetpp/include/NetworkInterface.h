@@ -37,7 +37,7 @@ namespace tcanetpp {
 
 class NetworkInterface;
 
-typedef std::vector<NetworkInterface>	IfList;
+typedef std::vector<NetworkInterface>  IfList;
 
 
 class NetworkInterface {
@@ -75,14 +75,14 @@ class NetworkInterface {
 
   private:
 
-    IpAddr		_device_ip;
-    IpAddr		_if_addr;
+    IpAddr              _device_ip;
+    IpAddr              _if_addr;
 
-    std::string 	_if_name;
-    std::string		_description;
+    std::string         _if_name;
+    std::string         _description;
     std::string         _vlan;
 
-    int			_if_index;
+    int                 _if_index;
     int                 _id;
 
 };

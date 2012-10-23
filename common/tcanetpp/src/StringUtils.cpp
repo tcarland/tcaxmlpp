@@ -138,10 +138,10 @@ StringUtils::indexOf ( const std::string & str, const std::string & match, size_
     std::string::size_type  indx;
 
     if ( from > str.length() || from < 0 )
-	return -1;
+        return -1;
 
     if ( (indx = str.find(match, from)) == std::string::npos )
-	return -1;
+        return -1;
 
     return( (int) indx );
 }
@@ -158,12 +158,12 @@ StringUtils::lastIndexOf ( const std::string & str, const std::string & match, s
     std::string::size_type  indx;
 
     if ( from > str.length() )
-	from = str.length();
+        from = str.length();
     else if ( from < 0 )
-	return -1;
+        return -1;
 
     if ( (indx = str.find_last_of(match, from)) == std::string::npos )
-	return -1;
+        return -1;
 
     return ( (int) indx );
 }
@@ -186,7 +186,7 @@ StringUtils::toLowerCase ( std::string & str )
 {
     std::string::size_type  i;
     for ( i = 0; i < str.length(); i++ )
-	str[i] = tolower( (int) str[i] );
+        str[i] = tolower( (int) str[i] );
     return;
 }
 
@@ -205,7 +205,7 @@ StringUtils::toUpperCase ( std::string & str )
 {
     std::string::size_type  i;
     for ( i = 0; i < str.length(); i++ )
-	str[i] = toupper( (int) str[i] );
+        str[i] = toupper( (int) str[i] );
     return;
 }
 /*@}*/
@@ -297,9 +297,9 @@ void
 StringUtils::trim ( std::string & str )
 {
     while ( isspace(str[0]) )
-	str.erase(0,1);
+        str.erase(0,1);
     while ( isspace(str[str.length() - 1]) )
-	str.erase(str.length() - 1, str.length());
+        str.erase(str.length() - 1, str.length());
     return;
 }
 /*@}*/
@@ -459,10 +459,10 @@ StringUtils::indexOf ( const std::wstring & str, const std::wstring & match, siz
     std::wstring::size_type  indx;
 
     if ( from > str.length() || from < 0 )
-	return -1;
+        return -1;
 
     if ( (indx = str.find(match, from)) == std::wstring::npos )
-	return -1;
+        return -1;
 
     return( (int) indx );
 }
@@ -481,12 +481,12 @@ StringUtils::lastIndexOf ( const std::wstring & str, const std::wstring & match,
     std::wstring::size_type  indx;
 
     if ( from > str.length() )
-	from = str.length();
+        from = str.length();
     else if ( from < 0 )
-	return -1;
+        return -1;
 
     if ( (indx = str.find_last_of(match)) == std::wstring::npos )
-	return -1;
+        return -1;
 
     return ( (int) indx );
 }
@@ -506,7 +506,7 @@ void
 StringUtils::toLowerCase ( std::wstring & str )
 {
     for ( uint32_t i = 0; i < str.length(); i++ )
-	str[i] = tolower( (int) str[i] );
+        str[i] = tolower( (int) str[i] );
     return;
 }
 
@@ -524,7 +524,7 @@ void
 StringUtils::toUpperCase ( std::wstring & str )
 {
     for ( uint32_t i = 0; i < str.length(); i++ )
-	str[i] = toupper( (int) str[i] );
+        str[i] = toupper( (int) str[i] );
     return;
 }
 
@@ -543,10 +543,10 @@ void
 StringUtils::trim ( std::wstring & str )
 {
     while ( isspace(str[0]) )
-	str.erase(0,1);
+        str.erase(0,1);
     
     while ( isspace(str[str.length() - 1]) )
-	str.erase(str.length() - 1, str.length());
+        str.erase(str.length() - 1, str.length());
 
     return;
 }

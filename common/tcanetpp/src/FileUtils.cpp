@@ -64,7 +64,7 @@ FileUtils::IsReadable ( const std::string & filename )
 {
     std::ifstream ifn(filename.c_str());
     if ( ! ifn )
-	    return false;
+        return false;
     ifn.close();
     return true;
 }

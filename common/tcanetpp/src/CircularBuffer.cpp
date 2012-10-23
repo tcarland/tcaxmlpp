@@ -129,17 +129,17 @@ CircularBuffer::read ( void *buff, size_t n )
         if ( (rptr = getReadPtr(&size)) == NULL )
             break;
 
-	if ( size > rd )
-	    rn = rd;
-	else
-	    rn = size;
+        if ( size > rd )
+            rn = rd;
+        else
+            rn = size;
 
-	::memcpy(ptr, rptr, rn);
+        ::memcpy(ptr, rptr, rn);
 
-	this->setReadPtr(rn);
+        this->setReadPtr(rn);
 
-	rd  -= rn;
-	ptr += rn;
+        rd  -= rn;
+        ptr += rn;
     }
 
     return(n - rd);
@@ -164,7 +164,7 @@ CircularBuffer::write ( const void *buff, size_t n )
 
     while ( wd > 0 && ptr != NULL ) 
     {
-	size = wd;
+        size = wd;
 
         if ( (wptr = getWritePtr(&size)) == NULL )
             break;

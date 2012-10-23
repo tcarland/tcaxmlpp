@@ -98,9 +98,9 @@ BufferedSocket::BufferedSocket ( sockfd_t & fd, sockaddr_t & csock, SocketType t
 BufferedSocket::~BufferedSocket()
 {
     if ( _rbuffer )
-    	delete _rbuffer;
+        delete _rbuffer;
     if ( _wbuffer )
-    	delete _wbuffer;
+        delete _wbuffer;
 }
 
 // ----------------------------------------------------------------------

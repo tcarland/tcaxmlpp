@@ -32,8 +32,8 @@
 namespace tcanetpp {
 
 
-	
-SocketOption::SocketOption()	
+
+SocketOption::SocketOption()
     : _level(0),
       _optid(0),
       _optval(0)

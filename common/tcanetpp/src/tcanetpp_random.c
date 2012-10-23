@@ -84,7 +84,7 @@ uint32_t
 tcanet_randomValue ( double range )
 {
     if ( ! _tcanet_seeded )
-	tcanet_seed();
+        tcanet_seed();
     return TCANET_RandomValue(range);
 }
 

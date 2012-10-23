@@ -40,7 +40,7 @@ namespace tcanetpp {
 
 /**  Base Exception class used and thrown by the tcanetpp library. */
 class Exception : public std::runtime_error {
-	
+
 public:
     
     explicit Exception ( const std::string & errstr )
