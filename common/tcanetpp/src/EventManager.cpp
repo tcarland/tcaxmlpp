@@ -82,14 +82,14 @@ EventManager::~EventManager()
  **/
 evid_t
 EventManager::addTimerEvent ( EventTimerHandler * handler, 
-			      uint32_t sec, uint32_t usec, int count )
+                              uint32_t sec, uint32_t usec, int count )
 {
     EventTimer  timer;
 
     if ( (handler == NULL) || (sec == 0 && usec == 0) )
     {
         _errstr = "EventManager::addTimerEvent: invalid parameters";
-	return 0;
+        return 0;
     }
 
     timer.evid    =  this->getNewEventId();
@@ -176,7 +176,7 @@ EventManager::addIOEvent ( EventIOHandler * handler, const sockfd_t & sfd,
     if ( handler == NULL ) 
     {
         _errstr = "Invalid event handler";
-	return 0;
+        return 0;
     }
 
     if ( ! Socket::IsValidDescriptor(sfd) ) 
@@ -220,7 +220,7 @@ EventManager::removeEvent ( const evid_t & id )
     EventIOMap::iterator      cIter;
    
 #   ifdef EV_DEBUG
-    printf("EventManager::removeEvent() %lu\n", id);	
+    printf("EventManager::removeEvent() %lu\n", id);
 #   endif
 
     if ( (tIter = _timers.find(id)) != _timers.end() ) 
@@ -229,7 +229,7 @@ EventManager::removeEvent ( const evid_t & id )
             this->destroyEvent(tIter->second);
         _events.erase(id);
         _timers.erase(tIter);
-	return true;
+        return true;
     }
 
     if ( (cIter = _clients.find(id)) != _clients.end() ) 
@@ -243,7 +243,7 @@ EventManager::removeEvent ( const evid_t & id )
         }
         _events.erase(id);
         //_clients.erase(cIter);
-    	return true;
+            return true;
     }
 
     return false;
@@ -257,7 +257,7 @@ void
 EventManager::eventLoop()
 {
     timeval to, now;
-    int	    rdy = 0;
+    int     rdy = 0;
 
     EventIOMap::iterator   cIter;
 
@@ -267,77 +267,77 @@ EventManager::eventLoop()
     
     while ( ! _alarm ) 
     {
-	FD_ZERO(&_rset);
-	FD_ZERO(&_wset);
-	FD_ZERO(&_xset);
+        FD_ZERO(&_rset);
+        FD_ZERO(&_wset);
+        FD_ZERO(&_xset);
 
-	// set IO events
-	for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter ) 
+        // set IO events
+        for ( cIter = _clients.begin(); cIter != _clients.end(); ++cIter ) 
         {
-	    EventIO & io = cIter->second;
+            EventIO & io = cIter->second;
 
             if ( ! io.enabled )
                 continue;
 
-	    if ( io.handler->readable(io) )
-		FD_SET(io.sfd, &_rset);
+            if ( io.handler->readable(io) )
+                FD_SET(io.sfd, &_rset);
 
-	    if ( io.handler->writeable(io) )
-		FD_SET(io.sfd, &_wset);
-	}
+            if ( io.handler->writeable(io) )
+                FD_SET(io.sfd, &_wset);
+}
 
         // validate timer events
-	this->verifyTimers();
+        this->verifyTimers();
 
         // set minimum event sleep interval 
-	::memset(&to, 0, sizeof(struct timeval));
-	to.tv_usec = _minevu;
+        ::memset(&to, 0, sizeof(struct timeval));
+        to.tv_usec = _minevu;
 
 #       ifdef WIN32
-	if ( this->activeClients() == 0 ) {
-	    Sleep(evutomsec(_minevu));
-	}
+        if ( this->activeClients() == 0 ) {
+            Sleep(evutomsec(_minevu));
+        }
 #       endif
 
 
         // select on our fdsets
-	if ( (rdy = ::select(_maxfdp, &_rset, &_wset, &_xset, &to)) < 0 ) 
+        if ( (rdy = ::select(_maxfdp, &_rset, &_wset, &_xset, &to)) < 0 ) 
         {
 #           ifdef WIN32
             int err = WSAGetLastError();
             if ( err == WSAEINTR )
                 continue;
 #           else
-	    if ( errno == EINTR )
-		continue;
+            if ( errno == EINTR )
+                continue;
 #           endif
-	}
+        }
 
         EventManager::GetTimeOfDay(&now);
 
         // handle io events
-	for ( cIter = _clients.begin(); cIter != _clients.end(); cIter++ ) 
+        for ( cIter = _clients.begin(); cIter != _clients.end(); cIter++ ) 
         {
-	    EventIO & io = cIter->second;
+            EventIO & io = cIter->second;
 
             if ( ! io.enabled )
                 continue;
 
-	    if ( FD_ISSET(io.sfd, &_rset) ) {
+            if ( FD_ISSET(io.sfd, &_rset) ) {
                 io.abstime = now;
 
-		if ( io.isServer ) {
-		    io.handler->handle_accept(io);
-		} else {
-		    io.handler->handle_read(io);
-		}
-	    }
+                if ( io.isServer ) {
+                    io.handler->handle_accept(io);
+                } else {
+                    io.handler->handle_read(io);
+                }
+            }
 
-	    if ( FD_ISSET(io.sfd, &_wset) ) {
+            if ( FD_ISSET(io.sfd, &_wset) ) {
                 io.abstime = now;
-		io.handler->handle_write(io);
-	    }
-	}
+                io.handler->handle_write(io);
+            }
+        }
 
         for ( cIter = _clients.begin(); cIter != _clients.end(); ) 
         {
@@ -349,16 +349,16 @@ EventManager::eventLoop()
 
         // check for timer events
         EventManager::GetTimeOfDay(&now);
-	this->checkTimers(now);
+        this->checkTimers(now);
 
         // single-shot
-	if ( this->activeEvents() == 0 && _dieoff )
-	    break;
+        if ( this->activeEvents() == 0 && _dieoff )
+            break;
     }
 
     // cleanup clients
     for ( cIter = _clients.begin(); cIter != _clients.end(); cIter++ )
-	this->destroyEvent(cIter->second);
+        this->destroyEvent(cIter->second);
     _clients.clear();
 
     // cleanup timers
@@ -463,15 +463,15 @@ EventManager::verifyTimers()
 
     for ( tIter = _timers.begin(); tIter != _timers.end(); ) 
     {
-	EventTimer & timer = tIter->second;
+        EventTimer & timer = tIter->second;
 
-	if ( timer.evid == 0 || ! timer.enabled ) {
-	    _timers.erase(tIter++);
-	} else {
-	    if ( timer.evusec > 0 && timer.evusec < this->_minevu )
-		this->_minevu = timer.evusec;
-	    tIter++;
-	}
+        if ( timer.evid == 0 || ! timer.enabled ) {
+            _timers.erase(tIter++);
+        } else {
+            if ( timer.evusec > 0 && timer.evusec < this->_minevu )
+                this->_minevu = timer.evusec;
+            tIter++;
+        }
     }
 
     return;
@@ -485,10 +485,10 @@ EventManager::checkTimers ( const timeval & now )
 
     for ( tIter = _timers.begin(); tIter != _timers.end(); tIter++ ) 
     {
-	EventTimer & timer = tIter->second;
+        EventTimer & timer = tIter->second;
 
-	if ( ! timer.enabled )
-	    continue;
+        if ( ! timer.enabled )
+            continue;
 
         if ( timer.abstime.tv_sec == 0 ) 
         {
@@ -571,7 +571,7 @@ void
 EventManager::checkMinTimer ( const EventTimer & timer )
 {
     if ( timer.evusec < _minevu )
-	_minevu = timer.evusec;
+        _minevu = timer.evusec;
 
     return;
 }
@@ -581,7 +581,7 @@ void
 EventManager::destroyEvent ( EventIO & io )
 {
     if ( io.handler )
-	io.handler->handle_destroy(io);
+        io.handler->handle_destroy(io);
     io.enabled = false;
     return;
 }
@@ -591,7 +591,7 @@ void
 EventManager::destroyEvent ( EventTimer & timer )
 {
     if ( timer.enabled )
-	timer.handler->finished(timer);
+        timer.handler->finished(timer);
     timer.enabled = false;
 }
     
