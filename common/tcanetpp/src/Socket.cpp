@@ -187,13 +187,16 @@ Socket::Socket ( sockfd_t & fd, sockaddr_t & csock, SocketType type, int protoco
       _block(false),
       _noUdpClose(false)
 {
-    if ( Socket::IsValidDescriptor(this->_fd) ) {
+    if ( Socket::IsValidDescriptor(this->_fd) ) 
+    {
         if ( _proto == IPPROTO_TCP )
             _connected  = true;
         else if ( _proto == IPPROTO_UDP )
             _noUdpClose = true;
         _bound     = true;
-    } else {
+    } 
+    else 
+    {
         _connected = false;
         _bound     = false;
     }
@@ -230,7 +233,8 @@ Socket::~Socket()
 int
 Socket::init ( bool block )
 {
-    if ( ! Socket::IsValidDescriptor(_fd) ) {
+    if ( ! Socket::IsValidDescriptor(_fd) ) 
+    {
         try {
             Socket::InitializeSocket(_fd, _socktype, _proto);
         } catch ( SocketException & err ) {
@@ -239,8 +243,9 @@ Socket::init ( bool block )
         }
     }
       
-    if ( _socktype == SOCKTYPE_SERVER ) {
-            this->setSocketOption(SocketOption::SetReuseAddr(1));
+    if ( _socktype == SOCKTYPE_SERVER ) 
+    {
+        this->setSocketOption(SocketOption::SetReuseAddr(1));
         
         if ( ! this->bind() )
             return -1;
@@ -276,12 +281,10 @@ Socket::bind()
     
     if ( r != 0 ) {
         _errstr = "Socket::bind() Failed to bind";
-        
-#   ifndef WIN32
+#       ifndef WIN32
         if ( strerror_r(errno, serr, ERRORSTRLEN) == 0 )
             _errstr = serr;
-#   endif
-        
+#       endif
         return -1;
     }
     
@@ -361,8 +364,10 @@ Socket::connect()
 void
 Socket::close()
 {
-   if ( ! this->_noUdpClose ) {
-        if ( Socket::IsValidDescriptor(_fd) ) {
+   if ( ! this->_noUdpClose ) 
+   {
+        if ( Socket::IsValidDescriptor(_fd) ) 
+        {
            _connected = false;
      
 #          ifdef WIN32
@@ -430,7 +435,7 @@ Socket::accept ( SocketFactory & factory )
     sockfd_t     cfd;
 
     if ( _socktype < SOCKTYPE_SERVER )
-            return NULL;
+        return NULL;
 
     len = sizeof(csock);
     ::memset(&csock, 0, len);
@@ -438,8 +443,7 @@ Socket::accept ( SocketFactory & factory )
     if ( _proto == SOCKET_TCP )
     {
         if ( (cfd = ::accept(_fd, (struct sockaddr*) &csock, &len)) < 0 )
-                return NULL;
-
+            return NULL;
         client = factory(cfd, csock, _socktype, _proto);
     }
     else if ( _proto == SOCKET_UDP )
@@ -476,7 +480,8 @@ Socket::isConnected()
     wset.fd     = this->getDescriptor();
     wset.events = POLLOUT | POLLERR;
 
-    if ( poll(&wset, 1, 0) < 0 ) {
+    if ( poll(&wset, 1, 0) < 0 ) 
+    {
         if ( errno == EINTR )
             return true;
 
@@ -523,14 +528,14 @@ Socket::readFrom ( void * vptr, size_t n, sockaddr_t & csock )
     rd  = ::recvfrom(_fd, (char*) vptr, n, 0, (struct sockaddr*) &csock, &len);
 
     if ( rd < 0 ) {
-#   ifdef WIN32
+#       ifdef WIN32
         int  err  = WSAGetLastError();
         if ( err == WSAEINTR || err == WSAEWOULDBLOCK )
             rd = 0;
-#   else
+#       else
         if ( errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK )
             rd = 0;
-#   endif
+#       endif
     }
 
     return rd;
@@ -815,20 +820,21 @@ Socket::nwriten ( const void * vptr, size_t n )
 
     nleft = n;
 
-    while ( nleft > 0 ) {
-        if ( (nwritten = ::send(_fd, ptr, nleft, 0)) <= 0 ) {
-
+    while ( nleft > 0 ) 
+    {
+        if ( (nwritten = ::send(_fd, ptr, nleft, 0)) <= 0 ) 
+        {
 #           ifdef WIN32
 
-            int err = WSAGetLastError();
+            int  err  = WSAGetLastError();
             if ( err == WSAEINTR )
                 nwritten = 0;
             else if ( err == WSAEWOULDBLOCK )
                 return(n-nleft);
             else
                 return -1;
-                
-#         else
+
+#           else
 
             if ( errno == EINTR )
                 nwritten = 0;
@@ -836,8 +842,8 @@ Socket::nwriten ( const void * vptr, size_t n )
                 return(n-nleft);
             else
                 return -1;
-                
-#         endif
+
+#           endif
         }
         nleft -= nwritten;
         ptr   += nwritten;
@@ -858,12 +864,13 @@ Socket::nreadn ( void * vptr, size_t n )
     ptr   = (char*) vptr;
     nleft = n;
 
-    while ( nleft > 0 ) {
-        if ( (nread = ::recv(_fd, ptr, nleft, 0)) < 0 ) {
-            
-#         ifdef WIN32
+    while ( nleft > 0 ) 
+    {
+        if ( (nread = ::recv(_fd, ptr, nleft, 0)) < 0 ) 
+        {
+#           ifdef WIN32
                 
-            int err = WSAGetLastError();
+            int  err  = WSAGetLastError();
             if ( err == WSAEINTR ) 
                 nread = 0;
             else if ( err == WSAEWOULDBLOCK )
@@ -871,7 +878,7 @@ Socket::nreadn ( void * vptr, size_t n )
             else
                 return -1;
                 
-#         else
+#           else
             
             if ( errno == EINTR )
                 nread = 0;
@@ -880,9 +887,10 @@ Socket::nreadn ( void * vptr, size_t n )
             else
                 return -1;
             
-#         endif
-
-        } else if ( nread == 0 ) {
+#           endif
+        } 
+        else if ( nread == 0 ) 
+        {
             return -1;
         }
         nleft -= nread;
@@ -917,13 +925,13 @@ Socket::InitializeSocket ( sockfd_t & fd, int socktype, int proto )
         fd = socket(AF_INET, SOCK_RAW, proto);
     }
 
-    if ( ! Socket::IsValidDescriptor(fd) ) {
-
+    if ( ! Socket::IsValidDescriptor(fd) ) 
+    {
 #       ifdef WIN32
         errstr.append(": Failed to initialize socket");
 #       else
-
         char   serr[ERRORSTRLEN];
+
         if ( errno == EACCES || errno == EPERM ) {
             errstr.append("EACCES: Permission denied");
         } else if ( errno == EAFNOSUPPORT ) {
