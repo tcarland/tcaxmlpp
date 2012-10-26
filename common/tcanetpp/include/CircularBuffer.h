@@ -92,42 +92,44 @@ class CircularBuffer {
 
     ~CircularBuffer();
 
+    CircularBuffer& operator= ( const CircularBuffer & cb );
 
-    size_t         read    ( void       * buff, size_t n );
-    size_t         write   ( const void * buff, size_t n );
+
+    size_t          read    ( void       * buff, size_t n );
+    size_t          write   ( const void * buff, size_t n );
  
-    size_t         readAvailable() const;
-    size_t         writeAvailable() const;
+    size_t          readAvailable() const;
+    size_t          writeAvailable() const;
 
-    size_t         reverse ( size_t offset );
-    size_t         skip    ( size_t offset );
+    size_t          reverse ( size_t offset );
+    size_t          skip    ( size_t offset );
 
-    bool           resize  ( size_t buffsize ) throw ( BufferException );
+    bool            resize  ( size_t buffsize ) throw ( BufferException );
 
-    void           clear();
-    inline  void   reset()       { return this->clear(); }
-    inline size_t  size() const  { return this->_buffsize; }
+    void            clear();
+    inline  void    reset()       { return this->clear(); }
+    inline size_t   size() const  { return this->_buffsize; }
 
 
   public:
 
-    char*          getWritePtr ( size_t * size );
-    void           setWritePtr ( size_t   offset ) throw ( BufferException );
+    char*           getWritePtr ( size_t * size );
+    void            setWritePtr ( size_t   offset ) throw ( BufferException );
 
-    char*          getReadPtr  ( size_t * size );
-    void           setReadPtr  ( size_t   offset ) throw ( BufferException );
+    char*           getReadPtr  ( size_t * size );
+    void            setReadPtr  ( size_t   offset ) throw ( BufferException );
     
-    size_t         readPtrAvailable() const;
-    size_t         writePtrAvailable() const;
+    size_t          readPtrAvailable() const;
+    size_t          writePtrAvailable() const;
 
     static
-    const char*    Version();
+    const char*     Version();
 
 
-  protected:
+  private:
 
-    void           init() throw ( BufferException );
-    bool           isWrapped() const;
+    void            init() throw ( BufferException );
+    bool            isWrapped() const;
 
 
   private:

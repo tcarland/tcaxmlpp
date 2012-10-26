@@ -39,7 +39,7 @@ namespace tcanetpp {
 
 
 /* ----------------------------------------------------------------------- */
-/** Simple class to lock/unlock a mutex on construction/destruction
+/**  Class to lock/unlock a mutex on construction/destruction
   *  allowing for simple synchronization of a class method by simply
   *  instantiating this object with the ThreadLock instance.
  **/

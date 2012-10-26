@@ -43,8 +43,6 @@ FileStat::FileStat ( const std::string & filename )
         throw Exception("Failure performing stat().");
 }
 
-FileStat::~FileStat() {}
-
 
 bool
 FileStat::operator< ( const FileStat & fs ) const

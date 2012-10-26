@@ -37,14 +37,6 @@
 
 namespace tcanetpp {
 
-/*
- *   ::0:0/96       ipv4 in ipv6
- *   ::ffff:0:0/96  ipv4 mapped ipv6
- *
- *  0     16    32    48    64    80    96   112   128
- *  | 0000:0000 : 0000:0000 : 0000:0000 : 0000:0000 |
- *  |           |           |           |           |
- */
 
 class IpAddr;
 
@@ -68,7 +60,7 @@ class IpAddr {
 
     virtual ~IpAddr();
 
-
+    IpAddr&             operator=    ( const IpAddr & ipaddr );
     bool                operator==   ( const IpAddr & ipaddr ) const;
     bool                operator<    ( const IpAddr & ipaddr ) const;
 

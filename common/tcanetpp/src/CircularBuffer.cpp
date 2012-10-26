@@ -84,6 +84,27 @@ CircularBuffer::~CircularBuffer()
 
 // ----------------------------------------------------------------------
 
+CircularBuffer&
+CircularBuffer::operator= ( const CircularBuffer & buffer )
+{
+    this->init();
+
+    ::memcpy(this->_buffer, buffer._buffer, _buffsize);
+
+    if ( buffer._endPtr != NULL ) {
+        _endPtr   = this->_buffer;
+        _endPtr  += (buffer._endPtr - buffer._buffer);
+        _wrapPtr  = _endPtr;
+    }
+
+    _readPtr  += (buffer._readPtr - buffer._buffer);
+    _writePtr += (buffer._writePtr - buffer._buffer);
+
+    return *this;
+}
+
+// ----------------------------------------------------------------------
+
 /** Internal initialization function used by the constructor(s) */
 void
 CircularBuffer::init() throw ( BufferException )

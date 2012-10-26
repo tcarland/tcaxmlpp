@@ -77,25 +77,25 @@ class Prefix {
     virtual ~Prefix() {}
 
 
-    bool   operator==  ( const Prefix & prefix ) const
+    inline bool operator== ( const Prefix & prefix ) const
     {
         return( (_pfx.addr == prefix._pfx.addr) 
                && (_pfx.mb == prefix._pfx.mb) );
     }
     
-    bool   operator<   ( const Prefix & prefix ) const
+    inline bool operator<  ( const Prefix & prefix ) const
     {
         if ( _pfx.addr == prefix._pfx.addr )
             return(_pfx.mb < prefix._pfx.mb  );
         return(_pfx.addr < prefix._pfx.addr);
     }
 
-    inline ipv4addr_t    getPrefix() const
+    inline ipv4addr_t  getPrefix() const
     { 
         return _pfx.addr;
     }
 
-    inline uint8_t       getPrefixLen() const
+    inline uint8_t  getPrefixLen() const
     {
         uint8_t mb = *((uint8_t*)&_pfx.mb  );
         return mb;
