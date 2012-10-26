@@ -58,7 +58,7 @@ all: lib
 include ${TOPDIR}/tcamake/project_defs
 
 
-lib: arlib solib
+lib: arlib 
 
 arlib: lib/libtcanetpp.a
 

@@ -81,7 +81,6 @@ LFLAGS       += -L$(TCANETPP_HOME)/lib
 LIBS         += -lcmdbuf
 endif
 
-
 ifdef NEED_TCASQLPP
 ifdef TCAMAKE_PROJECT
   TCASQL_HOME = $(TOPDIR)/common/tcasqlpp
@@ -111,6 +110,11 @@ HEXESHOME = $(TOPDIR)/common/hexes
 INCLUDES += -I$(HEXESHOME)/include
 LFLAGS   += -L$(HEXESHOME)/lib
 LIBS     += -lhexes
+endif
+
+ifdef NEED_JSONPP
+JSONPPHOME = $(TOPDIR)/common/jsonpp
+INCLUDES  += -I$(JSONPPHOME)/include
 endif
 
 #-------------------------------------------------------------------------

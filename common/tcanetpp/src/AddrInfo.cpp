@@ -68,7 +68,6 @@ AddrInfo::AddrInfo()
       _nxt(NULL)
 {}
 
-
 AddrInfo::AddrInfo ( const std::string & name, const std::string & service )
     : _ai(NULL),
       _nxt(NULL)
@@ -76,6 +75,11 @@ AddrInfo::AddrInfo ( const std::string & name, const std::string & service )
     _err = AddrInfo::GetAddrInfo(name, service, NULL, &_ai);
 }
 
+AddrInfo::AddrInfo ( struct addrinfo * ai )
+    : _ai(ai),
+      _nxt(NULL)
+{
+}
 
 AddrInfo::~AddrInfo()
 {
@@ -85,10 +89,18 @@ AddrInfo::~AddrInfo()
 
 // ----------------------------------------------------------------------
 
-AddrInfo::AddrInfo ( struct addrinfo * ai )
-    : _ai(ai),
-      _nxt(NULL)
+AddrInfo::AddrInfo ( const AddrInfo & ai )
+    : _ai(ai._ai),
+      _nxt(ai._nxt)
 {
+}
+
+AddrInfo&
+AddrInfo::operator= ( const AddrInfo & ai )
+{
+    _ai  = ai._ai;
+    _nxt = ai._nxt;
+    return *this;
 }
 
 // ----------------------------------------------------------------------
@@ -247,31 +259,29 @@ AddrInfo::getError() const
   * @{
  **/
 AddrInfo*
-AddrInfo::GetAddrInfo ( const std::string & host, const std::string & svc )
+AddrInfo::GetAddrInfo ( const std::string & host, uint16_t port, const addrinfo * hints )
 {
-    AddrInfo   * ai = NULL;
-    addrinfo   * res, hints;
-    int          err;
+    std::string svc = StringUtils::toString<uint16_t>(port);
 
-    hints = AddrInfo::GetTCPClientHints();
+    return AddrInfo::GetAddrInfo(host, svc, hints);
+}
 
-    if ( (err = AddrInfo::GetAddrInfo(host, svc, &hints, &res)) == 0 )
+AddrInfo*
+AddrInfo::GetAddrInfo ( const std::string & host, const std::string & svc, const addrinfo * hints )
+{
+    AddrInfo  * ai = NULL;
+    addrinfo  * res;
+    int         err = 0;
+
+    if ( (err = AddrInfo::GetAddrInfo(host, svc, hints, &res)) == 0 )
         ai = AddrInfo::factory(res);
     else
         ai_error = (std::string) ::gai_strerror(err);
 
     return ai;
 }
-
-
-AddrInfo*
-AddrInfo::GetAddrInfo ( const std::string & host, uint16_t port )
-{
-    std::string svc = StringUtils::toString<uint16_t>(port);
-
-    return AddrInfo::GetAddrInfo(host, svc);
-}
 /*@}*/
+
 
 /**  Static wrapper function to getaddrinfo. Returns 0 on success
   *  or non-zero error code.
@@ -288,7 +298,8 @@ AddrInfo::GetAddrInfo ( const std::string & host,
 
 
 int
-AddrInfo::GetAddrInfo ( const std::string & host, const std::string & svc,
+AddrInfo::GetAddrInfo ( const std::string & host, 
+                        const std::string & svc,
                         const addrinfo    * hints,
                         addrinfo         ** res )
 {
@@ -412,7 +423,7 @@ AddrInfo::GetHostAddr ( const std::string & host )
     AddrInfo * ai;
     struct addrinfo  *res;
 
-    ai  = AddrInfo::GetAddrInfo(host);
+    ai  = AddrInfo::GetAddrInfo(host, "");
 
     if ( ai == NULL )
         return addr;
@@ -434,7 +445,7 @@ AddrInfo::GetHostAddr ( const std::string & host )
 int
 AddrInfo::GetAddrList ( const std::string & host, IpAddrList & v )
 {
-    AddrInfo * ai = AddrInfo::GetAddrInfo(host);
+    AddrInfo * ai = AddrInfo::GetAddrInfo(host, "");
 
     if ( ai == NULL )
         return 0;
@@ -460,7 +471,7 @@ AddrInfo::GetTCPServerHints()
     ::memset(&hints, 0, sizeof(struct addrinfo));
 
     hints.ai_family    = AF_UNSPEC;
-    hints.ai_socktype  = SOCKET_TCP;
+    hints.ai_socktype  = SOCK_STREAM;
     hints.ai_flags     = AI_PASSIVE;
 
     return hints;
@@ -474,7 +485,7 @@ AddrInfo::GetUDPServerHints()
     ::memset(&hints, 0, sizeof(struct addrinfo));
 
     hints.ai_family    = AF_UNSPEC;
-    hints.ai_socktype  = SOCKET_UDP;
+    hints.ai_socktype  = SOCK_DGRAM;
     hints.ai_flags     = AI_PASSIVE;
 
     return hints;
@@ -488,7 +499,7 @@ AddrInfo::GetTCPClientHints()
     ::memset(&hints, 0, sizeof(struct addrinfo));
 
     hints.ai_family    = AF_UNSPEC;
-    hints.ai_socktype  = SOCKET_TCP;
+    hints.ai_socktype  = SOCK_STREAM;
 
     return hints;
 }
@@ -501,7 +512,7 @@ AddrInfo::GetUDPClientHints()
     ::memset(&hints, 0, sizeof(struct addrinfo));
 
     hints.ai_family    = AF_UNSPEC;
-    hints.ai_socktype  = SOCKET_UDP;
+    hints.ai_socktype  = SOCK_DGRAM;
 
     return hints;
 }

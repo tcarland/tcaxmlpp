@@ -54,6 +54,10 @@ class AddrInfo {
 
     static AddrInfoFactory  factory;
 
+  private:
+    
+    AddrInfo  ( const AddrInfo    & ai );
+    AddrInfo&  operator= ( const AddrInfo & ai );
 
   public:
 
@@ -66,8 +70,8 @@ class AddrInfo {
 
     virtual ~AddrInfo();
 
-
   public:
+
 
     bool        isValid() const;
 
@@ -102,11 +106,12 @@ class AddrInfo {
     /* static factory methods */
 
     static AddrInfo*   GetAddrInfo ( const std::string & host,
-                                     const std::string & svc = "" );
+                                     uint16_t            port,
+                                     const addrinfo    * hints = NULL );
 
     static AddrInfo*   GetAddrInfo ( const std::string & host,
-                                     uint16_t            port );
-
+                                     const std::string & svc,
+                                     const addrinfo    * hints = NULL );
 
     /* static utility methods for getaddrinfo/getnameinfo */
 
