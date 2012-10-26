@@ -43,13 +43,13 @@ typedef enum JsonValueType {
 } jsonValueType_t;
 
 
-/**  Exception class throwed by the JSON constructor */
-class JSONException : public std::runtime_error {
+/**  Exception class used by various jsonpp methods */
+class JsonException : public std::runtime_error {
   public:
-    explicit JSONException ( const std::string & errstr )
+    explicit JsonException ( const std::string & errstr )
         : std::runtime_error(errstr)
     {}
-    virtual ~JSONException() throw() {}
+    virtual ~JsonException() throw() {}
     virtual std::string toString() const
     {
         return this->what();
@@ -94,13 +94,14 @@ class JsonObject : public JsonItem {
 
     JsonObject() : JsonItem(JSON_OBJECT) {}
     JsonObject ( const JsonObject & obj );
-    virtual ~JsonObject();
+    virtual ~JsonObject() throw ();
 
     JsonObject&     operator=  ( const JsonObject  & obj );
 
     JsonItem*       operator[] ( const std::string & key ) 
-                    throw ( JSONException );
-    const JsonItem* operator[] ( const std::string & key ) const;
+                        throw ( JsonException );
+    const JsonItem* operator[] ( const std::string & key ) const
+                        throw ( JsonException );
 
     iterator        begin() { return _items.begin(); }
     iterator        end()   { return _items.end(); }
@@ -108,7 +109,8 @@ class JsonObject : public JsonItem {
     const_iterator  begin() const { return _items.begin(); }
     const_iterator  end()   const { return _items.end(); }
 
-    pairI           insert ( const std::string & key, JsonItem * item );
+    pairI           insert ( const std::string & key, JsonItem * item )
+                        throw ( JsonException );
     void            erase  ( iterator at );
     void            erase  ( iterator first, iterator last );
     size_type       erase  ( const std::string & key );
@@ -210,7 +212,7 @@ class JSON {
 
   public:
 
-    JSON ( const std::string & str = "" ) throw ( JSONException );
+    JSON ( const std::string & str = "" ) throw ( JsonException );
     JSON ( const JSON & json );
     ~JSON() throw();
 
