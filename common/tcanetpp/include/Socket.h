@@ -54,11 +54,11 @@ namespace tcanetpp {
 /**  Socket types for Socket constructor  */
 typedef enum SocketType
 {
-    SOCKTYPE_NONE = 0,
-    SOCKTYPE_CLIENT = 1,
+    SOCKTYPE_NONE          = 0,
+    SOCKTYPE_CLIENT        = 1,
     SOCKTYPE_SERVER_CLIENT = 2,
-    SOCKTYPE_SERVER = 3,
-    SOCKTYPE_RAW = 4
+    SOCKTYPE_SERVER        = 3,
+    SOCKTYPE_RAW           = 4
 } sockType_t;
 
 
@@ -228,16 +228,16 @@ class Socket {
     
   private:
     
-    sockfd_t                _fd;
-    sockaddr_t              _sock;
-    SocketType              _socktype;
-    int                     _proto;
-    uint16_t                _port;
+    sockfd_t               _fd;
+    sockaddr_t             _sock;
+    SocketType             _socktype;
+    int                    _proto;
+    uint16_t               _port;
     
-    bool                    _bound;
-    bool                    _connected;
-    bool                    _block;
-    bool                    _noUdpClose;
+    bool                   _bound;
+    bool                   _connected;
+    bool                   _block;
+    bool                   _noUdpClose;
     
 };
 
