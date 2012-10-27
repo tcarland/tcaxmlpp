@@ -98,8 +98,14 @@ AddrInfo::AddrInfo ( const AddrInfo & ai )
 AddrInfo&
 AddrInfo::operator= ( const AddrInfo & ai )
 {
+    if ( this == &ai )
+        return *this;
+    if ( _ai && _ai != ai._ai )
+        ::freeaddrinfo(_ai);
+
     _ai  = ai._ai;
     _nxt = ai._nxt;
+
     return *this;
 }
 

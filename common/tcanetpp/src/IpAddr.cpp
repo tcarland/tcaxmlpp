@@ -124,8 +124,10 @@ IpAddr::~IpAddr()
 IpAddr&
 IpAddr::operator= ( const IpAddr & ipaddr ) 
 {
-    this->_mb = ipaddr.getPrefixLen();
-    ::memcpy(&_saddr, ipaddr.getSockAddr(), sizeof(sockaddr_t));
+    if ( this != &ipaddr ) {
+        this->_mb = ipaddr.getPrefixLen();
+        ::memcpy(&_saddr, ipaddr.getSockAddr(), sizeof(sockaddr_t));
+    }
     return *this;
 }
 

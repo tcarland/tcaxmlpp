@@ -87,6 +87,13 @@ CircularBuffer::~CircularBuffer()
 CircularBuffer&
 CircularBuffer::operator= ( const CircularBuffer & buffer )
 {
+    if ( this == &buffer )
+        return *this;
+
+    if ( _buffer )
+        ::free(_buffer);
+
+    this->_buffsize = buffer._buffsize;
     this->init();
 
     ::memcpy(this->_buffer, buffer._buffer, _buffsize);
