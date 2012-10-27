@@ -1,8 +1,23 @@
-/**  @file JSON.h
+/** @file JSON.h
   *
-  *  Copyright (c) 2012 Timothy Charlton Arland
-  *  @author tcarland@gmail.com
+  * Copyright (c) 2012 Timothy Charlton Arland
+  * @author tcarland@gmail.com
+  * 
+  * @section LICENSE
   *
+  * jsonpp is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU Lesser General Public License as 
+  * published by the Free Software Foundation, either version 3 of 
+  * the License, or (at your option) any later version.
+  *
+  * jsonpp is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Lesser General Public License for more details.
+  *
+  * You should have received a copy of the GNU Lesser General Public 
+  * License along with jsonpp.  
+  * If not, see <http://www.gnu.org/licenses/>.
  **/
 #ifndef _JSONPP_JSON_H_
 #define _JSONPP_JSON_H_
@@ -120,7 +135,7 @@ class JsonObject : public JsonItem {
  
     size_t          size()  const { return _items.size(); }
     bool            empty() const { return _items.empty(); }
-    void            clear()       { return _items.clear(); }
+    void            clear();
   
     virtual std::string toString() const;
 
@@ -160,7 +175,7 @@ class JsonArray : public JsonItem {
 
     size_t          size()  const { return _items.size(); }
     bool            empty() const { return _items.empty(); }
-    void            clear()       { return _items.clear(); }
+    void            clear();
 
     JsonItem*       at ( size_type index );
     const JsonItem* at ( size_type index ) const;
@@ -223,7 +238,8 @@ class JSON {
     JsonObject& getJSON() { return this->_root; }
     JsonObject& json()    { return this->getJSON(); }
 
-    size_t getErrorPos() const { return _errpos; }
+    size_t      getErrorPos() const { return _errpos; }
+    std::string getErrorStr ( const std::string & str ) const;
 
     static std::string typeToString ( JsonValueType  t );
 

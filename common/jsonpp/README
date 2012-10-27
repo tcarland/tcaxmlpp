@@ -1,0 +1,54 @@
+/** $Id: README,v 1.0 2012/10/26 16:18:46 tca $
+  *
+  * Copyright (c) 2008,2009 Timothy Charlton Arland 
+  * @author tca@charltontechnology.net
+  * 
+  * @section LICENSE
+  *
+  * jsonpp is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU Lesser General Public License as 
+  * published by the Free Software Foundation, either version 3 of 
+  * the License, or (at your option) any later version.
+  *
+  * jsonpp is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Lesser General Public License for more details.
+  *
+  * You should have received a copy of the GNU Lesser General Public 
+  * License along with jsonpp.  
+  * If not, see <http://www.gnu.org/licenses/>.
+ **/
+
+/**
+  @mainpage   jsonpp
+
+@section overview Overview:
+
+  The 'jsonpp' library is a C++ library implementation of the JSON 
+standard, RFC 4627 (www.ietf.org/rfc/rfc4627.txt). JSON, or 
+JavaScript Object Notation, is a text format for serializing 
+structured data. More information about JSON can be found at 
+www.json.org. 
+
+  This implementation was created after browsing the currently 
+available (at the time) C++ JSON implementations and either not 
+liking the library, or not liking the licensing scheme for the 
+given library or both. 
+
+
+Notes:
+
+ October 26, 2012 - version 0.1.
+
+  In its current form, the library probably is not suited for 
+heavy lifting in JSON, and is not yet fully compliant with the 
+JSON specification. The following issues need to still be 
+addressed:
+
+  - proper Unicode support.
+  - i/o stream support.
+  - documentation.
+
+*/
+

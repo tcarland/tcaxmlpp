@@ -21,17 +21,18 @@ int main()
        \"path\" : [ \"eth\", \"ip\", \"tcp\", \"http\", \"youtube\" ], \
        \"packets_in\" : 1, \
        \"bytes_in\" : 60, \
+       \"foo\" : false, \
        \"path_str\" : \"eth.ip.tcp.http.youtube\" }";
 
     if ( ! j.parse(s) ) {
-        std::cout << "Json parsing failed at position: " << j.getErrorPos() << std::endl;
+        std::cout << "Json parsing failed at position: " << j.getErrorPos() 
+            << ">> '" << j.getErrorStr(s) << "'" << std::endl;
         return -1;
     }
 
     JsonObject & root = j.json();
 
     JsonObject::iterator  jIter;
-
     for ( jIter = root.begin(); jIter != root.end(); ++jIter )
     {
         const std::string & key  = jIter->first;
@@ -41,8 +42,9 @@ int main()
     }
 
     std::cout << std::endl;
-
     std::cout << root.toString() << std::endl;
+
+    //root.clear();
 
     return 0;
 }
