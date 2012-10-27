@@ -26,6 +26,7 @@
 #include <deque>
 #include <map>
 #include <istream>
+#include <ostream>
 #include <sstream>
 #include <stdexcept>
 
@@ -216,13 +217,20 @@ class JsonType : public JsonItem {
     T    _value;
 };
 
-
 typedef JsonType<double>      JsonNumber;
 typedef JsonType<bool>        JsonBoolean;
 typedef JsonType<std::string> JsonString;
 
+// std::ostream support
+std::ostream& operator<< ( std::ostream & stream, const JsonObject  & obj );
+std::ostream& operator<< ( std::ostream & stream, const JsonArray   & ary );
+std::ostream& operator<< ( std::ostream & stream, const JsonItem    & val );
+std::ostream& operator<< ( std::ostream & stream, const JsonNumber  & val );
+std::ostream& operator<< ( std::ostream & stream, const JsonBoolean & val );
+std::ostream& operator<< ( std::ostream & stream, const JsonString  & str );
 
 
+// primary interface for parsing json
 class JSON {
 
   public:
@@ -233,8 +241,8 @@ class JSON {
 
     JSON& operator= ( const JSON & json );
 
-    bool parse ( const std::string & str );
-    void clear();
+    bool  parse ( const std::string & str );
+    void  clear();
 
     JsonObject& getJSON() { return this->_root; }
     JsonObject& json()    { return this->getJSON(); }
@@ -242,18 +250,11 @@ class JSON {
     size_t      getErrorPos() const { return _errpos; }
     std::string getErrorStr ( const std::string & str ) const;
 
-    static std::string typeToString ( JsonValueType  t );
-
     template<typename T>
-    static inline T fromString ( const std::string & str )
-    {
-        T target = T();
-        std::stringstream strm(str);
-        strm >> target;
-        return target;
-    }
+    static T    fromString ( const std::string & str );
 
     static std::string ToString ( const JsonItem * item );
+    static std::string typeToString ( JsonValueType  t );
 
   private:
 

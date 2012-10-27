@@ -42,7 +42,8 @@ int main()
     }
 
     std::cout << std::endl;
-    std::cout << root.toString() << std::endl;
+    //std::cout << root.toString() << std::endl;
+    std::cout << root << std::endl;
 
     return 0;
 }

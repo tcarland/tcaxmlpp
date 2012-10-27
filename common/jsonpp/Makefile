@@ -17,7 +17,9 @@ endif
 # set requirements
 #NEED_SOCKET = 1
 
+ifdef TNMS_DEBUG
 OPT_FLAGS= 	-g
+endif
 
 # custom lib/includes
 INCLUDES=       -I.

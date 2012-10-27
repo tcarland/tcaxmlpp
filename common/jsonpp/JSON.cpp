@@ -401,6 +401,50 @@ JsonType<T>::toString() const
 
 // ------------------------------------------------------------------------- //
 
+inline std::ostream&
+operator<< ( std::ostream & stream, const JsonObject & obj )
+{
+    stream << obj.toString();
+    return stream;
+}
+
+inline std::ostream&
+operator<< ( std::ostream & stream, const JsonArray & ary )
+{
+    stream << ary.toString();
+    return stream;
+}
+
+inline std::ostream&
+operator<< ( std::ostream & stream, const JsonItem & val )
+{
+    stream << val.toString();
+    return stream;
+}
+
+inline std::ostream&
+operator<< ( std::ostream & stream, const JsonNumber & val )
+{
+    stream << val.toString();
+    return stream;
+}
+
+inline std::ostream&
+operator<< ( std::ostream & stream, const JsonBoolean & val )
+{
+    stream << val.toString();
+    return stream;
+}
+
+inline std::ostream&
+operator<< ( std::ostream & stream, const JsonString & str )
+{
+    stream << str.toString();
+    return stream;
+}
+
+// ------------------------------------------------------------------------- //
+
 JSON::JSON ( const std::string & str ) throw ( JsonException )
 {
     if ( ! str.empty() && ! this->parse(str) )
@@ -927,6 +971,16 @@ JSON::typeToString ( JsonValueType t )
     return name;
 }
 
+
+template<typename T>
+inline T 
+JSON::fromString ( const std::string & str )
+{
+    T target = T();
+    std::stringstream strm(str);
+    strm >> target;
+    return target;
+}
 
 std::string
 JSON::ToString ( const JsonItem * item )
