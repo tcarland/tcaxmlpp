@@ -234,6 +234,7 @@ class JSON {
     JSON& operator= ( const JSON & json );
 
     bool parse ( const std::string & str );
+    void clear();
 
     JsonObject& getJSON() { return this->_root; }
     JsonObject& json()    { return this->getJSON(); }
