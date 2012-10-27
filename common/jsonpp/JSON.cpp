@@ -53,26 +53,44 @@ JsonObject::JsonObject ( const JsonObject & obj )
 JsonObject&
 JsonObject::operator= ( const JsonObject & obj )
 {
+    if ( this == &obj )
+        return *this;
+
+    this->_items.clear();
     this->_type  = obj._type;
 
     JsonObject::const_iterator jIter;
     for ( jIter = obj.begin(); jIter != obj.end(); ++jIter )
     {
         JsonValueType t = jIter->second->getType();
-        if ( t == JSON_OBJECT ) {
-            this->insert(jIter->first, new JsonObject(*((JsonObject*)jIter->second)));
-        } else if ( t == JSON_ARRAY ) {
-            this->insert(jIter->first, new JsonArray(*((JsonArray*)jIter->second)));
-        } else if ( t == JSON_NUMBER ) {
-            this->insert(jIter->first, new JsonNumber(*((JsonNumber*)jIter->second)));
-        } else if ( t == JSON_STRING ) {
-            this->insert(jIter->first, new JsonString(*((JsonString*)jIter->second)));
-        } else if ( t == JSON_BOOL_TRUE || t == JSON_BOOL_FALSE ) {
-            this->insert(jIter->first, new JsonBoolean(*((JsonBoolean*)jIter->second)));
-        } else if ( t == JSON_NULL ) {
-            this->insert(jIter->first, new JsonItem(JSON_NULL));
+
+        switch ( t ) {
+            case JSON_OBJECT:
+                this->insert(jIter->first, new JsonObject(*((JsonObject*)jIter->second)));
+                break;
+            case JSON_ARRAY:
+                this->insert(jIter->first, new JsonArray(*((JsonArray*)jIter->second)));
+                break;
+            case JSON_NUMBER:
+                this->insert(jIter->first, new JsonNumber(*((JsonNumber*)jIter->second)));
+                break;
+            case JSON_STRING:
+                this->insert(jIter->first, new JsonString(*((JsonString*)jIter->second)));
+                break;
+            case JSON_BOOL_TRUE:
+            case JSON_BOOL_FALSE:
+                this->insert(jIter->first, new JsonBoolean(*((JsonBoolean*)jIter->second)));
+                break;
+            case JSON_NULL:
+                this->insert(jIter->first, new JsonItem(JSON_NULL));
+                break;
+            case JSON_ITEM:
+            case JSON_INVALID:
+            default:
+                break;
         }
     }
+
     return *this;
 }
 
@@ -210,6 +228,10 @@ JsonArray::~JsonArray()
 JsonArray&
 JsonArray::operator= ( const JsonArray & ary )
 {
+    if ( this == &ary )
+        return *this;
+
+    this->_items.clear();
     this->_type  = ary._type;
 
     JsonArray::const_iterator  jIter;
@@ -237,10 +259,9 @@ JsonArray::operator= ( const JsonArray & ary )
             case JSON_NULL:
                 this->insert(new JsonItem(JSON_NULL));
                 break;
-            case JSON_INVALID:
             case JSON_ITEM:
+            case JSON_INVALID:
             default:
-                this->insert(new JsonItem(JSON_INVALID));
                 break;
         }
     }
@@ -338,8 +359,10 @@ template<typename T>
 JsonType<T>&
 JsonType<T>::operator= ( const JsonType<T> & val )
 {
-    this->_value = val._value;
-    this->_type  = val._type;
+    if ( this != &val ) {
+        this->_value = val._value;
+        this->_type  = val._type;
+    }
     return *this;
 }
 
@@ -395,8 +418,11 @@ JSON::~JSON() throw()
 JSON&
 JSON::operator= ( const JSON & json )
 {
-    this->_root   = json._root;
-    this->_errpos = json._errpos;
+    if ( this != &json ) {
+        this->_root.clear();
+        this->_root   = json._root;
+        this->_errpos = json._errpos;
+    }
     return *this;
 }
 
