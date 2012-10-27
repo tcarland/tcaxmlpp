@@ -1,12 +1,13 @@
 
 #include <string>
 #include <iostream>
+#include <fstream>
 
 #include "JSON.h"
 using namespace jsonpp;
 
 
-int main()
+int main ( int argc, char **argv )
 {
     JSON j;
 
@@ -37,12 +38,33 @@ int main()
     {
         const std::string & key  = jIter->first;
         JsonItem          * item = jIter->second;
-
-        std::cout << key << " : " << JSON::typeToString(item->getType()) << std::endl;
+        std::cout << key << " : " << JSON::TypeToString(item->getType()) << std::endl;
     }
 
     std::cout << std::endl;
-    //std::cout << root.toString() << std::endl;
+    std::cout << root << std::endl;
+
+    if ( argc == 1 )
+        return 0;
+
+    /* Reading from a file */
+    const char  * fn = argv[1];
+    std::ifstream ifs(fn);
+
+    if ( ! ifs )
+        std::cout << "Error opening file " << fn << std::endl;
+
+    std::istream & buf = (std::istream&) ifs;
+
+    j.clear();
+    if ( ! j.parse(buf) ) {
+        std::cout << "Json parsing failed at position: " << j.getErrorPos() 
+            << ">> '" << j.getErrorStr(s) << "'" << std::endl;
+        return -1;
+    }
+    root = j.json();
+
+    std::cout << std::endl;
     std::cout << root << std::endl;
 
     return 0;

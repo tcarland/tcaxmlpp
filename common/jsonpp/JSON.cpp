@@ -494,6 +494,17 @@ JSON::parse ( const std::string & str )
 }
 
 bool
+JSON::parse ( std::istream & buf )
+{
+    char c;
+
+    while ( !buf.eof() && (c = buf.peek()) != TOKEN_OBJECT_BEGIN )
+        buf.get();
+
+    return this->parseObject(buf, _root);
+}
+
+bool
 JSON::parseObject ( std::istream & buf, JsonObject & obj )
 {
     bool p = true;
@@ -781,7 +792,7 @@ JSON::parseNumber ( std::istream & buf, JsonNumber & num )
         return false;
     }
 
-    num = JsonNumber(JSON::fromString<double>(numstr), JSON_NUMBER);
+    num = JsonNumber(JSON::FromString<double>(numstr), JSON_NUMBER);
 
     return true;
 }
@@ -935,9 +946,25 @@ JSON::parseValueType ( std::istream & buf )
     return t;
 }
 
+std::string
+JSON::getErrorStr ( const std::string & str ) const
+{
+    std::string loc;
+
+    if ( _errpos == 0 || _errpos >= str.length() )
+        return loc;
+
+    std::string::size_type end = 10;
+    if ( (_errpos + 5) > str.length() )
+        end = str.length() - (_errpos - 5);
+
+    loc = str.substr(_errpos - 5, end);
+
+    return loc;
+}
 
 inline std::string
-JSON::typeToString ( JsonValueType t )
+JSON::TypeToString ( JsonValueType t )
 {
     std::string name;
 
@@ -974,7 +1001,7 @@ JSON::typeToString ( JsonValueType t )
 
 template<typename T>
 inline T 
-JSON::fromString ( const std::string & str )
+JSON::FromString ( const std::string & str )
 {
     T target = T();
     std::stringstream strm(str);
@@ -1012,20 +1039,11 @@ JSON::ToString ( const JsonItem * item )
 }
 
 std::string
-JSON::getErrorStr ( const std::string & str ) const
+JSON::Version()
 {
-    std::string loc;
-
-    if ( _errpos == 0 || _errpos >= str.length() )
-        return loc;
-
-    std::string::size_type end = 10;
-    if ( (_errpos + 5) > str.length() )
-        end = str.length() - (_errpos - 5);
-
-    loc = str.substr(_errpos - 5, end);
-
-    return loc;
+    std::string ver = "jsonpp v";
+    ver.append(JSONPP_VERSION);
+    return ver;
 }
 
 } // namespace

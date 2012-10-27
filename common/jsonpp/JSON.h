@@ -34,6 +34,8 @@
 namespace jsonpp {
 
 
+#define JSONPP_VERSION         "0.91"
+
 #define TOKEN_ARRAY_BEGIN      '['
 #define TOKEN_ARRAY_END        ']'
 #define TOKEN_OBJECT_BEGIN     '{'
@@ -221,6 +223,7 @@ typedef JsonType<double>      JsonNumber;
 typedef JsonType<bool>        JsonBoolean;
 typedef JsonType<std::string> JsonString;
 
+
 // std::ostream support
 std::ostream& operator<< ( std::ostream & stream, const JsonObject  & obj );
 std::ostream& operator<< ( std::ostream & stream, const JsonArray   & ary );
@@ -242,6 +245,7 @@ class JSON {
     JSON& operator= ( const JSON & json );
 
     bool  parse ( const std::string & str );
+    bool  parse ( std::istream      & buf );
     void  clear();
 
     JsonObject& getJSON() { return this->_root; }
@@ -250,11 +254,14 @@ class JSON {
     size_t      getErrorPos() const { return _errpos; }
     std::string getErrorStr ( const std::string & str ) const;
 
+  public: 
+
     template<typename T>
-    static T    fromString ( const std::string & str );
+    static T    FromString ( const std::string & str );
 
     static std::string ToString ( const JsonItem * item );
-    static std::string typeToString ( JsonValueType  t );
+    static std::string TypeToString ( JsonValueType  t );
+    static std::string Version();
 
   private:
 
