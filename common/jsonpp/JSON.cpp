@@ -400,6 +400,12 @@ JSON::operator= ( const JSON & json )
     return *this;
 }
 
+void
+JSON::clear()
+{
+    this->_root.clear();
+}
+
 bool
 JSON::parse ( const std::string & str )
 {

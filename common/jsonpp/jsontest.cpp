@@ -44,7 +44,5 @@ int main()
     std::cout << std::endl;
     std::cout << root.toString() << std::endl;
 
-    //root.clear();
-
     return 0;
 }
