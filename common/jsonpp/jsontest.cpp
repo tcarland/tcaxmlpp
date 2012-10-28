@@ -12,7 +12,7 @@ int main ( int argc, char **argv )
     JSON j;
 
     std::string  s = 
-    "{ \"_id\" : \"4d7dab887f06676117a7fbd2\", \
+    "{ \"_id\" , : \"4d7dab887f06676117a7fbd2\", \
        \"end_time\" : 12995200000 , \
        \"event_id\" : 28393, \
        \"src_ip\" : \"74.125.224.65\", \
@@ -27,7 +27,7 @@ int main ( int argc, char **argv )
 
     if ( ! j.parse(s) ) {
         std::cout << "Json parsing failed at position: " << j.getErrorPos() 
-            << ">> '" << j.getErrorStr(s) << "'" << std::endl;
+            << " >> '" << j.getErrorStr() << "'" << std::endl;
         return -1;
     }
 
@@ -59,7 +59,7 @@ int main ( int argc, char **argv )
     j.clear();
     if ( ! j.parse(buf) ) {
         std::cout << "Json parsing failed at position: " << j.getErrorPos() 
-            << ">> '" << j.getErrorStr(s) << "'" << std::endl;
+            << " >> '" << j.getErrorStr() << "'" << std::endl;
         return -1;
     }
     root = j.json();

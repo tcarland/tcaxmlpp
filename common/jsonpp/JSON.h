@@ -22,6 +22,8 @@
 #ifndef _JSONPP_JSON_H_
 #define _JSONPP_JSON_H_
 
+#pragma once
+
 #include <string>
 #include <deque>
 #include <map>
@@ -34,7 +36,7 @@
 namespace jsonpp {
 
 
-#define JSONPP_VERSION         "0.91"
+#define JSONPP_VERSION         "0.92"
 
 #define TOKEN_ARRAY_BEGIN      '['
 #define TOKEN_ARRAY_END        ']'
@@ -252,7 +254,7 @@ class JSON {
     JsonObject& json()    { return this->getJSON(); }
 
     size_t      getErrorPos() const { return _errpos; }
-    std::string getErrorStr ( const std::string & str ) const;
+    std::string getErrorStr() const { return _errstr; }
 
   public: 
 
@@ -275,6 +277,8 @@ class JSON {
     bool parseAssign    ( std::istream & buf );
     bool parseSeparator ( std::istream & buf );
 
+    void setError       ( std::istream & buf );
+
     JsonValueType parseValueType ( std::istream & buf );
 
 
@@ -282,6 +286,7 @@ class JSON {
 
     JsonObject   _root;
     size_t       _errpos;
+    std::string  _errstr;
     
 };
 

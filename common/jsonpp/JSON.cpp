@@ -28,7 +28,7 @@ namespace jsonpp {
 
 
 
-std::string
+inline std::string
 JsonItem::toString() const
 {
     if ( _type == JSON_NULL ) 
@@ -39,18 +39,20 @@ JsonItem::toString() const
 
 // ------------------------------------------------------------------------- //
 
+inline
 JsonObject::~JsonObject() throw ()
 {
     this->clear();
 }
 
+inline
 JsonObject::JsonObject ( const JsonObject & obj )
     : JsonItem(JSON_OBJECT)
 {
     *this = obj;
 }
 
-JsonObject&
+inline JsonObject&
 JsonObject::operator= ( const JsonObject & obj )
 {
     if ( this == &obj )
@@ -94,23 +96,17 @@ JsonObject::operator= ( const JsonObject & obj )
     return *this;
 }
 
-JsonItem*
+inline JsonItem*
 JsonObject::operator[] ( const std::string & key ) throw ( JsonException )
 {
     iterator iter;
-    pairI    insR;
     
-    if ( (iter = this->find(key)) == _items.end() ) {
-        JsonItem * item = new JsonItem();
-        insR = this->insert(key, item);
-        if ( ! insR.second )
-            throw ( JsonException("Error on insert") );
-        iter = insR.first;
-    }
+    if ( (iter = this->find(key)) == _items.end() )
+        throw ( JsonException("Error, object key not found") );
     return iter->second;
 }
 
-const JsonItem*
+inline const JsonItem*
 JsonObject::operator[] ( const std::string & key ) const throw ( JsonException )
 {
     const_iterator iter = this->find(key);
@@ -119,7 +115,7 @@ JsonObject::operator[] ( const std::string & key ) const throw ( JsonException )
     return iter->second;
 }
 
-JsonObject::pairI
+inline JsonObject::pairI
 JsonObject::insert ( const std::string & key, JsonItem * item ) throw ( JsonException )
 {
     JsonObject::iterator iter;
@@ -181,7 +177,7 @@ JsonObject::clear()
     return _items.clear();
 }
 
-std::string
+inline std::string
 JsonObject::toString() const
 {
     JsonObject::const_iterator jIter;
@@ -210,22 +206,25 @@ JsonObject::toString() const
 
 // ------------------------------------------------------------------------- //
 
+inline
 JsonArray::JsonArray()
     : JsonItem(JSON_ARRAY)
 {}
 
+inline
 JsonArray::JsonArray ( const JsonArray & ary )
     : JsonItem(JSON_ARRAY)
 {
     *this = ary;
 }
 
+inline
 JsonArray::~JsonArray()
 {
     this->clear();
 }
 
-JsonArray&
+inline JsonArray&
 JsonArray::operator= ( const JsonArray & ary )
 {
     if ( this == &ary )
@@ -325,7 +324,7 @@ JsonArray::clear()
     return _items.clear();
 }
 
-std::string
+inline std::string
 JsonArray::toString() const
 {
     JsonArray::const_iterator jIter;
@@ -349,6 +348,7 @@ JsonArray::toString() const
 // ------------------------------------------------------------------------- //
 
 template<typename T>
+inline 
 JsonType<T>::JsonType ( const JsonType<T> & val )
 {
     this->_value = val._value;
@@ -356,7 +356,7 @@ JsonType<T>::JsonType ( const JsonType<T> & val )
 }
 
 template<typename T>
-JsonType<T>&
+inline JsonType<T>&
 JsonType<T>::operator= ( const JsonType<T> & val )
 {
     if ( this != &val ) {
@@ -374,7 +374,7 @@ JsonType<T>::operator== ( const JsonType<T> & val ) const
 }
 
 template<typename T>
-std::string
+inline std::string
 JsonType<T>::toString() const
 {
     std::stringstream jstr;
@@ -445,38 +445,43 @@ operator<< ( std::ostream & stream, const JsonString & str )
 
 // ------------------------------------------------------------------------- //
 
+inline
 JSON::JSON ( const std::string & str ) throw ( JsonException )
+    : _errpos(0)
 {
     if ( ! str.empty() && ! this->parse(str) )
         throw ( JsonException("Error parsing string to json") );
 }
 
+inline
 JSON::JSON ( const JSON & json )
 {
     *this = json;
 }
 
+inline
 JSON::~JSON() throw()
 {}
 
-JSON&
+inline JSON&
 JSON::operator= ( const JSON & json )
 {
     if ( this != &json ) {
         this->_root.clear();
         this->_root   = json._root;
         this->_errpos = json._errpos;
+        this->_errstr = json._errstr;
     }
     return *this;
 }
 
-void
+inline void
 JSON::clear()
 {
     this->_root.clear();
 }
 
-bool
+inline bool
 JSON::parse ( const std::string & str )
 {
     std::string::size_type  indx;
@@ -493,7 +498,7 @@ JSON::parse ( const std::string & str )
     return this->parseObject(buf, _root);
 }
 
-bool
+inline bool
 JSON::parse ( std::istream & buf )
 {
     char c;
@@ -504,7 +509,7 @@ JSON::parse ( std::istream & buf )
     return this->parseObject(buf, _root);
 }
 
-bool
+inline bool
 JSON::parseObject ( std::istream & buf, JsonObject & obj )
 {
     bool p = true;
@@ -607,7 +612,7 @@ JSON::parseObject ( std::istream & buf, JsonObject & obj )
 }
 
 
-bool
+inline bool
 JSON::parseArray ( std::istream & buf, JsonArray & ary )
 {
     bool p = true;
@@ -682,12 +687,12 @@ JSON::parseArray ( std::istream & buf, JsonArray & ary )
                 break;
             case JSON_INVALID:
             default:
-                this->_errpos = buf.tellg();
+                this->setError(buf);
                 return false;
         }
     
         if ( ! p || ! this->parseSeparator(buf) ) {
-            this->_errpos = buf.tellg();
+            this->setError(buf);
             return false;
         }
     }
@@ -696,7 +701,7 @@ JSON::parseArray ( std::istream & buf, JsonArray & ary )
 }
 
 
-bool
+inline bool
 JSON::parseString ( std::istream & buf, JsonString & str )
 {
     bool start = false;
@@ -722,7 +727,7 @@ JSON::parseString ( std::istream & buf, JsonString & str )
         }
 
         if ( ! start && ! stop ) {
-            this->_errpos = buf.tellg();
+            this->setError(buf);
             return false;
         }
 
@@ -755,7 +760,7 @@ JSON::parseString ( std::istream & buf, JsonString & str )
                     sstr.push_back('\t');
                     break;
                 default:   // error
-                    this->_errpos = buf.tellg();
+                    this->setError(buf);
                     return false;
                     break;
             }
@@ -771,7 +776,7 @@ JSON::parseString ( std::istream & buf, JsonString & str )
     return true;
 }
 
-bool
+inline bool
 JSON::parseNumber ( std::istream & buf, JsonNumber & num )
 {
     const char nums[] = "-+.eE0123456789";
@@ -788,7 +793,7 @@ JSON::parseNumber ( std::istream & buf, JsonNumber & num )
         numstr.push_back(buf.get());
 
     if ( numstr.empty() ) {
-        this->_errpos = buf.tellg();
+        this->setError(buf);
         return false;
     }
 
@@ -797,7 +802,7 @@ JSON::parseNumber ( std::istream & buf, JsonNumber & num )
     return true;
 }
 
-bool
+inline bool
 JSON::parseBoolean ( std::istream & buf, JsonBoolean & b )
 {
     std::string token;
@@ -824,12 +829,12 @@ JSON::parseBoolean ( std::istream & buf, JsonBoolean & b )
         return true;
     }
 
-    _errpos = buf.tellg();
+    this->setError(buf);
 
     return false;
 }
 
-bool
+inline bool
 JSON::parseLiteral ( std::istream & buf, JsonItem & item )
 {
     std::string token;
@@ -849,7 +854,7 @@ JSON::parseLiteral ( std::istream & buf, JsonItem & item )
     if ( item.getType() == JSON_NULL && token.compare("null") == 0 )
         return true;
     
-    _errpos = buf.tellg();
+    this->setError(buf);
 
     return false;
 }
@@ -867,7 +872,7 @@ JSON::parseAssign ( std::istream & buf )
     if ( c == TOKEN_NAME_SEPARATOR ) 
         return true;
 
-    _errpos = buf.tellg();
+    this->setError(buf);
 
     return false;
 }
@@ -889,7 +894,7 @@ JSON::parseSeparator ( std::istream & buf )
     if ( c == TOKEN_ARRAY_END || c == TOKEN_OBJECT_END )
         return true;
     
-    _errpos = buf.tellg();
+    this->setError(buf);
 
     return false;
 }
@@ -946,21 +951,18 @@ JSON::parseValueType ( std::istream & buf )
     return t;
 }
 
-std::string
-JSON::getErrorStr ( const std::string & str ) const
+inline void
+JSON::setError ( std::istream & buf )
 {
-    std::string loc;
-
-    if ( _errpos == 0 || _errpos >= str.length() )
-        return loc;
-
-    std::string::size_type end = 10;
-    if ( (_errpos + 5) > str.length() )
-        end = str.length() - (_errpos - 5);
-
-    loc = str.substr(_errpos - 5, end);
-
-    return loc;
+    _errpos = buf.tellg();
+    _errstr.clear();
+    if ( _errpos < 15 )
+        buf.seekg(0);
+    else
+        buf.seekg(_errpos - 15);
+    while ( ! buf.eof() && buf.tellg() < (_errpos + 5) )
+        _errstr.push_back(buf.get());
+    return;
 }
 
 inline std::string
@@ -1009,7 +1011,7 @@ JSON::FromString ( const std::string & str )
     return target;
 }
 
-std::string
+inline std::string
 JSON::ToString ( const JsonItem * item )
 {
     JsonValueType t = item->getType();
@@ -1038,7 +1040,7 @@ JSON::ToString ( const JsonItem * item )
     return std::string("Invalid type");
 }
 
-std::string
+inline std::string
 JSON::Version()
 {
     std::string ver = "jsonpp v";
