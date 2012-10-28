@@ -169,6 +169,9 @@ IpAddr::ipv6() const
 
 //-------------------------------------------------------------------//
 
+/**  Retruns the IPv6 address, if applicable, of the underlying
+  *  sockaddr or zero if the address family is IPv4.
+ **/
 ipv6addr_t
 IpAddr::getAddr() const
 {
@@ -176,8 +179,8 @@ IpAddr::getAddr() const
 }
 
 /*@{*/
-/** Returns the IPV4 address, if applicable, of the underlying
-  * sockaddr. Returns 0 if the address family is for IPV6.
+/** Returns the IPv4 address, if applicable, of the underlying
+  * sockaddr. Returns 0 if the address family is for IPv6.
  **/
 ipv4addr_t
 IpAddr::getAddr4() const
@@ -202,8 +205,8 @@ IpAddr::getPrefix() const
 /*@}*/
 
 /*@{*/
-/** Returns the IPV6 address, if applicable, of the underlying
-  * sockaddr. Returns 0 if the address family is for IPV4.
+/** Returns the IPv6 address, if applicable, of the underlying
+  * sockaddr. Returns 0 if the address family is for IPv4.
  **/
 ipv6addr_t
 IpAddr::getAddr6() const
@@ -237,12 +240,14 @@ IpAddr::getPrefixLen() const
 
 //-------------------------------------------------------------------//
 
+/**  Returns the pointer to the underlying sockaddr_t structure */
 sockaddr_t*
 IpAddr::getSockAddr()
 {
     return &_saddr;
 }
 
+/**  Returns a const pointer to the underlying sockaddr_t structure */
 const sockaddr_t*
 IpAddr::getSockAddr() const
 {
@@ -277,9 +282,9 @@ IpAddr::isLoopback() const
     return IpAddr::IsLoopback(this->getAddr6());
 }
 
-/**  Legacy method for returning a cidr_t object for IPV4. Note
+/**  Legacy method for returning a cidr_t object for IPv4. Note
   *  that the cidr address could be 0 if the underlying IP address is
-  *  an IPV6 address.
+  *  an IPv6 address.
  **/
 cidr_t
 IpAddr::getCidr() const
@@ -359,10 +364,12 @@ IpAddr::ntop ( const sockaddr_t * sock )
     switch ( sock->ss_family )
     {
         case AF_INET:
-            dst = ::inet_ntop(sock->ss_family, &((struct sockaddr_in*) sock)->sin_addr.s_addr, ip, INET6_ADDRSTRLEN);
+            dst = ::inet_ntop(sock->ss_family, &((struct sockaddr_in*)sock)->sin_addr.s_addr, 
+                  ip, INET6_ADDRSTRLEN);
             break;
         case AF_INET6:
-            dst = ::inet_ntop(sock->ss_family, &((struct sockaddr_in6*) sock)->sin6_addr, ip, INET6_ADDRSTRLEN);
+            dst = ::inet_ntop(sock->ss_family, &((struct sockaddr_in6*)sock)->sin6_addr, 
+                  ip, INET6_ADDRSTRLEN);
             break;
     }
     if ( dst )
@@ -372,6 +379,7 @@ IpAddr::ntop ( const sockaddr_t * sock )
 
     return ipstr;
 }
+
 //-------------------------------------------------------------------//
 
 int
@@ -418,6 +426,11 @@ IpAddr::ether_ntop ( const ethaddr_t * ethaddr )
 
 //-------------------------------------------------------------------//
 
+/**  Legacy function to return the range of IP Addresses for a given
+  *  mask length. If @param subnet_pos is not NULL, it is populated 
+  *  with the octet position of the range based on the mask length.
+  *  eg. a /21 would give the address range for the 3rd octet.
+ **/
 int
 IpAddr::GetCidrRange ( uint8_t mb, uint8_t * subnet_pos )
 {
@@ -504,12 +517,18 @@ IpAddr::RandomPrefix ( ipv4addr_t agg, uint8_t masklen )
 
 //-------------------------------------------------------------------//
 
+/**  Function indicating whether the provided IPv4 address is 
+  *  the base network address for the given mask length.
+ **/
 bool
 IpAddr::IsBasePrefix ( const ipv4addr_t & pfx, uint8_t mb )
 {
     return(IpAddr::ToBasePrefix(pfx, mb) == pfx);
 }
 
+/**  Converts an IPv4 address and mask length to the base 
+  *  network address prefix.
+ **/
 ipv4addr_t
 IpAddr::ToBasePrefix ( const ipv4addr_t & pfx, uint8_t mb )
 {
@@ -525,6 +544,9 @@ IpAddr::ToBasePrefix ( const ipv4addr_t & pfx, uint8_t mb )
     return addr;
 }
 
+/**  Converts the provided IpAddr object to a cidr format string
+  *  such as 172.16.0.0/16.
+ **/
 std::string
 IpAddr::ToPrefixStr ( const IpAddr & pfx )
 {
@@ -544,6 +566,7 @@ IpAddr::ToPrefixStr ( const IpAddr & pfx )
     return prefix;
 }
 
+/**  Converts the provided string to an IpAddr object. */
 int
 IpAddr::ToIpAddr ( const std::string & str, IpAddr & ipaddr )
 {
@@ -578,6 +601,9 @@ IpAddr::ToIpAddr ( const std::string & str, IpAddr & ipaddr )
 
 //-------------------------------------------------------------------//
 
+/**  Returns the IPv4 address representation of the provided mask 
+  *  length. eg. /24 would return the integer version of 255.255.255.0.
+ **/
 ipv4addr_t
 IpAddr::BitsToMask ( uint8_t mb )
 {
@@ -595,7 +621,7 @@ uint8_t
 IpAddr::SubnetValue ( const ipv4addr_t & addr, uint8_t pos )
 {
     const uint8_t * ptr;
-    uint8_t   octets[4];
+    uint8_t  octets[4];
 
     if ( pos > 4 )
         return 0;
@@ -675,7 +701,6 @@ IpAddr::DeAggregate ( const IpAddr & pfx, uint8_t mb, IpAddrList & v )
 //-------------------------------------------------------------------//
 
 } // namespace
-
 
 // _TCANETPP_IPADDR_CPP_
 
