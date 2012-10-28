@@ -80,7 +80,7 @@ class JsonException : public std::runtime_error {
 class JsonItem {
   public:
 
-    JsonItem ( JsonValueType t = JSON_ITEM ) : _type(t) {}
+    JsonItem ( json_t  t = JSON_ITEM ) : _type(t) {}
     virtual ~JsonItem() {}
 
     json_t   getType()      const { return _type; }
@@ -95,8 +95,8 @@ class JsonItem {
 
 
 /** The JsonObject class represents the core JSON type of 
-  * an associative array. The STL std::map is used to store all
-  * items.
+  * an associative array. The STL map containger is used 
+  * to store the items.
  **/
 class JsonObject : public JsonItem {
 
