@@ -62,7 +62,7 @@ ThreadMutexPool::operator= ( const ThreadMutexPool & pool )
         this->clear();
         this->_lockmin = pool._lockmin;
         this->_lockmax = pool._lockmax;
-        this->createMutexes()
+        this->createMutexes();
     }
     return *this;
 }
