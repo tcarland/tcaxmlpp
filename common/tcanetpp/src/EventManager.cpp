@@ -649,6 +649,7 @@ EventManager::GetTimeOfDay ( timeval * tv )
     return r;
 }
 
+//---------------------------------------------------------------//
 
 // TODO: should diff in ms need to be a float? why not int64? double?
 // Addl. Note: the float was for ease of transmission and size.
@@ -706,21 +707,7 @@ EventManager::TimevalNorm ( struct timeval * tv )
     return;
 }
 
-
 //---------------------------------------------------------------//
-#ifdef USE_LIBRT
-
-int
-EventManager::GetTimeOfClock ( int clkid, timespec * ts )
-{
-    return( ::clock_gettime(clkid, ts) );
-}
-
-int
-EventManager::GetClockResolution ( int clkid, timespec * ts )
-{
-    return( ::clock_getres(clkid, ts) );
-}
 
 void
 EventManager::TimespecDiff ( const timespec * t2, const timespec * t1,
@@ -761,6 +748,21 @@ EventManager::TimespecNorm ( timespec * ts )
     return;
 }
 
+//---------------------------------------------------------------//
+#ifdef USE_LIBRT
+
+int
+EventManager::GetTimeOfClock ( int clkid, timespec * ts )
+{
+    return( ::clock_gettime(clkid, ts) );
+}
+
+int
+EventManager::GetClockResolution ( int clkid, timespec * ts )
+{
+    return( ::clock_getres(clkid, ts) );
+}
+
 void
 EventManager::NanoSleep ( int clkid, uint64_t & ns )
 {
@@ -793,7 +795,6 @@ EventManager::NanoSleep ( uint64_t & ns )
 #endif
 
 //---------------------------------------------------------------//
-
 
 
 } // namespace 

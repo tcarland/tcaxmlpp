@@ -62,7 +62,7 @@ class ThreadLock {
 
 
     virtual int wait();
-    virtual int waitFor ( time_t seconds );
+    virtual int waitFor ( time_t mseconds );
 
     virtual int lock();
     virtual int unlock();

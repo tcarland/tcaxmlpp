@@ -32,6 +32,7 @@ extern "C" {
 }
 
 #include "ThreadLock.h"
+#include "EventManager.h"
 
 
 namespace tcanetpp {
@@ -142,21 +143,23 @@ ThreadLock::wait()
 /**  A timed wait that blocks for given number of seconds.
   *  As with the pthreads API, the mutex must be locked first.
   *
-  *  @param seconds is the number of seconds to block.
+  *  @param seconds is the number of microseconds to block.
  **/
 int
-ThreadLock::waitFor ( time_t seconds)
+ThreadLock::waitFor ( time_t usec )
 {
     struct timespec  to;
     int    status;
 
-    if ( seconds < 1 )
+    if ( usec < 1 )
         return 0;
 
     ::memset(&to, 0, sizeof(to));
 
-    to.tv_sec = ::time(NULL) + seconds;
-    status    = ::pthread_cond_timedwait(&_items, &_mutex, &to);
+    to.tv_sec  = ::time(NULL);
+    to.tv_nsec = usec * 1000;
+    EventManager::TimespecNorm(&to);
+    status     = ::pthread_cond_timedwait(&_items, &_mutex, &to);
 
     if ( status == ETIMEDOUT )
         return 0;
