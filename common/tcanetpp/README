@@ -67,6 +67,7 @@ Run 'make documentation' to generate the docs (doxygen req.)
 Unix:
   Uses tcamake build environment to set dependencies for simply 
 running 'make'. The library links only libpthread and libdl.
+The library librt may be needed on some systems.
   (+libsocket and libnsl for SunOS) 
 
 Win32/64:
