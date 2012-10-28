@@ -139,11 +139,10 @@ ThreadLock::wait()
     return 1;
 }
 
-
 /**  A timed wait that blocks for given number of seconds.
   *  As with the pthreads API, the mutex must be locked first.
   *
-  *  @param seconds is the number of microseconds to block.
+  *  @param usec is the number of microseconds to wait.
  **/
 int
 ThreadLock::waitFor ( time_t usec )
@@ -162,7 +161,12 @@ ThreadLock::waitFor ( time_t usec )
 
     return this->waitFor(&to);
 }
-    
+  
+/**  A timed wait that blocks for given number of seconds.
+  *  As with the pthreads API, the mutex must be locked first.
+  *
+  *  @param ts is a struct timespec of the amount of time to wait.
+ **/
 int
 ThreadLock::waitFor ( const timespec * ts )
 {
