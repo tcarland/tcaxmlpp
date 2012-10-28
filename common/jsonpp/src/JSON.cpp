@@ -605,17 +605,6 @@ JSON::TypeToString ( json_t t )
     return name;
 }
 
-
-template<typename T>
-T 
-JSON::FromString ( const std::string & str )
-{
-    T target = T();
-    std::stringstream strm(str);
-    strm >> target;
-    return target;
-}
-
 std::string
 JSON::ToString ( const JsonItem * item )
 {

@@ -57,7 +57,13 @@ class JSON {
   public: 
 
     template<typename T>
-    static T    FromString ( const std::string & str );
+    static T    FromString ( const std::string & str )
+    {
+         T target = T();
+        std::stringstream strm(str);
+        strm >> target;
+        return target;
+    }
 
     static std::string ToString ( const JsonItem * item );
     
