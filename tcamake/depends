@@ -114,7 +114,9 @@ endif
 
 ifdef NEED_JSONPP
 JSONPPHOME = $(TOPDIR)/common/jsonpp
-INCLUDES  += -I$(JSONPPHOME)
+INCLUDES  += -I$(JSONPPHOME)/include
+LFLAGS    += -L$(JSONPPHOME)/lib
+LIBS      += -ljsonpp
 endif
 
 #-------------------------------------------------------------------------
