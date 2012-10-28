@@ -58,20 +58,22 @@ class ThreadLock {
   public:
 
     ThreadLock();
-    virtual ~ThreadLock();
+    ~ThreadLock();
 
 
-    virtual int wait();
-    virtual int waitFor ( time_t mseconds );
+    int  wait();
+    int  waitFor ( time_t mseconds );
+    int  waitFor ( const timespec * ts );
 
-    virtual int lock();
-    virtual int unlock();
+    int  lock();
+    int  unlock();
 
-    virtual int notify();
-    virtual int notifyAll();
+    int  notify();
+    int  notifyAll();
 
-    virtual int tryLock();
-    inline  int trylock() { return this->tryLock(); }
+    int  tryLock();
+
+    inline int trylock() { return this->tryLock(); }
 
   private:
 

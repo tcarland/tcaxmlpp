@@ -149,7 +149,6 @@ int
 ThreadLock::waitFor ( time_t usec )
 {
     struct timespec  to;
-    int    status;
 
     if ( usec < 1 )
         return 0;
@@ -158,8 +157,18 @@ ThreadLock::waitFor ( time_t usec )
 
     to.tv_sec  = ::time(NULL);
     to.tv_nsec = usec * 1000;
+
     EventManager::TimespecNorm(&to);
-    status     = ::pthread_cond_timedwait(&_items, &_mutex, &to);
+
+    return this->waitFor(&to);
+}
+    
+int
+ThreadLock::waitFor ( const timespec * ts )
+{
+    int status;
+
+    status   = ::pthread_cond_timedwait(&_items, &_mutex, ts);
 
     if ( status == ETIMEDOUT )
         return 0;
