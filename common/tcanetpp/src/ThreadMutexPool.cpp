@@ -40,30 +40,31 @@ ThreadMutexPool::ThreadMutexPool()
    this->createMutexes();
 }
 
+ThreadMutexPool::ThreadMutexPool ( const ThreadMutexPool & pool )
+    : _lockcnt(0),
+      _lockmin(pool._lockmin),
+      _lockmax(pool._lockmax)
+{
+    this->createMutexes();
+}
 
 ThreadMutexPool::~ThreadMutexPool()
 {
-    ThreadLockPool::iterator  tIter;
+    this->clear();
+}
 
-    _lock.lock();
 
-    for ( tIter = _mutexIn.begin(); tIter != _mutexIn.end(); ++tIter ) {
-        ThreadLock * lock = (ThreadLock*) *tIter;
-        
-        if ( lock )
-            delete lock;
+ThreadMutexPool&
+ThreadMutexPool::operator= ( const ThreadMutexPool & pool )
+{
+    ThreadAutoMutex mutex(&_lock);
+    if ( this != &pool ) {
+        this->clear();
+        this->_lockmin = pool._lockmin;
+        this->_lockmax = pool._lockmax;
+        this->createMutexes()
     }
-    _mutexIn.clear();
- 
-    for ( tIter = _mutexOut.begin(); tIter != _mutexOut.end(); ++tIter ) {
-        ThreadLock * lock = (ThreadLock*) *tIter;
-        
-        if ( lock )
-            delete lock;
-    }
-    _mutexOut.clear();
-
-    _lock.unlock();
+    return *this;
 }
 
 
@@ -85,7 +86,6 @@ ThreadMutexPool::AcquireMutex()
     return lock;
 }
 
-
 void
 ThreadMutexPool::ReleaseMutex ( ThreadLock * lock )
 {
@@ -99,7 +99,7 @@ ThreadMutexPool::ReleaseMutex ( ThreadLock * lock )
         if ( lock )
             delete lock;
     } else {
-       _mutexOut.erase(tIter);
+        _mutexOut.erase(tIter);
         _mutexIn.push_front(lock);
     }
 
@@ -113,7 +113,6 @@ ThreadMutexPool::MinPoolSize ( size_t minsize )
     ThreadAutoMutex mutex(&_lock);
     _lockmin = minsize;
 }
-
 
 size_t
 ThreadMutexPool::MinPoolSize()
@@ -180,6 +179,33 @@ ThreadMutexPool::createMutexes()
     return;
 }
 
+void
+ThreadMutexPool::clear()
+{
+    ThreadLockPool::iterator  tIter;
+
+    _lock.lock();
+
+    for ( tIter = _mutexIn.begin(); tIter != _mutexIn.end(); ++tIter ) 
+    {
+        ThreadLock * lock = (ThreadLock*) *tIter;
+        
+        if ( lock )
+            delete lock;
+    }
+    _mutexIn.clear();
+ 
+    for ( tIter = _mutexOut.begin(); tIter != _mutexOut.end(); ++tIter ) 
+    {
+        ThreadLock * lock = (ThreadLock*) *tIter;
+        
+        if ( lock )
+            delete lock;
+    }
+    _mutexOut.clear();
+
+    _lock.unlock();
+}
 
 } // namespace
 

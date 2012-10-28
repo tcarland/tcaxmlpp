@@ -48,8 +48,10 @@ class ThreadMutexPool {
   public:
 
     ThreadMutexPool();
-    virtual ~ThreadMutexPool();
+    ThreadMutexPool ( const ThreadMutexPool & pool );
+    ~ThreadMutexPool();
 
+    ThreadMutexPool& operator= ( const ThreadMutexPool & pool );
 
     ThreadLock*  AcquireMutex();
     void         ReleaseMutex ( ThreadLock * lock );
@@ -63,13 +65,14 @@ class ThreadMutexPool {
     size_t       MutexAvailable();
     size_t       MutexInUse();
 
+    void         clear();
 
   private:
 
     void         createMutexes();
 
     
-  protected:
+  private:
 
     ThreadLockPool    _mutexIn;
     ThreadLockPool    _mutexOut;

@@ -57,7 +57,6 @@ AddrInfo::AddrInfoFactory::operator() ( struct addrinfo * ai )
     return(new AddrInfo(ai));
 }
 
-
 // ----------------------------------------------------------------------
 
 std::string AddrInfo::ai_error = " -- ";

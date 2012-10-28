@@ -62,7 +62,7 @@ class ThreadLock {
 
 
     int  wait();
-    int  waitFor ( time_t mseconds );
+    int  waitFor ( time_t usec );
     int  waitFor ( const timespec * ts );
 
     int  lock();

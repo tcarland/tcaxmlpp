@@ -42,7 +42,13 @@ namespace tcanetpp {
 #define DEFAULT_QUEUE_MAXSIZE 65535
 
 
-
+/**  A SynchronizedQueue is a thread-safe wrapper to a
+  *  STL queue container. If the queue is used with pointers,
+  *  care must be taken to properly delete the resources prior
+  *  to destruction by popping all pointers off the queue first.
+  *  Alternatively, the class can be derived and the clear() method 
+  *  can be implemented to do this.
+ **/
 template<class ValueType> class SynchronizedQueue {
 
   public:
@@ -51,35 +57,43 @@ template<class ValueType> class SynchronizedQueue {
         : _maxSize(maxsize) 
     {}
 
+    virtual ~SynchronizedQueue() 
+    { 
+        this->clear(); 
+    }
 
-    virtual ~SynchronizedQueue() { this->clear(); }
-
-
+    /**  Pushes an object onto the queue and returns a positive value
+      *  on success or zero if the queue is full.
+     **/
     int  push ( ValueType object )
     {
-        if ( this->size() == _maxSize || _mutex.lock() < 0 )
+        if ( this->size() == _maxSize || this->lock() < 0 )
             return 0;
 
         _queue.push(object);
-        _mutex.unlock();
+        this->unlock();
 
         return 1;
     }
- 
 
+    /**  Pops an object off the front of the queue returning a positive
+      *  value on success or zero if the queue is empty.
+     **/
     int  pop ( ValueType & object )
     {
-        if ( this->size() == 0 || _mutex.lock() < 0 )
+        if ( this->size() == 0 || this->lock() < 0 )
             return 0;
 
         object = _queue.front();
         _queue.pop();
-        _mutex.unlock();
+        this->unlock();
 
         return 1;
     }
 
-    
+    /**  This locks and waits the calling thread on the underlying mutex 
+      *  until notified via the notify() method. 
+     **/
     int  wait()
     {
         if ( _mutex.lock() == 0 )
@@ -87,86 +101,110 @@ template<class ValueType> class SynchronizedQueue {
         return -1;
     }
 
-    
-    int  waitFor ( time_t seconds )
+    /**  Will lock the calling thread for the time specified.
+      *  @param  usec  is the number of microseconds to wait.
+     **/
+    int  waitFor ( time_t usec )
     {
         if ( _mutex.lock() < 0 )
             return -1;
-
-        return _mutex.waitFor(seconds);
+        return _mutex.waitFor(usec);
     }
 
-
-    int  lock()
+    /**  Will lock the calling thread for the time specified.
+      *  @param  ts  is a timespec struct specifying the 
+      *  length of time to wait.
+     **/
+    int  waitFor ( const timespec * ts )
     {
-        return _mutex.lock();
+        if ( _mutex.lock() < 0 )
+            return -1;
+        return _mutex.waitFor(ts);
     }
 
-    int  unlock()
-    {
-        return _mutex.unlock();
-    }
-
-    int  notify()
+    /**  Notifies any waiting threads */
+    inline int  notify()
     {
         return _mutex.notify();
     }
 
-
+    /**  Returns the current size of the queue */
     size_t size()
     {
         size_t  sz = 0;
 
-        if ( _mutex.lock() < 0 )
+        if ( this->lock() < 0 )
             return sz;
 
         sz  = _queue.size();
-        _mutex.unlock();
+        this->unlock();
 
         return sz;
     }
 
-
-    bool empty() { return this->isEmpty(); }
-
+    /**@{
+      *  Returns a boolean indicating whether the queue is empty. 
+     **/
+    inline bool empty() 
+    { 
+        return this->isEmpty(); 
+    }
 
     bool isEmpty()
     {
         bool empty = true;
 
-        if ( _mutex.lock() < 0 )
+        if ( this->lock() < 0 )
             return empty;
 
         empty = _queue.empty();
-        _mutex.unlock();
+        this->unlock();
 
         return empty;
     }
+    /*@}*/
 
-
-    void clear()
+    /**  Clears or empties the queue of all objects. If this is a 
+      *  container of object pointers, no resources would be free'd
+      *  resulting in a leak, in which case the queue should be 
+      *  cleared manually.
+     **/
+    virtual void clear()
     {
-        if ( _mutex.lock() < 0 )
+        if ( this->lock() < 0 )
             return;
 
         while ( !_queue.empty() )
             _queue.pop();
 
-        _mutex.unlock();
+         this->unlock();
     }
 
-
-    size_t maxSize()
+    /**  Returns the maximum queue size allowed. */
+    inline size_t maxSize()
     {
         return _maxSize;
     }
 
-
-    void maxSize ( size_t maxsz )
+    /**  @param maxsz sets the maximum queue size accordingly */
+    inline void maxSize ( size_t maxsz )
     {
+        this->lock();
         _maxSize = maxsz;
+        this->unlock();
     }
 
+  protected:
+
+    inline int  lock()
+    {
+        return _mutex.lock();
+    }
+
+    inline int  unlock()
+    {
+        return _mutex.unlock();
+    }
 
   private:
 

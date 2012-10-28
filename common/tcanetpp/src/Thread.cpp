@@ -41,7 +41,11 @@ namespace tcanetpp {
 
 /* -------------------------------------------------------------- */
 
-
+/**  The thread constructor
+  *  @param detach indicates whether the thread should be detached
+  *  at initialization. Detaching a thread informs the OS to reclaim
+  *  any resources used by the thread at thread termination.
+ **/
 Thread::Thread ( bool detach )
     : _Alarm(false),
       _running(false),
@@ -63,9 +67,9 @@ Thread::~Thread()
 }
 
 /* -------------------------------------------------------------- */
-/** Initiates the start of the thread by create the underlying thread object.
+/** Initiates the start of the thread by creating the underlying thread object.
  *  If the underlying call to the thread create() fails, a ThreadException is 
- *  thrown. Once start() succeeds, the new thread will initiate with the private 
+ *  thrown. Once start() succeeds, the new thread will initiate via the  
  *  threadEntry function.
  **/
 void
@@ -184,6 +188,9 @@ Thread::yield()
 
 /* -------------------------------------------------------------- */
 
+/**  Sets the stack size of the Thread. This method should be 
+  *  called prior to starting the Thread.
+ **/
 bool
 Thread::setStackSize ( size_t stksz )
 {
@@ -211,6 +218,7 @@ Thread::setStackSize ( size_t stksz )
     return true;
 }
 
+/**  Returns the Thread's configured stack size */
 bool
 Thread::getStackSize ( size_t & stksz )
 {
@@ -226,7 +234,10 @@ Thread::getStackSize ( size_t & stksz )
 
 /* -------------------------------------------------------------- */
 
-
+/**  Sets the CPU Affinity of the Thread object or essentially 
+  *  which CPU should run this Thread. This can be called prior 
+  *  to starting the Thread, or while it is running.
+ **/
 bool
 Thread::setCpuAffinity ( long cpu )
 {
@@ -257,6 +268,9 @@ Thread::setCpuAffinity ( long cpu )
     return true;
 }
 
+/**  Provides the current CPU Affinity of the Thread object by 
+  *  setting the provided cpu_set_t.
+ **/
 bool
 Thread::getCpuAffinity ( cpu_set_t & cpus )
 {
@@ -283,6 +297,7 @@ Thread::getMaxPriority ( int policy )
 
 /* -------------------------------------------------------------- */
 
+/** Sets the Thread scheduling policy and priority. */
 int
 Thread::setScheduler ( int policy, int prio )
 {
@@ -367,7 +382,7 @@ Thread::getScheduler ( int & policy, int & prio )
 
 /** Sets the thread priority to the provided integer.
  *  This implies that we may be using realtime scheduling, which
- *  can be very dangerous */
+ *  can be dangerous in terms of starving other threads. */
 int
 Thread::setPriorityAttr ( int prio )
 {
@@ -383,6 +398,9 @@ Thread::setPriorityAttr ( int prio )
     return(::pthread_attr_setschedparam(&_attr, &param));
 }
 
+/**  Provides the current Thread priority by setting 
+  *  @param prio to pthread priority attribute.
+ **/
 int
 Thread::getPriorityAttr ( int & prio )
 {
@@ -409,6 +427,7 @@ Thread::setScope ( int scope )
     return true;
 }
 
+/**  Returns the value of the Thread's current contention scope. */
 int
 Thread::getScope()
 {
@@ -483,6 +502,15 @@ Thread::ThreadEntry ( void* arg )
 
 /* -------------------------------------------------------------- */
 
+/**  Returns the thread ID of the calling thread */
+pthread_t
+Thread::ThreadID()
+{
+    return(::pthread_self());
+}
+
+/* -------------------------------------------------------------- */
+
 /**  Return the number of available system cpu's determined by
  *   sysconf(_SC_NPROCESSORS_CONF)
  */
@@ -492,7 +520,7 @@ Thread::MaxCPUs()
     return(::sysconf(_SC_NPROCESSORS_CONF));
 }
 
-/**  Returns a string name of the provided Thread's configured scheduler */
+/**  Returns the string name of the provided Thread's configured scheduler */
 std::string
 Thread::GetSchedulerPolicyName ( Thread * t )
 {
