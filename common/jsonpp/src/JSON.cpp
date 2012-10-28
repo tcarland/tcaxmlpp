@@ -1,449 +1,50 @@
-/** @file JSON.cpp
-  *
-  * Copyright (c) 2012 Timothy Charlton Arland
-  * @author tcarland@gmail.com
-  * 
-  * @section LICENSE
-  *
-  * 'jsonpp' is free software: you can redistribute it and/or modify
-  * it under the terms of the GNU Lesser General Public License as 
-  * published by the Free Software Foundation, either version 3 of 
-  * the License, or (at your option) any later version.
-  *
-  * 'jsonpp' is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU Lesser General Public License for more details.
-  *
-  * You should have received a copy of the GNU Lesser General Public 
-  * License along with jsonpp.  
-  * If not, see <http://www.gnu.org/licenses/>.
- **/
 #define _JSONPP_JSON_CPP_
 
 #include <set>
 
+#include "JSON.h"
+
 
 namespace jsonpp {
 
-
-
-inline std::string
-JsonItem::toString() const
-{
-    if ( _type == JSON_NULL ) 
-        return std::string("null");
-
-    return std::string("UNKNOWN");
-}
-
 // ------------------------------------------------------------------------- //
 
-inline
-JsonObject::~JsonObject() throw ()
-{
-    this->clear();
-}
-
-inline
-JsonObject::JsonObject ( const JsonObject & obj )
-    : JsonItem(JSON_OBJECT)
-{
-    *this = obj;
-}
-
-inline JsonObject&
-JsonObject::operator= ( const JsonObject & obj )
-{
-    if ( this == &obj )
-        return *this;
-
-    this->_items.clear();
-    this->_type  = obj._type;
-
-    JsonObject::const_iterator jIter;
-    for ( jIter = obj.begin(); jIter != obj.end(); ++jIter )
-    {
-        json_t  t = jIter->second->getType();
-
-        switch ( t ) {
-            case JSON_OBJECT:
-                this->insert(jIter->first, new JsonObject(*((JsonObject*)jIter->second)));
-                break;
-            case JSON_ARRAY:
-                this->insert(jIter->first, new JsonArray(*((JsonArray*)jIter->second)));
-                break;
-            case JSON_NUMBER:
-                this->insert(jIter->first, new JsonNumber(*((JsonNumber*)jIter->second)));
-                break;
-            case JSON_STRING:
-                this->insert(jIter->first, new JsonString(*((JsonString*)jIter->second)));
-                break;
-            case JSON_BOOL_TRUE:
-            case JSON_BOOL_FALSE:
-                this->insert(jIter->first, new JsonBoolean(*((JsonBoolean*)jIter->second)));
-                break;
-            case JSON_NULL:
-                this->insert(jIter->first, new JsonItem(JSON_NULL));
-                break;
-            case JSON_ITEM:
-            case JSON_INVALID:
-            default:
-                break;
-        }
-    }
-
-    return *this;
-}
-
-inline JsonItem*
-JsonObject::operator[] ( const std::string & key ) throw ( JsonException )
-{
-    iterator iter;
-    
-    if ( (iter = this->find(key)) == _items.end() )
-        throw ( JsonException("Error, object key not found") );
-    return iter->second;
-}
-
-inline const JsonItem*
-JsonObject::operator[] ( const std::string & key ) const throw ( JsonException )
-{
-    const_iterator iter = this->find(key);
-    if ( iter == _items.end() )
-        throw ( JsonException("Error, object key not found") );
-    return iter->second;
-}
-
-inline JsonObject::pairI
-JsonObject::insert ( const std::string & key, JsonItem * item ) throw ( JsonException )
-{
-    JsonObject::iterator iter;
-
-    if ( (iter = this->find(key)) != _items.end() )
-        throw ( JsonException("Item already exists") );
-    
-    return _items.insert(JsonItems::value_type(key, item));
-}
-
-inline void
-JsonObject::erase ( JsonObject::iterator at )
-{
-    if ( at == _items.end() )
-        return;
-    if ( at->second )
-        delete at->second;
-    return _items.erase(at);
-}
-
-inline void
-JsonObject::erase ( JsonObject::iterator first, JsonObject::iterator last )
-{
-    JsonObject::iterator iter;
-    for ( iter = first; iter != last; ++iter ) {
-        if ( iter->second )
-            delete iter->second;
-    }
-    return _items.erase(first, last);
-}
-
-inline JsonObject::size_type
-JsonObject::erase ( const std::string & key )
-{
-    return _items.erase(key);
-}
-
-inline JsonObject::iterator
-JsonObject::find ( const std::string & key )
-{
-    return _items.find(key);
-}
-
-inline JsonObject::const_iterator
-JsonObject::find ( const std::string & key ) const
-{
-    return _items.find(key);
-}
-
-inline void
-JsonObject::clear()
-{
-    JsonObject::iterator  jIter;
-    for ( jIter = _items.begin(); jIter != _items.end(); ++jIter )
-    {
-        if ( jIter->second )
-            delete jIter->second;
-    }
-    return _items.clear();
-}
-
-inline std::string
-JsonObject::toString() const
-{
-    JsonObject::const_iterator jIter;
-    std::stringstream jstr;
-    size_t i = 1;
-
-    jstr << TOKEN_OBJECT_BEGIN << TOKEN_WS;
-
-    for ( jIter = this->begin(); jIter != this->end(); ++jIter, ++i )
-    {
-        const std::string & key  = jIter->first;
-        const JsonItem    * item = jIter->second;
-
-        jstr << TOKEN_STRING_SEPARATOR << key << TOKEN_STRING_SEPARATOR
-             << TOKEN_WS << TOKEN_NAME_SEPARATOR << TOKEN_WS
-             << JSON::ToString(item);
-        if ( i < this->size() )
-            jstr << TOKEN_VALUE_SEPARATOR << TOKEN_WS;
-    }
-
-    jstr << TOKEN_WS << TOKEN_OBJECT_END;
-
-    return jstr.str();
-}
-
-
-// ------------------------------------------------------------------------- //
-
-inline
-JsonArray::JsonArray()
-    : JsonItem(JSON_ARRAY)
-{}
-
-inline
-JsonArray::JsonArray ( const JsonArray & ary )
-    : JsonItem(JSON_ARRAY)
-{
-    *this = ary;
-}
-
-inline
-JsonArray::~JsonArray()
-{
-    this->clear();
-}
-
-inline JsonArray&
-JsonArray::operator= ( const JsonArray & ary )
-{
-    if ( this == &ary )
-        return *this;
-
-    this->_items.clear();
-    this->_type  = ary._type;
-
-    JsonArray::const_iterator  jIter;
-    for ( jIter = ary.begin(); jIter != ary.end(); ++jIter )
-    {
-        json_t  t = (*jIter)->getType();
-        
-        switch ( t ) {
-            case JSON_OBJECT:
-                this->insert(new JsonObject(*(JsonObject*)*jIter));
-                break;
-            case JSON_ARRAY:
-                this->insert(new JsonArray(*(JsonArray*)*jIter));
-                break;
-            case JSON_NUMBER:
-                this->insert(new JsonNumber(*(JsonNumber*)*jIter));
-                break;
-            case JSON_STRING:
-                this->insert(new JsonString(*(JsonString*)*jIter));
-                break;
-            case JSON_BOOL_TRUE:
-            case JSON_BOOL_FALSE:
-                this->insert(new JsonBoolean(*(JsonBoolean*)*jIter));
-                break;
-            case JSON_NULL:
-                this->insert(new JsonItem(JSON_NULL));
-                break;
-            case JSON_ITEM:
-            case JSON_INVALID:
-            default:
-                break;
-        }
-    }
-
-    return *this;
-}
-
-inline JsonItem*
-JsonArray::operator[] ( JsonArray::size_type index )
-{
-    return _items[index];
-}
-
-inline const JsonItem*
-JsonArray::operator[] ( JsonArray::size_type index ) const
-{
-    return _items[index];
-}
-
-inline JsonArray::iterator
-JsonArray::insert ( JsonItem * item )
-{
-    return _items.insert(_items.end(), item);
-}
-
-inline JsonArray::iterator
-JsonArray::insert ( JsonItem * item, JsonArray::iterator at )
-{
-    return _items.insert(at, item);
-}
-
-inline JsonArray::iterator
-JsonArray::erase ( JsonArray::iterator at )
-{
-    return _items.erase(at);
-}
-
-inline JsonItem*
-JsonArray::at ( JsonArray::size_type index )
-{
-    return _items.at(index);
-}
-
-inline const JsonItem*
-JsonArray::at ( JsonArray::size_type index ) const
-{
-    return _items.at(index);
-}
-
-inline void
-JsonArray::clear()
-{
-    JsonArray::iterator jIter;
-
-    for ( jIter = this->begin(); jIter != this->end(); ++jIter )
-    {
-        if ( (*jIter) )
-            delete(*jIter);
-    }
-
-    return _items.clear();
-}
-
-inline std::string
-JsonArray::toString() const
-{
-    JsonArray::const_iterator jIter;
-    std::stringstream  jstr;
-    size_t i = 1;
-
-    jstr << TOKEN_ARRAY_BEGIN << TOKEN_WS;
-
-    for ( jIter = this->begin(); jIter != this->end(); ++jIter, ++i ) {
-        const JsonItem * item = *jIter;
-        jstr << JSON::ToString(item);
-        if ( i  < this->size() )
-            jstr << TOKEN_VALUE_SEPARATOR << TOKEN_WS;
-    }
-
-    jstr << TOKEN_WS << TOKEN_ARRAY_END;
-
-    return jstr.str();
-}
-
-// ------------------------------------------------------------------------- //
-
-template<typename T>
-inline
-JsonType<T>::JsonType ( const T & val, json_t  t )
-    : JsonItem(t),
-      _value(val)
-{}
-
-template<typename T>
-inline 
-JsonType<T>::JsonType ( const JsonType<T> & val )
-{
-    this->_value = val._value;
-    this->_type  = val._type;
-}
-
-template<typename T>
-inline JsonType<T>&
-JsonType<T>::operator= ( const JsonType<T> & val )
-{
-    if ( this != &val ) {
-        this->_value = val._value;
-        this->_type  = val._type;
-    }
-    return *this;
-}
-
-template<typename T>
-inline bool
-JsonType<T>::operator== ( const JsonType<T> & val ) const
-{
-    return(_value == val._value);
-}
-
-template<typename T>
-inline std::string
-JsonType<T>::toString() const
-{
-    std::stringstream jstr;
-    bool s = false;
-
-    if ( this->getType() == JSON_STRING )
-        s = true;
-
-    if ( s )
-        jstr << TOKEN_STRING_SEPARATOR;
-    if ( this->getType() == JSON_NULL )
-        jstr << "null";
-    else if ( this->getType() == JSON_BOOL_TRUE )
-        jstr << "true";
-    else if ( this->getType() == JSON_BOOL_FALSE )
-        jstr << "false";
-    else
-        jstr << _value;
-    if ( s )
-        jstr << TOKEN_STRING_SEPARATOR;
-
-    return jstr.str();
-}
-
-// ------------------------------------------------------------------------- //
-
-inline std::ostream&
+std::ostream&
 operator<< ( std::ostream & stream, const JsonObject & obj )
 {
     stream << obj.toString();
     return stream;
 }
 
-inline std::ostream&
+std::ostream&
 operator<< ( std::ostream & stream, const JsonArray & ary )
 {
     stream << ary.toString();
     return stream;
 }
 
-inline std::ostream&
+std::ostream&
 operator<< ( std::ostream & stream, const JsonItem & val )
 {
     stream << val.toString();
     return stream;
 }
 
-inline std::ostream&
+std::ostream&
 operator<< ( std::ostream & stream, const JsonNumber & val )
 {
     stream << val.toString();
     return stream;
 }
 
-inline std::ostream&
+std::ostream&
 operator<< ( std::ostream & stream, const JsonBoolean & val )
 {
     stream << val.toString();
     return stream;
 }
 
-inline std::ostream&
+std::ostream&
 operator<< ( std::ostream & stream, const JsonString & str )
 {
     stream << str.toString();
@@ -452,7 +53,6 @@ operator<< ( std::ostream & stream, const JsonString & str )
 
 // ------------------------------------------------------------------------- //
 
-inline
 JSON::JSON ( const std::string & str ) throw ( JsonException )
     : _errpos(0)
 {
@@ -460,17 +60,15 @@ JSON::JSON ( const std::string & str ) throw ( JsonException )
         throw ( JsonException("Error parsing string to json") );
 }
 
-inline
 JSON::JSON ( const JSON & json )
 {
     *this = json;
 }
 
-inline
 JSON::~JSON() throw()
 {}
 
-inline JSON&
+JSON&
 JSON::operator= ( const JSON & json )
 {
     if ( this != &json ) {
@@ -482,13 +80,13 @@ JSON::operator= ( const JSON & json )
     return *this;
 }
 
-inline void
+void
 JSON::clear()
 {
     this->_root.clear();
 }
 
-inline bool
+bool
 JSON::parse ( const std::string & str )
 {
     std::string::size_type  indx;
@@ -505,7 +103,7 @@ JSON::parse ( const std::string & str )
     return this->parseObject(buf, _root);
 }
 
-inline bool
+bool
 JSON::parse ( std::istream & buf )
 {
     char c;
@@ -516,7 +114,7 @@ JSON::parse ( std::istream & buf )
     return this->parseObject(buf, _root);
 }
 
-inline bool
+bool
 JSON::parseObject ( std::istream & buf, JsonObject & obj )
 {
     bool p = true;
@@ -619,7 +217,7 @@ JSON::parseObject ( std::istream & buf, JsonObject & obj )
 }
 
 
-inline bool
+bool
 JSON::parseArray ( std::istream & buf, JsonArray & ary )
 {
     bool p = true;
@@ -708,7 +306,7 @@ JSON::parseArray ( std::istream & buf, JsonArray & ary )
 }
 
 
-inline bool
+bool
 JSON::parseString ( std::istream & buf, JsonString & str )
 {
     bool start = false;
@@ -783,7 +381,7 @@ JSON::parseString ( std::istream & buf, JsonString & str )
     return true;
 }
 
-inline bool
+bool
 JSON::parseNumber ( std::istream & buf, JsonNumber & num )
 {
     const char nums[] = "-+.eE0123456789";
@@ -809,7 +407,7 @@ JSON::parseNumber ( std::istream & buf, JsonNumber & num )
     return true;
 }
 
-inline bool
+bool
 JSON::parseBoolean ( std::istream & buf, JsonBoolean & b )
 {
     std::string token;
@@ -841,7 +439,7 @@ JSON::parseBoolean ( std::istream & buf, JsonBoolean & b )
     return false;
 }
 
-inline bool
+bool
 JSON::parseLiteral ( std::istream & buf, JsonItem & item )
 {
     std::string token;
@@ -866,7 +464,7 @@ JSON::parseLiteral ( std::istream & buf, JsonItem & item )
     return false;
 }
 
-inline bool
+bool
 JSON::parseAssign ( std::istream & buf )
 {
     char  c;
@@ -885,7 +483,7 @@ JSON::parseAssign ( std::istream & buf )
 }
 
 
-inline bool
+bool
 JSON::parseSeparator ( std::istream & buf )
 {
     char  c;
@@ -907,7 +505,7 @@ JSON::parseSeparator ( std::istream & buf )
 }
 
 
-inline json_t
+json_t
 JSON::parseValueType ( std::istream & buf )
 {
     json_t t;
@@ -958,7 +556,7 @@ JSON::parseValueType ( std::istream & buf )
     return t;
 }
 
-inline void
+void
 JSON::setError ( std::istream & buf )
 {
     _errpos = buf.tellg();
@@ -972,7 +570,7 @@ JSON::setError ( std::istream & buf )
     return;
 }
 
-inline std::string
+std::string
 JSON::TypeToString ( json_t t )
 {
     std::string name;
@@ -1009,7 +607,7 @@ JSON::TypeToString ( json_t t )
 
 
 template<typename T>
-inline T 
+T 
 JSON::FromString ( const std::string & str )
 {
     T target = T();
@@ -1018,7 +616,7 @@ JSON::FromString ( const std::string & str )
     return target;
 }
 
-inline std::string
+std::string
 JSON::ToString ( const JsonItem * item )
 {
     json_t  t = item->getType();
@@ -1047,7 +645,7 @@ JSON::ToString ( const JsonItem * item )
     return std::string("Invalid type");
 }
 
-inline std::string
+std::string
 JSON::Version()
 {
     std::string ver = "jsonpp v";
@@ -1055,6 +653,8 @@ JSON::Version()
     return ver;
 }
 
+
 } // namespace
 
+// _JSONPP_JSON_CPP_
 
