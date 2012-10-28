@@ -64,7 +64,7 @@ JsonObject::operator= ( const JsonObject & obj )
     JsonObject::const_iterator jIter;
     for ( jIter = obj.begin(); jIter != obj.end(); ++jIter )
     {
-        JsonValueType t = jIter->second->getType();
+        json_t  t = jIter->second->getType();
 
         switch ( t ) {
             case JSON_OBJECT:
@@ -236,7 +236,7 @@ JsonArray::operator= ( const JsonArray & ary )
     JsonArray::const_iterator  jIter;
     for ( jIter = ary.begin(); jIter != ary.end(); ++jIter )
     {
-        JsonValueType t = (*jIter)->getType();
+        json_t  t = (*jIter)->getType();
         
         switch ( t ) {
             case JSON_OBJECT:
@@ -346,6 +346,13 @@ JsonArray::toString() const
 }
 
 // ------------------------------------------------------------------------- //
+
+template<typename T>
+inline
+JsonType<T>::JsonType ( const T & val, json_t  t )
+    : JsonItem(t),
+      _value(val)
+{}
 
 template<typename T>
 inline 
@@ -900,11 +907,11 @@ JSON::parseSeparator ( std::istream & buf )
 }
 
 
-inline JsonValueType
+inline json_t
 JSON::parseValueType ( std::istream & buf )
 {
-    JsonValueType t;
-    char  c;
+    json_t t;
+    char   c;
 
     while ( ! buf.eof() && ::isspace(buf.peek()) )
         buf.get();
@@ -966,7 +973,7 @@ JSON::setError ( std::istream & buf )
 }
 
 inline std::string
-JSON::TypeToString ( JsonValueType t )
+JSON::TypeToString ( json_t t )
 {
     std::string name;
 
@@ -1014,7 +1021,7 @@ JSON::FromString ( const std::string & str )
 inline std::string
 JSON::ToString ( const JsonItem * item )
 {
-    JsonValueType t = item->getType();
+    json_t  t = item->getType();
 
     if ( t == JSON_ITEM )
         return item->toString();

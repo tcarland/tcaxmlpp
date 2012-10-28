@@ -12,7 +12,7 @@ int main ( int argc, char **argv )
     JSON j;
 
     std::string  s = 
-    "{ \"_id\" , : \"4d7dab887f06676117a7fbd2\", \
+    "{ \"_id\" : \"4d7dab887f06676117a7fbd2\", \
        \"end_time\" : 12995200000 , \
        \"event_id\" : 28393, \
        \"src_ip\" : \"74.125.224.65\", \

@@ -35,7 +35,7 @@
 namespace jsonpp {
 
 
-#define JSONPP_VERSION         "0.92"
+#define JSONPP_VERSION         "0.93"
 
 #define TOKEN_ARRAY_BEGIN      '['
 #define TOKEN_ARRAY_END        ']'
@@ -59,7 +59,7 @@ typedef enum JsonValueType {
     JSON_BOOL_TRUE,
     JSON_BOOL_FALSE,
     JSON_NULL
-} jsonValueType_t;
+} json_t;
 
 
 /**  Exception class used by various jsonpp methods */
@@ -69,40 +69,39 @@ class JsonException : public std::runtime_error {
         : std::runtime_error(errstr)
     {}
     virtual ~JsonException() throw() {}
-    virtual std::string toString() const
+    virtual inline std::string toString() const
     {
         return this->what();
     }
 };
 
 
-/**  JsonItem is the base class defining any JSON
-  *  type. 
- **/
+/**  JsonItem is the base class of all JSON types.  */
 class JsonItem {
   public:
 
     JsonItem ( JsonValueType t = JSON_ITEM ) : _type(t) {}
     virtual ~JsonItem() {}
 
-    JsonValueType getType() const { return _type; }
-    JsonValueType getValueType() const { return this->getType(); }
+    json_t   getType()      const { return _type; }
+    json_t   getValueType() const { return this->getType(); }
 
     virtual std::string toString() const;
 
   protected:
 
-    jsonValueType_t  _type;
+    json_t   _type;
 };
 
 
 /** The JsonObject class represents the core JSON type of 
-  * an associative array. std::map is used to store all
-  * JsonItems.
+  * an associative array. The STL std::map is used to store all
+  * items.
  **/
 class JsonObject : public JsonItem {
 
   public:
+
     typedef std::map<std::string, JsonItem*> JsonItems;
     typedef JsonItems::iterator              iterator;
     typedef JsonItems::const_iterator        const_iterator;
@@ -113,12 +112,14 @@ class JsonObject : public JsonItem {
 
     JsonObject() : JsonItem(JSON_OBJECT) {}
     JsonObject ( const JsonObject & obj );
+
     virtual ~JsonObject() throw ();
 
     JsonObject&     operator=  ( const JsonObject  & obj );
 
     JsonItem*       operator[] ( const std::string & key ) 
                         throw ( JsonException );
+
     const JsonItem* operator[] ( const std::string & key ) const
                         throw ( JsonException );
 
@@ -130,6 +131,7 @@ class JsonObject : public JsonItem {
 
     pairI           insert ( const std::string & key, JsonItem * item )
                         throw ( JsonException );
+
     void            erase  ( iterator at );
     void            erase  ( iterator first, iterator last );
     size_type       erase  ( const std::string & key );
@@ -147,6 +149,7 @@ class JsonObject : public JsonItem {
 
     JsonItems      _items;
 };
+
 
 /** JsonArray represents a one-dimensional array of JsonItems. */
 class JsonArray : public JsonItem {
@@ -196,16 +199,13 @@ template <typename T>
 class JsonType : public JsonItem {
   public:
 
-    JsonType ( const T & val = T(), jsonValueType_t t = JSON_ITEM )
-        : JsonItem(t),
-          _value(val)
-    {}
+    JsonType ( const T & val = T(), json_t  t = JSON_ITEM );
     JsonType ( const JsonType<T> & val );
 
     virtual ~JsonType() {}
 
-    JsonType<T>& operator= ( const JsonType<T> & val );
-    bool  operator== ( const JsonType<T> & val ) const;
+    JsonType<T>& operator=  ( const JsonType<T> & val );
+    bool         operator== ( const JsonType<T> & val ) const;
 
     operator T&() { return this->value(); }
     operator const T&() const { return this->value(); }
@@ -225,7 +225,7 @@ typedef JsonType<bool>        JsonBoolean;
 typedef JsonType<std::string> JsonString;
 
 
-// std::ostream support
+/* std::ostream support */
 std::ostream& operator<< ( std::ostream & stream, const JsonObject  & obj );
 std::ostream& operator<< ( std::ostream & stream, const JsonArray   & ary );
 std::ostream& operator<< ( std::ostream & stream, const JsonItem    & val );
@@ -234,13 +234,17 @@ std::ostream& operator<< ( std::ostream & stream, const JsonBoolean & val );
 std::ostream& operator<< ( std::ostream & stream, const JsonString  & str );
 
 
-// primary interface for parsing json
+/** The JSON class is the primary interface for parsing json objects 
+  * via strings or streams.
+ **/
 class JSON {
 
   public:
 
     JSON ( const std::string & str = "" ) throw ( JsonException );
-    JSON ( const JSON & json );
+    JSON ( std::istream      & buf );
+    JSON ( const JSON        & json );
+
     ~JSON() throw();
 
     JSON& operator= ( const JSON & json );
@@ -261,24 +265,24 @@ class JSON {
     static T    FromString ( const std::string & str );
 
     static std::string ToString ( const JsonItem * item );
-    static std::string TypeToString ( JsonValueType  t );
+    
+    static std::string TypeToString ( json_t  t );
     static std::string Version();
 
   private:
 
-    bool parseString    ( std::istream & buf, JsonString  & str );
-    bool parseArray     ( std::istream & buf, JsonArray   & ary );
-    bool parseObject    ( std::istream & buf, JsonObject  & obj );
-    bool parseNumber    ( std::istream & buf, JsonNumber  & num );
-    bool parseBoolean   ( std::istream & buf, JsonBoolean & b );
-    bool parseLiteral   ( std::istream & buf, JsonItem    & item );
+    bool   parseString    ( std::istream & buf, JsonString  & str );
+    bool   parseArray     ( std::istream & buf, JsonArray   & ary );
+    bool   parseObject    ( std::istream & buf, JsonObject  & obj );
+    bool   parseNumber    ( std::istream & buf, JsonNumber  & num );
+    bool   parseBoolean   ( std::istream & buf, JsonBoolean & b );
+    bool   parseLiteral   ( std::istream & buf, JsonItem    & item );
 
-    bool parseAssign    ( std::istream & buf );
-    bool parseSeparator ( std::istream & buf );
+    bool   parseAssign    ( std::istream & buf );
+    bool   parseSeparator ( std::istream & buf );
 
-    void setError       ( std::istream & buf );
-
-    JsonValueType parseValueType ( std::istream & buf );
+    void   setError       ( std::istream & buf );
+    json_t parseValueType ( std::istream & buf );
 
 
   private:
