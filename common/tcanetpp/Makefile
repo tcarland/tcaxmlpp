@@ -121,7 +121,7 @@ distclean: clean libclean doc-clean test-clean
 dist: distclean
 ifdef TNMS_DISTDIR
 	@echo "build distribution to $(TNMS_DISTDIR)/tcanetpp"
-	( $(TOPDIR)/tcamake/scripts/build.sh dist $(TNMS_DISTDIR) )
+	( $(TOPDIR)/tcamake/scripts/tcamake_build.sh dist $(TNMS_DISTDIR) )
 	@echo
 endif
 

@@ -19,10 +19,9 @@
   * License along with jsonpp.  
   * If not, see <http://www.gnu.org/licenses/>.
  **/
+#pragma once
 #ifndef _JSONPP_JSON_H_
 #define _JSONPP_JSON_H_
-
-#pragma once
 
 #include <string>
 #include <deque>
