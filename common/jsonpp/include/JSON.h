@@ -17,7 +17,7 @@
 namespace jsonpp {
 
 
-#define JSONPP_VERSION         "0.93"
+#define JSONPP_VERSION         "0.95"
 
 
 /* std::ostream support */
