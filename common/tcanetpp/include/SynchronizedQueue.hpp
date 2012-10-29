@@ -194,8 +194,6 @@ template<class ValueType> class SynchronizedQueue {
         this->unlock();
     }
 
-  protected:
-
     inline int  lock()
     {
         return _mutex.lock();

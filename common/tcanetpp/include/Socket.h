@@ -60,7 +60,6 @@ typedef enum SocketType
     SOCKTYPE_CLIENT        = 1,
     SOCKTYPE_SERVER_CLIENT = 2,
     SOCKTYPE_SERVER        = 3,
-    //SOCKTYPE_RAW           = 4
 } sockType_t;
 
 
@@ -134,6 +133,8 @@ class Socket {
              uint16_t     port,
              SocketType   type,
              int          protocol ) throw ( SocketException );
+
+    Socket ( addrinfo   * ai ) throw ( SocketException );
 
     virtual ~Socket();
 	

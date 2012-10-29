@@ -14,6 +14,7 @@ KEYWORDS="x86 amd64"
 IUSE=""
 
 export USE_PTHREADS=1
+export USE_LIBRT=1
 
 DEPEND=""
 RDEPEND="${DEPEND}"

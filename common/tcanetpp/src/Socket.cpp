@@ -141,6 +141,7 @@ Socket::Socket ( ipv6addr_t ipaddr, uint16_t port, SocketType type, int protocol
     _hoststr.append("/:").append(StringUtils::toString(port));
 }
 
+
 Socket::Socket ( sockaddr_t * sa, uint16_t port, SocketType type, int protocol )
     throw ( SocketException )
     : _ipaddr(sa),
@@ -167,6 +168,50 @@ Socket::Socket ( sockaddr_t * sa, uint16_t port, SocketType type, int protocol )
     _hoststr.append("/:").append(StringUtils::toString(port));
 }
 
+
+Socket::Socket ( addrinfo * ai )
+    throw ( SocketException )
+    : _socktype(SOCKTYPE_CLIENT),
+      _bound(false),
+      _connected(false),
+      _block(false),
+      _noUdpClose(false)
+{
+    Socket::ResetDescriptor(this->_fd);
+
+    switch ( ai->ai_socktype )
+    {
+        case SOCK_STREAM:
+            _proto = SOCKET_TCP;
+            break;
+        case SOCK_DGRAM:
+            _proto = SOCKET_UDP;
+            break;
+        case SOCK_RAW:
+            _proto = SOCKET_RAW;
+            break;
+        default:
+            throw SocketException("Unsupported socket protocol");
+            break;
+    }
+
+    if ( (ai->ai_flags & AI_PASSIVE) )
+        _socktype = SOCKTYPE_SERVER;
+
+    _ipaddr  = IpAddr((sockaddr_t*) ai->ai_addr);
+ 
+    if ( _ipaddr.getFamily() == AF_INET ) {
+        sockaddr_in * sock  = (sockaddr_in*) _ipaddr.getSockAddr();
+        _port    = ntohs(sock->sin_port);
+    } else if ( _ipaddr.getFamily() == AF_INET6 ) {
+        sockaddr_in6 * sock  = (sockaddr_in6*) _ipaddr.getSockAddr();
+        _port    = ntohs(sock->sin6_port);
+    }
+
+    _addrstr = _ipaddr.toString();
+    _hoststr = _addrstr;
+    _hoststr.append("/32:").append(StringUtils::toString(_port));
+}
 
 Socket::Socket ( sockfd_t & fd, sockaddr_t & csock, SocketType type, int protocol )
     : _fd(fd),
