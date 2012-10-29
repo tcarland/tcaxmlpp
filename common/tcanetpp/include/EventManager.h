@@ -97,6 +97,9 @@ class EventManager {
     const EventTimer*    findTimerEvent ( const evid_t  & id ) const;
     const EventIO*       findIOEvent    ( const evid_t  & id ) const;
 
+    const EventIOMap&    getIOMap() const;
+    const EventTimerMap& getTimerMap() const;
+
     bool                 isActive       ( const evid_t  & id ) const;
     bool                 isValidEvent   ( const evid_t  & id ) const;
 

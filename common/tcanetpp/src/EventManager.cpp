@@ -401,6 +401,19 @@ EventManager::findIOEvent ( const evid_t & id ) const
     return(&iIter->second);
 }
 
+/**  Returns a const reference to the internal EventIOMap */
+const EventManager::EventIOMap&
+EventManager::getIOMap() const
+{
+    return _clients;
+}
+
+/**  Returns a const reference to the internal EventTimerMap */
+const EventManager::EventTimerMap&
+EventManager::getTimerMap() const
+{
+    return _timers;
+}
 
 /**  Return the number of current active events, both timer and io */
 size_t
