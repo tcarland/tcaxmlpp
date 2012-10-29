@@ -282,7 +282,7 @@ Socket::bind()
     if ( r != 0 ) {
         _errstr = "Socket::bind() Failed to bind";
 #       ifndef WIN32
-        if ( strerror_r(errno, serr, ERRORSTRLEN) == 0 )
+        if ( ::strerror_r(errno, serr, ERRORSTRLEN) == 0 )
             _errstr = serr;
 #       endif
         return -1;
@@ -347,7 +347,7 @@ Socket::connect()
 
         char  serr[ERRORSTRLEN];
 
-        if ( strerror_r(errno, serr, ERRORSTRLEN) == 0 )
+        if ( ::strerror_r(errno, serr, ERRORSTRLEN) == 0 )
             _errstr = serr;
 #     endif
 
@@ -485,7 +485,7 @@ Socket::isConnected()
         if ( errno == EINTR )
             return true;
 
-        if ( strerror_r(errno, serr, ERRORSTRLEN) == 0 )
+        if ( ::strerror_r(errno, serr, ERRORSTRLEN) == 0 )
             _errstr = serr;
         
         return false;
@@ -550,7 +550,7 @@ Socket::read ( void * vptr, size_t n )
     ssize_t    rd  = 0;
 
     if ( _proto == IPPROTO_UDP && ! _connected ) {
-        rd  = this->readFrom(vptr, n, csock);
+        rd = this->readFrom(vptr, n, csock);
     } else {
         rd = this->nreadn(vptr, n);
     }
@@ -712,7 +712,7 @@ Socket::getSockAddr()
 }
 
 // ----------------------------------------------------------------------
-/**  set/get methods for avoiding calling close on a udp socket
+/**  THese set/get methods are for avoiding calling close on a UDP socket
  *   descriptor. This only gets set true by the protected constructor
  *   when creating a UDP construct of a 'server-client' object. Calling
  *   close on a server-client fd in UDP would result in closing on our
@@ -741,6 +741,7 @@ Socket::getErrorString() const
 
 // ----------------------------------------------------------------------
 
+/** Static function to set a Socket to non-blocking */
 void
 Socket::Unblock ( Socket * s )
 {
@@ -754,7 +755,7 @@ Socket::Unblock ( Socket * s )
     
 #   else
     
-    int flags = fcntl(s->getDescriptor(), F_GETFL, 0);
+    int flags = ::fcntl(s->getDescriptor(), F_GETFL, 0);
     ::fcntl(s->getDescriptor(), F_SETFL, flags | O_NONBLOCK);
 
 #   endif
@@ -762,7 +763,7 @@ Socket::Unblock ( Socket * s )
     return;
 }
 
-
+/** Static function to set a Socket to blocking */
 void
 Socket::Block ( Socket * s ) 
 {
@@ -776,7 +777,7 @@ Socket::Block ( Socket * s )
     
 #   else 
     
-    int  flags  = fcntl(s->getDescriptor(), F_GETFL, 0);
+    int  flags  = ::fcntl(s->getDescriptor(), F_GETFL, 0);
     ::fcntl(s->getDescriptor(), F_SETFD, flags & ~O_NONBLOCK);
 
 #   endif
@@ -786,6 +787,10 @@ Socket::Block ( Socket * s )
 
 // ----------------------------------------------------------------------
 
+/**  A static function for ensuring a file descriptor is valid. This
+  *  provides a consistent method for testing descriptors across different
+  *  platforms.
+ */
 bool
 Socket::IsValidDescriptor ( const sockfd_t & fd )
 {
@@ -811,6 +816,7 @@ Socket::ResetDescriptor ( sockfd_t & fd )
 
 // ----------------------------------------------------------------------
 
+/**  Internal Socket method for performing a non-blocking write, if applicable. */
 ssize_t
 Socket::nwriten ( const void * vptr, size_t n )
 {
@@ -854,6 +860,7 @@ Socket::nwriten ( const void * vptr, size_t n )
 
 // ----------------------------------------------------------------------
 
+/**  Internal Socket method for performing a non-blocking read, if applicable. */
 ssize_t
 Socket::nreadn ( void * vptr, size_t n )
 {
@@ -903,6 +910,7 @@ Socket::nreadn ( void * vptr, size_t n )
 
 // ----------------------------------------------------------------------
 
+/** Static function for initializing a socket descriptor */
 void
 Socket::InitializeSocket ( sockfd_t & fd, int socktype, int proto ) 
     throw ( SocketException )
@@ -912,9 +920,9 @@ Socket::InitializeSocket ( sockfd_t & fd, int socktype, int proto )
     if ( socktype > SOCKTYPE_NONE && socktype < SOCKTYPE_RAW )
     {
         if ( proto == IPPROTO_TCP ) {
-            fd = socket(AF_INET, SOCK_STREAM, 0);
+            fd = ::socket(AF_INET, SOCK_STREAM, 0);
         } else if ( proto == IPPROTO_UDP ) {
-            fd = socket(AF_INET, SOCK_DGRAM, 0);
+            fd = ::socket(AF_INET, SOCK_DGRAM, 0);
         } else {
             errstr.append(": Unsupported protocol");
             throw SocketException(errstr);
@@ -922,7 +930,7 @@ Socket::InitializeSocket ( sockfd_t & fd, int socktype, int proto )
     }
     else if ( socktype == SOCKTYPE_RAW )
     {
-        fd = socket(AF_INET, SOCK_RAW, proto);
+        fd = ::socket(AF_INET, SOCK_RAW, proto);
     }
 
     if ( ! Socket::IsValidDescriptor(fd) ) 
@@ -975,7 +983,6 @@ Socket::IpChkSum ( uint16_t * t, int n )
 
     return res;
 }
-
 
 // ----------------------------------------------------------------------
 

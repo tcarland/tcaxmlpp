@@ -64,19 +64,22 @@ std::string AddrInfo::ai_error = " -- ";
 
 AddrInfo::AddrInfo()
     : _ai(NULL),
-      _nxt(NULL)
+      _nxt(NULL),
+      _err(0)
 {}
 
 AddrInfo::AddrInfo ( const std::string & name, const std::string & service )
     : _ai(NULL),
-      _nxt(NULL)
+      _nxt(NULL),
+      _err(0)
 {
     _err = AddrInfo::GetAddrInfo(name, service, NULL, &_ai);
 }
 
 AddrInfo::AddrInfo ( struct addrinfo * ai )
     : _ai(ai),
-      _nxt(NULL)
+      _nxt(NULL),
+      _err(0)
 {
 }
 
@@ -90,7 +93,8 @@ AddrInfo::~AddrInfo()
 
 AddrInfo::AddrInfo ( const AddrInfo & ai )
     : _ai(ai._ai),
-      _nxt(ai._nxt)
+      _nxt(ai._nxt),
+      _err(ai._err)
 {
 }
 
@@ -99,11 +103,13 @@ AddrInfo::operator= ( const AddrInfo & ai )
 {
     if ( this == &ai )
         return *this;
+
     if ( _ai && _ai != ai._ai )
         ::freeaddrinfo(_ai);
 
     _ai  = ai._ai;
     _nxt = ai._nxt;
+    _err = ai._err;
 
     return *this;
 }
