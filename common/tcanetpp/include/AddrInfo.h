@@ -68,7 +68,7 @@ class AddrInfo {
     
     AddrInfo ( struct addrinfo   * ai );
 
-    virtual ~AddrInfo();
+    ~AddrInfo();
 
   public:
 
@@ -81,8 +81,12 @@ class AddrInfo {
 
     sockaddr_t* getAddr();
     sockaddr_t* getSockAddr() { return this->getAddr(); }
+    sockaddr_t* getNextAddr();
+
     size_t      getAddrLen() const;
     size_t      getAddrlen() const { return this->getAddrLen(); }
+    size_t      getNextAddrLen();
+    size_t      getNextAddrlen() { return this->getNextAddrLen(); }
 
     bool        setFlags    ( int flags );
     int         getFlags()  const;

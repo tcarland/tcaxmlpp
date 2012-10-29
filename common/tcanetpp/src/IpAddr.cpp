@@ -74,7 +74,7 @@ IpAddr::IpAddr ( const ipv4addr_t & addr, uint8_t mb )
 }
 
 
-IpAddr::IpAddr ( const sockaddr * sa )
+IpAddr::IpAddr ( const sockaddr_t * sa )
     : _mb(0)
 {
     sockaddr_t * s = (sockaddr_t*) sa;
@@ -204,6 +204,8 @@ IpAddr::getPrefix() const
 }
 /*@}*/
 
+//-------------------------------------------------------------------//
+
 /*@{*/
 /** Returns the IPv6 address, if applicable, of the underlying
   * sockaddr. Returns 0 if the address family is for IPv4.
@@ -222,7 +224,6 @@ IpAddr::getAddr6() const
 
     return addr;
 }
-
 
 ipv6addr_t
 IpAddr::getPrefix6() const
@@ -252,6 +253,14 @@ const sockaddr_t*
 IpAddr::getSockAddr() const
 {
     return( (const sockaddr_t*) &_saddr );
+}
+
+//-------------------------------------------------------------------//
+
+int
+IpAddr::getFamily() const
+{
+    return _saddr.ss_family;
 }
 
 //-------------------------------------------------------------------//

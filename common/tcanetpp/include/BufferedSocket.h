@@ -70,7 +70,6 @@ class BufferedSocket : public Socket {
                      int          proto ) throw ( SocketException );
 
     BufferedSocket ( sockaddr_t * sa,
-                     size_t       salen,
                      uint16_t     port,
                      SocketType   type,
                      int          protocol ) throw ( SocketException );

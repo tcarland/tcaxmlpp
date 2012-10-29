@@ -74,10 +74,9 @@ BufferedSocket::BufferedSocket ( ipv6addr_t ip, uint16_t port, SocketType type, 
     this->init(false);
 }
 
-BufferedSocket::BufferedSocket ( sockaddr_t * sa, size_t salen,
-                                 uint16_t port, SocketType type, int proto )
+BufferedSocket::BufferedSocket ( sockaddr_t * sa, uint16_t port, SocketType type, int proto )
     throw ( SocketException )
-    : Socket(sa, salen, port, type, proto),
+    : Socket(sa, port, type, proto),
       _rbuffer(new CircularBuffer()),
       _wbuffer(NULL),
       _wbx(false)

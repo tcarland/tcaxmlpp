@@ -39,6 +39,7 @@
 
 
 #include "tcanetpp_ip.h"
+#include "IpAddr.h"
 #include "Exception.hpp"
 #include "SocketOption.h"
 
@@ -49,6 +50,7 @@ namespace tcanetpp {
 #define SOCKET_TCP    IPPROTO_TCP
 #define SOCKET_UDP    IPPROTO_UDP
 #define SOCKET_ICMP   IPPROTO_ICMP
+#define SOCKET_RAW    SOCK_RAW
 
 
 /**  Socket types for Socket constructor  */
@@ -58,7 +60,7 @@ typedef enum SocketType
     SOCKTYPE_CLIENT        = 1,
     SOCKTYPE_SERVER_CLIENT = 2,
     SOCKTYPE_SERVER        = 3,
-    SOCKTYPE_RAW           = 4
+    //SOCKTYPE_RAW           = 4
 } sockType_t;
 
 
@@ -129,7 +131,6 @@ class Socket {
              int          protocol ) throw ( SocketException );
 
     Socket ( sockaddr_t * sa,
-             size_t       salen,
              uint16_t     port,
              SocketType   type,
              int          protocol ) throw ( SocketException );
@@ -164,7 +165,7 @@ class Socket {
     ipv4addr_t          getAddress() const;
     const std::string&  getAddressString() const;
     const std::string&  getHostString() const;
-    sockaddr_storage*   getSockAddr();
+    const sockaddr_t*   getSockAddr() const;
 
     ipv4addr_t          getAddr() const       { return this->getAddress(); }
     const std::string&  getAddrString() const { return this->getAddressString(); }
@@ -215,7 +216,7 @@ class Socket {
     ssize_t             nreadn   ( void * vptr, size_t n );
     
     
-    static void InitializeSocket ( sockfd_t & fd, int type, int proto )
+    static void InitializeSocket ( sockfd_t & fd, IpAddr & addr, int proto )
         throw ( SocketException );
     
     
@@ -229,7 +230,7 @@ class Socket {
   private:
     
     sockfd_t               _fd;
-    sockaddr_t             _sock;
+    IpAddr                 _ipaddr;
     SocketType             _socktype;
     int                    _proto;
     uint16_t               _port;

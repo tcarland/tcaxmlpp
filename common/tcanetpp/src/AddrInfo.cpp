@@ -74,11 +74,12 @@ AddrInfo::AddrInfo ( const std::string & name, const std::string & service )
       _err(0)
 {
     _err = AddrInfo::GetAddrInfo(name, service, NULL, &_ai);
+    _nxt = _ai;
 }
 
 AddrInfo::AddrInfo ( struct addrinfo * ai )
     : _ai(ai),
-      _nxt(NULL),
+      _nxt(ai),
       _err(0)
 {
 }
@@ -134,7 +135,7 @@ AddrInfo::begin()
 addrinfo*
 AddrInfo::next()
 {
-    if ( _nxt != NULL )
+    if ( _nxt )
         _nxt = _nxt->ai_next;
 
     return _nxt;
@@ -144,7 +145,7 @@ AddrInfo::next()
 addrinfo*
 AddrInfo::get()
 {
-    return _ai;
+    return _nxt;
 }
 
 /** Returns the IP address of the underlying addrinfo
@@ -155,6 +156,23 @@ AddrInfo::getAddr()
 {
     if ( _ai )
         return((sockaddr_t*) _ai->ai_addr);
+    return NULL;
+}
+
+/** Returns the ai_addrlen of the underlying struct addrinfo */
+size_t
+AddrInfo::getAddrLen() const
+{
+    if ( _ai )
+        return _ai->ai_addrlen;
+    return 0;
+}
+
+sockaddr_t*
+AddrInfo::getNextAddr()
+{
+    if ( _nxt )
+        return((sockaddr_t*) _nxt->ai_addr);
     return NULL;
 }
 
@@ -200,6 +218,10 @@ AddrInfo::setFamily ( int family )
     return false;
 }
 
+/** Returns the socktype of the struct addrinfo.
+  * This commonly either SOCK_STREAM for TCP, or
+  * SOCK_DGRAM for UDP.
+ **/
 int
 AddrInfo::getSocktype() const
 {
@@ -208,6 +230,7 @@ AddrInfo::getSocktype() const
     return 0;
 }
 
+/*r Sets the socktype of the underlying addrinfo object */
 bool
 AddrInfo::setSocktype ( int type )
 {
@@ -236,15 +259,6 @@ AddrInfo::setProtocol ( int proto )
         return true;
     }
     return false;
-}
-
-/** Returns the ai_addrlen of the underlying struct addrinfo */
-size_t
-AddrInfo::getAddrLen() const
-{
-    if ( this->isValid() )
-        return _ai->ai_addrlen;
-    return 0;
 }
 
 /** Returns the canonical name if applicable, or NULL if not set */
@@ -465,7 +479,7 @@ AddrInfo::GetAddrList ( const std::string & host, IpAddrList & v )
 
     for ( res = ai->begin(); res != NULL; res = ai->next() )
     {
-        IpAddr addr(res->ai_addr);
+        IpAddr addr((sockaddr_t*)res->ai_addr);
         v.push_back(addr);
     }
 

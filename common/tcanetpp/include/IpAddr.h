@@ -53,7 +53,7 @@ class IpAddr {
   public:
 
     IpAddr();
-    IpAddr ( const sockaddr * sa );
+    IpAddr ( const sockaddr_t * sa );
     IpAddr ( const ipv4addr_t & addr, uint8_t mb = 32 );
     IpAddr ( const ipv6addr_t & addr, uint8_t mb = 64 );
     IpAddr ( const IpAddr & ipaddr );
@@ -79,6 +79,8 @@ class IpAddr {
 
     sockaddr_t*         getSockAddr();
     const sockaddr_t*   getSockAddr() const;
+
+    int                 getFamily() const;
 
     std::string         toString() const;
     bool                isLoopback() const;

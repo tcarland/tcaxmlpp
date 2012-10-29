@@ -118,7 +118,8 @@ typedef struct IpHeader {
     IpHeader() 
         : version(0x45), tos(0), 
           length(0), id(0), 
-          frag(0), ttl(0), chksum(0), 
+          frag(0), ttl(0),
+          protocol(0), chksum(0),
           srcaddr(0), dstaddr(0)
     {}
 
