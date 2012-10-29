@@ -285,7 +285,7 @@ TnmsAuthManager::parseConfig ( const std::string & cfg, const time_t & now )
         }
 
         _authHandler = new AuthdIOHandler(_authDb);
-        _svr         = new Socket(0, acfg.tnms_port, SOCKTYPE_SERVER, IPPROTO_TCP);
+        _svr         = new Socket((ipv4addr_t)0, acfg.tnms_port, SOCKTYPE_SERVER, SOCKET_TCP);
 
         if ( _svr->init(false) < 0 ) {
             LogFacility::LogMessage("Config error creating server " 

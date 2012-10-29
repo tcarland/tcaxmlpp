@@ -39,11 +39,12 @@ createServer ( int port )
     int     retry  = 0;
 
     BufferedSocket *server = NULL;
+    ipv4addr_t addr = 0;
 
     while ( retry < 4 ) {
 
 	try {
-	    server = new BufferedSocket(0, port, SOCKTYPE_SERVER, IPPROTO_TCP);
+	    server = new BufferedSocket(addr, port, SOCKTYPE_SERVER, SOCKET_TCP);
 	    if ( ! server->init(true) ) {
 		printf("Socket error: %s\n", server->errorStr().c_str());
 	    } else {

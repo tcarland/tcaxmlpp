@@ -188,7 +188,7 @@ TnmsSocket::openConnection ( const std::string & host, uint16_t port )
 
     _host = host;
     _port = port;
-    _sock = new BufferedSocket(_ai->getAddr(), _ai->getAddrLen(), _port, SOCKTYPE_CLIENT, _ai->getSocktype());
+    _sock = new BufferedSocket(_ai->getAddr(), _port, SOCKTYPE_CLIENT, SOCKET_TCP);
     _sock->setNonBlocking();
     _sock->rxBufferSize(TNMS_PACKET_SIZE);
     this->setHostStr();
@@ -232,8 +232,7 @@ TnmsSocket::openConnection()
 
         if ( (res = _ai->next()) != NULL ) {
             delete _sock;
-            _sock = new BufferedSocket((sockaddr_t*) res->ai_addr, res->ai_addrlen,
-                                       _port, SOCKTYPE_CLIENT, res->ai_protocol);
+            _sock = new BufferedSocket(_ai->getNextAddr(), _port, SOCKTYPE_CLIENT, SOCKET_TCP);
             _sock->setNonBlocking();
             _sock->rxBufferSize(TNMS_PACKET_SIZE);
             this->setHostStr();
