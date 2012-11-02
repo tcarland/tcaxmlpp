@@ -194,8 +194,6 @@ Thread::yield()
 bool
 Thread::setStackSize ( size_t stksz )
 {
-    void * stack;
-
     if ( this->isRunning() ) {
         _serr  = "Thread is already running.";
         return false;
@@ -204,13 +202,13 @@ Thread::setStackSize ( size_t stksz )
     if ( stksz < THREAD_STACKSIZE_MIN )
         stksz = THREAD_STACKSIZE_MIN;
 
-    stack = ::malloc(stksz);
-    if ( stack == NULL ) {
+    _stack = ::malloc(stksz);
+    if ( _stack == NULL ) {
         _serr  = "Error in malloc().";
         return false;
     }
 
-    if ( ::pthread_attr_setstack(&_attr, stack, stksz) ) {
+    if ( ::pthread_attr_setstack(&_attr, _stack, stksz) ) {
         _serr = "Error in pthread_attr_setstack().";
         return false;
     }
