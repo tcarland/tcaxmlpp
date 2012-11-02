@@ -96,7 +96,7 @@ Thread::start() throw ( ThreadException )
         throw ThreadException(_serr);
     }
 
-    _running = true;
+    this->_running = true;
 
     if ( _threadName.empty() ) {
         std::ostringstream  name;
@@ -487,7 +487,7 @@ Thread::getErrorStr() const
  *   all new threads.
  **/
 void*
-Thread::ThreadEntry ( void* arg )
+Thread::ThreadEntry ( void * arg )
 {
     Thread * t = (Thread*) arg;
 
