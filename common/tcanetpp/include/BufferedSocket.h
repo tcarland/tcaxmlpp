@@ -74,6 +74,8 @@ class BufferedSocket : public Socket {
                      SocketType   type,
                      int          protocol ) throw ( SocketException );
 
+    BufferedSocket ( addrinfo   * ai ) throw ( SocketException );
+
     virtual ~BufferedSocket();
 
 

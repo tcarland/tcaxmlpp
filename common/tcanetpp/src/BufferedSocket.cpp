@@ -84,6 +84,15 @@ BufferedSocket::BufferedSocket ( sockaddr_t * sa, uint16_t port, SocketType type
     this->init(false);
 }
 
+BufferedSocket::BufferedSocket ( addrinfo * ai ) throw ( SocketException )
+    : Socket(ai),
+      _rbuffer(new CircularBuffer()),
+      _wbuffer(NULL),
+      _wbx(false)
+{
+    this->init(false);
+}
+
 // protected constructor
 BufferedSocket::BufferedSocket ( sockfd_t & fd, sockaddr_t & csock, SocketType type, int proto )
     : Socket(fd, csock, type, proto),
@@ -93,6 +102,7 @@ BufferedSocket::BufferedSocket ( sockfd_t & fd, sockaddr_t & csock, SocketType t
 {
     this->init(false);
 }
+
 
 BufferedSocket::~BufferedSocket()
 {
