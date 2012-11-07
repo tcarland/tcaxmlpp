@@ -36,8 +36,7 @@ tnmsd:
 	@echo
 
 tnmsauthd:
-	( cd TnmsAuthd; make soap )
-	( cd TnmsAuthd; make tnmsauthd; make tools )
+	( cd TnmsAuthd; make all )
 	@echo
 
 archiver:

@@ -20,7 +20,7 @@ ifdef TNMS_DEBUG
 OPT_FLAGS= 	-g
 endif
 
-LIBS=
+LIBS=		
 INCLUDES=       -Iinclude -Isoap 
 
 BIN=		tnmsauthd
