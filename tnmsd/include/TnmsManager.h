@@ -70,6 +70,9 @@ class TnmsManager : public EventTimerHandler {
     void                createClients();
     void                destroyClients();
 
+    void                clearAgentServers();
+    void                clearClientServers();
+
     void                reportStats   ( const time_t & now );
     void                addStaticMetrics();
 
@@ -100,7 +103,7 @@ class TnmsManager : public EventTimerHandler {
 
     typedef std::map<std::string, MirrorConnection>  ClientMap;
 
-    typedef std::set<Socket*>   ServerSet;
+    typedef std::map<evid_t, Socket*>   ServerMap;
 
 
   private:
@@ -112,7 +115,8 @@ class TnmsManager : public EventTimerHandler {
     Socket*                     _client;
     AuthClient*                 _auth;
 
-    ServerSet                   _agents;
+    ServerMap                   _asvrs;
+    ServerMap                   _csvrs;
     ClientMap                   _clients;
     evid_t                      _agentId, _clientId;
     evid_t                      _reportId, _logId;

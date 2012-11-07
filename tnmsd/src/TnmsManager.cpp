@@ -17,7 +17,7 @@ namespace tnmsd {
 
 
 std::string
-TnmsManager::_Version = "v0.190";
+TnmsManager::_Version = "v0.201";
 
 
 TnmsManager::TnmsManager ( const std::string & configfile )
@@ -126,7 +126,7 @@ TnmsManager::timeout ( const EventTimer & timer )
             _startAt = now + _startDelay;
 
         if ( _startAt <= now && _client ) {
-            _clientId   = _evmgr->addIOEvent(_clientHandler, _client->getDescriptor(), _client, true);
+            //_clientId   = _evmgr->addIOEvent(_clientHandler, _client->getDescriptor(), _client, true);
             _startDelay = 0;
         }
     }
@@ -179,14 +179,15 @@ TnmsManager::reportStats ( const time_t & now )
 void
 TnmsManager::addStaticMetrics()
 {
-    std::string  name = _tconfig.agent_name;
-    std::string  ver  = name;
-    std::string  rep  = name;
-    std::string  hold = name;
+    std::string & name = _tconfig.agent_name;
+    std::string   ver  = name;
+    std::string   rep  = name;
+    std::string   hold = name;
     
     ver.append("/").append(TNMSD_VERSION_METRIC);
     rep.append("/").append(TNMSD_REPORTI_METRIC);
     hold.append("/").append(TNMSD_HOLDDOWN_METRIC);
+
     TnmsMetric  version(ver);
     TnmsMetric  reporti(rep);
     TnmsMetric  holdi(hold);
@@ -225,6 +226,7 @@ TnmsManager::createClients()
         client->setCompression(_tconfig.compression);
         client->setReconnectTime(cfg.reconnect_interval);
         client->setClientLogin(login, "");  // psk from config?
+
         if ( client->openConnection(cIter->hostname, cIter->port) > 0 )
             client->login();
 
@@ -240,7 +242,7 @@ TnmsManager::createClients()
 
 
 void
-TnmsManager::destroyClients ()
+TnmsManager::destroyClients()
 {
     ClientMap::iterator  cIter;
 
@@ -259,6 +261,36 @@ TnmsManager::destroyClients ()
 }
 
 
+void
+TnmsManager::clearAgentServers()
+{
+    ServerMap::iterator  sIter;
+
+    for ( sIter = _asvrs.begin(); sIter != _asvrs.end(); ++sIter )
+    {
+        evid_t  sid = sIter->first;
+        _evmgr->removeEvent(sid);
+        delete sIter->second;
+    }
+    _asvrs.clear();
+}
+
+
+void
+TnmsManager::clearClientServers()
+{
+    ServerMap::iterator  sIter;
+
+    for ( sIter = _csvrs.begin(); sIter != _csvrs.end(); ++sIter )
+    {
+        evid_t  sid = sIter->first;
+        _evmgr->removeEvent(sid);
+        delete sIter->second;
+    }
+    _csvrs.clear();
+}
+
+
 bool
 TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
 {
@@ -268,7 +300,8 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
     TnmsConfigHandler  cfgmgr(cfg, TNMSD_CONFIG_ROOT);
     std::string        prefix    = TNMSD_CONFIG_ROOT;
 
-    if ( ! cfgmgr.parse() ) {
+    if ( ! cfgmgr.parse() ) 
+    {
         if ( LogFacility::IsOpen() ) {
             LogFacility::LogMessage("TnmsManager::parseConfig() error: " 
                     + cfgmgr.getErrorStr());
@@ -278,6 +311,7 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
         }
         return false;
     }
+
     TnmsConfig & config = cfgmgr.config;
 
     if ( ! config.agent_name.empty() )
@@ -308,14 +342,15 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
     {
         LogFacility::LogMessage("TnmsManager: WARNING: Enabling Auth Bypass");
         this->_auth->enableAuthBypass(true);
-    } else {
+    } 
+    else 
+    {
         this->_auth->setAuthServer(config.auth_server, config.auth_port);
         // this fails due to no connection but sets credentials
         this->_auth->login(config.agent_name, config.agent_key);
     }
 
     // (re)initialize our tree?
-
     TnmsServerConfig & nsvrcfg = cfgmgr.config.serverConfig;
     TnmsServerConfig & svrcfg  = _tconfig.serverConfig;
 
@@ -323,52 +358,73 @@ TnmsManager::parseConfig ( const std::string & cfg, const time_t & now )
     if ( nsvrcfg.agent_port != svrcfg.agent_port 
             && nsvrcfg.agent_port > 0 )
     {
-        if ( _agent ) {
-            _agent->close();
-            _evmgr->removeEvent(_agentId);
-            _agentId = 0;
-        }
+        Socket    * svr;
+        evid_t      sid;
+        AddrInfo  * addri;
+        addrinfo  * ai, aihints;
 
-        _agent = new Socket((ipv4addr_t)0, nsvrcfg.agent_port, SOCKTYPE_SERVER, SOCKET_TCP);
+        aihints  = AddrInfo::GetTCPServerHints();
+        addri    = AddrInfo::GetAddrInfo("", nsvrcfg.agent_port, &aihints);
 
-        if ( ! _agent->init(false) ) {
-            LogFacility::LogMessage("TnmsManager::parseConfig: Error creating agent server socket" 
-                    + _agent->errorStr());
+        if ( addri == NULL ) {
+            LogFacility::LogMessage("Error in GetAddrInfo");
             return false;
         }
 
-        LogFacility::Message  logmsg;
-        logmsg << "TnmsManager::parseConfig(): Agent server init "  << _agent->getHostStr();
-        LogFacility::LogMessage(logmsg.str());
+        this->clearAgentServers();
 
+        for ( ai = addri->begin(); ai != NULL; ai = addri->next() ) 
+        {
+            svr = new Socket(ai);
+            if ( ! svr->init(false) ) {
+                LogFacility::LogMessage("TnmsManager: Error creating agent server socket: " 
+                    + svr->errorStr());
+                return false;
+            }
+            LogFacility::LogMessage("TnmsManager: Agent server init: " + svr->getHostStr());
 
-        _agentId = _evmgr->addIOEvent(_agentHandler, _agent->getFD(), _agent, true);
+            sid = _evmgr->addIOEvent(_agentHandler, svr->getFD(), svr, true);
+
+            _asvrs[sid] = svr;
+        }
+
     } 
 
     // client server startup
     if ( nsvrcfg.client_port != svrcfg.client_port 
             && nsvrcfg.client_port > 0 )
     {
-        if ( _client ) {
-            _client->close();
-            _evmgr->removeEvent(_clientId);
-            _clientId = 0;
-        }
+        Socket    * svr;
+        evid_t      sid;
+        AddrInfo  * addri;
+        addrinfo  * ai, aihints;
 
-        _client = new Socket((ipv4addr_t)0, nsvrcfg.client_port, SOCKTYPE_SERVER, SOCKET_TCP);
+        aihints = AddrInfo::GetTCPServerHints();
+        addri   = AddrInfo::GetAddrInfo("", nsvrcfg.client_port, &aihints);
 
-        if ( ! _client->init(false) ) {
-            LogFacility::LogMessage("TnmsManager::parseConfig: Error creating client server socket" 
-                    + _client->errorStr());
+        if ( addri == NULL ) {
+            LogFacility::LogMessage("Error in GetAddrInfo");
             return false;
         }
+        
+        this->clearClientServers();
 
-        LogFacility::Message  logmsg;
-        logmsg << "TnmsManager::parseConfig(): Client Server init " << _client->getHostStr();
-        LogFacility::LogMessage(logmsg.str());
+        for ( ai = addri->begin(); ai != NULL; ai = addri->next() )
+        {
+            svr = new Socket(ai);
+            if ( ! svr->init(false) ) {
+                LogFacility::LogMessage("TnmsManager: Error creating client server socket: " 
+                    + svr->errorStr());
+                return false;
+            }
+            LogFacility::LogMessage("TnmsManager: Client server init: " + svr->getHostStr());
 
-        if ( _startDelay == 0 )
-            _clientId = _evmgr->addIOEvent(_clientHandler, _client->getFD(), _client, true);
+            //if ( _startDelay == 0 ) 
+            sid = _evmgr->addIOEvent(_clientHandler, svr->getFD(), svr, true);
+
+            _csvrs[sid] = svr;
+        }
+
     }
 
     // assign the new config
