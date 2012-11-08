@@ -129,7 +129,7 @@ template<class ValueType> class SynchronizedQueue {
     }
 
     /**  Returns the current size of the queue */
-    size_t size() const
+    size_t size()
     {
         size_t  sz = 0;
 
@@ -145,12 +145,12 @@ template<class ValueType> class SynchronizedQueue {
     /**@{
       *  Returns a boolean indicating whether the queue is empty. 
      **/
-    inline bool empty() const
+    inline bool empty()
     { 
         return this->isEmpty(); 
     }
 
-    bool isEmpty() const
+    bool isEmpty()
     {
         bool empty = true;
 
