@@ -39,7 +39,7 @@ extern "C" {
 namespace tcanetpp {
 
 
-#define DEFAULT_QUEUE_MAXSIZE 65535
+#define DEFAULT_QUEUE_MAXSIZE 2^16
 
 
 /**  A SynchronizedQueue is a thread-safe wrapper to a
