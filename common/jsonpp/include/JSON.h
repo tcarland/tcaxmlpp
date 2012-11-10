@@ -54,6 +54,7 @@ class JSON {
     size_t      getErrorPos() const { return _errpos; }
     std::string getErrorStr() const { return _errstr; }
 
+
   public: 
 
     template<typename T>

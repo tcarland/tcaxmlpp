@@ -47,7 +47,6 @@ JSON specification. The following issues need to still be
 addressed:
 
   - proper Unicode support.
-  - i/o stream support.
   - documentation.
 
 */

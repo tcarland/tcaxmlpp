@@ -13,7 +13,7 @@ namespace jsonpp {
 
 
 /** The JsonObject class represents the core JSON type of 
-  * an associative array. The STL map containger is used 
+  * an associative array. The STL map container is used
   * to store the items.
  **/
 class JsonObject : public JsonItem {
