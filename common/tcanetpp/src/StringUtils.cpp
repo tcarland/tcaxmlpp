@@ -265,11 +265,10 @@ StringUtils::toHexString ( const uint8_t * buf, size_t len, size_t offset )
     
     for ( i = 0; i < len; ++i )
     {
-        if ( ::isprint(*ptr) ) {
+        if ( ::isprint(*ptr) )
             rt  = ::snprintf(hx, lt, "%c", *ptr);
-        } else {
+        else
             rt  = ::snprintf(hx, lt, ".");
-        }
 
         hx += rt;
         lt -= rt;
