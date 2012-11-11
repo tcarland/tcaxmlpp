@@ -62,8 +62,6 @@ Thread::~Thread()
     ::pthread_attr_destroy(&_attr);
     if ( _tid != 0 )
         this->stop();
-    if ( _stack )
-        ::free(_stack);
 }
 
 /* -------------------------------------------------------------- */
