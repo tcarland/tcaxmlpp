@@ -8,6 +8,9 @@ NEED_LIBDL = 1
 NEED_SOCKET = 1
 NEED_TCANETPP = 1
 
+ifdef USE_LIBRT
+NEED_LIBRT = 1
+endif
 ifdef USE_PTHREADS
 NEED_PTHREADS = 1
 endif
@@ -106,6 +109,10 @@ packtest: pack_test.o
 	@echo
 
 gktrace: trace_test.o
+	$(make-cxxbin-rule)
+	@echo
+
+thtest: threadtest.o
 	$(make-cxxbin-rule)
 	@echo
 

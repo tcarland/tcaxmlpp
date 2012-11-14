@@ -88,6 +88,7 @@ class Thread {
 
     void                threadName      ( const std::string & name );
     const std::string&  threadName() const;
+    pthread_t           threadId() const;
 
     const std::string&  getErrorStr() const;
 

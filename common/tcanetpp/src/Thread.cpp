@@ -155,6 +155,12 @@ Thread::threadName() const
     return this->_threadName;
 }
 
+pthread_t
+Thread::threadId() const
+{
+    return this->_tid;
+}
+
 /* -------------------------------------------------------------- */
 
 /**  Indicates whether the thread is currently in the run state. */
