@@ -96,7 +96,7 @@ Socket::Socket ( ipv4addr_t ipaddr, uint16_t port, SocketType type, int protocol
 {
     Socket::ResetDescriptor(this->_fd);
     
-    if ( _socktype <= SOCKTYPE_NONE || _socktype > SOCKTYPE_SERVER )
+    if ( _socktype <= SOCKTYPE_NONE || _socktype > SOCKTYPE_RAW )
         throw SocketException("Socket error: Invalid Socket type");
     if ( _proto < 0 || _proto > 255 )
         throw SocketException("Socket error: Invalid protocol");
@@ -125,7 +125,7 @@ Socket::Socket ( ipv6addr_t ipaddr, uint16_t port, SocketType type, int protocol
 {
     Socket::ResetDescriptor(this->_fd);
 
-    if ( _socktype <= SOCKTYPE_NONE || _socktype > SOCKTYPE_SERVER )
+    if ( _socktype <= SOCKTYPE_NONE || _socktype > SOCKTYPE_RAW )
         throw SocketException("Socket error: Invalid Socket type");
     if ( _proto < 0 || _proto > 255 )
         throw SocketException("Socket error: Invalid protocol");
@@ -188,7 +188,7 @@ Socket::Socket ( addrinfo * ai )
             _proto = SOCKET_UDP;
             break;
         case SOCK_RAW:
-            _proto = SOCKET_RAW;
+            _socktype = SOCKTYPE_RAW;
             break;
         default:
             throw SocketException("Unsupported socket protocol");
@@ -210,7 +210,7 @@ Socket::Socket ( addrinfo * ai )
 
     _addrstr = _ipaddr.toString();
     _hoststr = _addrstr;
-    _hoststr.append("/32:").append(StringUtils::toString(_port));
+    _hoststr.append("/:").append(StringUtils::toString(_port));
 }
 
 Socket::Socket ( sockfd_t & fd, sockaddr_t & csock, SocketType type, int protocol )
@@ -229,7 +229,7 @@ Socket::Socket ( sockfd_t & fd, sockaddr_t & csock, SocketType type, int protoco
             _connected  = true;
         else if ( _proto == IPPROTO_UDP )
             _noUdpClose = true;
-        _bound     = true;
+        _bound = true;
     } 
     else 
     {
@@ -272,7 +272,7 @@ Socket::init ( bool block )
     if ( ! Socket::IsValidDescriptor(_fd) ) 
     {
         try {
-            Socket::InitializeSocket(_fd, _ipaddr, _proto);
+            Socket::InitializeSocket(_fd, _ipaddr, _socktype, _proto);
         } catch ( SocketException & err ) {
             _errstr = err.toString();
             return -1;
@@ -285,7 +285,6 @@ Socket::init ( bool block )
         
         if ( ! this->bind() )
             return -1;
-            
         if ( _proto == SOCKET_TCP )
             this->listen();
     }
@@ -538,7 +537,7 @@ Socket::write ( const void * vptr, size_t n )
 {
     ssize_t   st  = 0;
 
-    if ( (_proto == SOCKET_UDP && ! _connected) || _proto == SOCKET_RAW ) {
+    if ( _socktype == SOCKTYPE_RAW || (_proto == SOCKET_UDP && ! _connected) ) {
         st  = ::sendto(_fd, (const char*) vptr, n, 0,
               (struct sockaddr*) _ipaddr.getSockAddr(), sizeof(sockaddr_t));
     } else {
@@ -556,7 +555,7 @@ Socket::readFrom ( void * vptr, size_t n, sockaddr_t & csock )
     socklen_t len = 0;
     ssize_t   rd  = 0;
 
-    if ( _proto == SOCKET_TCP && _proto != SOCKET_RAW )
+    if ( _proto == SOCKET_TCP && _socktype != SOCKTYPE_RAW )
         return -1;
 
     len = sizeof(csock);
@@ -941,20 +940,25 @@ Socket::nreadn ( void * vptr, size_t n )
 
 /** Static function for initializing a socket descriptor */
 void
-Socket::InitializeSocket ( sockfd_t & fd, IpAddr & addr, int proto )
+Socket::InitializeSocket ( sockfd_t & fd, IpAddr & addr, int socktype, int proto )
     throw ( SocketException )
 {
     std::string errstr = "Socket::initSocket() Fatal Error ";
 
-    if ( proto == SOCKET_TCP ) {
-        fd = ::socket(addr.getFamily(), SOCK_STREAM, 0);
-    } else if ( proto == SOCKET_UDP ) {
-        fd = ::socket(addr.getFamily(), SOCK_DGRAM, 0);
-    } else if ( proto == SOCKET_RAW || proto == SOCKET_ICMP ) {
+    if ( socktype == SOCKTYPE_RAW ) 
+    {
         fd = ::socket(addr.getFamily(), SOCK_RAW, proto);
-    } else {
-        errstr.append(": Unsupported protocol");
-        throw SocketException(errstr);
+    }
+    else
+    {
+        if ( proto == SOCKET_TCP ) {
+            fd = ::socket(addr.getFamily(), SOCK_STREAM, 0);
+        } else if ( proto == SOCKET_UDP ) {
+            fd = ::socket(addr.getFamily(), SOCK_DGRAM, 0);
+        } else {
+            errstr.append(": Unsupported protocol");
+            throw SocketException(errstr);
+        }
     }
 
     if ( ! Socket::IsValidDescriptor(fd) ) 

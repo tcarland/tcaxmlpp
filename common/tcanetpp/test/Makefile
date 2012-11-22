@@ -44,8 +44,8 @@ ALL_BINS= 	$(BIN)
 
 
 
-all: asnwho ipconvert client server cidrtest strtest bufftest pttest \
-	pingt gktrace packtest filetest thtest
+all: asnclean asnwho ipconvert client server cidrtest strtest bufftest \
+	pttest pingt gktrace packtest filetest thtest
 
 
 include ${TOPDIR}/tcamake/project_defs

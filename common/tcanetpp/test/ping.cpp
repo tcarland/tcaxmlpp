@@ -289,7 +289,7 @@ int main ( int argc, char ** argv )
         exit(-1);
     }
 
-    Socket * icmps  = new Socket(dstaddr, SOCKET_ICMP, SOCKTYPE_CLIENT, SOCKET_ICMP);
+    Socket * icmps  = new Socket(dstaddr, SOCKET_ICMP, SOCKTYPE_RAW, SOCKET_ICMP);
     icmps->init(false);
 
     dropPriv();
@@ -364,18 +364,15 @@ int main ( int argc, char ** argv )
             sendReq = true;
 
         if ( sendReq && cnt > 0 ) {
+            sz           = idsz + size; // account for added data size
             tvsnt        = tvin;
             its->secs    = tvin.tv_sec;
             its->usecs   = tvin.tv_usec;
             req->chksum  = 0;
             req->seq++;
-            req->chksum  = Socket::IpChkSum((uint16_t*)req, idsz);
-
-            sz  = idsz + size; // account for added data size
-
             req->chksum  = Socket::IpChkSum((uint16_t*)req, sz);
 
-            wt = icmps->write(wbuff, sz);
+            wt  = icmps->write(wbuff, sz);
             if ( wt < 0 )
                 errorOut("Error in write " + icmps->getErrorString());
             

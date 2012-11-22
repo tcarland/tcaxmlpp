@@ -60,6 +60,7 @@ typedef enum SocketType
     SOCKTYPE_CLIENT        = 1,
     SOCKTYPE_SERVER_CLIENT = 2,
     SOCKTYPE_SERVER        = 3,
+    SOCKTYPE_RAW           = 4,
 } sockType_t;
 
 
@@ -217,7 +218,8 @@ class Socket {
     ssize_t             nreadn   ( void * vptr, size_t n );
     
     
-    static void InitializeSocket ( sockfd_t & fd, IpAddr & addr, int proto )
+    static void InitializeSocket ( sockfd_t & fd, IpAddr & addr, 
+                                   int socktype,  int proto )
         throw ( SocketException );
     
     
