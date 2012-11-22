@@ -28,7 +28,7 @@ using namespace tcanetpp;
 bool Alarm = false;
 int  Pid   = 0;
 
-static std::string Version  = "v0.93";
+static std::string Version  = "v0.94";
 static std::string RandData = std::string("");
 
 
