@@ -16,8 +16,9 @@ NEED_PTHREADS = 1
 endif
 
 ifdef TNMS_DEBUG
-OPT_FLAGS =	-g -DTWHOIS_MAIN
+OPT_FLAGS =	-g 
 endif
+OPT_FLAGS +=	-DTWHOIS_MAIN
 
 INCLUDES=	-I. -I../include
 LIBS=
@@ -35,7 +36,8 @@ PT_OBJS=
 PTT_OBJS=	pt_test.o
 
 BIN=		asnwho ipconvert client server cachetest pttest pfxtest \
-		strtest bufftest cidrtest packtest pingt gktrace filetest
+		strtest bufftest cidrtest packtest pingt gktrace filetest \
+		thtest
 
 ALL_OBJS=	$(OBJS) $(ASOBJ) $(STROBJ) $(CBUFF_OBJS) $(CIDR_OBJS)
 ALL_BINS= 	$(BIN)
@@ -43,11 +45,14 @@ ALL_BINS= 	$(BIN)
 
 
 all: asnwho ipconvert client server cidrtest strtest bufftest pttest \
-	pingt gktrace packtest filetest
+	pingt gktrace packtest filetest thtest
 
 
 include ${TOPDIR}/tcamake/project_defs
 
+
+asnclean:
+	( $(RM) ../src/Whois.o )
 
 asnwho: $(ASOBJ)
 ifdef TNMS_DEBUG
@@ -112,9 +117,11 @@ gktrace: trace_test.o
 	$(make-cxxbin-rule)
 	@echo
 
+ifdef USE_PTHREADS
 thtest: threadtest.o
 	$(make-cxxbin-rule)
 	@echo
+endif
 
 clean:
 	$(RM) $(ALL_OBJS) $(BIN) \

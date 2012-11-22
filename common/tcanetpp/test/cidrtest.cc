@@ -41,7 +41,7 @@ int main ( int argc, char **argv )
     // Query addrs for local host
 
     name  = "comet.ratnest.org";
-    ai    = AddrInfo::GetAddrInfo(name);
+    ai    = AddrInfo::GetAddrInfo(name, "");
     i     = 1;
 
     if ( ai == NULL ) {
@@ -66,7 +66,7 @@ int main ( int argc, char **argv )
     // Query for all host addrs for a given forward
 
     name  = "www.google.com";
-    ai    = AddrInfo::GetAddrInfo(name);
+    ai    = AddrInfo::GetAddrInfo(name, "");
     i     = 1;
 
     if ( ai == NULL ) {
@@ -117,7 +117,7 @@ int main ( int argc, char **argv )
 
     if ( argc > 1 ) {
         name.assign(argv[1]);
-        ai   = AddrInfo::GetAddrInfo(name);
+        ai   = AddrInfo::GetAddrInfo(name, "");
         res  = ai->begin();
         i     = 1;
 

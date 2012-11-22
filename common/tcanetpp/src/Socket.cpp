@@ -950,7 +950,7 @@ Socket::InitializeSocket ( sockfd_t & fd, IpAddr & addr, int proto )
         fd = ::socket(addr.getFamily(), SOCK_STREAM, 0);
     } else if ( proto == SOCKET_UDP ) {
         fd = ::socket(addr.getFamily(), SOCK_DGRAM, 0);
-    } else if ( proto == SOCKET_RAW ) {
+    } else if ( proto == SOCKET_RAW || proto == SOCKET_ICMP ) {
         fd = ::socket(addr.getFamily(), SOCK_RAW, proto);
     } else {
         errstr.append(": Unsupported protocol");

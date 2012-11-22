@@ -28,7 +28,7 @@ using namespace tcanetpp;
 bool Alarm = false;
 int  Pid   = 0;
 
-static std::string Version  = "v0.92";
+static std::string Version  = "v0.93";
 static std::string RandData = std::string("");
 
 
@@ -289,7 +289,7 @@ int main ( int argc, char ** argv )
         exit(-1);
     }
 
-    Socket * icmps  = new Socket(dstaddr, SOCKET_ICMP, SOCKTYPE_RAW, SOCKET_ICMP);
+    Socket * icmps  = new Socket(dstaddr, SOCKET_ICMP, SOCKTYPE_CLIENT, SOCKET_ICMP);
     icmps->init(false);
 
     dropPriv();

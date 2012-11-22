@@ -273,8 +273,8 @@ int main ( int argc, char ** argv )
         usage();
     }
 
-    Socket * udps  = new Socket(dstaddr, SOCKET_UDP, SOCKTYPE_RAW, SOCKET_UDP);
-    Socket * icmps = new Socket(dstaddr, SOCKET_ICMP, SOCKTYPE_RAW, SOCKET_ICMP);
+    Socket * udps  = new Socket(dstaddr, SOCKET_UDP, SOCKTYPE_CLIENT, SOCKET_UDP);
+    Socket * icmps = new Socket(dstaddr, SOCKET_ICMP, SOCKTYPE_CLIENT, SOCKET_ICMP);
 
     udps->init(false);
     icmps->init(false);
