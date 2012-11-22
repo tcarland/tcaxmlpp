@@ -22,8 +22,8 @@
 using namespace tcanetpp;
 
 
-typedef SynchronizedQueue<std::string>  StringQueue;
-typedef std::set<Thread*>               ThreadSet;
+typedef SynchronizedQueue<char*>    StringQueue;
+typedef std::set<Thread*>           ThreadSet;
 
 static bool Alarm = false;
 
@@ -34,21 +34,36 @@ class InputThread : public Thread {
 
     InputThread ( StringQueue * q, uint32_t ival ) 
         : _queue(q), _ival(ival) 
-    {
-    }
+    {}
+
     virtual ~InputThread() {}
+
+
+    virtual void  init()
+    {
+        sigset_t  sigset;
+
+        ::sigemptyset(&sigset);
+        ::sigaddset(&sigset, SIGALRM);
+        ::sigprocmask(SIG_BLOCK, &sigset, NULL);
+
+        LogFacility::LogMessage("InputThread::init() " + this->threadName());
+
+        return;
+    }
 
 
     virtual void  run()
     {
         uint64_t    stime, val;
         std::string msg;
+        char *      mstr;
 
         stime = msectoevu(_ival);
         stime = evutonsec(stime);
         val   = 0;
         
-        LogFacility::LogMessage("Starting " + this->threadName());
+        LogFacility::LogMessage("InputThread::run() " + this->threadName());
 
         while ( ! this->_Alarm ) 
         {
@@ -57,13 +72,17 @@ class InputThread : public Thread {
             msg = this->threadName();
             msg.append(":").append(StringUtils::toString(val));
 
-            _queue->push(msg);
+            mstr = (char*) ::malloc(msg.length() + 1);
+            ::strncpy(mstr, msg.c_str(), msg.length());
+            mstr[msg.length()] = '\0';
+            _queue->push(mstr);
 
             val++;
         }
             
         return;
     }
+
 
     virtual void finished()
     {
@@ -89,23 +108,40 @@ class OutputThread : public Thread {
     }
     virtual ~OutputThread() {}
 
+    virtual void  init()
+    {
+        sigset_t  sigset;
+
+        ::sigemptyset(&sigset);
+        ::sigaddset(&sigset, SIGALRM);
+        ::sigprocmask(SIG_BLOCK, &sigset, NULL);
+
+        LogFacility::LogMessage("OutputThread::init() " + this->threadName());
+
+        return;
+    }
+
     virtual void  run()
     {
         uint64_t    stime;
-        std::string name, msg;
+        std::string name;
+        char *      mstr;
 
         stime = msectoevu(_ival);
         stime = evutonsec(stime);
         name  = this->threadName();
-        name.append(" ");
 
-        LogFacility::LogMessage("Starting " + name);
+        LogFacility::LogMessage("OutputThread::run() " + name);
         
         while ( ! this->_Alarm ) 
         {
             EventManager::NanoSleep(stime);
-            _queue->pop(msg);
-            LogFacility::LogMessage(name + msg);
+            if ( _queue->pop(mstr) ) {
+                LogFacility::Message logmsg;
+                logmsg << name << " : " << mstr;
+                LogFacility::LogMessage(logmsg.str());
+                ::free(mstr);
+            }
         }
             
         return;
@@ -151,8 +187,8 @@ int main ( int argc, char **argv )
     char optChar;
     int  xCnt, yCnt, xInt, yInt;
 
-    xCnt = 2;
-    yCnt = 5;
+    xCnt = 3;
+    yCnt = 10;
     xInt = 1000;
     yInt = 3000;
 
@@ -182,25 +218,27 @@ int main ( int argc, char **argv )
 
     ::signal(SIGINT, &sigHandler);
     ::signal(SIGTERM, &sigHandler);
+
     LogFacility::InitThreaded();
     LogFacility::AddLogStream("stdout", "thtest", &std::cout); 
 
     StringQueue * queue = new StringQueue();
     ThreadSet     ithreads, othreads;
 
-    InputThread * th    = NULL;
-    std::string   iname = "InputThread";
+    InputThread  * ith   = NULL;
+    std::string    iname = "InputThread";
 
     for ( int i = 0; i < xCnt; i++ )
     {
         std::string thname = iname;
         thname.append("_").append(StringUtils::toString(i));
 
-        th = new InputThread(queue, xInt);
-        th->threadName(thname);
-        th->start();
+        ith = new InputThread(queue, xInt);
+        ith->threadName(thname);
+        ith->init();
+        ith->start();
 
-        ithreads.insert(th);
+        ithreads.insert(ith);
     }
 
     OutputThread * oth = NULL;
@@ -213,9 +251,10 @@ int main ( int argc, char **argv )
 
         oth = new OutputThread(queue, yInt);
         oth->threadName(thname);
+        oth->init();
         oth->start();
 
-        othreads.insert(th);
+        othreads.insert(oth);
     }
 
     size_t qsz;
@@ -236,16 +275,26 @@ int main ( int argc, char **argv )
     {
         InputThread * ith = (InputThread*) *tIter;
         ith->setAlarm();
+        LogFacility::LogMessage("Killing " + ith->threadName());
         EventManager::NanoSleep(ss);
         delete ith;
     }
+    ithreads.clear();
 
     for ( tIter = othreads.begin(); tIter != othreads.end(); ++tIter )
     {
         OutputThread * oth = (OutputThread*) *tIter;
         oth->setAlarm();
+        LogFacility::LogMessage("Killing " + oth->threadName());
         EventManager::NanoSleep(ss);
         delete oth;
+    }
+    othreads.clear();
+
+    while ( ! queue->empty() ) {
+        char * s;
+        if ( queue->pop(s) )
+            free(s);
     }
 
     delete queue;
