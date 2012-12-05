@@ -22,6 +22,8 @@
 using namespace tcanetpp;
 
 
+#define MAXSTRLEN 2048
+
 typedef SynchronizedQueue<char*>    StringQueue;
 typedef std::set<Thread*>           ThreadSet;
 
@@ -73,6 +75,8 @@ class InputThread : public Thread {
             msg.append(":").append(StringUtils::toString(val));
 
             mstr = (char*) ::malloc(msg.length() + 1);
+            if ( mstr == NULL )
+                continue;
             ::strncpy(mstr, msg.c_str(), msg.length());
             mstr[msg.length()] = '\0';
             _queue->push(mstr);
@@ -124,22 +128,21 @@ class OutputThread : public Thread {
     virtual void  run()
     {
         uint64_t    stime;
-        std::string name;
         char *      mstr;
 
         stime = msectoevu(_ival);
         stime = evutonsec(stime);
-        name  = this->threadName();
 
-        LogFacility::LogMessage("OutputThread::run() " + name);
+        LogFacility::LogMessage("OutputThread::run() " + this->threadName());
         
         while ( ! this->_Alarm ) 
         {
             EventManager::NanoSleep(stime);
+
+            if ( _queue->empty() )
+                continue; 
             if ( _queue->pop(mstr) ) {
-                LogFacility::Message logmsg;
-                logmsg << name << " : " << mstr;
-                LogFacility::LogMessage(logmsg.str());
+                this->processMsg(mstr);
                 ::free(mstr);
             }
         }
@@ -152,6 +155,52 @@ class OutputThread : public Thread {
         std::string name = this->threadName();
         name.append(" Finished");
         LogFacility::LogMessage(name);
+    }
+
+    void  processMsg ( char * msg )
+    {
+        this->stripMsg(msg);
+        this->printMsg(msg);
+    }
+
+    void stripMsg ( char * msg )
+    {
+        size_t  len;
+        ssize_t indx;
+
+        len  = ::strnlen(msg, MAXSTRLEN);
+        indx = this->find_first_of(msg, ':', len);
+
+        if ( indx >= 0 )
+            this->replace(msg, indx, '=');
+
+        return;
+    }
+
+    ssize_t  find_first_of ( char * msg, char c, size_t len )
+    {
+        ssize_t indx = 0;
+
+        for ( ; (size_t)indx < len; indx++ )
+        {
+            if ( msg[indx] == c )
+                return indx;
+        }
+
+        return -1;
+    }
+
+    void replace ( char * msg, size_t index, char c )
+    {
+        msg[index] = c;
+    }
+
+    void printMsg ( char * msg )
+    {
+        LogFacility::Message logmsg;
+        logmsg << this->threadName() << " : " << msg;
+        LogFacility::LogMessage(logmsg.str());
+        return;
     }
 
 
