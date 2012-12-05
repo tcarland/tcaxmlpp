@@ -40,7 +40,6 @@ class InputThread : public Thread {
 
     virtual ~InputThread() {}
 
-
     virtual void  init()
     {
         sigset_t  sigset;
@@ -53,7 +52,6 @@ class InputThread : public Thread {
 
         return;
     }
-
 
     virtual void  run()
     {
@@ -87,7 +85,6 @@ class InputThread : public Thread {
         return;
     }
 
-
     virtual void finished()
     {
         std::string name = this->threadName();
@@ -108,8 +105,7 @@ class OutputThread : public Thread {
 
     OutputThread ( StringQueue * q, uint32_t ival ) 
         : _queue(q), _ival(ival) 
-    {
-    }
+    {}
     virtual ~OutputThread() {}
 
     virtual void  init()
@@ -141,6 +137,7 @@ class OutputThread : public Thread {
 
             if ( _queue->empty() )
                 continue; 
+
             if ( _queue->pop(mstr) ) {
                 this->processMsg(mstr);
                 ::free(mstr);
@@ -159,6 +156,8 @@ class OutputThread : public Thread {
 
     void  processMsg ( char * msg )
     {
+        if ( msg == NULL )
+            return;
         this->stripMsg(msg);
         this->printMsg(msg);
     }
