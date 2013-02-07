@@ -1,4 +1,27 @@
-#pragma once
+/**
+  * @file JSON.h
+  *
+  * Copyright (c) 2012,2013 Timothy Charlton Arland
+  * @author  tcarland@gmail.com
+  *
+  * @section LICENSE
+  *
+  * This file is part of jsonpp.
+  *
+  * jsonpp is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU Lesser General Public License as
+  * published by the Free Software Foundation, either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * jsonpp is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Lesser General Public License for more details.
+  *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with jsonpp.
+  * If not, see <http://www.gnu.org/licenses/>.
+**/
 #ifndef _JSONPP_JSON_H_
 #define _JSONPP_JSON_H_
 
@@ -17,7 +40,7 @@
 namespace jsonpp {
 
 
-#define JSONPP_VERSION         "0.95"
+#define JSONPP_VERSION         "0.96"
 
 
 /* std::ostream support */
@@ -27,6 +50,7 @@ std::ostream& operator<< ( std::ostream & stream, const JsonItem    & val );
 std::ostream& operator<< ( std::ostream & stream, const JsonNumber  & val );
 std::ostream& operator<< ( std::ostream & stream, const JsonBoolean & val );
 std::ostream& operator<< ( std::ostream & stream, const JsonString  & str );
+
 
 
 /** The JSON class is the primary interface for parsing json objects 
