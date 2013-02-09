@@ -101,19 +101,21 @@ LogFacility::OpenLogFile ( const std::string & logname,
                            bool append )
 {
     std::ofstream       * fstrm = NULL;
+    std::ios::openmode    mode  = std::ios::out;
     StreamMap::iterator   sIter;
 
     sIter = LogFacility::_StreamMap.find(logname);
-    
     if ( sIter != LogFacility::_StreamMap.end() )
         return false;
 
     std::auto_ptr<std::ofstream>  newfstrm(new std::ofstream());
 
     if ( append )
-        newfstrm->open( filename.c_str(), std::ios::out | std::ios::app );
+        mode |= std::ios::app;
     else
-        newfstrm->open( filename.c_str(), std::ios::out | std::ios::trunc );
+        mode |= std::ios::trunc;
+
+    newfstrm->open(filename.c_str(), mode);
 
     if ( ! newfstrm->is_open() )
         return false;
@@ -159,16 +161,13 @@ LogFacility::OpenLogStream ( const std::string & logname, const std::string & pr
      return(LogFacility::AddLogStream(logname, prefix, stream));
 }
 
-
 bool
 LogFacility::AddLogStream ( const std::string & logname, const std::string & prefix, std::ostream * stream )
 {
     bool result = false;
 
-    if ( stream == NULL ||  ! LogFacility::Lock() ) {
-        // set logerr
+    if ( stream == NULL || ! LogFacility::Lock() ) // set logerr
         return result;
-    }
 
     StreamMap::iterator  sIter = LogFacility::_StreamMap.find(logname);
 
@@ -185,6 +184,7 @@ LogFacility::AddLogStream ( const std::string & logname, const std::string & pre
 }
 /*@}*/
 
+
 /**  Removes and returns a pointer to the logstream identified by the 
   *  given logstream. If @param del is true, NULL is returned and the 
   *  associated logstream is free'd.
@@ -199,6 +199,7 @@ LogFacility::RemoveLogStream ( const std::string & logname, bool del )
         return ptr;
 
     sIter = LogFacility::_StreamMap.find(logname);
+
     if ( sIter != LogFacility::_StreamMap.end() ) {
         if ( del && sIter->second.logStream )
             delete sIter->second.logStream;
@@ -252,7 +253,6 @@ LogFacility::RemoveLogStreams ( bool del )
     return;
 }
 
-
 // ----------------------------------------------------------------------
 
 /*  Returns the current state of the entire LogFacility. If no log streams
@@ -270,7 +270,6 @@ LogFacility::LogFacilityIsOpen()
 
     return false;
 }
-
 
 /**  Set the log state of an existing log facility. */
 bool
@@ -290,7 +289,6 @@ LogFacility::SetEnabled ( const std::string & logname, bool enabled )
 
     return true;
 }
-
 
 /**  There are two conditions under which this function can fail. If
  *   the underlying mutex fails or the logname as provided does
@@ -387,7 +385,6 @@ LogFacility::IsOpen ( const std::string & logname )
 
     return open;
 }
-        
 
 // ----------------------------------------------------------------------
 
@@ -404,7 +401,6 @@ LogFacility::LogMessage ( LogFacility::Message & logmsg, int level )
     return LogFacility::LogMessage(LogFacility::_LogPrefix, logmsg.str(), level, false);
 }
 
-
 /**  Alternate LogMessage allowing control of the newline character. This
  *   mainly applies to not syslog logstreams.
  */
@@ -413,7 +409,6 @@ LogFacility::LogMessage ( const std::string & entry, int level, bool newline )
 {
     return LogFacility::LogMessage(LogFacility::_LogName, entry, level, newline);
 }
-
 
 void
 LogFacility::LogMessage ( const std::string & logname, 
