@@ -549,7 +549,9 @@ LogFacility::CloseSyslog()
 
 /** Closes the log stream associated with the given logname. If 
   * @param del is true, the logstream is deleted and NULL is returned;
-  * otherwise the associated logstream pointer is returned.
+  * otherwise the associated logstream pointer is returned. Note that
+  * the delete flag is not necessary for logfiles opened via 
+  * OpenLogFile() only those added manually via AddLogStream().
  **/
 std::ostream*
 LogFacility::CloseLogFile ( const std::string & logname, bool del )
