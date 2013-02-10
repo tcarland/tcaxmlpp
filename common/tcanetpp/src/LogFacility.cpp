@@ -31,6 +31,7 @@
 #include <algorithm>
 
 #include "LogFacility.h"
+#include "EventManager.h"
 
 #ifdef WIN32
 # pragma warning (disable:4996)
@@ -172,7 +173,11 @@ LogFacility::AddLogStream ( const std::string & logname, const std::string & pre
     StreamMap::iterator  sIter = LogFacility::_StreamMap.find(logname);
 
     if ( sIter == LogFacility::_StreamMap.end() ) {
+        timeval    tv;
         LogStream  lstrm(logname, prefix, stream);
+
+        EventManager::GetTimeOfDay(&tv);
+        lstrm.today = LogFacility::GetDayOfYear(tv.tv_sec);
         LogFacility::_StreamMap[logname] = lstrm;
         LogFacility::_Enabled = true;
         result = true;
@@ -649,7 +654,7 @@ LogFacility::GetDefaultLogName()
   *  day, the log will not be rotated (and the function returns false).
   *  When called with a time that is of a different day of year, the existing
   *  log stream is closed and a new logstream is created based on the logname
-  *  with an appended '.log_YYYYMMDD'.
+  *  with an appended '.YYYYMMDD'.
   *  It is up to the user to ensure that the underlying logstream is a proper
   *  log file stream.
  **/
@@ -663,25 +668,20 @@ LogFacility::RotateLogFile ( const std::string & logName, const time_t & now )
     if ( sIter == _StreamMap.end() )
         return false;
 
+    struct tm  ltm;
     char       datestr[64];
-    struct tm *ltm     = ::localtime(&now);
-    int        today   = ltm->tm_yday;
     bool       rotated = false;
 
-    if ( sIter->second.today == 0 ) 
-    {
-        sIter->second.today = today;
-        return rotated;
-    }
-
-    if ( sIter->second.today != today ) 
+   ::localtime_r(&now, &ltm);
+   
+    if ( sIter->second.today != ltm.tm_yday ) 
     {
         LogFacility::CloseLogFile(logName);
 
-        ::strftime(datestr, 64, ".log_%Y%02m%02d", ltm);
+        ::strftime(datestr, 64, ".%Y%02m%02d", &ltm);
+
         std::string logfile = logName;
         logfile.append(datestr);
-        sIter->second.today = today;
 
         rotated = LogFacility::OpenLogFile(logName, LogFacility::GetLogPrefix(), logfile, true);
     }
@@ -770,11 +770,11 @@ LogFacility::GetTimeString ( const time_t & now )
 int
 LogFacility::GetDayOfYear ( const time_t & now )
 {
-    struct tm *ltm = ::localtime(&now);
+    struct tm  ltm;
+    ::localtime_r(&now, &ltm);
     int      today = 0;
     
-    if ( ltm ) 
-        today = ltm->tm_yday;
+    today = ltm.tm_yday;
 
     return today;
 }
