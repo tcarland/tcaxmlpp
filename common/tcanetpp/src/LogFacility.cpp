@@ -568,12 +568,10 @@ LogFacility::CloseLogFile ( const std::string & logname, bool del )
 
     fstrm = (std::ofstream*) LogFacility::RemoveLogStream(logname);
 
-    if ( fstrm != NULL ) {
+    if ( del && fstrm != NULL ) {
         fstrm->close();
-        if ( del ) {
-            delete fstrm;
-            fstrm = NULL;
-        }
+        delete fstrm;
+        fstrm = NULL;
     }
 
     return fstrm;
