@@ -34,45 +34,45 @@ namespace jsonpp {
 // ------------------------------------------------------------------------- //
 
 std::ostream&
-operator<< ( std::ostream & stream, const JsonObject & obj )
+operator<< ( std::ostream & strm, const JsonObject & obj )
 {
-    stream << obj.toString();
-    return stream;
+    strm << obj.toString();
+    return strm;
 }
 
 std::ostream&
-operator<< ( std::ostream & stream, const JsonArray & ary )
+operator<< ( std::ostream & strm, const JsonArray & ary )
 {
-    stream << ary.toString();
-    return stream;
+    strm << ary.toString();
+    return strm;
 }
 
 std::ostream&
-operator<< ( std::ostream & stream, const JsonItem & val )
+operator<< ( std::ostream & strm, const JsonItem & val )
 {
-    stream << val.toString();
-    return stream;
+    strm << val.toString();
+    return strm;
 }
 
 std::ostream&
-operator<< ( std::ostream & stream, const JsonNumber & val )
+operator<< ( std::ostream & strm, const JsonNumber & val )
 {
-    stream << val.toString();
-    return stream;
+    strm << val.toString();
+    return strm;
 }
 
 std::ostream&
-operator<< ( std::ostream & stream, const JsonBoolean & val )
+operator<< ( std::ostream & strm, const JsonBoolean & val )
 {
-    stream << val.toString();
-    return stream;
+    strm << val.toString();
+    return strm;
 }
 
 std::ostream&
-operator<< ( std::ostream & stream, const JsonString & str )
+operator<< ( std::ostream & strm, const JsonString & str )
 {
-    stream << str.toString();
-    return stream;
+    strm << str.toString();
+    return strm;
 }
 
 // ------------------------------------------------------------------------- //

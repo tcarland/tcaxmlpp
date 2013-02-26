@@ -40,16 +40,16 @@
 namespace jsonpp {
 
 
-#define JSONPP_VERSION         "0.96"
+#define JSONPP_VERSION         "0.961"
 
 
 /* std::ostream support */
-std::ostream& operator<< ( std::ostream & stream, const JsonObject  & obj );
-std::ostream& operator<< ( std::ostream & stream, const JsonArray   & ary );
-std::ostream& operator<< ( std::ostream & stream, const JsonItem    & val );
-std::ostream& operator<< ( std::ostream & stream, const JsonNumber  & val );
-std::ostream& operator<< ( std::ostream & stream, const JsonBoolean & val );
-std::ostream& operator<< ( std::ostream & stream, const JsonString  & str );
+std::ostream& operator<< ( std::ostream & strm, const JsonObject  & obj );
+std::ostream& operator<< ( std::ostream & strm, const JsonArray   & ary );
+std::ostream& operator<< ( std::ostream & strm, const JsonItem    & val );
+std::ostream& operator<< ( std::ostream & strm, const JsonNumber  & val );
+std::ostream& operator<< ( std::ostream & strm, const JsonBoolean & val );
+std::ostream& operator<< ( std::ostream & strm, const JsonString  & str );
 
 
 
