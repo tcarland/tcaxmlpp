@@ -68,7 +68,7 @@ testclean:
 
 clean:
 	$(RM) $(ALL_OBJS) \
-	*.d *.D *.o src/*.d src/*.D src/*.bd src/*.o
+	*.d *.D *.o src/*.d src/*.D src/*.bd src/*.o lib/*.bd
 	@echo
 
 distclean: clean libclean testclean doc-clean
