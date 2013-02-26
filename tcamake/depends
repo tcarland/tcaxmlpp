@@ -30,9 +30,6 @@ INCLUDES    += -I/usr/include/libxml2
 endif
 
 ifdef NEED_OPENSSL
-#OPENSSL_HOME = $(TOPDIR)/common/ext/openssl-0.9.8k
-#INCLUDES    += -I$(OPENSSL_HOME)/include
-#LFLAGS      += -L$(OPENSSL_HOME)
 CFLAGS      += -DWITH_OPENSSL
 #LIBS        += -Wl,-Bstatic -lssl -lcrypto -Wl,-Bdynamic
 LIBS         += -lssl -lcrypto
@@ -151,7 +148,6 @@ endif
 #-------------------------------------------------------------------------
 
 ifdef NEED_GSOAP
-#GSOAP_DIR = $(TOPDIR)/common/ext/gsoap-2.7.14/gsoap
 GSOAP_DIR = $(TOPDIR)/common/ext/gsoap-2.8/gsoap
 #GSOAP_BIN = $(GSOAP_DIR)/bin/macosx
 GSOAP_BIN = $(GSOAP_DIR)/bin/linux386
