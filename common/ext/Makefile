@@ -11,7 +11,7 @@ all: zlib net-snmp openssl
 
 help:
 	@echo "Make targets are required to build external libs as needed. "
-	@echo "Available make targets: net-snmp mysqlpp udplibrary zlib"
+	@echo "Available make targets: net-snmp zlib"
 
 .PHONY: zlib
 zlib:
@@ -26,10 +26,6 @@ net-snmp:
 	  make )
 	@echo
 
-openssl:
-	( cd openssl-0.9.8k; ./config no-shared; make )
-	@echo
-
 clean:
 	( cd net-snmp-5.2.3; make clean )
 	@echo
@@ -42,7 +38,6 @@ distclean:
 		( cd net-snmp-5.2.3; make distclean ) \
 	fi
 	( cd zlib; make distclean )
-	( cd openssl-0.9.8k; make clean )
 	@echo
 
 install:
