@@ -34,6 +34,11 @@
 namespace jsonpp {
 
 
+/** The JsonType class represents all JSON types that are
+  * not a JsonObject or JsonArray. The base JsonType is
+  * a literal, with the additional types specified as
+  * a boolean, a number, or a string.
+ **/
 template <typename T>
 class JsonType : public JsonItem {
 

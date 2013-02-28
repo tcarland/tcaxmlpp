@@ -53,8 +53,8 @@ std::ostream& operator<< ( std::ostream & strm, const JsonString  & str );
 
 
 
-/** The JSON class is the primary interface for parsing json objects 
-  * via strings or streams.
+/** The JSON class is the primary interface for parsing json documents
+  * into objects via strings or streams.
  **/
 class JSON {
 

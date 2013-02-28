@@ -51,6 +51,7 @@ JsonArray::~JsonArray()
 
 // ------------------------------------------------------------------------- //
 
+/** Assignment operator for a JsonArray. */
 JsonArray&
 JsonArray::operator= ( const JsonArray & ary )
 {
@@ -111,6 +112,7 @@ JsonArray::operator[] ( JsonArray::size_type index ) const
 
 // ------------------------------------------------------------------------- //
 
+/** Inserts the provided JsonItem into the array. */
 JsonArray::iterator
 JsonArray::insert ( JsonItem * item )
 {
@@ -125,6 +127,7 @@ JsonArray::insert ( JsonItem * item, JsonArray::iterator at )
 
 // ------------------------------------------------------------------------- //
 
+/** Erases the JsonItem at the given iterator position */
 JsonArray::iterator
 JsonArray::erase ( JsonArray::iterator at )
 {
@@ -133,6 +136,7 @@ JsonArray::erase ( JsonArray::iterator at )
 
 // ------------------------------------------------------------------------- //
 
+/** Returns the JsonItem at the given index location */
 JsonItem*
 JsonArray::at ( JsonArray::size_type index )
 {
@@ -147,6 +151,7 @@ JsonArray::at ( JsonArray::size_type index ) const
 
 // ------------------------------------------------------------------------- //
 
+/**  Removes all elements from the JsonArray */
 void
 JsonArray::clear()
 {
@@ -163,6 +168,7 @@ JsonArray::clear()
 
 // ------------------------------------------------------------------------- //
 
+/** Converts the JsonArray to a proper JSON formatted string */
 std::string
 JsonArray::toString() const
 {

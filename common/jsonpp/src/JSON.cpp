@@ -92,6 +92,7 @@ JSON::JSON ( const JSON & json )
 JSON::~JSON() throw()
 {}
 
+/** Assignment operator */
 JSON&
 JSON::operator= ( const JSON & json )
 {
@@ -105,12 +106,18 @@ JSON::operator= ( const JSON & json )
     return *this;
 }
 
+/** Clears the current JSON document */
 void
 JSON::clear()
 {
     this->_root.clear();
 }
 
+/** Parses the given string into a JsonObject.
+  * Returns a boolean indicating whether the parsing of the
+  * string was successful. The root JsonObject representing
+  * the document can be retrieved via the getJSON() method.
+ **/
 bool
 JSON::parse ( const std::string & str )
 {
@@ -128,6 +135,11 @@ JSON::parse ( const std::string & str )
     return this->parseObject(buf, _root);
 }
 
+/** Parses the given input stream into a JsonObject.
+  * Returns a boolean indicating whether the parsing of the
+  * stream was successful. The root JsonObject representing
+  * the document can be retrieved via the getJSON() method.
+ **/
 bool
 JSON::parse ( std::istream & buf )
 {
@@ -139,6 +151,10 @@ JSON::parse ( std::istream & buf )
     return this->parseObject(buf, _root);
 }
 
+/** Internal method for parsing the input stream for a JsonObject.
+  * This method is used to recursively parse any and all objects
+  * within the JSON document.
+ **/
 bool
 JSON::parseObject ( std::istream & buf, JsonObject & obj )
 {
@@ -241,7 +257,9 @@ JSON::parseObject ( std::istream & buf, JsonObject & obj )
     return p;
 }
 
-
+/** Recursive method for parsing the JSON Array type within
+  * the given input stream.
+ **/
 bool
 JSON::parseArray ( std::istream & buf, JsonArray & ary )
 {
@@ -330,7 +348,7 @@ JSON::parseArray ( std::istream & buf, JsonArray & ary )
     return true;
 }
 
-
+/** Method for parsing a JSON String type */
 bool
 JSON::parseString ( std::istream & buf, JsonString & str )
 {
@@ -406,6 +424,7 @@ JSON::parseString ( std::istream & buf, JsonString & str )
     return true;
 }
 
+/** Method for parsing a JSON Number type */
 bool
 JSON::parseNumber ( std::istream & buf, JsonNumber & num )
 {
@@ -432,6 +451,7 @@ JSON::parseNumber ( std::istream & buf, JsonNumber & num )
     return true;
 }
 
+/** Method for parsing a JSON Boolean literal type */
 bool
 JSON::parseBoolean ( std::istream & buf, JsonBoolean & b )
 {
@@ -464,6 +484,7 @@ JSON::parseBoolean ( std::istream & buf, JsonBoolean & b )
     return false;
 }
 
+/** Method for parsing a JSON Literal */
 bool
 JSON::parseLiteral ( std::istream & buf, JsonItem & item )
 {
@@ -489,6 +510,11 @@ JSON::parseLiteral ( std::istream & buf, JsonItem & item )
     return false;
 }
 
+/** Method for parsing the JSON name assignment operator.
+  * Retrieves the name separator token from the stream
+  * and return true if the character is in fact the correct
+  * seperator.
+ **/
 bool
 JSON::parseAssign ( std::istream & buf )
 {
@@ -507,7 +533,9 @@ JSON::parseAssign ( std::istream & buf )
     return false;
 }
 
-
+/**  Method for parsing the field or value operator from
+  *  the given input stream.
+ **/
 bool
 JSON::parseSeparator ( std::istream & buf )
 {
@@ -529,7 +557,7 @@ JSON::parseSeparator ( std::istream & buf )
     return false;
 }
 
-
+/**  Method for determining the value type of the next value. */
 json_t
 JSON::parseValueType ( std::istream & buf )
 {
@@ -581,6 +609,9 @@ JSON::parseValueType ( std::istream & buf )
     return t;
 }
 
+/** Sets the error string recording the position within the stream
+  * of where the parse error occured.
+ **/
 void
 JSON::setError ( std::istream & buf )
 {
@@ -595,6 +626,9 @@ JSON::setError ( std::istream & buf )
     return;
 }
 
+/** Static function for converting the JSON type value to
+  * a string.
+ **/
 std::string
 JSON::TypeToString ( json_t t )
 {
@@ -630,6 +664,7 @@ JSON::TypeToString ( json_t t )
     return name;
 }
 
+/**  Converts the provided JsonItem into a readable string */
 std::string
 JSON::ToString ( const JsonItem * item )
 {
@@ -659,6 +694,7 @@ JSON::ToString ( const JsonItem * item )
     return std::string("Invalid type");
 }
 
+/**  Returns a string of the jsonpp library version */
 std::string
 JSON::Version()
 {

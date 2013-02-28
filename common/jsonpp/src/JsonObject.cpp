@@ -126,6 +126,7 @@ JsonObject::insert ( const std::string & key, JsonItem * item ) throw ( JsonExce
 
 // ------------------------------------------------------------------------- //
 
+/** Erases the key/value pair at the given iterator position(s). */
 void
 JsonObject::erase ( JsonObject::iterator at )
 {
@@ -155,6 +156,7 @@ JsonObject::erase ( const std::string & key )
 
 // ------------------------------------------------------------------------- //
 
+/** Method for finding the associated value to the provided key */
 JsonObject::iterator
 JsonObject::find ( const std::string & key )
 {
@@ -169,6 +171,7 @@ JsonObject::find ( const std::string & key ) const
 
 // ------------------------------------------------------------------------- //
 
+/** Clears all items from the JsonObject. */
 void
 JsonObject::clear()
 {
@@ -183,6 +186,7 @@ JsonObject::clear()
 
 // ------------------------------------------------------------------------- //
 
+/** Converts the JsonObject to a readable string */
 std::string
 JsonObject::toString() const
 {
