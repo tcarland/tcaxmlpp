@@ -46,7 +46,7 @@ with the JSON specification. The following issues still need to
 be addressed:
 
   - proper Unicode support.
-  - documentation.
+  - better documentation, unit tests and examples.
 
 */
 

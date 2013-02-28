@@ -53,7 +53,7 @@ createServer ( int port )
                 printf("Server listening: %s\n", server->getAddrStr().c_str());
 		return server;
 	    }
-	} catch ( SocketException err ) {
+	} catch ( SocketException & err ) {
 	    printf("Socket exception: %s: Retrying...\n", err.toString().c_str());
 	    delete server;
 	}
