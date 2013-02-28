@@ -40,7 +40,7 @@
 namespace jsonpp {
 
 
-#define JSONPP_VERSION         "0.961"
+#define JSONPP_VERSION     "0.962"
 
 
 /* std::ostream support */
@@ -84,7 +84,7 @@ class JSON {
     template<typename T>
     static T    FromString ( const std::string & str )
     {
-         T target = T();
+        T  target = T();
         std::stringstream strm(str);
         strm >> target;
         return target;

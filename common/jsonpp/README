@@ -31,9 +31,9 @@ JavaScript Object Notation, is a text format for serializing
 structured data. More information about JSON can be found at 
 www.json.org. 
 
-  This implementation was created after browsing the currently 
-available (at the time) C++ JSON implementations and either not 
-liking the library, or not liking the licensing scheme for the 
+  This implementation was created after browsing the available 
+(at the time) C++ JSON implementations and either not liking 
+the library, or not liking the licensing scheme for the 
 given library or both. 
 
 
@@ -41,10 +41,9 @@ Notes:
 
  October 26, 2012 - version 0.1.
 
-  In its current form, the library probably is not suited for 
-heavy lifting in JSON, and is not yet fully compliant with the 
-JSON specification. The following issues need to still be 
-addressed:
+  In its current form, the library is not yet fully compliant 
+with the JSON specification. The following issues still need to 
+be addressed:
 
   - proper Unicode support.
   - documentation.
