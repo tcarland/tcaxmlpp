@@ -85,6 +85,7 @@ JSON::JSON ( const std::string & str ) throw ( JsonException )
 }
 
 JSON::JSON ( const JSON & json )
+    : _errpos(0)
 {
     *this = json;
 }
@@ -339,10 +340,8 @@ JSON::parseArray ( std::istream & buf, JsonArray & ary )
                 return false;
         }
     
-        if ( ! p || ! this->parseSeparator(buf) ) {
-            this->setError(buf);
+        if ( ! p || ! this->parseSeparator(buf) )
             return false;
-        }
     }
 
     return true;
@@ -461,7 +460,7 @@ JSON::parseBoolean ( std::istream & buf, JsonBoolean & b )
     while ( ! buf.eof() && ::isspace(buf.peek()) )
         buf.get();
 
-    while ( ! buf.eof() && buf.peek() != TOKEN_VALUE_SEPARATOR ) 
+    while ( ! buf.eof() && ! this->IsSeparator(buf) )
     {
         c = buf.get();
         if ( ::isspace(c) )
@@ -494,7 +493,7 @@ JSON::parseLiteral ( std::istream & buf, JsonItem & item )
     while ( ! buf.eof() && ::isspace(buf.peek()) )
         buf.get();
 
-    while ( ! buf.eof() && buf.peek() != TOKEN_VALUE_SEPARATOR ) 
+    while ( ! buf.eof() && ! this->IsSeparator(buf) )
     {
         c = buf.get();
         if ( ::isspace(c) )
@@ -541,7 +540,7 @@ JSON::parseSeparator ( std::istream & buf )
 {
     char  c;
 
-    while ( ! buf.eof() && ::isspace(buf.peek()) )
+    while ( ! buf.eof() && (::isspace(buf.peek()) || buf.peek() == '\n') )
         buf.get();
     
     if ( (c = buf.peek()) == TOKEN_VALUE_SEPARATOR ) {
@@ -553,6 +552,17 @@ JSON::parseSeparator ( std::istream & buf )
         return true;
     
     this->setError(buf);
+
+    return false;
+}
+
+bool
+JSON::IsSeparator ( std::istream & buf )
+{
+    char c = buf.peek();
+
+    if ( c == TOKEN_VALUE_SEPARATOR || c == TOKEN_ARRAY_END || c == TOKEN_OBJECT_END )
+        return true;
 
     return false;
 }

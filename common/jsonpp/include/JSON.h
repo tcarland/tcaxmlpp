@@ -40,7 +40,7 @@
 namespace jsonpp {
 
 
-#define JSONPP_VERSION     "0.962"
+#define JSONPP_VERSION     "0.971"
 
 
 /* std::ostream support */
@@ -90,7 +90,8 @@ class JSON {
         return target;
     }
 
-    static std::string ToString ( const JsonItem * item );
+    static bool        IsSeparator ( std::istream & buf );
+    static std::string ToString    ( const JsonItem * item );
     
     static std::string TypeToString ( json_t  t );
     static std::string Version();
