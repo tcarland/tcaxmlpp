@@ -23,7 +23,9 @@ int main ( int argc, char **argv )
        \"packets_in\" : 1, \
        \"bytes_in\" : 60, \
        \"foo\" : false, \
-       \"path_str\" : \"eth.ip.tcp.http.youtube\" }";
+       \"path_str\" : \"eth.ip.tcp.http.youtube\", \
+       \"foo2\" : 33, \
+       \"aspath\" : [ 1335, 1740, 701, 1, 19423 ] }";
 
     if ( ! j.parse(s) ) {
         std::cout << "Json parsing failed at position: " << j.getErrorPos() 

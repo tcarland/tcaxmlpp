@@ -207,6 +207,7 @@ JSON::parseObject ( std::istream & buf, JsonObject & obj )
                 if ( this->parseObject(buf, jobj) ) {
                     obj.insert(key, new JsonObject(jobj));
                     key.clear();
+                    jobj.clear();
                     p = true;
                 }
                 break;
@@ -214,6 +215,7 @@ JSON::parseObject ( std::istream & buf, JsonObject & obj )
                 if ( this->parseArray(buf, jary) ) {
                     obj.insert(key, new JsonArray(jary));
                     key.clear();
+                    jary.clear();
                     p = true;
                 }
                 break;
