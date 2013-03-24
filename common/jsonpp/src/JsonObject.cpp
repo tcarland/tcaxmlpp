@@ -98,7 +98,7 @@ JsonObject::operator[] ( const std::string & key ) throw ( JsonException )
     iterator iter;
     
     if ( (iter = this->find(key)) == _items.end() )
-        throw ( JsonException("Error, object key not found") );
+        throw ( JsonException("JSONObject error, object key not found") );
     return iter->second;
 }
 
@@ -107,7 +107,7 @@ JsonObject::operator[] ( const std::string & key ) const throw ( JsonException )
 {
     const_iterator iter = this->find(key);
     if ( iter == _items.end() )
-        throw ( JsonException("Error, object key not found") );
+        throw ( JsonException("JSONObject error, object key not found") );
     return iter->second;
 }
 
@@ -119,7 +119,7 @@ JsonObject::insert ( const std::string & key, JsonItem * item ) throw ( JsonExce
     JsonObject::iterator iter;
 
     if ( (iter = this->find(key)) != _items.end() )
-        throw ( JsonException("Item already exists") );
+        throw ( JsonException("JsonObject::insert() Item already exists: " + key ) );
     
     return _items.insert(JsonItems::value_type(key, item));
 }

@@ -302,12 +302,14 @@ JSON::parseArray ( std::istream & buf, JsonArray & ary )
             case JSON_OBJECT:
                 if ( this->parseObject(buf, jobj) ) {
                     ary.insert(new JsonObject(jobj));
+                    jobj.clear();
                     p = true;
                 }
                 break;
             case JSON_ARRAY:
                 if ( this->parseArray(buf, jary) ) {
                     ary.insert(new JsonArray(jary));
+                    jary.clear();
                     p = true;
                 }
                 break;
