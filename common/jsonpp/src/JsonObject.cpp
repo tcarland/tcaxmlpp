@@ -33,19 +33,26 @@ namespace jsonpp {
 
 // ------------------------------------------------------------------------- //
 
-JsonObject::~JsonObject() throw ()
-{
-    this->clear();
-}
+/** JsonObject constructor */
+JsonObject::JsonObject()
+	: JsonItem(JSON_OBJECT)
+{}
 
+/**  JsonObject copy constructor */
 JsonObject::JsonObject ( const JsonObject & obj )
     : JsonItem(JSON_OBJECT)
 {
     *this = obj;
 }
 
+JsonObject::~JsonObject() throw ()
+{
+    this->clear();
+}
+
 // ------------------------------------------------------------------------- //
 
+/** JsonObject assignment operator */
 JsonObject&
 JsonObject::operator= ( const JsonObject & obj )
 {

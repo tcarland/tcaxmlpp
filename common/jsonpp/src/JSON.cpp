@@ -77,6 +77,11 @@ operator<< ( std::ostream & strm, const JsonString & str )
 
 // ------------------------------------------------------------------------- //
 
+/**  Constructor for the JSON parser class. If a non-empty string
+  *  is provided, the constructor will attempt to parse the string
+  *  and potentially throw a JsonException if the string contains
+  *  malformed JSON.
+ **/
 JSON::JSON ( const std::string & str ) throw ( JsonException )
     : _errpos(0)
 {
@@ -84,14 +89,17 @@ JSON::JSON ( const std::string & str ) throw ( JsonException )
         throw ( JsonException("Error parsing string to json") );
 }
 
+/**  JSON copy constructor */
 JSON::JSON ( const JSON & json )
     : _errpos(0)
 {
     *this = json;
 }
 
+/**  JSON destructor */
 JSON::~JSON() throw()
 {}
+
 
 /** Assignment operator */
 JSON&
@@ -560,6 +568,9 @@ JSON::parseSeparator ( std::istream & buf )
     return false;
 }
 
+/**  Static function to determine whether the next character in the input
+  *  stream is a valid JSON value or end separator.
+ **/
 bool
 JSON::IsSeparator ( std::istream & buf )
 {
@@ -571,7 +582,9 @@ JSON::IsSeparator ( std::istream & buf )
     return false;
 }
 
-/**  Method for determining the value type of the next value. */
+/**  Method for determining the value type of the upcoming value
+  *  in the input stream.
+ **/
 json_t
 JSON::parseValueType ( std::istream & buf )
 {
@@ -623,8 +636,8 @@ JSON::parseValueType ( std::istream & buf )
     return t;
 }
 
-/** Sets the error string recording the position within the stream
-  * of where the parse error occured.
+/** Sets the error string, recording the position within the stream
+  * where the parse error occurred.
  **/
 void
 JSON::setError ( std::istream & buf )
@@ -640,9 +653,7 @@ JSON::setError ( std::istream & buf )
     return;
 }
 
-/** Static function for converting the JSON type value to
-  * a string.
- **/
+/** Static function for converting the JSON type value to a string. */
 std::string
 JSON::TypeToString ( json_t t )
 {
@@ -678,7 +689,7 @@ JSON::TypeToString ( json_t t )
     return name;
 }
 
-/**  Converts the provided JsonItem into a readable string */
+/**  Converts the provided JsonItem to a readable string */
 std::string
 JSON::ToString ( const JsonItem * item )
 {

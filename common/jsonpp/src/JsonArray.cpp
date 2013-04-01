@@ -33,11 +33,12 @@ namespace jsonpp {
 
 // ------------------------------------------------------------------------- //
 
-
+/**  JsonArray constructor */
 JsonArray::JsonArray()
     : JsonItem(JSON_ARRAY)
 {}
 
+/**  JsonArray copy constructor */
 JsonArray::JsonArray ( const JsonArray & ary )
     : JsonItem(JSON_ARRAY)
 {
@@ -98,6 +99,7 @@ JsonArray::operator= ( const JsonArray & ary )
 
 // ------------------------------------------------------------------------- //
 
+/** Index operator for retrieving a JsonItem at a given location. */
 JsonItem*
 JsonArray::operator[] ( JsonArray::size_type index )
 {

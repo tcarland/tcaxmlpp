@@ -37,7 +37,7 @@ namespace jsonpp {
 
 /** The JsonObject class represents the core JSON type of 
   * an associative array. The STL map container is used
-  * to store the items.
+  * as the underlying container.
  **/
 class JsonObject : public JsonItem {
 
@@ -51,7 +51,7 @@ class JsonObject : public JsonItem {
 
   public:
 
-    JsonObject() : JsonItem(JSON_OBJECT) {}
+    JsonObject();
     JsonObject ( const JsonObject & obj );
 
     virtual ~JsonObject() throw ();
