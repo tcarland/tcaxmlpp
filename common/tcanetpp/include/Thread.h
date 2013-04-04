@@ -119,6 +119,7 @@ class Thread {
 
     static long         MaxCPUs();
     static std::string  GetSchedulerPolicyName ( Thread * t );
+    static std::string  GetSchedulerPolicyName ( int policy );
 
     static pthread_t    ThreadID();
 

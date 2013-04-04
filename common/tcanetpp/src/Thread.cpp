@@ -359,7 +359,7 @@ Thread::setSchedulerAttr ( int policy )
     return err;
 }
 
-/** Returns the int value of this thread scheduling policy. */
+/** Returns the int values of this threads scheduling policy. */
 int
 Thread::getScheduler ( int & policy, int & prio )
 {
@@ -530,6 +530,12 @@ Thread::GetSchedulerPolicyName ( Thread * t )
 
     t->getScheduler(policy, prio);
 
+    return(Thread::GetSchedulerPolicyName(policy));
+}
+
+std::string
+Thread::GetSchedulerPolicyName ( int policy )
+{
     return( (policy == SCHED_FIFO)  ? std::string("SCHED_FIFO") :
             (policy == SCHED_RR)    ? std::string("SCHED_RR") :
             (policy == SCHED_OTHER) ? std::string("SCHED_OTHER") :
