@@ -90,11 +90,12 @@ class JSON {
         return target;
     }
 
-    static bool        IsSeparator ( std::istream   & buf );
-    static std::string ToString    ( const JsonItem * item );
+    static bool        IsSeparator  ( std::istream   & buf );
+    static std::string ToString     ( const JsonItem * item );
     
     static std::string TypeToString ( json_t  t );
     static std::string Version();
+    static bool        ValidChar    ( char c );
 
   private:
 

@@ -728,6 +728,16 @@ JSON::Version()
     return ver;
 }
 
+/**  Includes check for unicode chars */
+bool
+JSON::ValidChar ( char c )
+{
+    if ( (c >= 'A' && c <= 'Z') || ( c >= 'a' && c <= 'z') ||
+         ((unsigned char) c >= 0xC0) )
+        return true;
+    return false;
+}
+
 
 } // namespace
 
