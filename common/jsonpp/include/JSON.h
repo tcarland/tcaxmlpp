@@ -40,7 +40,7 @@
 namespace jsonpp {
 
 
-#define JSONPP_VERSION     "0.974"
+#define JSONPP_VERSION     "0.975"
 
 
 /* std::ostream support */

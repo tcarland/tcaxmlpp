@@ -37,16 +37,5 @@ the library, or not liking the licensing scheme for the
 given library or both. 
 
 
-Notes:
-
- October 26, 2012 - version 0.1.
-
-  In its current form, the library is not yet fully compliant 
-with the JSON specification. The following issues still need to 
-be addressed:
-
-  - proper Unicode support.
-  - better documentation, unit tests and examples.
-
 */
 
