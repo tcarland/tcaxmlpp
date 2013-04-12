@@ -669,7 +669,7 @@ IpAddr::DeAggregate ( const IpAddr & pfx, uint8_t mb, IpAddrList & v )
     B   = ( 3 - ( (32 - mb) / 8 ) );
 
     if ( A == 0 ) {
-        A = 1;
+        A    = 1;
         bigA = true;
     }
 
@@ -679,7 +679,7 @@ IpAddr::DeAggregate ( const IpAddr & pfx, uint8_t mb, IpAddrList & v )
     for ( int i = 0; i < 4; i++, ptr++ )
         octets[i] = ( *(uint8_t*)ptr );
 
-    ptr = &octets[0];
+    ptr  = &octets[0];
 
     IpAddr p;
     while ( num > 0 )
@@ -688,16 +688,16 @@ IpAddr::DeAggregate ( const IpAddr & pfx, uint8_t mb, IpAddrList & v )
         v.push_back(p);
 
         x = octets[B];
-        octets[B] = x++;
+        octets[B] = ++x;
 
         if ( octets[B] == 0 )
         {
             x = octets[A];
-            octets[A] = x++;
+            octets[A] = ++x;
 
             if ( bigA && octets[A] == 0 ) {
                 x = octets[0];
-                octets[0] = x++;
+                octets[0] = ++x;
             }
         }
 
