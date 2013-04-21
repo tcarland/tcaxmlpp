@@ -39,6 +39,7 @@
 #include "AddrInfo.h"
 #include "StringUtils.h"
 #include "tcanetpp_random.h"
+#include "byte_order.h"
 
 
 namespace tcanetpp {
@@ -291,17 +292,25 @@ IpAddr::isLoopback() const
     return IpAddr::IsLoopback(this->getAddr6());
 }
 
-/**  Legacy method for returning a cidr_t object for IPv4. Note
-  *  that the cidr address could be 0 if the underlying IP address is
-  *  an IPv6 address.
+/**  Method for returning a ipcidr(pfx_t) struct. 
  **/
 cidr_t
 IpAddr::getCidr() const
 {
-    cidr_t  cidr;
-    cidr.addr = this->getPrefix();
-    cidr.mb   = this->getPrefixLen();
-    return cidr;
+    cidr_t  pfx;
+
+    if ( this->ipv4() ) {
+        pfx.addrA = 0;
+        pfx.addrB = this->getAddr4();
+    } else {
+        ipv6addr_t addr = this->getAddr6();
+        pfx.addrA = addr.a;
+        pfx.addrB = addr.b;
+    }
+
+    pfx.mb   = this->getPrefixLen();
+
+    return pfx;
 }
 
 //-------------------------------------------------------------------//
@@ -544,11 +553,32 @@ IpAddr::ToBasePrefix ( const ipv4addr_t & pfx, uint8_t mb )
     ipv4addr_t addr = pfx;
     uint32_t   mask = 0xffffffff;
 
-    if ( mb > MAXMASKLEN )
+    if ( mb > MAXMASKLEN_IPV4 )
         return 0;
 
-    mask  = mask >> (MAXMASKLEN - mb) << (MAXMASKLEN - mb);
+    mask  = mask >> (MAXMASKLEN_IPV4 - mb) << (MAXMASKLEN_IPV4 - mb);
     addr &= htonl(mask);
+
+    return addr;
+}
+
+/**  Converts an IPv6 address (network portion) and mask length to the base 
+  *  network address prefix.
+ **/
+ipv6addr_t
+IpAddr::ToBasePrefix ( const ipv6addr_t & pfx, uint8_t mb )
+{
+    ipv6addr_t addr;
+    uint64_t   net = pfx.a;
+    uint64_t   mask = 0xffffffffffffffff;
+
+    if ( mb > MAXMASKLEN_IPV6 )
+        return addr;
+
+    mask    = mask >> (MAXMASKLEN_IPV6 - mb) << (MAXMASKLEN_IPV6 - mb);
+    net    &= htonll(mask);
+    addr.a  = net;
+    addr.b  = pfx.b;
 
     return addr;
 }
@@ -579,6 +609,20 @@ IpAddr::ToPrefixStr ( const IpAddr & pfx )
 int
 IpAddr::ToIpAddr ( const std::string & str, IpAddr & ipaddr )
 {
+    std::string::size_type indx;
+
+    if ( (indx= str.find_first_of(".")) != std::string::npos )
+        return IpAddr::ToIpAddr4(str, ipaddr);
+    else if ( (indx = str.find_first_of(":")) != std::string::npos )
+        return IpAddr::ToIpAddr6(str, ipaddr);
+
+    return 0;
+}
+
+/**  Converts the provided ipv4 string to an IpAddr object. */
+int
+IpAddr::ToIpAddr4 ( const std::string & str, IpAddr & ipaddr )
+{
     std::string  addrstr;
     ipv4addr_t   addr;
     uint16_t     mb = 0;
@@ -587,7 +631,7 @@ IpAddr::ToIpAddr ( const std::string & str, IpAddr & ipaddr )
 
     if ( (indx = str.find_first_of('/')) == std::string::npos ) {
         addrstr = str;
-        mb      = MAXMASKLEN;
+        mb      = MAXMASKLEN_IPV4;
     } else {
         addrstr = str.substr(0, indx);
     }
@@ -600,13 +644,48 @@ IpAddr::ToIpAddr ( const std::string & str, IpAddr & ipaddr )
         mb = StringUtils::fromString<uint16_t>(addrstr);
     }
 
-    if ( mb < 1 || mb > 32 )
-        mb = 32;
+    if ( mb < 1 || mb > MAXMASKLEN_IPV4 )
+        mb = MAXMASKLEN_IPV4;
 
     ipaddr = IpAddr(addr, mb);
 
     return 1;
 }
+
+/**  Converts the provided ipv6 string to an IpAddr object. */
+int
+IpAddr::ToIpAddr6 ( const std::string & str, IpAddr & ipaddr )
+{
+    std::string addrstr;
+    ipv6addr_t  addr;
+    uint16_t    mb = 0;
+
+    std::string::size_type indx;
+
+    if ( (indx = str.find_first_of('/')) == std::string::npos ) {
+        addrstr = str;
+        mb      = MAXMASKLEN_IPV6;
+    } else {
+        addrstr = str.substr(0, indx);
+    }
+
+    if ( IpAddr::pton(addrstr, addr) <= 0 )
+        return 0;
+
+    if ( mb == 0 ) {
+        addrstr = str.substr(indx+1);
+        mb = StringUtils::fromString<uint16_t>(addrstr);
+    }
+
+    if ( mb < 1 || mb > MAXMASKLEN_IPV6 )
+        mb = MAXMASKLEN_IPV6;
+
+    ipaddr = IpAddr(addr, mb);
+
+    return 1;
+}
+
+
 
 //-------------------------------------------------------------------//
 
@@ -618,7 +697,7 @@ IpAddr::BitsToMask ( uint8_t mb )
 {
     ipv4addr_t  mask = 0xffffffff;
 
-    if ( mb > MAXMASKLEN )
+    if ( mb > MAXMASKLEN_IPV4 )
         return mask;
 
     mask = mask >> (32 - mb) << (32 - mb);

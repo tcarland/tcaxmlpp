@@ -21,20 +21,46 @@ const  char* addrs[] = { "10.0.0.0/8",
 
 const char * addrs2[] = { "10.0.0.0/8", "192.168.0.0/16" };
 
+const char* addrs6[] = { "fd00:0a0a:7fd0::/48",
+                         "fd00:0a0a:7fd0:a000::/52",
+                         "fd00:0a0a:7fd0:a000::/56",
+                         "fd00:0a0a:7fd0:a100::/56",
+                         "fd00:0a0a:7fd0:a200::/56",
+                         "fd00:0a0a:7fd0:aa0a:021b:21ff:fe2f:f99c/64"
+                       };
+
+const char* addrstr6 = "fd00:0a0a:7fd0:a200:021b:21ff:fe2d::/64";
+
+
 static
-void printNodeHandler ( ipv4addr_t addr, void * rock )
+void printNodeHandler ( uint64_t addrA, uint64_t addrB, uint16_t mb, void * rock )
 {
-    printf("node address is %s,  ", IpAddr::ntop(addr).c_str());
-    if ( rock ) printf("rock is valid\n");
+    std::string ip;
+    if ( addrA == addrB )
+        ip = IpAddr::ntop(addrB);
+    else
+        ip = IpAddr::ntop(ipv6addr_t(addrA, addrB));
+
+    printf("node address is %s/%d\n", ip.c_str(), mb);
+
+    if ( rock ) 
+        printf("  rock is valid\n");
+
     return;
 }
 
 static
 void debugNodeHandler ( ptNode_t * node )
 {
+    std::string ip;
     int i;
-    printf("node addr: %s, node bit: %d\n",
-	IpAddr::ntop(node->key).c_str(), node->bit);
+
+    if ( pt_is_ipv4(node) )
+        ip = IpAddr::ntop(pt_to_ipv4(node));
+    else
+        ip = IpAddr::ntop(ipv6addr_t(node->key, node->host));
+
+    printf("node addr: %s, node bit: %d\n", ip.c_str(), node->bit);
 
     if ( node->rlink )
 	printf("right link addr is %s  ", 
@@ -47,7 +73,7 @@ void debugNodeHandler ( ptNode_t * node )
     if ( (node->flags & PT_DELETE_FLAG) > 0 )
 	printf("delete flag set\n");
 
-    for ( i = 0; i < MAXMASKLEN; i++ ) {
+    for ( i = 0; i < 64; i++ ) {
 	if ( (node->rocks[i]) )
 	    printf("Rock found for entry %d\n", i);
     }
@@ -56,12 +82,11 @@ void debugNodeHandler ( ptNode_t * node )
 }
 
 static
-void nodeFreeHandler ( uint32_t addr, uint16_t mb, void * rock )
+void nodeFreeHandler ( uint64_t addrA, uint64_t addrB, uint16_t mb, void * rock )
 {
     IpAddr * p = (IpAddr*) rock;
     if ( p ) {
-	printf("deleting address %s/%d\n", IpAddr::ntop(p->getPrefix()).c_str(),
-	    p->getPrefixLen());
+	printf("deleting address %s\n", IpAddr::ToPrefixStr(*p).c_str());
 	delete p;
     }
 }
@@ -69,6 +94,8 @@ void nodeFreeHandler ( uint32_t addr, uint16_t mb, void * rock )
 
 int main ( int argc, char **argv )
 {
+    IpAddr   pfx;
+    IpAddr * p;
     PrefixTree<IpAddr*>  ptree;
 
     ptree.setFreeHandler(&nodeFreeHandler);
@@ -77,10 +104,14 @@ int main ( int argc, char **argv )
     std::vector<IpAddr>::iterator vIter;
 
     for ( int i = 0; i < 6; i++ ) {
-	IpAddr p;
-	IpAddr::ToIpAddr(addrs[i], p);
-	srcp.push_back(p);
+	IpAddr::ToIpAddr(addrs[i], pfx);
+	srcp.push_back(pfx);
 	//IpAddr::deAggregate(p, 24, srcp);
+    }
+
+    for ( int i = 0; i < 6; i++ ) {
+        IpAddr::ToIpAddr(addrs6[i], pfx);
+        srcp.push_back(pfx);
     }
     
     printf("v size is %lu\n", srcp.size());
@@ -93,23 +124,31 @@ int main ( int argc, char **argv )
     printf("patricia size is %d nodecnt is %d\n", ptree.size(), ptree.nodes());
    
     for ( vIter = srcp.begin(); vIter != srcp.end(); vIter++ ) {
-	IpAddr * p  = ptree.exactMatch(*vIter);
+	p  = ptree.exactMatch(*vIter);
 	if ( p == NULL )
 	    printf("Search failed for %s\n",  vIter->toString().c_str());
 	else
 	    printf("Found addr %s\n", vIter->toString().c_str());
     }
 
-    IpAddr psp;
-    IpAddr * p  = NULL;
+    p  = NULL;
 
-    IpAddr::ToIpAddr(addr3, psp);
-    p = ptree.longestMatch(psp);
+    IpAddr::ToIpAddr(addr3, pfx);
+    p = ptree.longestMatch(pfx);
     if ( p == NULL )
-	printf("Search failed for %s\n", psp.toString().c_str());
+	printf("Search failed for %s\n", pfx.toString().c_str());
     else
 	printf("longest match for %s returned %s\n",
-	       psp.toString().c_str(), p->toString().c_str());
+	       pfx.toString().c_str(), IpAddr::ToPrefixStr(*p).c_str());
+
+    IpAddr::ToIpAddr(addrstr6, pfx);
+    p  = ptree.longestMatch(pfx);
+    if ( p == NULL )
+	printf("Search failed for %s\n", pfx.toString().c_str());
+    else
+	printf("longest match for %s returned %s\n",
+	       pfx.toString().c_str(), IpAddr::ToPrefixStr(*p).c_str());
+
 
     return 0;
 }

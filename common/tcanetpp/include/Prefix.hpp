@@ -45,6 +45,8 @@ typedef std::vector<Prefix>  PrefixList;
   *  sorting and equality operators for use with the Standard 
   *  Template Library. This legacy class supports IPv4 only,
   *  use the IpAddr class for both IPv4 and IPv6 support.
+  *
+  *  This class is now deprecated, use IpAddr instead.
  **/
 class Prefix {
 
@@ -52,26 +54,30 @@ class Prefix {
 
     Prefix()
     {
-        _pfx.addr = 0;
+        _pfx.addrA = 0;
+        _pfx.addrB = 0;
         _pfx.mb   = 0;
     }
 
     Prefix ( ipv4addr_t addr, uint16_t mb )
     {
-        _pfx.addr = addr;
-        _pfx.mb   = mb;
+        _pfx.addrA = addr;
+        _pfx.addrB = addr;
+        _pfx.mb    = mb;
     }
 
     Prefix ( const cidr_t & cidr ) 
     {
-        _pfx.addr = cidr.addr;
-        _pfx.mb   = cidr.mb;
+        _pfx.addrA = cidr.addr;
+        _pfx.addrB = cidr.addr;
+        _pfx.mb    = cidr.mb;
     }
 
     Prefix ( const Prefix & p ) 
     {
-        _pfx.addr = p.getPrefix();
-        _pfx.mb   = p.getPrefixLen();
+        _pfx.addrA = p.getPrefix();
+        _pfx.addrB = p.getPrefix();
+        _pfx.mb    = p.getPrefixLen();
     }
 
     virtual ~Prefix() {}
@@ -79,20 +85,20 @@ class Prefix {
 
     inline bool operator== ( const Prefix & prefix ) const
     {
-        return( (_pfx.addr == prefix._pfx.addr) 
+        return( (_pfx.addrA == prefix._pfx.addrA) 
                && (_pfx.mb == prefix._pfx.mb) );
     }
     
     inline bool operator<  ( const Prefix & prefix ) const
     {
-        if ( _pfx.addr == prefix._pfx.addr )
+        if ( _pfx.addrA == prefix._pfx.addrA )
             return(_pfx.mb < prefix._pfx.mb  );
-        return(_pfx.addr < prefix._pfx.addr);
+        return(_pfx.addrA < prefix._pfx.addrA);
     }
 
     inline ipv4addr_t  getPrefix() const
     { 
-        return _pfx.addr;
+        return _pfx.addrA;
     }
 
     inline uint8_t  getPrefixLen() const

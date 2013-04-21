@@ -88,9 +88,10 @@ class PrefixTree {
     int  insert  ( const IpAddr & p, T obj )
     {
         int result = 0;
+        cidr_t  c  = p.getCidr();
 
         this->lock();
-        result = pt_insert(_pt, p.getCidr(), (void*) obj);
+        result = pt_insert(_pt, &c, (void*) obj);
         this->unlock();
 
         return result;
@@ -99,8 +100,10 @@ class PrefixTree {
 
     T    remove  ( const IpAddr & p )
     {
+        cidr_t  c  = p.getCidr();
+
         this->lock();
-        T  object = (T) pt_remove(_pt, p.getCidr());
+        T  object = (T) pt_remove(_pt, &c);
         this->unlock();
 
         return object;
@@ -109,8 +112,10 @@ class PrefixTree {
    
     T    exactMatch ( const IpAddr & p )
     {
+        cidr_t  c  = p.getCidr();
+
         this->lock();
-        T   object = (T) pt_match(_pt, p.getCidr());
+        T   object = (T) pt_match(_pt, &c);
         this->unlock();
             
         return object;
@@ -119,8 +124,10 @@ class PrefixTree {
 
     T    longestMatch ( IpAddr & p )
     {
+        cidr_t  c  = p.getCidr();
+
         this->lock();
-        T   object = (T) pt_matchLongest(_pt, p.getCidr());
+        T   object = (T) pt_matchLongest(_pt, &c);
         this->unlock();
 
         return object;
@@ -216,7 +223,7 @@ class PrefixTree {
 #       endif
     }
 
-    static void PTClearHandler ( uint32_t addr, uint16_t mb, void * rock )
+    static void PTClearHandler ( uint64_t addrA, uint64_t addrB, uint16_t mb, void * rock )
     {
         T  obj = (T) rock;
         if ( obj )

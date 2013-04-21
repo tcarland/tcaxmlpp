@@ -104,8 +104,14 @@ class IpAddr {
 
     static bool         IsBasePrefix ( const ipv4addr_t  & pfx, uint8_t mb );
     static ipv4addr_t   ToBasePrefix ( const ipv4addr_t  & pfx, uint8_t mb );
+    static ipv6addr_t   ToBasePrefix ( const ipv6addr_t  & pfx, uint8_t mb );
     static std::string  ToPrefixStr  ( const IpAddr      & pfx );
+
     static int          ToIpAddr     ( const std::string & str,
+                                       IpAddr            & ipaddr );
+    static int          ToIpAddr4    ( const std::string & str,
+                                       IpAddr            & ipaddr );
+    static int          ToIpAddr6    ( const std::string & str,
                                        IpAddr            & ipaddr );
 
     static ipv4addr_t   BitsToMask   ( uint8_t mb );

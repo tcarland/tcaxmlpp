@@ -82,8 +82,8 @@ typedef struct sockaddr_storage  sockaddr_t;
 #define INET6ADDRSTRLEN         INET6_ADDRSTRLEN;
 #define INET4_CIDRSTRLEN        20
 #define ERRORSTRLEN             256
-#define MAXMASKLEN              32
-#define MAXMASKLEN_IPV6         64   // nothing should subnet between /64 and /128
+#define MAXMASKLEN_IPV4         32
+#define MAXMASKLEN_IPV6         64   // we consider the first /64 primarily
 #define IPV4ADDR_LOOPBACK       16777343
 #define ETHER_ADDRLEN           6
 
@@ -99,8 +99,9 @@ typedef uint64_t                evid_t;       // event registration id
  *  This definition exists here vs _ip header for the
  *  extern C support since it is used within the patricia.
  **/
-typedef struct ipv4cidr {
-    ipv4addr_t   addr;
+typedef struct IPCidr {
+    uint64_t     addrA;
+    uint64_t     addrB;
     uint16_t     mb;
 } cidr_t;
 

@@ -29,10 +29,11 @@
 #include <string.h>
 
 #include "patricia.h"
+#include "byte_order.h"
 
 
 static const
-char version[] = "$Id: patricia.c,v 1.91 2011/03/06 12:27:19 tca$";
+char version[] = "$Id: patricia.c,v 1.92 2011/03/06 12:27:19 tca$";
 
 
 static cidr_t searchCidr;
@@ -42,13 +43,22 @@ static int    nodecnt    = 0;
 static int    ptsize     = 0;
 
 
+
+uint64_t
+PT_getNetworkAddr ( cidr_t * addr )
+{
+    uint64_t net = addr->addrA;
+
+    if ( net == 0 )
+        net = addr->addrB;
+
+    return net;
+}
+
+
 //  Create a new node
 static ptNode_t*
-PT_new ( cidr_t     cidr, 
-         int        bit, 
-         ptNode_t * llink, 
-         ptNode_t * rlink, 
-         void     * rock )
+PT_new ( cidr_t * cidr, int bit, ptNode_t * llink, ptNode_t * rlink, void * rock )
 {
     ptNode_t * np = NULL;
 
@@ -57,7 +67,8 @@ PT_new ( cidr_t     cidr,
     if ( np == NULL )
         return np;
 
-    np->key   = cidr.addr;
+    np->key   = PT_getNetworkAddr(cidr);
+    np->host  = cidr->addrB;
     np->bit   = bit;
     np->flags = 0;
     np->llink = llink;
@@ -66,11 +77,10 @@ PT_new ( cidr_t     cidr,
     memset(np->rocks, 0, sizeof(np->rocks));
 
     if ( rock )
-        np->rocks[cidr.mb] = rock;
+        np->rocks[cidr->mb] = rock;
 
     return np;
 }
-
 
 //  Visits all nodes and children of the trie.
 static void
@@ -82,9 +92,8 @@ PT_visitR ( ptNode_t * node, int bit, nodeHandler_t handler )
     {
         for ( i = 0; i < PT_MASKLEN; i++ ) 
         {
-            if ( (node->rocks[i]) && handler ) {
-                handler(node->key, i, node->rocks[i]);
-            }
+            if ( (node->rocks[i]) && handler )
+                handler(node->key, node->host, i, node->rocks[i]);
         }
     } 
     else 
@@ -116,7 +125,7 @@ PT_visitR_node ( ptNode_t * node, int bit, pvtNodeHandler_t handler )
 
 //  recursive search in the trie
 static ptNode_t*
-PT_searchR ( ptNode_t * node, ipv4addr_t key, int bit )
+PT_searchR ( ptNode_t * node, uint64_t key, int bit )
 {
     if ( node->bit <= bit )
         return node;
@@ -130,11 +139,8 @@ PT_searchR ( ptNode_t * node, ipv4addr_t key, int bit )
 
 //  recursive insert into the trie 
 static ptNode_t*
-PT_insertR ( ptNode_t * head, 
-             cidr_t     cidr, 
-             int        bit, 
-             ptNode_t * p, 
-             void     * rock )
+PT_insertR ( ptNode_t * head, cidr_t * cidr, int bit, 
+             ptNode_t * p,    void   * rock )
 {
     ptNode_t * node = NULL;
 
@@ -142,7 +148,7 @@ PT_insertR ( ptNode_t * head,
     {
         node = PT_new(cidr, bit, 0, 0, rock);
 
-        if ( PT_GETBIT(cidr.addr, bit) ) {
+        if ( PT_GETBIT(node->key, bit) ) {
             node->llink = head;
             node->rlink = node;
         } else {
@@ -153,7 +159,7 @@ PT_insertR ( ptNode_t * head,
         return node;
     }
 
-    if ( PT_GETBIT(cidr.addr, head->bit) == 0 ) {
+    if ( PT_GETBIT(PT_getNetworkAddr(cidr), head->bit) == 0 ) {
         head->llink = PT_insertR(head->llink, cidr, bit, head, rock);
     } else {
         head->rlink = PT_insertR(head->rlink, cidr, bit, head, rock);
@@ -165,20 +171,21 @@ PT_insertR ( ptNode_t * head,
 
 //  recursive removal from the trie
 static void*
-PT_removeR ( ptNode_t * node, cidr_t cidr, int bit )
+PT_removeR ( ptNode_t * node, cidr_t * cidr, int bit )
 {
-    void * rock = NULL;
+    void  * rock = NULL;
+    uint64_t key = PT_getNetworkAddr(cidr);
 
     if ( node->bit <= bit ) 
     {
-        if ( node->key == cidr.addr && node->rocks[cidr.mb] ) {
-            rock = node->rocks[cidr.mb];
-            node->rocks[cidr.mb] = NULL;
+        if ( node->key == key && node->rocks[cidr->mb] ) {
+            rock = node->rocks[cidr->mb];
+            node->rocks[cidr->mb] = NULL;
         }
         return rock;
     }
     
-    if ( PT_GETBIT(cidr.addr, node->bit) == 0 )
+    if ( PT_GETBIT(key, node->bit) == 0 )
         return PT_removeR(node->llink, cidr, node->bit);
 
     return PT_removeR(node->rlink, cidr, node->bit);
@@ -202,7 +209,7 @@ PT_freeNodesR ( ptNode_t * head, ptNode_t * node, int bit, nodeHandler_t handler
         for ( i = 0; i < PT_MASKLEN; i++ ) 
         {
             if ( node->rocks[i] && handler )
-                handler(node->key, i, node->rocks[i]);
+                handler(node->key, node->host, i, node->rocks[i]);
         }
         free(node);
         freecnt++;
@@ -213,15 +220,15 @@ PT_freeNodesR ( ptNode_t * head, ptNode_t * node, int bit, nodeHandler_t handler
 
 
 //  function used internally to 'base' a prefix
-static ipv4addr_t
-PT_basePrefix ( ipv4addr_t addr, uint16_t mb )
+static uint64_t
+PT_basePrefix ( uint64_t addr, uint16_t mb )
 {
-    ipv4addr_t  mask;
+    uint64_t  mask;
     
-    mask  = 0xffffffff;
-    mask  = mask >> (32 - mb) << (32 - mb);
+    mask  = 0xffffffffffffffff;
+    mask  = mask >> (64 - mb) << (64 - mb);
 
-    addr &= htonl(mask);
+    addr &= htonll(mask);
 
     return addr;
 }
@@ -232,14 +239,21 @@ static void
 PT_searchLongHandler ( ptNode_t * node )
 {
     int  i;
+    uint64_t key = PT_getNetworkAddr(&searchCidr);
     
     for ( i = 0; i < (PT_MASKLEN + 1); i++ ) 
     {
-        if ( node->rocks[i] && PT_basePrefix(searchCidr.addr, i) == node->key )  
+        if ( node->rocks[i] && PT_basePrefix(key, i) == node->key )  
         {
             if ( i > resultCidr.mb ) {
-                resultCidr.addr = node->key;
-                resultCidr.mb   = i;
+                if ( node->key == node->host ) {
+                    resultCidr.addrA = 0;
+                    resultCidr.addrB = node->key;
+                } else {
+                    resultCidr.addrA = node->key;
+                    resultCidr.addrB = node->host;
+                }
+                resultCidr.mb = i;
             }
         }
     }
@@ -275,10 +289,11 @@ pt_init()
     ptNode_t * head;
     cidr_t     cidr;
 
-    cidr.addr = 0;
-    cidr.mb   = 0;
+    cidr.addrA = 0;
+    cidr.addrB = 0;
+    cidr.mb    = 0;
 
-    head = PT_new(cidr, -1, NULL, NULL, NULL);
+    head = PT_new(&cidr, -1, NULL, NULL, NULL);
 
     if ( head != NULL ) {
         head->llink = head;
@@ -294,26 +309,28 @@ pt_init()
 
 /**  Inserts a node into the trie. Returns 1 on success, 0 on error. */
 int
-pt_insert ( ptNode_t * head, cidr_t cidr, void * rock )
+pt_insert ( ptNode_t * head, cidr_t * cidr, void * rock )
 {
     ptNode_t  * node;
+    uint64_t    key;
     int         bit;
     int         result = 0;
 
-    node = PT_searchR(head->llink, cidr.addr, -1);
-
-    if ( cidr.addr != node->key ) 
+    key  = PT_getNetworkAddr(cidr);
+    node = PT_searchR(head->llink, key, -1);
+    
+    if ( key != node->key ) 
     {
         result = 1;
-        for ( bit = 0; PT_GETBIT(cidr.addr,bit) == PT_GETBIT(node->key, bit); bit++ );
+        for ( bit = 0; PT_GETBIT(key, bit) == PT_GETBIT(node->key, bit); bit++ );
         head->llink = PT_insertR(head->llink, cidr, bit, head, rock);
     } 
-    else if ( ! node->rocks[cidr.mb] )
+    else if ( ! node->rocks[cidr->mb] )
     {
         result = 1;
-        node->rocks[cidr.mb] = rock;
+        node->rocks[cidr->mb] = rock;
     }
-        
+
     return result;
 }
 
@@ -325,13 +342,15 @@ pt_insert ( ptNode_t * head, cidr_t cidr, void * rock )
   *  @param cidr  is the IP Prefix to check.
  **/
 int
-pt_exists ( ptNode_t * head, cidr_t cidr )
+pt_exists ( ptNode_t * head, cidr_t * cidr )
 {
     ptNode_t  * node;
+    uint64_t    key;
 
-    node = PT_searchR(head->llink, cidr.addr, -1);
+    key  = PT_getNetworkAddr(cidr);
+    node = PT_searchR(head->llink, key, -1);
 
-    if ( node->key == cidr.addr && (node->rocks[cidr.mb]) )
+    if ( node->key == key && (node->rocks[cidr->mb]) )
         return 1;
 
     return 0;
@@ -344,39 +363,53 @@ pt_exists ( ptNode_t * head, cidr_t cidr )
   *  Returns the associated void*, or NULL if there is no match.
  **/
 void*
-pt_match ( ptNode_t * head, cidr_t cidr )
+pt_match ( ptNode_t * head, cidr_t * cidr )
 {
+    uint64_t    key;
     ptNode_t  * node;
     void      * rock = NULL;
 
-    node = PT_searchR(head->llink, cidr.addr, -1);
+    key  = PT_getNetworkAddr(cidr);
+    node = PT_searchR(head->llink, key, -1);
 
-    if ( node->key == cidr.addr && (node->rocks[cidr.mb]) )
-        rock = node->rocks[cidr.mb];
+    if ( node->key == key && (node->rocks[cidr->mb]) )
+        rock = node->rocks[cidr->mb];
 
     return rock;
 }
+
 
 /**  Searches the trie, for the longest (bit mask) ip addr
   *  that encompasses the provided network address.
  **/
 void*
-pt_matchLongest ( ptNode_t * head, cidr_t cidr )
+pt_matchLongest ( ptNode_t * head, cidr_t * cidr )
 {
-    void * rock = NULL;
+    void    * rock = NULL;
+    uint64_t  key;
 
-    searchCidr.addr = PT_basePrefix(cidr.addr, cidr.mb);
-    searchCidr.mb   = cidr.mb;
+    key  = PT_getNetworkAddr(cidr);
+    key  = PT_basePrefix(key, cidr->mb);
+    
+    if ( cidr->addrA == 0 ) {
+        searchCidr.addrA = 0;
+        searchCidr.addrB = key;
+    } else {
+        searchCidr.addrA = key;
+        searchCidr.addrB = cidr->addrB;
+    }
+    searchCidr.mb  = cidr->mb;
 
     memset(&resultCidr, 0, sizeof(cidr_t));
 
     PT_visitR_node(head->llink, -1, &PT_searchLongHandler);
 
-    if ( resultCidr.addr > 0 )
-        rock = pt_match(head, resultCidr);
+    if ( resultCidr.addrA > 0 || resultCidr.addrB > 0 )
+        rock = pt_match(head, &resultCidr);
 
     return rock;
 }
+
 
 /**  Removes the provided IP Prefix from the trie
   *  returning the associated user data as a void*.
@@ -384,7 +417,7 @@ pt_matchLongest ( ptNode_t * head, cidr_t cidr )
   *  @param cidr  is the IP Prefix to remove.
  **/
 void*
-pt_remove ( ptNode_t * head, cidr_t cidr )
+pt_remove ( ptNode_t * head, cidr_t * cidr )
 {
     void  * rock = NULL;
 
@@ -441,6 +474,35 @@ pt_size ( ptNode_t * head )
     return ptsize;
 }
 
+/**  Obtains the given node's IPV4 address, if applicable.
+  *  Note this function would return 0 if there is node is 
+  *  in fact for an IPV6 address, which would match the 
+  *  root node of the tree
+ **/
+ipv4addr_t
+pt_to_ipv4 ( ptNode_t * node ) 
+{
+    ipv4addr_t  ip;
+    uint32_t  * ptr;
+
+    ip = 0;
+
+    if ( node->key == node->host ) {
+        ptr = (uint32_t*) &node->host;
+        ip = ptr[0];
+    }
+        
+        //return( (uint32_t) ((uint32_t*) &node->host)[0] );
+    return ip;
+}
+
+int
+pt_is_ipv4 ( ptNode_t * node )
+{
+    if ( node->key == node->host )
+        return 1;
+    return 0;
+}
 
 /**  Free nodes of a patricia trie */
 int

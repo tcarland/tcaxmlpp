@@ -41,35 +41,36 @@ extern "C" {
 #include <stdlib.h>
 
 
-#define PT_GETBIT(v, bit)  ((v) & (0x80000000 >> (bit)))
+#define PT_GETBIT(v, bit)  ((v) & (0x8000000000000000 >> (bit)))
 #define PT_DELETE_FLAG     0x1
-#define PT_MASKLEN         32
-#define PT_MAXBITS         128
+#define PT_MASKLEN         64
+#define PT_MAXBITS         64
 
 
 typedef struct ptNode {
-    uint32_t        key;
+    uint64_t        key;
+    uint64_t        host;
     int             bit;
     uint32_t        flags;
     struct ptNode*  llink;
     struct ptNode*  rlink;
     uint32_t        slots;
-    void*           rocks[PT_MASKLEN + 1];
+    void*           rocks[PT_MASKLEN];
 } ptNode_t;
 
 
-typedef void (*nodeHandler_t) (uint32_t, uint16_t, void*);
+typedef void (*nodeHandler_t) (uint64_t, uint64_t, uint16_t, void*);
 typedef void (*pvtNodeHandler_t)(ptNode_t*);
 
 
 ptNode_t*  pt_init();
 
-int        pt_insert       ( ptNode_t * head, cidr_t cidr, void * rock );
-void*      pt_remove       ( ptNode_t * head, cidr_t key );
-int        pt_exists       ( ptNode_t * head, cidr_t key );
+int        pt_insert       ( ptNode_t * head, cidr_t * cidr, void * rock );
+void*      pt_remove       ( ptNode_t * head, cidr_t * key );
+int        pt_exists       ( ptNode_t * head, cidr_t * key );
 
-void*      pt_match        ( ptNode_t * head, cidr_t key );
-void*      pt_matchLongest ( ptNode_t * head, cidr_t key );
+void*      pt_match        ( ptNode_t * head, cidr_t * key );
+void*      pt_matchLongest ( ptNode_t * head, cidr_t * key );
 
 void       pt_visit        ( ptNode_t * head, nodeHandler_t handler );
 void       pt_visit_node   ( ptNode_t * head, pvtNodeHandler_t handler );
@@ -77,8 +78,10 @@ void       pt_visit_node   ( ptNode_t * head, pvtNodeHandler_t handler );
 int        pt_nodes        ( ptNode_t * head );
 int        pt_size         ( ptNode_t * head );
 
-int        pt_free         ( ptNode_t * head, nodeHandler_t handler );
+int        pt_is_ipv4      ( ptNode_t * node );
+ipv4addr_t pt_to_ipv4      ( ptNode_t * node );
 
+int        pt_free         ( ptNode_t * head, nodeHandler_t handler );
 
 # ifdef __cplusplus
 }  // extern "C"
