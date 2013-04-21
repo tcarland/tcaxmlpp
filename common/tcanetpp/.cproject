@@ -39,6 +39,12 @@
 								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.487325398" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
 									<listOptionValue builtIn="false" value="../include"/>
 								</option>
+								<option id="org.eclipse.cdt.build.core.settings.holder.symbols.432109552" name="Symbols" superClass="org.eclipse.cdt.build.core.settings.holder.symbols" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="__cplusplus"/>
+								</option>
+								<option id="org.eclipse.cdt.build.core.settings.holder.undef.symbols.111779755" name="Undefined Symbols" superClass="org.eclipse.cdt.build.core.settings.holder.undef.symbols" valueType="undefDefinedSymbols">
+									<listOptionValue builtIn="false" value="__cplusplus"/>
+								</option>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.1562063710" languageId="org.eclipse.cdt.core.assembly" languageName="Assembly" sourceContentType="org.eclipse.cdt.core.asmSource" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
 							<tool id="org.eclipse.cdt.build.core.settings.holder.1252313778" name="GNU C++" superClass="org.eclipse.cdt.build.core.settings.holder">
@@ -48,7 +54,7 @@
 									<listOptionValue builtIn="false" value="/usr/lib/gcc/x86_64-pc-linux-gnu/4.5.4/include/g++-v4/x86_64-pc-linux-gnu"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/tcanetpp/include}&quot;"/>
 								</option>
-								<option id="org.eclipse.cdt.build.core.settings.holder.undef.incpaths.32924077" name="Undefined Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.undef.incpaths" valueType="undefIncludePath"/>
+								<option id="org.eclipse.cdt.build.core.settings.holder.undef.incpaths.32924077" name="Undefined Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.undef.incpaths"/>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.489203918" languageId="org.eclipse.cdt.core.g++" languageName="GNU C++" sourceContentType="org.eclipse.cdt.core.cxxSource,org.eclipse.cdt.core.cxxHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
 							<tool id="org.eclipse.cdt.build.core.settings.holder.2097314064" name="GNU C" superClass="org.eclipse.cdt.build.core.settings.holder">
@@ -70,6 +76,12 @@
 									<listOptionValue builtIn="false" value="/usr/lib/gcc/x86_64-pc-linux-gnu/4.5.4/include-fixed"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/tcanetpp/include}&quot;"/>
 								</option>
+								<option id="org.eclipse.cdt.build.core.settings.holder.symbols.2003682608" name="Symbols" superClass="org.eclipse.cdt.build.core.settings.holder.symbols" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="__cplusplus"/>
+								</option>
+								<option id="org.eclipse.cdt.build.core.settings.holder.undef.symbols.1414549839" name="Undefined Symbols" superClass="org.eclipse.cdt.build.core.settings.holder.undef.symbols" valueType="undefDefinedSymbols">
+									<listOptionValue builtIn="false" value="__cplusplus"/>
+								</option>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.1449098457" languageId="org.eclipse.cdt.core.gcc" languageName="GNU C" sourceContentType="org.eclipse.cdt.core.cSource,org.eclipse.cdt.core.cHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
 						</toolChain>
@@ -86,6 +98,9 @@
 		</cconfiguration>
 		<cconfiguration id="0.1311033198.1280043821.510472030.946203081">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="0.1311033198.1280043821.510472030.946203081" moduleId="org.eclipse.cdt.core.settings" name="Debug">
+				<macros>
+					<stringMacro name="USE_PTHREADS" type="VALUE_TEXT" value="true"/>
+				</macros>
 				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.VCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
@@ -149,8 +164,13 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="tcanetpp.null.1784566088" name="tcanetpp"/>
 	</storageModule>
-	<storageModule moduleId="refreshScope" versionNumber="1">
-		<resource resourceType="PROJECT" workspacePath="/tcanetpp"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/tcanetpp"/>
+		</configuration>
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/tcanetpp"/>
+		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="scannerConfiguration">

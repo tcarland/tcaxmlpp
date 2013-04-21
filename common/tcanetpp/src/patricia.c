@@ -1,7 +1,7 @@
 /**
   * @file patricia.c
   *
-  * Copyright (c) 2002,2008 Timothy Charlton Arland 
+  * Copyright (c) 2002,2008,2013 Timothy Charlton Arland
   * @author  tcarland@gmail.com
   *
   * @section LICENSE
@@ -33,17 +33,18 @@
 
 
 static const
-char version[] = "patricia v1.93 2013/04/20 tca";
+char PT_version[] = "patricia v1.94 2013/04/20 tcarland@gmail.com";
 
 
 static int    freecnt    = 0;
 static int    nodecnt    = 0;
 static int    ptsize     = 0;
 
-
+/* match handler used for longest match */
 typedef void (*matchHandler_t) (ptNode_t*, prefix_t*, prefix_t*);
 
 
+//  Returns the network portion of an IPv6 address or the IPv4 address
 uint64_t
 PT_getNetworkAddr ( prefix_t * addr )
 {
@@ -54,7 +55,6 @@ PT_getNetworkAddr ( prefix_t * addr )
 
     return net;
 }
-
 
 //  Create a new node
 static ptNode_t*
@@ -104,7 +104,6 @@ PT_visitR ( ptNode_t * node, int bit, nodeHandler_t handler )
     return;
 }
 
-
 //  Visits all nodes of the trie.
 static void
 PT_visitR_node ( ptNode_t * node, int bit, pvtNodeHandler_t handler )
@@ -122,9 +121,10 @@ PT_visitR_node ( ptNode_t * node, int bit, pvtNodeHandler_t handler )
     return;
 }
 
+//  Visits all nodes recursively looking for a match to the given prefix.
 static void
 PT_visitR_match ( ptNode_t * node, int bit, matchHandler_t handler, 
-                  prefix_t   * search, prefix_t  * result )
+                  prefix_t * search, prefix_t * result )
 {
     if ( node->bit <= bit ) 
     {
@@ -151,7 +151,6 @@ PT_searchR ( ptNode_t * node, uint64_t key, int bit )
     
     return PT_searchR(node->rlink, key, node->bit);
 }
-
 
 //  recursive insert into the trie 
 static ptNode_t*
@@ -184,7 +183,6 @@ PT_insertR ( ptNode_t * head, prefix_t * pfx, int bit,
     return head;
 }
 
-
 //  recursive removal from the trie
 static void*
 PT_removeR ( ptNode_t * node, prefix_t * pfx, int bit )
@@ -206,7 +204,6 @@ PT_removeR ( ptNode_t * node, prefix_t * pfx, int bit )
 
     return PT_removeR(node->rlink, pfx, node->bit);
 }
-
 
 //  recursively frees all nodes of the trie, except the root node.
 static void
@@ -234,7 +231,6 @@ PT_freeNodesR ( ptNode_t * head, ptNode_t * node, int bit, nodeHandler_t handler
     return;
 }
 
-
 //  function used internally to 'base' a prefix
 static uint64_t
 PT_basePrefix ( uint64_t addr, uint16_t mb )
@@ -243,12 +239,10 @@ PT_basePrefix ( uint64_t addr, uint16_t mb )
     
     mask  = 0xffffffffffffffff;
     mask  = mask >> (64 - mb) << (64 - mb);
-
     addr &= htonll(mask);
 
     return addr;
 }
-
 
 //  callback function used to find the longest match
 static void
@@ -279,7 +273,6 @@ PT_matchLongHandler ( ptNode_t * node, prefix_t * search, prefix_t * result )
     return;
 }
 
-
 //  callback used by pt_nodes() to count allocated nodes
 static void
 PT_countNodesHandler ( ptNode_t * node )
@@ -287,7 +280,6 @@ PT_countNodesHandler ( ptNode_t * node )
     nodecnt++;
     return;
 }
-
 
 //  callback used by pt_size() to count allocated children
 static void
@@ -298,6 +290,7 @@ PT_countChildrenHandler ( uint64_t addrA, uint64_t addrB,
         ptsize++;
     return;
 }
+
 
 //--------------------------------------------------------------------
 
@@ -421,8 +414,6 @@ pt_matchLongest ( ptNode_t * head, prefix_t * pfx )
     }
     search.mb  = pfx->mb;
 
-    memset(&result, 0, sizeof(prefix_t));
-
     PT_visitR_match(head->llink, -1, &PT_matchLongHandler, &search, &result);
 
     if ( result.addrA > 0 || result.addrB > 0 )
@@ -440,10 +431,8 @@ pt_matchLongest ( ptNode_t * head, prefix_t * pfx )
 void*
 pt_remove ( ptNode_t * head, prefix_t * pfx )
 {
-    void  * rock = NULL;
-
+    void * rock = NULL;
     rock = PT_removeR(head->llink, pfx, -1);
-
     return rock;
 }
 
@@ -464,6 +453,7 @@ pt_visit_node ( ptNode_t * head, pvtNodeHandler_t handler )
         PT_visitR_node(head->llink, -1, handler);
 }
 
+
 /**  Returns the number of nodes in the trie.
   *  Each node can have multiple entries.
  **/
@@ -481,24 +471,34 @@ pt_nodes ( ptNode_t * head )
     return nodecnt;
 }
 
-
 /**  Returns the total number of entries in the trie.
   *  Note this differs from the actual number of nodes in the trie.
  **/
 int
 pt_size ( ptNode_t * head )
 {
-    ptsize  = 0;
-
+    ptsize = 0;
     pt_visit(head, &PT_countChildrenHandler);
-
     return ptsize;
 }
 
-/**  Obtains the given node's IPV4 address, if applicable.
-  *  Note this function would return 0 if there is node is 
-  *  in fact for an IPV6 address, which would match the 
-  *  root node of the tree
+
+/**  Returns an integer indicating whether the provided node
+  *  represents an IPv4 Address. Returns 1 if the node is an
+  *  IPv4 address or 0 if the node is IPv6.
+ **/
+int
+pt_is_ipv4 ( ptNode_t * node )
+{
+    if ( node->key == node->host )
+        return 1;
+    return 0;
+}
+
+/**  Obtains the given node's IPv4 address, if applicable.
+  *  Note this function would return 0 if the node is
+  *  an IPv6 address, which would also match the root
+  *  node of the tree.
  **/
 ipv4addr_t
 pt_to_ipv4 ( ptNode_t * node ) 
@@ -510,20 +510,12 @@ pt_to_ipv4 ( ptNode_t * node )
 
     if ( node->key == node->host ) {
         ptr = (uint32_t*) &node->host;
-        ip = ptr[0];
+        ip  = ptr[0];
     }
         
-        //return( (uint32_t) ((uint32_t*) &node->host)[0] );
     return ip;
 }
 
-int
-pt_is_ipv4 ( ptNode_t * node )
-{
-    if ( node->key == node->host )
-        return 1;
-    return 0;
-}
 
 /**  Free nodes of a patricia trie */
 int
@@ -535,6 +527,14 @@ pt_free ( ptNode_t * head, nodeHandler_t handler )
     head->llink = head->rlink = head;
 
     return freecnt;
+}
+
+
+/**  Returns a string of the internal patricia version */
+const char*
+pt_version()
+{
+    return &PT_version[0];
 }
 
 

@@ -115,6 +115,7 @@ int main ( int argc, char **argv )
     IpAddr::ToIpAddr(addrs[5], pfx);
     IpAddr::DeAggregate(pfx, 24, srcp);
 
+    printf("pttest starting... <%s>\n", pt_version());
     printf("v size is %lu\n", srcp.size());
 
     for ( vIter = srcp.begin(); vIter != srcp.end(); vIter++ )
