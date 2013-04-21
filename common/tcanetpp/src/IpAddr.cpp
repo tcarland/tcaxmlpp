@@ -280,6 +280,16 @@ IpAddr::toString() const
     return ipstr;
 }
 
+std::string
+IpAddr::toPrefixString() const
+{
+    std::string  ipstr;
+
+    ipstr = IpAddr::ToPrefixStr(*this);
+
+    return ipstr;
+}
+
 /** Returns a boolean indicating whether the IP Address is
   * a loopback address i
  **/
@@ -294,10 +304,10 @@ IpAddr::isLoopback() const
 
 /**  Method for returning a ipcidr(pfx_t) struct. 
  **/
-cidr_t
-IpAddr::getCidr() const
+prefix_t
+IpAddr::getPrefixType() const
 {
-    cidr_t  pfx;
+    prefix_t  pfx;
 
     if ( this->ipv4() ) {
         pfx.addrA = 0;

@@ -94,16 +94,17 @@ typedef uint32_t                ipv4addr_t;
 typedef uint64_t                evid_t;       // event registration id
 
 
-/** Structure defining an IPV4 Address and its associated mask
- *  length in bits representing the a.b.c.d/mb cidr format.
+/** Structure defining either an IPv4 or IPv6 Address and 
+ *  its associated mask length in bits representing 
+ *  the a.b.c.d/mb or xxxx:xxxx::/mb cidr format.
  *  This definition exists here vs _ip header for the
  *  extern C support since it is used within the patricia.
  **/
-typedef struct IPCidr {
+typedef struct ip_prefix {
     uint64_t     addrA;
     uint64_t     addrB;
     uint16_t     mb;
-} cidr_t;
+} prefix_t;
 
 
 # ifdef __cplusplus

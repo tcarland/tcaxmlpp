@@ -75,7 +75,7 @@ class IpAddr {
     ipv4addr_t          getAddr4() const;
     ipv4addr_t          getPrefix() const;
     uint8_t             getPrefixLen() const;
-    cidr_t              getCidr() const;
+    prefix_t            getPrefixType() const;
 
     sockaddr_t*         getSockAddr();
     const sockaddr_t*   getSockAddr() const;
@@ -83,6 +83,7 @@ class IpAddr {
     int                 getFamily() const;
 
     std::string         toString() const;
+    std::string         toPrefixString() const;
     bool                isLoopback() const;
 
 

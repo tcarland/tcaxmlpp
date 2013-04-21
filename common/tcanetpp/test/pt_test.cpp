@@ -102,7 +102,7 @@ int main ( int argc, char **argv )
     ptNode_t*   ptree;
     int         tmp;
     IpAddr      pfx;
-    cidr_t      c;
+    prefix_t    c;
 
     IpAddrList  srcp;
     IpAddrList::iterator  vIter;
@@ -123,7 +123,7 @@ int main ( int argc, char **argv )
     ptree = pt_init();
 
     for ( vIter = srcp.begin(); vIter != srcp.end(); vIter++ ) {
-        c = vIter->getCidr();
+        c = vIter->getPrefixType();
         pt_insert(ptree, &c, (void*)(new IpAddr(*vIter)));
     }
 
@@ -135,7 +135,7 @@ int main ( int argc, char **argv )
 
     IpAddr  p;
     IpAddr::ToIpAddr(addrs[1], p);
-    c = p.getCidr();
+    c = p.getPrefixType();
     IpAddr * pptr = (IpAddr*) pt_remove(ptree, &c);
 
     if ( pptr ) {
@@ -150,7 +150,7 @@ int main ( int argc, char **argv )
    
     // exists
     for ( vIter = srcp.begin(); vIter != srcp.end(); vIter++ ) {
-        c = vIter->getCidr();
+        c = vIter->getPrefixType();
         if ( (tmp = pt_exists(ptree, &c)) == 0 )
             printf("Search failed for %s\n", vIter->toString().c_str());
         else
@@ -172,12 +172,12 @@ int main ( int argc, char **argv )
 
     for ( vIter = srcp.begin(); vIter != srcp.end(); vIter++ ) {
         printf("Prefix is %s\n", IpAddr::ToPrefixStr(*vIter).c_str());
-        c = vIter->getCidr();
+        c = vIter->getPrefixType();
         pt_insert(ptree, &c, (void*)(new IpAddr(*vIter)));
     }
 
     IpAddr::ToIpAddr(addrstr6, p);
-    c = p.getCidr();
+    c = p.getPrefixType();
     // matchLongest
     pptr = (IpAddr*) pt_matchLongest(ptree, &c);
     if ( pptr )
