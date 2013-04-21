@@ -146,7 +146,7 @@ int main ( int argc, char **argv )
     // matchLongest
     pptr = (IpAddr*) pt_matchLongest(ptree, &c);
     if ( pptr )
-        printf("MatchLongest found %s\n", pptr->toString().c_str());
+        printf("MatchLongest found %s\n\n", pptr->toString().c_str());
    
     // exists
     for ( vIter = srcp.begin(); vIter != srcp.end(); vIter++ ) {
@@ -168,7 +168,7 @@ int main ( int argc, char **argv )
         srcp.push_back(pfx);
     }
 
-    printf("v size is %lu\n", srcp.size());
+    printf("v size is %lu\n\n", srcp.size());
 
     for ( vIter = srcp.begin(); vIter != srcp.end(); vIter++ ) {
         printf("Prefix is %s\n", IpAddr::ToPrefixStr(*vIter).c_str());

@@ -33,15 +33,15 @@
 
 
 static const
-char version[] = "$Id: patricia.c,v 1.92 2011/03/06 12:27:19 tca$";
+char version[] = "patricia v1.93 2013/04/20 tca";
 
 
-static cidr_t searchCidr;
-static cidr_t resultCidr;
 static int    freecnt    = 0;
 static int    nodecnt    = 0;
 static int    ptsize     = 0;
 
+
+typedef void (*matchHandler_t) (ptNode_t*, cidr_t*, cidr_t*);
 
 
 uint64_t
@@ -122,6 +122,22 @@ PT_visitR_node ( ptNode_t * node, int bit, pvtNodeHandler_t handler )
     return;
 }
 
+static void
+PT_visitR_match ( ptNode_t * node, int bit, matchHandler_t handler, 
+                  cidr_t   * search, cidr_t  * result )
+{
+    if ( node->bit <= bit ) 
+    {
+        if ( handler ) 
+            handler(node, search, result);
+    } 
+    else 
+    {
+        PT_visitR_match(node->llink, node->bit, handler, search, result);
+        PT_visitR_match(node->rlink, node->bit, handler, search, result);
+    }
+    return;
+}
 
 //  recursive search in the trie
 static ptNode_t*
@@ -236,24 +252,27 @@ PT_basePrefix ( uint64_t addr, uint16_t mb )
 
 //  callback function used to find the longest match
 static void
-PT_searchLongHandler ( ptNode_t * node )
+PT_matchLongHandler ( ptNode_t * node, cidr_t * search, cidr_t * result )
 {
-    int  i;
-    uint64_t key = PT_getNetworkAddr(&searchCidr);
+    uint64_t key;
+    int      i;
+    
+    key = PT_getNetworkAddr(search);
     
     for ( i = 0; i < (PT_MASKLEN + 1); i++ ) 
     {
         if ( node->rocks[i] && PT_basePrefix(key, i) == node->key )  
         {
-            if ( i > resultCidr.mb ) {
+            if ( i > result->mb ) 
+            {
                 if ( node->key == node->host ) {
-                    resultCidr.addrA = 0;
-                    resultCidr.addrB = node->key;
+                    result->addrA = 0;
+                    result->addrB = node->key;
                 } else {
-                    resultCidr.addrA = node->key;
-                    resultCidr.addrB = node->host;
+                    result->addrA = node->key;
+                    result->addrB = node->host;
                 }
-                resultCidr.mb = i;
+                result->mb = i;
             }
         }
     }
@@ -272,7 +291,8 @@ PT_countNodesHandler ( ptNode_t * node )
 
 //  callback used by pt_size() to count allocated children
 static void
-PT_countRocksHandler ( ipv4addr_t addr, uint16_t mb, void * rock )
+PT_countChildrenHandler ( uint64_t addrA, uint64_t addrB, 
+                          uint16_t mb,    void * rock )
 {
     if ( rock )
         ptsize++;
@@ -299,9 +319,6 @@ pt_init()
         head->llink = head;
         head->rlink = head;
     }
-
-    memset(&searchCidr, 0, sizeof(cidr_t));
-    memset(&resultCidr, 0, sizeof(cidr_t));
 
     return head;
 }
@@ -385,27 +402,31 @@ pt_match ( ptNode_t * head, cidr_t * cidr )
 void*
 pt_matchLongest ( ptNode_t * head, cidr_t * cidr )
 {
+    cidr_t    search, result;
     void    * rock = NULL;
     uint64_t  key;
+
+    memset(&search, 0, sizeof(cidr_t));
+    memset(&result, 0, sizeof(cidr_t));
 
     key  = PT_getNetworkAddr(cidr);
     key  = PT_basePrefix(key, cidr->mb);
     
     if ( cidr->addrA == 0 ) {
-        searchCidr.addrA = 0;
-        searchCidr.addrB = key;
+        search.addrA = 0;
+        search.addrB = key;
     } else {
-        searchCidr.addrA = key;
-        searchCidr.addrB = cidr->addrB;
+        search.addrA = key;
+        search.addrB = cidr->addrB;
     }
-    searchCidr.mb  = cidr->mb;
+    search.mb  = cidr->mb;
 
-    memset(&resultCidr, 0, sizeof(cidr_t));
+    memset(&result, 0, sizeof(cidr_t));
 
-    PT_visitR_node(head->llink, -1, &PT_searchLongHandler);
+    PT_visitR_match(head->llink, -1, &PT_matchLongHandler, &search, &result);
 
-    if ( resultCidr.addrA > 0 || resultCidr.addrB > 0 )
-        rock = pt_match(head, &resultCidr);
+    if ( result.addrA > 0 || result.addrB > 0 )
+        rock = pt_match(head, &result);
 
     return rock;
 }
@@ -469,7 +490,7 @@ pt_size ( ptNode_t * head )
 {
     ptsize  = 0;
 
-    pt_visit(head, &PT_countRocksHandler);
+    pt_visit(head, &PT_countChildrenHandler);
 
     return ptsize;
 }
