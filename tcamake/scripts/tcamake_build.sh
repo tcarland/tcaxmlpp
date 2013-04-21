@@ -18,6 +18,8 @@ DODIST=0
 RSYNC="rsync"
 OPTIONS="-avL --delete --exclude=.cvs --exclude=.svn --exclude=.hg --exclude=.git "
 DRYRUN="--dry-run"
+
+dry=
 retval=0
 
 if [ -z "$TOPDIR" ]; then
@@ -31,18 +33,21 @@ fi
 usage()
 {
     echo ""
-    echo "Usage: $PNAME [command] {args} "
+    echo "Usage: $PNAME [-hn] [command] {args} "
     echo ""
     echo "   [command] :  a standard 'make' target or one of the "
     echo "                following commands."
     echo ""
-    echo "       'dist' [path] <dryrun> "
-    echo "                  : requires a valid path as {option}"
+    echo "       -h|--help   : displays this help"
+    echo "       -n|--dryrun : enables dry-run test mode" 
+    echo ""
+    echo "       'dist' [path] "
+    echo "                   : takes a valid path as addt. argument"
     echo "                     Syncs the project to 'path/projectname'"
-    echo "       'link'     : Creates project build links only"
-    echo "       'unlink'   : Removes build links only"
-    echo "       'clean'    : Removes build links and runs 'make clean'"
-    echo "       'show'     : shows the determined project root and "
+    echo "       'link'      : Creates project build links only"
+    echo "       'unlink'    : Removes build links only"
+    echo "       'clean'     : Removes build links and runs 'make clean'"
+    echo "       'show'      : shows the determined project root and "
     echo "                     what links would be created. (dry run) "
     echo ""
     echo " Summary: Creates a complete distribution directory that"
@@ -112,16 +117,11 @@ clearLinks()
 
 makeLinks()
 {
-    local dryrun=$1
-
     echo "  <tcamake> generating links: $LINKLIST "
     
     for lf in $LINKLIST; do
-        if [ -n "$dryrun" ]; then
-            echo "  ln -s $TOPDIR/$lf ."
-        else
-            ln -s "$TOPDIR/$lf"
-        fi
+        echo "  ln -s $TOPDIR/$lf ."
+        ln -s "$TOPDIR/$lf"
     done
 
     return 1
@@ -148,7 +148,6 @@ doBuild()
 doDist()
 {
     local target="$1"
-    local dryrun="$2"
     local curdir=$PWD
     local pname=`basename $curdir`
     local options="$OPTIONS"
@@ -159,7 +158,7 @@ doDist()
         return 0
     fi
 
-    if [ -n "$dryrun" ]; then
+    if [ -n "$dry" ]; then
         echo "  Dry run enabled."
         options="${options}${DRYRUN}"
     fi
@@ -196,19 +195,23 @@ if [ -z "$1" ]; then
 fi
 
 
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        -n|--dryrun)
+            dry=1
+            shift
+            ;;
+         *)
+            break
+            ;;
+    esac
+done
+        
 case "$1" in
-    'help')
-        usage
-        exit 0
-        ;;
-    '-h')
-        usage
-        exit 0
-        ;;
-    '--help')
-        usage
-        exit 0
-        ;;
      'dist')
         DODIST=1
         ;;
@@ -250,7 +253,7 @@ makeLinks
 if [ $DODIST -eq 0 ]; then
     doBuild $1
 else
-    doDist $2 $3
+    doDist $2
 fi
 
 clearLinks
