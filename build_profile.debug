@@ -1,10 +1,11 @@
 
 export PROFILE="tnms-debug"
 
-export USE_PTHREADS=true
-export USE_MYSQL=true
+export USE_PTHREADS=1
+export USE_MYSQL=1
 export USE_LIBRT=1
 
-export TNMS_DEBUG=true
-export TNMS_PREFIX=/opt/tnms
+export TNMS_DEBUG="true"
+
+export TNMS_PREFIX="/opt/tnms"
 
