@@ -20,7 +20,7 @@ OPT_FLAGS =	-g
 endif
 OPT_FLAGS +=	-DTWHOIS_MAIN
 
-INCLUDES=	-I. -I../include
+INCLUDES=	-I. 
 LIBS=
 
 
@@ -90,6 +90,10 @@ pfxtest: pfxtreetest.o
 	@echo
 
 cachetest: pfxcachetest.o
+	$(make-cxxbin-rule)
+	@echo
+
+pfxbase: pfx_base.o
 	$(make-cxxbin-rule)
 	@echo
 

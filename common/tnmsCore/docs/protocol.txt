@@ -1,16 +1,16 @@
 
 
-'tcanms' Line Protocol Specification
+'tnms' Line Protocol Specification
 ------------------------------------
 
-PDU     = VERSION RECORD_TYPE RECORD_COUNT RECORD_OPTIONS RECORD_PAYLOAD
-
-VERSION                  = UINT16 UINT16
-RECORD_OPTIONS           = UINT32
+PDU            = VERSION RECORD_TYPE RECORD_COUNT RECORD_OPTIONS RECORD_PAYLOAD
+VERSION        = UINT16 UINT16
+RECORD_OPTIONS = UINT32
 
 RECORD_TYPE  = NO_RECORD_TYPE
              | AUTH_REQUEST_TYPE
              | AUTH_REPLY_TYPE
+             | AUTH_REFRESH_TYPE
              | RESOLVE_REQUEST_TYPE
              | RESOLVE_REPLY_TYPE
              | RECORD_ADD_TYPE
@@ -25,8 +25,8 @@ RECORD_TYPE  = NO_RECORD_TYPE
              | PING_REPLY_TYPE
 
 RECORD_OPTIONS = NO_RECORD_OPTIONS
-               | COMPRESSED
                | LAST_RECORD_MARKER
+               | COMPRESSED
 
 RECORD_PAYLOAD = NO_PAYLOAD
                | AUTH_REQUEST_PAYLOAD
