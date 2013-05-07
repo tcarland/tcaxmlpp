@@ -7,13 +7,16 @@ else
 endif
 
 # set requirements
-#NEED_SOCKET = 1
+NEED_SOCKET = 1
 
 ifdef TNMS_DEBUG
 OPT_FLAGS= 	-g
 endif
 
-# custom lib/includes
+OPT_FLAGS += 	-fPIC -O2
+CCSHARED +=	-Wl,-soname,$@
+
+
 INCLUDES=       -Iinclude
 LIBS=
 
