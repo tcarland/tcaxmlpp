@@ -1,6 +1,7 @@
 # Copyright 1999-2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
+EAPI=4
 
 inherit eutils
 
@@ -20,12 +21,13 @@ DEPEND=""
 RDEPEND="${DEPEND}"
 
 src_compile() {
-	emake || die "Make failed"
+	emake solib || die "Make failed"
 }
 
 src_install() {
 	insinto /usr/lib
-	doins lib/libtcanetpp.so || die "File copy failed"
+	dolib.so lib/libtcanetpp.so.${PVR} || die "File copy failed"
+	dolib.so lib/libtcanetpp.so || die "File copy failed"
 	insinto /usr/include/tcanetpp
 	doins include/* || die "File copy failed"
 }

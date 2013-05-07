@@ -41,9 +41,9 @@ usage()
     echo "       -h|--help   : displays this help"
     echo "       -n|--dryrun : enables dry-run test mode" 
     echo ""
-    echo "       'dist' [path] "
+    echo "       'dist' [path/project] "
     echo "                   : takes a valid path as addt. argument"
-    echo "                     Syncs the project to 'path/projectname'"
+    echo "                     Syncs the project to 'path/project'"
     echo "       'link'      : Creates project build links only"
     echo "       'unlink'    : Removes build links only"
     echo "       'clean'     : Removes build links and runs 'make clean'"
@@ -149,7 +149,6 @@ doDist()
 {
     local target="$1"
     local curdir=$PWD
-    local pname=`basename $curdir`
     local options="$OPTIONS"
     local dstpath=
 
@@ -163,7 +162,7 @@ doDist()
         options="${options}${DRYRUN}"
     fi
 
-    dstpath="${target}/${pname}"
+    dstpath="${target}/"
 
     if [ -e $dstpath ]; then
         echo "WARNING! target path of '$dstpath' already exists."
