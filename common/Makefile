@@ -3,7 +3,7 @@
 include ../tcamake/build_defs
 
 
-all: hexes tcanetpp tcaxmlpp tcasnmp tcasqlpp tnmsSession tnmsCore
+all: hexes tcanetpp tcaxmlpp tcasnmp jsonpp tcasqlpp tnmsSession tnmsCore
 
 
 .PHONY: hexes
@@ -33,6 +33,11 @@ tcasqlpp:
 	@echo
 endif
 
+.PHONY: jsonpp
+jsonpp:
+	( cd jsonpp; make all )
+	@echo
+
 .PHONY: tnmsCore
 tnmsCore:
 	( cd tnmsCore; make all )
@@ -51,6 +56,7 @@ endif
 	( cd tcanetpp; make install )
 	( cd tcaxmlpp; make install )
 	( cd tcasnmp; make install )
+	( cd jsonpp; make install )
 	( cd tnmsSession; make install )
 	( cd tnmsCore; make install )
 	@echo
@@ -63,6 +69,7 @@ endif
 	( cd tcanetpp; make clean )
 	( cd tcaxmlpp; make clean )
 	( cd tcasnmp; make clean )
+	( cd jsonpp; make clean )
 	( cd tnmsSession; make clean )
 	( cd tnmsCore; make clean )
 	@echo
@@ -75,6 +82,7 @@ endif
 	( cd tcanetpp; make distclean )
 	( cd tcaxmlpp; make distclean )
 	( cd tcasnmp; make distclean )
+	( cd jsonpp; make distclean )
 	( cd tnmsSession; make distclean )
 	( cd tnmsCore; make distclean )
 	@echo

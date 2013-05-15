@@ -342,12 +342,10 @@ TnmsSocket::receive ( const time_t & now )
     tnmsHeader  hdr;
     size_t      hdrlen;
     ssize_t     rd;
-    int         mctr, actr, ctr;
+    int         ctr;
 
     hdrlen  = sizeof(hdr);
     rd      = 0;
-    mctr    = 0;
-    actr    = 0;
     ctr     = 0;
 
     if ( _sock == NULL )
@@ -1054,14 +1052,13 @@ int
 TnmsSocket::rcvAuthRequest ( tnmsHeader & hdr )
 {
     char    * rptr;
-    size_t    rsz, rd;
+    size_t    rsz;
     ssize_t   upk;
 
     TnmsAuthRequest  auth;
 
     rptr  = _rxbuff;
     rsz   = hdr.payload_size;
-    rd    = 0;
     upk   = 0;
 
     upk = auth.deserialize(rptr, rsz);
@@ -1082,14 +1079,13 @@ int
 TnmsSocket::rcvAuthReply ( tnmsHeader & hdr )
 {
     char   * rptr;
-    size_t   rsz, rd;
+    size_t   rsz;
     ssize_t  upk;
 
     TnmsAuthReply  reply;
 
     rptr  = _rxbuff;
     rsz   = hdr.payload_size;
-    rd    = 0;
 
     upk = reply.deserialize(rptr, rsz);
 
@@ -1347,11 +1343,10 @@ TnmsSocket::txBytesBuffered()
 bool
 TnmsSocket::initHeader ( uint16_t type, size_t messagesize )
 {
-    size_t  sz, hdrlen, rd;
+    size_t  sz, hdrlen;
 
     hdrlen = sizeof(tnmsHdr_t);
     sz     = messagesize;
-    rd     = 0;
 
     if ( _sock == NULL || ! this->isConnected() )
         return false;
@@ -1376,7 +1371,7 @@ TnmsSocket::initHeader ( uint16_t type, size_t messagesize )
         {
             if ( _hdr->message_type != type )
                 _hdr->options |= LAST_MESSAGE;
-            rd = this->flush();
+            this->flush();
 
         }
         else if ( _hdr->message_type == type )   // continue pdu
@@ -1411,7 +1406,7 @@ TnmsSocket::initHeader ( uint16_t type, size_t messagesize )
         else   // flush pdu 
         {
             _hdr->options |= LAST_MESSAGE;
-            rd = this->flush();
+            this->flush();
         }
     }
 
