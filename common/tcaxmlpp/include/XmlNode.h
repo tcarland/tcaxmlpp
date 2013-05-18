@@ -30,6 +30,7 @@
 #include <list>
 #include <map>
 #include <string>
+#include <sstream>
 
 #include "XmlDocument.h"
 
@@ -87,6 +88,9 @@ class XmlNode {
     XmlNode*       getParent();
 
     bool           isRootElement() const;
+
+    std::string    getNodeContent() const;
+    void           setNodeContent    ( const std::string & txt );
 
     // children
     inline size_t  children()  const { return _kids.size(); }
@@ -209,7 +213,17 @@ class XmlNode {
             : name(name_)
         {}
 
+        bool operator() ( XmlNode * node );
     };
+
+    template<typename T>
+    static inline  T    FromString  ( const std::string & str )
+    {
+        T target = T();
+        std::stringstream stream(str);
+        stream >> target;
+        return target;
+    }
 
 
   protected:
@@ -228,6 +242,7 @@ class XmlNode {
     xmlElementType	_type;
 
     std::string     	_name;
+    std::string     	_text;
     std::string     	_errStr;
     
     XmlNodeList		_kids;

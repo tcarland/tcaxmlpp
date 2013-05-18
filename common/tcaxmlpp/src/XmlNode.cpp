@@ -55,6 +55,8 @@ XmlNode::XmlNode ( XmlNode     * parent,
 	_type = _node->type;
 	if ( _node->name )
 	    _name = (char*) _node->name;
+        if ( _node->content )
+            _text = (char*) _node->content;
     }
 
     if ( _node && recursive_walk ) {
@@ -148,6 +150,18 @@ XmlNode::getNodeType() const
     return _type;
 }
 
+std::string
+XmlNode::getNodeContent() const
+{
+    return _text;
+}
+
+void
+XmlNode::setNodeContent ( const std::string & txt )
+{
+    if ( ! txt.empty() )
+        ::xmlNodeSetContent(_node, (const xmlChar*) txt.c_str());
+}
 
 XmlNode*
 XmlNode::getParent()
@@ -479,6 +493,14 @@ XmlNode::FindXmlNodeName::operator() ( const XmlNode * node )
     if ( node->getNodeName().compare(name) == 0 )
         return(node->getAttr(key).compare(val) == 0);
     return false;
+}
+
+bool
+XmlNode::FindXmlNodesByName::operator() ( XmlNode * node )
+{
+    if ( node->getNodeName().compare(name) == 0 )
+        nodes.push_back(node);
+    return true;
 }
 
 
