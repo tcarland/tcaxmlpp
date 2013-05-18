@@ -13,12 +13,12 @@ hexes:
 
 .PHONY: tcanetpp
 tcanetpp:
-	( cd tcanetpp; make all )
+	( cd tcanetpp; make arlib )
 	@echo
 
 .PHONY: tcaxmlpp
 tcaxmlpp:
-	( cd tcaxmlpp; make all )
+	( cd tcaxmlpp; make arlib )
 	@echo
 
 .PHONY: tcasnmp
