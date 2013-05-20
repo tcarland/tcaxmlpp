@@ -39,16 +39,16 @@ XmlAttribute::XmlAttribute ( XmlNode * parent, xmlAttrPtr node )
 {
     if ( _node )
     {
-	_key = (char*) node->name;
-	if ( _node->children )
-	    _val = (char*) node->children->content;
+        _key = (char*) node->name;
+        if ( _node->children )
+            _val = (char*) node->children->content;
     }
 }
 
 
 XmlAttribute::XmlAttribute ( XmlNode * parent, 
-		             const std::string & key, 
-	                     const std::string & val )
+                             const std::string & key, 
+                             const std::string & val )
    : _parent(parent),
      _node(NULL),
      _key(key)
@@ -69,10 +69,10 @@ XmlAttribute::setValue ( const std::string & val )
     this->_val = val;
 
     if ( node == NULL )
-	return;
+        return;
 
     this->_node = xmlSetProp(node, (const xmlChar*) _key.c_str(),
-	(const xmlChar*) val.c_str());
+        (const xmlChar*) val.c_str());
 
     return;
 }
