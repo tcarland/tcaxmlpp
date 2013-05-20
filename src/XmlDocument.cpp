@@ -123,16 +123,16 @@ XmlDocument::initDocument ( const std::string & filename, bool create )
     {
         _xmlfile = filename;
 
-	if ( _doc != NULL )
+        if ( _doc != NULL )
             this->clearDocument();
 
-	// create new xml document
-	_doc = ::xmlNewDoc((const xmlChar*) "1.0");
-	node = ::xmlNewNode(NULL, (const xmlChar*) _roottag.c_str());
-	::xmlDocSetRootElement(_doc, node);
+        // create new xml document
+        _doc = ::xmlNewDoc((const xmlChar*) "1.0");
+        node = ::xmlNewNode(NULL, (const xmlChar*) _roottag.c_str());
+        ::xmlDocSetRootElement(_doc, node);
 
-	_root = new XmlNode(NULL, node); // pass false too??
-	_root->setAttr("Version", std::string(DEFAULT_ROOT_VERSION));
+        _root = new XmlNode(NULL, node); // pass false too??
+        _root->setAttr("Version", std::string(DEFAULT_ROOT_VERSION));
         result = true;
     }
 
@@ -259,11 +259,11 @@ void
 XmlDocument::clearDocument()
 {
     if ( _root ) {
-	delete _root;
+        delete _root;
         _root = NULL;
     }
     if ( _doc ) {
-	xmlFreeDoc(_doc);
+        xmlFreeDoc(_doc);
         _doc = NULL;
     }
 
@@ -331,7 +331,7 @@ XmlDocument::setRootNode ( XmlNode * node, bool erase )
         if ( n->parent )
             ::xmlUnlinkNode(n);
     }
-	
+        
     ::xmlDocSetRootElement(_doc, n);
     ::xmlSetTreeDoc(n, _doc);
     _root = node;
@@ -375,7 +375,7 @@ bool
 XmlDocument::initParser ( const std::string & filename )
 {
     if ( filename.length() > 0 )
-	_doc = ::xmlParseFile(filename.c_str());
+        _doc = ::xmlParseFile(filename.c_str());
 
     if ( _doc == NULL ) {
         _errStr = "Error: parse error in XML document: ";
@@ -466,7 +466,6 @@ XmlDocument::attachNode ( XmlNode * parent, XmlNode * node )
 
     p = parent->getNode();
     n = node->getNode();
-
 
     if ( p == NULL || n == NULL )
         return false;

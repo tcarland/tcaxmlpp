@@ -70,11 +70,11 @@ class XmlNode {
     XmlNode();
     XmlNode   ( XmlNode           * parent, 
                 xmlNodePtr          node, 
-	        bool                recursive_walk = true );
+                bool                recursive_walk = true );
 
     XmlNode   ( XmlNode           * parent, 
                 const std::string & name, 
-	        int                 type = XML_ELEMENT_NODE );
+                int                 type = XML_ELEMENT_NODE );
 
     virtual ~XmlNode();
 
@@ -100,7 +100,7 @@ class XmlNode {
     bool           addNode           ( XmlNode * node );
     bool           removeNode        ( XmlNode * node );
 
-    XmlNode*	   findNode          ( const std::string & nodename,
+    XmlNode*       findNode          ( const std::string & nodename,
                                        const std::string & attrkey = "", 
                                        const std::string & attrval = "" );
     XmlNodeList    findNodes         ( const std::string & nodename,
@@ -238,15 +238,15 @@ class XmlNode {
 
     XmlNode*            _parent;
     
-    xmlNodePtr		_node;
-    xmlElementType	_type;
+    xmlNodePtr          _node;
+    xmlElementType      _type;
 
-    std::string     	_name;
-    std::string     	_text;
-    std::string     	_errStr;
+    std::string         _name;
+    std::string         _text;
+    std::string         _errStr;
     
-    XmlNodeList		_kids;
-    XmlAttrMap		_attrs;
+    XmlNodeList         _kids;
+    XmlAttrMap          _attrs;
 
     bool                _debug;
 

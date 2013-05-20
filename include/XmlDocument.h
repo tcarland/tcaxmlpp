@@ -114,7 +114,7 @@ class XmlDocument {
     virtual bool         attachNode     ( XmlNode * parent, XmlNode * node );
 
     XmlNode*             getRootNode();
-    XmlNode*        	 setRootNode    ( XmlNode * node, bool erase = true );
+    XmlNode*             setRootNode    ( XmlNode * node, bool erase = true );
     void                 setRootTagName ( const std::string & tagname );
 
     void                 setNodeFactory ( XmlNodeFactory * nodeFactory );
@@ -141,10 +141,10 @@ class XmlDocument {
 
   protected:
 
-    std::string	        _xmlfile;
-    std::string	        _dtdfile;
+    std::string         _xmlfile;
+    std::string         _dtdfile;
     std::string         _encoding;
-    std::string	        _errStr;
+    std::string         _errStr;
     std::string         _roottag;
 
     xmlDocPtr           _doc;

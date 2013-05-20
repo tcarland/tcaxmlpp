@@ -52,15 +52,15 @@ XmlNode::XmlNode ( XmlNode     * parent,
       _debug(false)
 {
     if ( _node ) {
-	_type = _node->type;
-	if ( _node->name )
-	    _name = (char*) _node->name;
+        _type = _node->type;
+        if ( _node->name )
+            _name = (char*) _node->name;
         if ( _node->content )
             _text = (char*) _node->content;
     }
 
     if ( _node && recursive_walk ) {
-	this->recursiveWalk();
+        this->recursiveWalk();
         this->readNodeAttributes();
     }
 }
@@ -91,20 +91,20 @@ XmlNode::~XmlNode()
 
     for ( nIter = _kids.begin(); nIter != _kids.end(); nIter++ ) 
     {
-	if ( (*nIter) )
-	    delete *nIter;
+        if ( (*nIter) )
+            delete *nIter;
     }
     _kids.clear();
 
     for ( aIter = _attrs.begin(); aIter != _attrs.end(); aIter++ ) 
     {
-	if ( aIter->second )
-	    delete aIter->second;
+        if ( aIter->second )
+            delete aIter->second;
     }
     _attrs.clear();
 
     if ( _node && ! _node->parent )
-	::xmlFreeNode(_node);
+        ::xmlFreeNode(_node);
 }
 
 void
@@ -125,8 +125,8 @@ XmlNode::readNodeAttributes()
 
     for ( attr = _node->properties; attr; attr = attr->next ) 
     {
-	XmlAttribute* xa = new XmlAttribute(this, attr);
-	_attrs[xa->getKey()] = xa;
+        XmlAttribute* xa = new XmlAttribute(this, attr);
+        _attrs[xa->getKey()] = xa;
     }
 
     return;
@@ -204,16 +204,16 @@ XmlNode::getErrorStr()
  **/
 XmlNode*
 XmlNode::findNode ( const std::string & nodename,
-		    const std::string & attrkey, const std::string & attrval )
+                    const std::string & attrkey, const std::string & attrval )
 {
     XmlNode     * node = NULL;
     XmlNodeIter   nIter;
 
     nIter = std::find_if(_kids.begin(), _kids.end(), 
-	                 FindXmlNodeName(nodename, attrkey, attrval));
+                 FindXmlNodeName(nodename, attrkey, attrval));
 
     if ( nIter == _kids.end() )
-	return node;
+        return node;
 
     node = *nIter;
 
@@ -255,12 +255,12 @@ bool
 XmlNode::addNode ( XmlNode * node )
 {
     if ( node == NULL )
-	return false;
-	
+        return false;
+
     if ( _debug ) {
-	printf("XmlNode::addNode(): node: %s\n", 
-	    node->getNodeName().c_str());
-	node->setDebug(_debug);
+        printf("XmlNode::addNode(): node: %s\n", 
+        node->getNodeName().c_str());
+        node->setDebug(_debug);
     }
     
     XmlNodeIter nIter = std::find(_kids.begin(), _kids.end(), node);
@@ -271,13 +271,13 @@ XmlNode::addNode ( XmlNode * node )
     }
 
     if ( node->getParent() == this ) {
-	_kids.push_back(node);
+        _kids.push_back(node);
     } else if ( node->getParent() == NULL ) {
-	node->setParent(this);
-	_kids.push_back(node);
+        node->setParent(this);
+        _kids.push_back(node);
     } else {
-	_errStr = "Node already has parent";
-	return false;
+        _errStr = "Node already has parent";
+        return false;
     }
 
     return true;
@@ -294,17 +294,17 @@ XmlNode::removeNode ( XmlNode * node )
     xmlNodePtr   n;
 
     if ( node == NULL )
-	return false;
+        return false;
 
     nIter = std::find(_kids.begin(), _kids.end(), node);
 
     if ( nIter == _kids.end() )
-	return false;
+        return false;
     
     n = node->getNode();
 
     if ( n != NULL )
-	::xmlUnlinkNode(n);
+        ::xmlUnlinkNode(n);
     
     _kids.erase(nIter);
 
@@ -317,7 +317,7 @@ XmlNode::findAttr ( const std::string & key )
     XmlAttrIter  aIter;
 
     if ( (aIter = _attrs.find(key)) == _attrs.end() )
-	return NULL;
+        return NULL;
 
     return((XmlAttribute*) aIter->second);
 }
@@ -339,7 +339,7 @@ bool
 XmlNode::hasAttr ( const std::string & key ) const
 {
     if ( this->findAttr(key) == NULL )
-	return false;
+        return false;
     return true;
 }
 
@@ -368,7 +368,7 @@ XmlNode::addAttr ( const std::string & key, const std::string & val )
     XmlAttribute*  attr;
 
     if ( (attr = this->findAttr(key)) != NULL )
-	return false;
+        return false;
 
     attr = new XmlAttribute(this, key, val);
 
@@ -383,7 +383,7 @@ XmlNode::getAttr ( const std::string & key ) const
     const XmlAttribute* attr = this->findAttr(key);
 
     if ( attr == NULL )
-	return std::string("");
+        return std::string("");
 
     return attr->getValue();
 }
@@ -394,8 +394,8 @@ XmlNode::setAttr ( const std::string & key, const std::string & val )
     XmlAttribute*  attr;
 
     if ( (attr = this->findAttr(key)) != NULL ) {
-	attr->setValue(val);
-	return;
+        attr->setValue(val);
+        return;
     }
 
     attr = new XmlAttribute(this, key, val);
@@ -422,10 +422,10 @@ XmlNode::printNode ( bool recursive )
 
     for ( aIter = _attrs.begin(); aIter != _attrs.end(); aIter++ ) 
     {
-	attr = (XmlAttribute*) aIter->second;
+        attr = (XmlAttribute*) aIter->second;
 
-	if ( attr == NULL )
-	    continue;
+        if ( attr == NULL )
+            continue;
 
         std::cout << "      " << attr->getKey() << "  =  " << attr->getValue() 
                   << std::endl;

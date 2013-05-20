@@ -51,8 +51,8 @@ class XmlAttribute {
     XmlAttribute ( XmlNode * parent, xmlAttrPtr node );
 
     XmlAttribute ( XmlNode * parent, 
-	           const std::string & key, 
-	           const std::string & val );
+                   const std::string & key, 
+                   const std::string & val );
 
     virtual ~XmlAttribute();
 
