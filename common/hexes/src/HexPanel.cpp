@@ -610,6 +610,23 @@ HexPanel::getPanelId() const
 
 //----------------------------------------------------------------//
 
+void
+HexPanel::setUserData ( const void * ptr )
+{
+    if ( _panel )
+        ::set_panel_userptr(_panel, ptr);
+}
+
+const void*
+HexPanel::getUserData()
+{
+    if ( _panel )
+        return ::panel_userptr(_panel);
+    return NULL;
+}
+
+//----------------------------------------------------------------//
+
 bool
 HexPanel::enableScroll ( bool scroll, int lines )
 {

@@ -103,6 +103,8 @@ class HexPanel {
     void                setPanelId   ( int panelId );
     int                 getPanelId()   const;
 
+    void                setUserData  ( const void * ptr );
+    const void*         getUserData();
 
     void                setOutputHandler ( HexOutputInterface * output );
     void                setInputHandler  ( HexInputInterface  * input  );
@@ -170,7 +172,7 @@ class HexPanel {
 
     void                setFocus();
     void                unsetFocus();
-    bool			    hasFocus() const;
+    bool                hasFocus() const;
 
     int                 getTextColor();
     void                setTextColor   ( int colorIndex );
