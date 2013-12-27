@@ -40,7 +40,7 @@
 namespace jsonpp {
 
 
-#define JSONPP_VERSION     "0.1.1"
+#define JSONPP_VERSION     "0.2.1"
 
 
 /* std::ostream support */
@@ -54,7 +54,7 @@ std::ostream& operator<< ( std::ostream & strm, const JsonString  & str );
 
 
 /** The JSON class is the primary interface for parsing JSON documents
-  * into objects via strings or streams.
+  * into JsonItems via strings or streams.
  **/
 class JSON {
 
@@ -92,7 +92,6 @@ class JSON {
 
     static bool        IsSeparator  ( std::istream   & buf );
     static std::string ToString     ( const JsonItem * item );
-    
     static std::string TypeToString ( json_t  t );
     static std::string Version();
     static bool        ValidChar    ( char c );

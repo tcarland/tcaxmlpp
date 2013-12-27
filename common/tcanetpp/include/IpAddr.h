@@ -45,7 +45,7 @@ typedef std::set<IpAddr>     IpAddrSet;
 typedef std::vector<IpAddr>  IpAddrList;
 
 
-/**  Provides a seamless interaction with an underlying sockaddr
+/**  Provides seamless interaction with an underlying sockaddr
   *  supporting both IPV4 and IPV6 addresses.
  */
 class IpAddr {

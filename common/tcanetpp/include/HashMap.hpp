@@ -26,31 +26,17 @@
 #ifndef _TCANETPP_HASHMAP_HPP_
 #define _TCANETPP_HASHMAP_HPP_
 
-
-#if defined __GNUC__ && __GNUC__ >= 3
-# include <ext/hash_map>
-  using __gnu_cxx::hash_map;
-  using __gnu_cxx::hash;
-#else
-#if defined __GNUC__ && __GNUC__ < 3
-# include <hash_map>
-  using std::hash_map;
-  using std::hash;
-# endif
-#endif
+#include <string>
+#include <unordered_map>
 
 
 namespace tcanetpp {
 
 
-/**  A wrapper to the SGI hash_map<> class that provides a
+/**  A wrapper to the unordered_map<> class that provides a
   * default hasher implementation for using string keys.
-  * As of the time of this writing, the hash_map implementation is
-  * not yet a part of the C++ standard library. This implementation
-  * relies on the original SGI hash_map, which is still provided with
-  * the newer GNU STL releases, but as a result this code may
-  * not cross-compile or function properly on WIN32 platforms (or
-  * non-Gnu stdc++).
+  * The unordered_map template is a part of the newer C++-11
+  * standard and requires the '-std=c++0x' compile flag.
  **/
 template< typename ValueType >
 class HashMap {
@@ -58,16 +44,17 @@ class HashMap {
   public:
 
     struct keyeq {
-        bool operator() ( const char * a, const char * b )
+        bool operator() ( const std::string & a,
+                          const std::string &  b ) const
         { 
-            return ( strcmp(a, b) == 0 ); 
+            return ( a.compare(b) == 0 );
         }
     };
 
-    typedef hash_map< const char*, ValueType, 
-                      hash<const char*>, keyeq >  Hash;
-    typedef typename Hash::iterator               iterator;
-    typedef typename Hash::const_iterator         const_iterator;
+    typedef std::unordered_map<std::string, ValueType,
+                     std::hash<std::string>, keyeq >   Hash;
+    typedef typename Hash::iterator                    iterator;
+    typedef typename Hash::const_iterator              const_iterator;
 
     
   public:

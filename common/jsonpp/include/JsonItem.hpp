@@ -42,7 +42,7 @@ namespace jsonpp {
 
 
 /**  The JSON type used to identify JsonItems */
-// TODO: Use JSON_LITERAL instead of bool hack and null
+// TODO: Use JSON_LITERAL instead of bool and null
 typedef enum JsonValueType {
     JSON_INVALID,
     JSON_ITEM,

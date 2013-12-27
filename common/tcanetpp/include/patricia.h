@@ -61,8 +61,10 @@ typedef struct ptNode {
 
 /** Typical node handler used when walking the trie via pt_visit() */
 typedef void (*nodeHandler_t) (uint64_t, uint64_t, uint16_t, void*);
+
 /** Specialized node handler used for obtaining a node pointer */
 typedef void (*pvtNodeHandler_t)(ptNode_t*);
+
 
 
 ptNode_t*   pt_init();

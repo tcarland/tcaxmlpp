@@ -1,4 +1,10 @@
-
+/**  
+  *   @file ping.cpp
+  *   @author tcarland@gmail.com
+  *
+  *   Test implementation of ICMP based ping using the tcanetpp library.
+  *
+ **/
 extern "C" {
 #include <signal.h>
 #include <unistd.h>

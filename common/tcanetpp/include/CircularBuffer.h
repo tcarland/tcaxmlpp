@@ -74,7 +74,7 @@ class BufferException : public Exception {
   *  It allows direct access to the underlying char* for direct writing and
   *  reading saving multiple memcpy's that result from normal read()/writes().
   *  It is also useful to use the safe read()/write() methods which guarantee
-  *  safe operation as well as truly treating the buffer as circular. This 
+  *  safe operation as well as truly treating the buffer as circular. The
   *  use case as a packet buffer is intended to allow the buffer to hold many
   *  datagrams efficiently at once for bulk reads in larger buffering scenarios 
   *  and unlike most buffers, it is truly circular, allowing writes to wrap and

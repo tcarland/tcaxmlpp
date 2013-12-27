@@ -23,12 +23,19 @@ int main()
 
 
     hasht.add("foo1", f1);
+
     hasht.add("foo2", f2);
 
     std::cout << "Hash size is " << hasht.size() << std::endl;
 
-    HashMap<foo*>::iterator hIter;
+    HashMap<foo*>::iterator  hIter, fIter;
     hIter = hasht.find("foo2");
+    fIter = hasht.find("foo1");
+
+    if ( fIter != hasht.end() ) 
+    {
+        std::cout << "Found foo1: id=" << fIter->second->client << std::endl;
+    }
 
     if ( hIter != hasht.end() ) 
     {

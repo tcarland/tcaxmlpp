@@ -18,7 +18,7 @@ endif
 ifdef TNMS_DEBUG
 OPT_FLAGS =	-g 
 endif
-OPT_FLAGS +=	-DTWHOIS_MAIN
+OPT_FLAGS +=	-DTWHOIS_MAIN -std=c++0x
 
 INCLUDES=	-I. 
 LIBS=
@@ -37,7 +37,7 @@ PTT_OBJS=	pt_test.o
 
 BIN=		asnwho ipconvert client server cachetest pttest pfxtest \
 		strtest bufftest cidrtest packtest pingt gktrace filetest \
-		thtest
+		thtest hashtest pfxbase
 
 ALL_OBJS=	$(OBJS) $(ASOBJ) $(STROBJ) $(CBUFF_OBJS) $(CIDR_OBJS)
 ALL_BINS= 	$(BIN)

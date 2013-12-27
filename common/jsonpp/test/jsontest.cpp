@@ -40,7 +40,9 @@ int main ( int argc, char **argv )
     {
         const std::string & key  = jIter->first;
         JsonItem          * item = jIter->second;
-        std::cout << key << " : " << JSON::TypeToString(item->getType()) << std::endl;
+
+        std::cout << key << " : " << JSON::TypeToString(item->getType())
+            << std::endl;
     }
 
     std::cout << std::endl;

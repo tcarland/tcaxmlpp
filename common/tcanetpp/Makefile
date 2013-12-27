@@ -23,7 +23,8 @@ ifdef TNMS_DEBUG
 # -DEV_DEBUG
 endif
 
-OPT_FLAGS +=	    -fPIC -O2
+OPT_FLAGS +=	    -fPIC -O2 
+# -std=c++0x
 CCSHARED += 	    -Wl,-soname,$@
 
 INCLUDES =	    -Iinclude
@@ -62,7 +63,7 @@ lib: arlib
 
 arlib: lib/libtcanetpp.a
 
-solib: libtcanetpp.so.1.0.6
+solib: libtcanetpp.so.1.0.7
 
 libtcapt: lib/libtcapt.a
 
@@ -86,7 +87,7 @@ lib/libtcanetpp.a: ${OBJS}
 	$(make-lib-rule)
 	@echo
 
-libtcanetpp.so.1.0.6: ${OBJS}
+libtcanetpp.so.1.0.7: ${OBJS}
 	( $(MKDIR) lib )
 	( $(RM) $@ lib/libtcanetpp.so )
 	$(make-so-rule)

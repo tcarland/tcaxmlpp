@@ -80,7 +80,7 @@ operator<< ( std::ostream & strm, const JsonString & str )
 /**  Constructor for the JSON parser class. If a non-empty string
   *  is provided, the constructor will attempt to parse the string
   *  and potentially throw a JsonException if the string contains
-  *  malformed JSON.
+  *  invalid JSON.
  **/
 JSON::JSON ( const std::string & str ) throw ( JsonException )
     : _errpos(0)
@@ -115,7 +115,7 @@ JSON::operator= ( const JSON & json )
     return *this;
 }
 
-/** Clears the current JSON document */
+/** Erases the current JSON document */
 void
 JSON::clear()
 {
@@ -664,21 +664,21 @@ JSON::TypeToString ( json_t t )
             name.assign("Unknown");
             break;
         case JSON_OBJECT:
-            name.assign("Json Object");
+            name.assign("JSON Object");
             break;
         case JSON_ARRAY:
-            name.assign("Json Array");
+            name.assign("JSON Array");
             break;
         case JSON_NUMBER:
-            name.assign("Json Number");
+            name.assign("JSON Number");
             break;
         case JSON_STRING:
-            name.assign("Json String");
+            name.assign("JSON String");
             break;
         case JSON_BOOL_TRUE:
         case JSON_BOOL_FALSE:
         case JSON_NULL:
-            name.assign("Json Literal");
+            name.assign("JSON Literal");
             break;
         case JSON_INVALID:
         default:
@@ -695,9 +695,9 @@ JSON::ToString ( const JsonItem * item )
 {
     json_t  t = item->getType();
 
-    if ( t == JSON_ITEM )
+    if ( t == JSON_ITEM ) {
         return item->toString();
-    else if ( t == JSON_OBJECT ) {
+    } else if ( t == JSON_OBJECT ) {
         const JsonObject * obj = (const JsonObject*) item;
         return obj->toString();
     } else if ( t == JSON_ARRAY ) {
@@ -728,7 +728,9 @@ JSON::Version()
     return ver;
 }
 
-/**  Includes check for unicode chars */
+/** Static method for validating the given characters is a valid
+  * input character. This includes checking for unicode chars
+ **/
 bool
 JSON::ValidChar ( char c )
 {

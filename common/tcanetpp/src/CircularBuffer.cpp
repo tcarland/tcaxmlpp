@@ -48,6 +48,10 @@ namespace tcanetpp {
  **/
 CircularBuffer::CircularBuffer ( size_t totalsize ) throw ( BufferException )
     : _buffer(NULL),
+      _readPtr(NULL),
+      _writePtr(NULL),
+      _endPtr(NULL),
+      _wrapPtr(NULL),
       _buffsize(totalsize)
 {
     this->init();
