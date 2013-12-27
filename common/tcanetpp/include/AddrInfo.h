@@ -40,7 +40,7 @@ namespace tcanetpp {
 /**  The AddrInfo class provides a convenient object for
   *  creating and manipulating struct addrinfo objects
   *  including some static methods for wrapping calls to
-  *  the system getaddrinfo and getnameinfo functions.
+  *  the system 'getaddrinfo()' and 'getnameinfo()' functions.
  **/
 class AddrInfo {
 

@@ -36,7 +36,7 @@
 #include "tcanetpp_random.h"
 
 #include "AddrInfo.h"
-#include "Prefix.hpp"
+#include "IpAddr.h"
 #include "EventManager.h"
 
 
