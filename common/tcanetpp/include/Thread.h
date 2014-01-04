@@ -132,8 +132,8 @@ class Thread {
 
     std::string         _threadName;
     std::string         _serr;
-    bool                _Alarm;
-    bool                _running;
+    volatile bool       _Alarm;
+    volatile bool       _running;
     bool                _detach;
 
 

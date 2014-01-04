@@ -178,7 +178,7 @@ class EventManager {
 
     std::string               _errstr;
     bool                      _dieoff;
-    bool                      _alarm;
+    volatile bool             _alarm;
     bool                      _debug;
 
     static int                _maxfdp;
