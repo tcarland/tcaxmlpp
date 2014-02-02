@@ -33,8 +33,10 @@ extern "C" {
 }
 #endif
 
+#include "tcanetpp_types.h"
 #include "patricia.h"
 #include "IpAddr.h"
+
 
 
 namespace tcanetpp {
@@ -87,8 +89,8 @@ class PrefixTree {
 
     int  insert  ( const IpAddr & p, T obj )
     {
-        int result = 0;
-        cidr_t  c  = p.getCidr();
+        int result  = 0;
+        prefix_t  c = p.getPrefixType();
 
         this->lock();
         result = pt_insert(_pt, &c, (void*) obj);
@@ -100,7 +102,7 @@ class PrefixTree {
 
     T    remove  ( const IpAddr & p )
     {
-        cidr_t  c  = p.getCidr();
+        prefix_t  c  = p.getPrefixType();
 
         this->lock();
         T  object = (T) pt_remove(_pt, &c);
@@ -112,7 +114,7 @@ class PrefixTree {
    
     T    exactMatch ( const IpAddr & p )
     {
-        cidr_t  c  = p.getCidr();
+        prefix_t  c  = p.getPrefixType();
 
         this->lock();
         T   object = (T) pt_match(_pt, &c);
@@ -124,7 +126,7 @@ class PrefixTree {
 
     T    longestMatch ( IpAddr & p )
     {
-        cidr_t  c  = p.getCidr();
+        prefix_t  c  = p.getPrefixType();
 
         this->lock();
         T   object = (T) pt_matchLongest(_pt, &c);
