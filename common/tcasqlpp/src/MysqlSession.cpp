@@ -130,7 +130,7 @@ MysqlSession::dbconnect()
     throw ( SqlException )
 {
     MYSQL * conn     = NULL;
-    u_int   port     = 0;
+    u_int   port     = 3306;
 
     if ( _dbuser.empty() ) {
         _sqlerr = "MysqlSession::dbconnect(): invalid connection parameters";
@@ -155,7 +155,7 @@ MysqlSession::dbconnect()
         port = MysqlSession::fromString<u_int>(_dbport);
 
     conn = mysql_real_connect(_dbcon, _dbhost.c_str(), _dbuser.c_str(), 
-            _dbpass.c_str(), _dbname.c_str(), 0, NULL, 0);
+            _dbpass.c_str(), _dbname.c_str(), port, NULL, 0);
     
     if ( conn == NULL ) {
         _sqlerr = "MysqlSession::dbconnect(): ";

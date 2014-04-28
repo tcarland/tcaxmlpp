@@ -27,7 +27,7 @@
 #define _TCASQLPP_SQLSESSION_HPP_
 
 
-#define  TCASQLPP_VERSION  "1.2.2"
+#define  TCASQLPP_VERSION  "1.2.4"
 
 
 #include "SqlFactoryInterface.hpp"
