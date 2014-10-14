@@ -34,14 +34,14 @@ lib: arlib
 
 arlib: lib/libjsonpp.a
 
-solib: libjsonpp.so.0.1.0
+solib: libjsonpp.so.0.2.2
 
 lib/libjsonpp.a: $(OBJS)
 	( $(MKDIR) lib )
 	$(make-lib-rule)
 	@echo
 
-libjsonpp.so.0.1.0: $(OBJS)
+libjsonpp.so.0.2.2: $(OBJS)
 	( $(MKDIR) lib )
 	( $(RM) lib/$@ lib/libjsonpp.so )
 	$(make-so-rule)
