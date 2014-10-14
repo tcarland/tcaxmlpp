@@ -302,7 +302,7 @@ IpAddr::isLoopback() const
     return IpAddr::IsLoopback(this->getAddr6());
 }
 
-/**  Method for returning a ipcidr(pfx_t) struct. 
+/**  Method for returning an IP cidr(prefix_t) structure.
  **/
 prefix_t
 IpAddr::getPrefixType() const
