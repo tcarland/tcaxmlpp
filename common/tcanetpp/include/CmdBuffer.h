@@ -65,7 +65,8 @@ class CmdBuffer {
 
   public:
 
-    CmdBuffer ( size_t bufsize = DEFAULT_CMDBUFFER_SIZE ) throw ( CmdBufferException );
+    CmdBuffer ( size_t bufsize = DEFAULT_CMDBUFFER_SIZE ) 
+        throw ( CmdBufferException );
 
     CmdBuffer ( const std::string & cmd, size_t bufsize = DEFAULT_CMDBUFFER_SIZE )
         throw ( CmdBufferException );
@@ -106,8 +107,7 @@ class CmdBuffer {
     static const char*          EOL;
 };
 
-
 } // namespace
 
-
 #endif // _TCANETPP_CMDBUFFER_H_
+

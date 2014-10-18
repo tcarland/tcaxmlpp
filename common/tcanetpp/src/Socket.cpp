@@ -658,6 +658,7 @@ Socket::setSocketOption ( int level, int optname, int optval )
     }
 #   else
     char   serr[ERRORSTRLEN];
+    char * str;
     if ( ::setsockopt(_fd, level, optname, (const void*) &optval, len) < 0 ) {
         // could test for EOPNOTSUPP here
         if ( ::strerror_r(errno, serr, ERRORSTRLEN) == 0 )
@@ -975,8 +976,8 @@ Socket::InitializeSocket ( sockfd_t & fd, IpAddr & addr, int socktype, int proto
         } else if ( errno == EINVAL ) {
             errstr.append("EINVAL: Unknown protocol or PF not supported");
         } else {
-            ::strerror_r(errno, serr, ERRORSTRLEN);
-            errstr.append(serr);
+            char const * str = ::strerror_r(errno, serr, ERRORSTRLEN);
+            errstr.append(str);
         }
 #       endif
 
