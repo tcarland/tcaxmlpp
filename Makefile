@@ -1,10 +1,9 @@
-# ------------------------
-#  Top-level Makefile
+# -------------------------------------------
+#  Top-level Makefile for the TNMS Repository
+# -------------------------------------------
 #
-
 export USE_PTHREADS=1
 export USE_LIBRT=1
-
 
 include ./tcamake/build_defs
 

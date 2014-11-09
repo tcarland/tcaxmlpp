@@ -22,6 +22,9 @@ Author: Jonathan de Halleux, dehalleux@pelikhan.com, 2003
  *  - properly qualified std:: namespace
  *  - added missing typename's for char_type and int_type
  */
+/*  Altered 2014, by Timothy C. Arland (tcarland@gmail.com)
+ *  - updates for gcc 4.x.x; need this-> dereferencing
+ */
 #ifndef ZIPSTREAM_HPP
 #define ZIPSTREAM_HPP
 
@@ -242,7 +245,7 @@ class basic_zip_ostreambase : virtual public std::basic_ios<Elem, Tr>
                 memory_level_,
                 buffer_size_)
     {
-        init(&m_buf);
+        this->init(&m_buf);
     };
 
     virtual ~basic_zip_ostreambase() {}
@@ -298,7 +301,7 @@ class basic_zip_istreambase : virtual public std::basic_ios<Elem, Tr>
                 read_buffer_size_, 
                 input_buffer_size_)
     {
-        init(&m_buf );
+        this->init(&m_buf );
     };
 
     virtual ~basic_zip_istreambase() {}
@@ -397,13 +400,13 @@ class basic_zip_ostream :
           m_is_gzip(is_gzip_)
     {
         if ( m_is_gzip )
-            add_header();
+            this->add_header();
     }
 
     virtual ~basic_zip_ostream()
     {
         if ( m_is_gzip )
-            add_footer();
+            this->add_footer();
     }
 
     /// returns true if it is a gzip 
@@ -487,7 +490,7 @@ class basic_zip_istream :
           m_gzip_data_size(0)
     {
           if (this->rdbuf()->get_zerr()==Z_OK)
-              check_header();
+              this->check_header();
     };
 
     virtual ~basic_zip_istream() {}

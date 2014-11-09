@@ -27,6 +27,7 @@
 extern "C" {
 # include <strings.h>
 # include <errno.h>
+# include <unistd.h>
 }
 
 #include <cstdlib>

@@ -74,7 +74,7 @@ basic_zip_streambuf<Elem,Tr,ElemA,ByteT,ByteAT>::basic_zip_streambuf (
                           static_cast<int>(strategy_)
                         );
 
-    setp(&(m_buffer[0]), &(m_buffer[m_buffer.size()-1]));
+    this->setp(&(m_buffer[0]), &(m_buffer[m_buffer.size()-1]));
 };
 
 
@@ -114,7 +114,7 @@ basic_zip_streambuf<Elem, Tr, ElemA, ByteT, ByteAT>::overflow
          ++w;
      }
      if ( this->zip_to_stream( this->pbase(), w) ) {
-         setp(this->pbase(), this->epptr() - 1);
+         this->setp(this->pbase(), this->epptr() - 1);
          return c;
      } else
          return EOF;
@@ -243,9 +243,9 @@ basic_unzip_streambuf<Elem,Tr,ElemA,ByteT,ByteAT>::basic_unzip_streambuf
     
     m_err = inflateInit2(&m_zip_stream, -static_cast<int>(window_size_));
             
-    setg(&(m_buffer[0])+4,     // beginning of putback area
-         &(m_buffer[0])+4,     // read position
-         &(m_buffer[0])+4);    // end position    
+    this->setg(&(m_buffer[0])+4,     // beginning of putback area
+               &(m_buffer[0])+4,     // read position
+               &(m_buffer[0])+4);    // end position    
 };
 
 
@@ -291,9 +291,9 @@ basic_unzip_streambuf<Elem, Tr, ElemA, ByteT, ByteAT>::underflow()
        return EOF;
 
     // reset buffer pointers
-    setg( &(m_buffer[0]) + (4 - n_putback),   // beginning of putback area
-          &(m_buffer[0]) + 4,                 // read position
-          &(m_buffer[0]) + 4 + num);          // end of buffer
+    this->setg( &(m_buffer[0]) + (4 - n_putback),   // beginning of putback area
+                &(m_buffer[0]) + 4,                 // read position
+                &(m_buffer[0]) + 4 + num);          // end of buffer
 
      // return next character
      return* reinterpret_cast<unsigned char*>(this->gptr());    
