@@ -53,14 +53,13 @@ class ThreadException : public Exception {
 };
 
 
-/**
-  *  The Thread class is an abstract interface class for instantiating an object
-  *  as a thread. The derived object provides the 'run()' implementation.
+/**  The Thread class is an abstract interface class for making an object
+  *  a thread. The derived object provides the 'run()' implementation.
   *  The thread is started via the base class's non-virtual method 'start()', 
   *  which sets up the thread and makes the call to the virtual 'init() method 
-  *  for any needed initialization, and then the derived 'run()'.
-  *  On thread exit or termination, the derived virtual 'finished()'.
-  *  Finally, stop() will terminate the thread and 'join' if applicable.
+  *  for any needed initialization, and then the 'run()' method for execution.
+  *  On thread exit or termination, the virtual 'finished()'.
+  *  Finally, stop() will terminate the thread and join it if applicable.
   *  setAlarm() allows for the signaling of the underlying thread 
   *  to initiate a graceful 'stop'.
  **/

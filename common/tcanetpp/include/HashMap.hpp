@@ -36,7 +36,8 @@ namespace tcanetpp {
 /**  A wrapper to the unordered_map<> class that provides a
   * default hasher implementation for using string keys.
   * The unordered_map template is a part of the newer C++-11
-  * standard and requires the '-std=c++0x' compile flag.
+  * standard and requires the '-std=c++0x' compile flag depending
+  * on the compiler and its version (ie. required in gcc <4.8).
  **/
 template< typename ValueType >
 class HashMap {
@@ -45,7 +46,7 @@ class HashMap {
 
     struct keyeq {
         bool operator() ( const std::string & a,
-                          const std::string &  b ) const
+                          const std::string & b ) const
         { 
             return ( a.compare(b) == 0 );
         }
