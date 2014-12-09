@@ -601,14 +601,12 @@ Socket::setBlocking()
     _block = true;
 }
 
-
 void
 Socket::setNonBlocking()
 {
     Socket::Unblock(this);
     _block = false;
 }
-
 
 bool
 Socket::isBlocking()
@@ -657,10 +655,9 @@ Socket::setSocketOption ( int level, int optname, int optval )
         return -1;
     }
 #   else
-    char   serr[ERRORSTRLEN];
-    char * str;
+    char  serr[ERRORSTRLEN];
     if ( ::setsockopt(_fd, level, optname, (const void*) &optval, len) < 0 ) {
-        // could test for EOPNOTSUPP here
+        // test for EOPNOTSUPP here
         if ( ::strerror_r(errno, serr, ERRORSTRLEN) == 0 )
             _errstr = serr;
         return -1;
@@ -669,7 +666,6 @@ Socket::setSocketOption ( int level, int optname, int optval )
 
     return 1;
 }
-
 
 int 
 Socket::setSocketOption ( SocketOption opt )
