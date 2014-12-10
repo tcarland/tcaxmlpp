@@ -37,9 +37,9 @@
 #include "Exception.hpp"
 
 
-#define DEFAULT_CMDBUFFER_SIZE  256
 #define MINIMUM_CMDBUFFER_SIZE  16
-#define MAXIMUM_CMDBUFFER_SIZE  16384
+#define MAXIMUM_CMDBUFFER_SIZE  2147483648
+#define DEFAULT_CMDBUFFER_SIZE  1024
 
 
 namespace tcanetpp {
@@ -47,6 +47,7 @@ namespace tcanetpp {
 
 typedef __gnu_cxx::stdio_filebuf<char>  StreamBuffer;
 typedef std::vector<std::string>        StringBuffer;
+typedef std::streamsize                 strmsz_t;
 
 
 
@@ -85,6 +86,7 @@ class CmdBuffer {
     bool         isOpen()   const;
     bool         haveData() const;
     bool         hasData()  const  { return this->haveData(); }
+    strmsz_t     inAvail();
 
     std::string  getCommand() const;
     std::string  getErrorStr() const;

@@ -30,8 +30,7 @@
 namespace tcanetpp {
 
 
-const char*
-CmdBuffer::EOL = "\n";
+const char*  CmdBuffer::EOL = "\n";
 
 
 CmdBuffer::CmdBufferException::CmdBufferException ( const std::string & errstr )
@@ -47,7 +46,7 @@ CmdBuffer::CmdBuffer ( size_t bufsize ) throw ( CmdBufferException )
       _eol(*CmdBuffer::EOL),
       _init(false)
 {
-    if ( bufsize < MINIMUM_CMDBUFFER_SIZE || bufsize > MAXIMUM_CMDBUFFER_SIZE )
+    if ( (bufsize < MINIMUM_CMDBUFFER_SIZE) || (bufsize > MAXIMUM_CMDBUFFER_SIZE) )
         throw ( CmdBufferException("CmdBuffer error, buffersize out of bounds") );
 }
 
@@ -60,7 +59,7 @@ CmdBuffer::CmdBuffer ( const std::string & cmd, size_t bufsize ) throw ( CmdBuff
       _eol(*CmdBuffer::EOL),
       _init(false)
 {
-    if ( bufsize < MINIMUM_CMDBUFFER_SIZE || bufsize > MAXIMUM_CMDBUFFER_SIZE )
+    if ( (bufsize < MINIMUM_CMDBUFFER_SIZE) || (bufsize > MAXIMUM_CMDBUFFER_SIZE) )
         throw ( CmdBufferException("CmdBuffer error, buffersize out of bounds") );
     if ( ! this->Open(cmd) )
         throw ( CmdBufferException(this->_errstr) );
@@ -92,7 +91,7 @@ CmdBuffer::Open ( const std::string & cmd )
     _cmdbuf = new StreamBuffer(f, std::ios_base::in, _bufsize);
 
     if ( ! _cmdbuf->is_open() ) {
-        _errstr = "CmdBuffer::Open() error in is_open()";
+        _errstr = "CmdBuffer::Open() failed.";
         delete _cmdbuf;
         delete f;
     } else {
@@ -142,6 +141,14 @@ CmdBuffer::haveData() const
     return true;
 }
 
+strmsz_t
+CmdBuffer::inAvail()
+{
+    if ( ! _init )
+    	return 0;
+
+    return _cmdbuf->in_avail();
+}
 
 std::string
 CmdBuffer::getLine()
