@@ -642,16 +642,23 @@ JSON::parseValueType ( std::istream & buf )
 void
 JSON::setError ( std::istream & buf )
 {
-    _errpos = buf.tellg();
+    std::ios::pos_type pos;
+
+    _errpos  = buf.tellg();
+    pos      = 15;
     _errstr.clear();
-    if ( _errpos < 15 )
+
+    if ( _errpos < pos )
         buf.seekg(0);
     else
-        buf.seekg(_errpos - 15);
-    while ( ! buf.eof() && buf.tellg() < (_errpos + 5) )
+        buf.seekg(_errpos - pos);
+
+    while ( ! buf.eof() && buf.tellg() < (_errpos + ((std::ios::pos_type)5)) )
         _errstr.push_back(buf.get());
+
     return;
 }
+
 
 /** Static function for converting the JSON type value to a string. */
 std::string

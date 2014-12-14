@@ -60,16 +60,16 @@ class JSON {
 
   public:
 
-    JSON ( const std::string & str = "" ) throw ( JsonException );
-    JSON ( std::istream      & buf );
-    JSON ( const JSON        & json );
+    JSON  ( const std::string & str = "" ) throw ( JsonException );
+    JSON  ( std::istream      & buf );
+    JSON  ( const JSON        & json );
 
     ~JSON() throw();
 
     JSON& operator= ( const JSON & json );
 
-    bool  parse ( const std::string & str );
-    bool  parse ( std::istream      & buf );
+    bool  parse   ( const std::string & str );
+    bool  parse   ( std::istream      & buf );
     void  clear();
 
     JsonObject& getJSON() { return this->_root; }
@@ -91,10 +91,11 @@ class JSON {
     }
 
     static bool        IsSeparator  ( std::istream   & buf );
-    static std::string ToString     ( const JsonItem * item );
+    static bool        ValidChar    ( char    c );
     static std::string TypeToString ( json_t  t );
+    static std::string ToString     ( const JsonItem * item );
     static std::string Version();
-    static bool        ValidChar    ( char c );
+
 
   private:
 
@@ -114,9 +115,9 @@ class JSON {
 
   private:
 
-    JsonObject   _root;
-    size_t       _errpos;
-    std::string  _errstr;
+    JsonObject          _root;
+    std::ios::pos_type  _errpos;
+    std::string         _errstr;
     
 };
 
