@@ -21,6 +21,8 @@
   * You should have received a copy of the GNU Lesser General Public 
   * License along with tcanetpp.  
   * If not, see <http://www.gnu.org/licenses/>.
+  *
+  * $Id: BufferedSocket.cpp,v 0.3 2009/01/03 03:02:00 tca Exp $
  **/
 #define _TCANETPP_BUFFEREDSOCKET_CPP_
 
@@ -28,10 +30,6 @@
 
 
 namespace tcanetpp {
-
-
-static const
-char rcsid[] = "$Id: BufferedSocket.cpp,v 0.3 2009/01/03 03:02:00 tca Exp $";
 
 
 BufferedSocket::BufferedSocketFactory  BufferedSocket::factory;

@@ -137,7 +137,7 @@ StringUtils::indexOf ( const std::string & str, const std::string & match, size_
 {
     std::string::size_type  indx;
 
-    if ( from > str.length() || from < 0 )
+    if ( from > str.length() )
         return -1;
 
     if ( (indx = str.find(match, from)) == std::string::npos )
@@ -159,8 +159,6 @@ StringUtils::lastIndexOf ( const std::string & str, const std::string & match, s
 
     if ( from > str.length() )
         from = str.length();
-    else if ( from < 0 )
-        return -1;
 
     if ( (indx = str.find_last_of(match, from)) == std::string::npos )
         return -1;
@@ -457,7 +455,7 @@ StringUtils::indexOf ( const std::wstring & str, const std::wstring & match, siz
 {
     std::wstring::size_type  indx;
 
-    if ( from > str.length() || from < 0 )
+    if ( from > str.length() )
         return -1;
 
     if ( (indx = str.find(match, from)) == std::wstring::npos )
@@ -481,8 +479,6 @@ StringUtils::lastIndexOf ( const std::wstring & str, const std::wstring & match,
 
     if ( from > str.length() )
         from = str.length();
-    else if ( from < 0 )
-        return -1;
 
     if ( (indx = str.find_last_of(match)) == std::wstring::npos )
         return -1;
