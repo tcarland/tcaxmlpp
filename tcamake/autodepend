@@ -104,7 +104,7 @@ makebindep-cmd = \
 #
 #   primary build commands
 make-cbin-rule = $(CC) -o $@ $(CFLAGS) $^ $(LFLAGS) $(LIBS)
-make-cxxbin-rule = $(CXX) -o $@ $(CFLAGS) $^ $(LFLAGS) $(LIBS)
+make-cxxbin-rule = $(CXX) -o $@ $(CFLAGS) $(CXXFLAGS) $^ $(LFLAGS) $(LIBS)
 make-so-rule = $(CC) -shared -o $@ $(CCSHARED) $(CFLAGS) $^ $(LFLAGS) $(LIBS); $(makebindep-cmd)
 make-lib-rule = ld -r -o $@ $^; $(makebindep-cmd)
 

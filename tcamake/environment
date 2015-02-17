@@ -64,7 +64,7 @@ ifeq ($(TCA_PORT_IDENTIFIER), "Darwin_i386")
   EMANATE_os = darwin
   LIB_PTHREAD = -lpthread
   PTHREAD_CFLAGS = -pthread
-  #LIB_DL = -ldl
+  CXXFLAGS_ADD = -stdlib=libstdc++
 endif
 
 ifeq ($(TCA_PORT_IDENTIFIER), "Darwin_x86_64")
@@ -74,7 +74,7 @@ ifeq ($(TCA_PORT_IDENTIFIER), "Darwin_x86_64")
   EMANATE_os = darwin
   LIB_PTHREAD = -lpthread
   PTHREAD_CFLAGS = -pthread
-  #LIB_DL = -ldl
+  CXXFLAGS_ADD = -stdlib=libstdc++
 endif
 
 ifeq ($(TCA_PORT_IDENTIFIER), "FreeBSD_i386")
@@ -89,4 +89,4 @@ ifndef CFLAGS_ADD
 endif
 
 CFLAGS          += $(CFLAGS_ADD)
-
+CXXFLAGS        += $(CXXFLAGS_ADD)

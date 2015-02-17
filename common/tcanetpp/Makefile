@@ -24,8 +24,8 @@ ifdef TNMS_DEBUG
 endif
 
 OPT_FLAGS +=	    -fPIC -O2 
-# -std=c++0x
 CCSHARED += 	    -Wl,-soname,$@
+#CXXFLAGS =         -std=c++0x
 
 INCLUDES =	    -Iinclude
 LIBS =

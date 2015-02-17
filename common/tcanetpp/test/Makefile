@@ -18,10 +18,11 @@ endif
 ifdef TNMS_DEBUG
 OPT_FLAGS =	-g 
 endif
-OPT_FLAGS +=	-DTWHOIS_MAIN -std=c++0x
+OPT_FLAGS +=	-DTWHOIS_MAIN 
 
 INCLUDES=	-I. 
 LIBS=
+CXXFLAGS=       -std=c++0x
 
 
 ASOBJ=          ../src/IpAddr.o ../src/AddrInfo.o \
