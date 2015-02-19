@@ -1,7 +1,11 @@
 # tcamake/autodepend
-#   This file is included internally
+#
+#   This file is included internally and should not need to edited.
+#
+#   Timothy C. Arland <tcarland@gmail.com>
+#
 #------------------------------------------------------------------------
-#  Do not edit below this line unless prepared to deal with the breakage.
+#  Do not edit below this line unless prepared to deal with breakage.
 #------------------------------------------------------------------------
 ifndef TCAMAKE_AUTODEPEND
 TCAMAKE_AUTODEPEND=1
@@ -25,16 +29,12 @@ DEPFILES = $(ALL_OBJS:.o=.d) $(ALL_BINS:=.bd)
 # We include the .d files below.
 #
 # It is IMPORTANT to remove the .d files first otherwise they get appended to
-# (to support a single "depend" file).
-#
-# These should specify SUNPRO_DEPENDENCIES='$*.d $*.o $*.po'
-# but newer gcc quotes the space between the .o and .po and makes gmake
-# 3.78 crash.  So we have to postprocess the .d file instead.
+# (to support a single "depend" file). ie. make clean.
 #
 # To speed make up, we strip out dependencies for /usr/include and
-# other system dirs.  This is less fragile than using gcc's -MM option since
-# we do <tcl.h> in places, for example, and use lots of -I directives.
+# other system dirs.  This is less fragile than using gcc's -MM option.
 #
+
 makedep-prefix = \
 	$(RM) $@ $*.d; $(MKDIR) $(@D); SUNPRO_DEPENDENCIES='$*.D @TARGET@'
 makedep-postcmd = \
@@ -56,6 +56,7 @@ makedep-postcmd = \
 	$(CC) -o $@ -c $(CPPFLAGS) $(CFLAGS) $<
 	$(makedep-postcmd)
 
+
 # .to objects are thread safe versions of objects in libraries that suppport
 # both threaded and non-threaded versions.
 %.to: %.cc
@@ -75,7 +76,7 @@ makedep-postcmd = \
 	$(CC) -o $@ -c $(CPPFLAGS) $(CPPFLAGS_THR) $(CFLAGS) $<
 	$(makedep-postcmd)
 
-#
+
 # This rule generates a binary dependency file that represents the *.a
 # files that go into the binary.  It writes these out to a <binary>.bd
 # file.  The *.bd files should then be picked up to get the dependencies.
@@ -101,8 +102,7 @@ makebindep-cmd = \
 	echo $@: $$DEPS | sed 's,/usr/lib/[^ ]* ,,g;s,/usr/local/lib/[^ ]* ,,g;s,/usr/X11R6/lib/[^ ]* ,,g' > $@.bd
 
 
-#
-#   primary build commands
+# primary build commands
 make-cbin-rule = $(CC) -o $@ $(CFLAGS) $^ $(LFLAGS) $(LIBS)
 make-cxxbin-rule = $(CXX) -o $@ $(CFLAGS) $(CXXFLAGS) $^ $(LFLAGS) $(LIBS)
 make-so-rule = $(CC) -shared -o $@ $(CCSHARED) $(CFLAGS) $^ $(LFLAGS) $(LIBS); $(makebindep-cmd)

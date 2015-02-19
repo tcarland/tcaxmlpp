@@ -2,6 +2,7 @@
 #
 #   determines and sets up a platform specific environment
 #
+#   Timothy C. Arland <tcarland@gmail.com>
 #
 TCA_PORT_OS         := $(shell uname)
 TCA_PORT_MACHINE    := $(shell uname -m)
@@ -14,79 +15,81 @@ LIB_PTHREAD=
 LIB_DL=
 PTHREAD_CFLAGS=
 
+# set defaults for solaris sparc
 ifeq ($(TCA_PORT_IDENTIFIER), "SunOS_sun4u")
-  # set defaults for solaris sparc
-  CFLAGS_ADD = -DTCA_PORT_SOLARIS_SPARC
-  EMANATE_OS = -DSOLARIS
-  EMANATE_os = solaris_sun4
-  LIB_SOCKET = -lsocket
-  LIB_NSL = -lnsl
-  LIB_PTHREAD = -lpthread
+  CFLAGS_ADD     = -DTCA_PORT_SOLARIS_SPARC
+  EMANATE_OS     = -DSOLARIS
+  EMANATE_os     = solaris_sun4
+  LIB_SOCKET     = -lsocket
+  LIB_NSL        = -lnsl
+  LIB_PTHREAD    = -lpthread
   PTHREAD_CFLAGS = -pthread 
-  LIB_DL = -ldl
+  LIB_DL         = -ldl
 endif
 
+# set defaults for linux intel x86
 ifeq ($(TCA_PORT_IDENTIFIER), "Linux_i686")
-  # set defaults for linux intel x86
-  CFLAGS_ADD = -DTCA_PORT_LINUX_INTEL32
-  EMANATE_OS = -DLINUX
-  EMANATE_os = linux
-  LIB_PTHREAD = -lpthread
+  CFLAGS_ADD     = -DTCA_PORT_LINUX_INTEL32
+  EMANATE_OS     = -DLINUX
+  EMANATE_os     = linux
+  LIB_PTHREAD    = -lpthread
   PTHREAD_CFLAGS = -pthread
-  LIB_DL = -ldl
+  LIB_DL         = -ldl
 endif
 
+# set defaults for linux amd64/intelx86_64
 ifeq ($(TCA_PORT_IDENTIFIER), "Linux_x86_64")
-  # set defaults for linux amd64/intelx86_64
-  CFLAGS_ADD = -DTCA_PORT_LINUX_INTEL64
-  EMANATE_OS = -DLINUX
-  EMANATE_os = linux
-  LIB_PTHREAD = -lpthread
+  CFLAGS_ADD     = -DTCA_PORT_LINUX_INTEL64
+  EMANATE_OS     = -DLINUX
+  EMANATE_os     = linux
+  LIB_PTHREAD    = -lpthread
   PTHREAD_CFLAGS = -pthread
-  LIB_DL = -ldl
+  LIB_DL         = -ldl
   PTHREAD_CFLAGS = -pthread
 endif
 
+# set defaults for linux intel itanium
 ifeq ($(TCA_PORT_IDENTIFIER), "Linux_ia64")
-  # set defaults for linux intel itanium
-  CFLAGS_ADD = -DTCA_PORT_LINUX_IA64
-  EMANATE_OS = -DLINUX
-  EMANATE_os = linux
-  LIB_PTHREAD = -lpthread
+  CFLAGS_ADD     = -DTCA_PORT_LINUX_IA64
+  EMANATE_OS     = -DLINUX
+  EMANATE_os     = linux
+  LIB_PTHREAD    = -lpthread
   PTHREAD_CFLAGS = -pthread
-  LIB_DL = -ldl
+  LIB_DL         = -ldl
 endif
 
+# set defaults for mac os x32
 ifeq ($(TCA_PORT_IDENTIFIER), "Darwin_i386")
-  # set defaults for macos
-  CFLAGS_ADD = -DTCA_PORT_DARWIN_I386
-  EMANATE_OS = -DDARWIN
-  EMANATE_os = darwin
-  LIB_PTHREAD = -lpthread
+  CFLAGS_ADD     = -DTCA_PORT_DARWIN_I386
+  EMANATE_OS     = -DDARWIN
+  EMANATE_os     = darwin
+  LIB_PTHREAD    = -lpthread
   PTHREAD_CFLAGS = -pthread
-  CXXFLAGS_ADD = -stdlib=libstdc++
+  CXXFLAGS_ADD   = -stdlib=libstdc++
 endif
 
+# set defaults for mac os x x64
 ifeq ($(TCA_PORT_IDENTIFIER), "Darwin_x86_64")
-  # set defaults for macos
-  CFLAGS_ADD = -DTCA_PORT_DARWIN_INTEL64
-  EMANATE_OS = -DDARWIN
-  EMANATE_os = darwin
-  LIB_PTHREAD = -lpthread
+  CFLAGS_ADD     = -DTCA_PORT_DARWIN_INTEL64
+  EMANATE_OS     = -DDARWIN
+  EMANATE_os     = darwin
+  LIB_PTHREAD    = -lpthread
   PTHREAD_CFLAGS = -pthread
-  CXXFLAGS_ADD = -stdlib=libstdc++
+  CXXFLAGS_ADD   = -stdlib=libstdc++
 endif
 
+# set defaults for freebsd
 ifeq ($(TCA_PORT_IDENTIFIER), "FreeBSD_i386")
-  CFLAGS_ADD = -DTCA_PORT_FREEBSD_INTEL
+  CFLAGS_ADD     = -DTCA_PORT_FREEBSD_INTEL
   PTHREAD_CFLAGS = -pthread
 endif
 
 ifndef CFLAGS_ADD
-  # error out. 
-  # we don't know how to port to anything but those ones listed here.
+  # error out for unknown os/platform
   $(error "cannot support unknown os/machine: $(TCA_PORT_IDENTIFIER)")
 endif
 
 CFLAGS          += $(CFLAGS_ADD)
 CXXFLAGS        += $(CXXFLAGS_ADD)
+
+
