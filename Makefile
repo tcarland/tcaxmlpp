@@ -9,14 +9,15 @@ endif
 
 NEED_LIBXML2_INCLUDE = 1
 
+
 ifdef TNMS_DEBUG
 OPT_FLAGS =     -g
 endif
 
 
-OPT_FLAGS += -fPIC -O2
-CCSHARED += 	-Wl,-soname,$@
-
+OPT_FLAGS +=    -fPIC -O2
+CCSHARED +=     -Wl,-soname,$@
+#TODO: osx linker 'ld' doesn't support soname
 
 INCLUDES =	-Iinclude
 LIBS = 
@@ -42,15 +43,15 @@ solib: libtcaxmlpp.so.1.0.4
 
 lib/libtcaxmlpp.a: $(OBJS)
 	@echo $(OBJS)
-	( mkdir -p lib )
-	ld -r -o $@ $(OBJS) $(LFLAGS)
+	( $(MKDIR) lib )
+	$(make-lib-rule)
 	@echo
 
 libtcaxmlpp.so.1.0.4: $(OBJS)
+	( $(MKDIR) lib )
+	( $(RM) lib/$@ lib/libtcaxmlpp.so )
 	$(make-so-rule)
-	$(RM) lib/$@ lib/libtcaxmlpp.so
-	( mkdir -p lib; mv $@ lib/; \
-	  cd lib; ln -s $@ libtcaxmlpp.so )
+	( mv $@ lib/; cd lib; ln -s $@ libtcaxmlpp.so )
 	@echo
 
 lib-clean:
