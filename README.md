@@ -39,7 +39,9 @@ node attributes and any of its children.
                
 
 ### Building
-To build the library simply run 'make'.   
+To build the library, tcamake must first be obtained by cloning the git 
+repo directly into the project via 'git clone https://github.com/tcarland/tcamake'. 
+Then simply run 'make' to build the library.
 
 
 ### Contact
