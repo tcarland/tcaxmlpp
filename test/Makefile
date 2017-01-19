@@ -1,13 +1,9 @@
-ifdef TCAMAKE_PROJECT
-TOPDIR = ../../..
-else
-TOPDIR = ..
-endif
+TOPDIR = ../..
 
 NEED_TCAXMLPP = 1
 NEED_LIBXML2 = 1
 
-ifdef TCANMS_DEBUG
+ifdef TCAMAKE_DEBUG
 OPT_FLAGS =     -g
 endif
 
