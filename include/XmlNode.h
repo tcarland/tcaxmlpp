@@ -188,7 +188,7 @@ class XmlNode {
     };
 
     /**  Predicate for locating a specific XmlNode 
-      *  based on a given attribute 
+      *  based on a given node name and attribute. 
      **/
     class FindXmlNodeName {
       public:
@@ -205,6 +205,7 @@ class XmlNode {
         bool operator() ( const XmlNode * node );
     };
 
+    /**  Predicate for locating all nodes of a given name. */
     class FindXmlNodesByName {
     public:
         std::string  name;
