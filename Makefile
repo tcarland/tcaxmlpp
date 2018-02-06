@@ -4,7 +4,6 @@ TOPDIR = ..
 
 NEED_LIBXML2_INCLUDE = 1
 
-
 ifdef TCAMAKE_DEBUG
 OPT_FLAGS =     -g
 endif
@@ -15,11 +14,11 @@ CCSHARED +=     -Wl,-soname,$@
 #TODO: osx linker 'ld' doesn't support soname
 
 INCLUDES =	-Iinclude
-LIBS = 
+LIBS =
 
-BIN =		
+BIN =
 OBJS = 		src/XmlDocument.o src/XmlNode.o src/XmlAttribute.o \
-		src/XmlDocNode.o 
+		src/XmlDocNode.o
 
 ALL_OBJS =	$(OBJS)
 ALL_BINS = 	$(BIN)
@@ -34,7 +33,7 @@ include $(TOPDIR)/tcamake/project_defs
 lib: arlib solib
 
 arlib: lib/libtcaxmlpp.a
-solib: libtcaxmlpp.so.1.0.4
+solib: libtcaxmlpp.so.1.0.5
 
 lib/libtcaxmlpp.a: $(OBJS)
 	@echo $(OBJS)
@@ -42,7 +41,7 @@ lib/libtcaxmlpp.a: $(OBJS)
 	$(make-lib-rule)
 	@echo
 
-libtcaxmlpp.so.1.0.4: $(OBJS)
+libtcaxmlpp.so.1.0.5: $(OBJS)
 	( $(MKDIR) lib )
 	( $(RM) lib/$@ lib/libtcaxmlpp.so )
 	$(make-so-rule)
@@ -68,7 +67,7 @@ test:
 
 test-clean:
 	( cd test; $(MAKE) clean )
-	@echo 
+	@echo
 
 test-distclean:
 	(cd test; $(MAKE) distclean )
@@ -91,4 +90,3 @@ ifdef TCAMAKE_PREFIX
 	$(RSYNC) lib/ $(TCAMAKE_PREFIX)/lib/
 	@echo
 endif
-

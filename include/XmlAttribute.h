@@ -1,10 +1,10 @@
 /**
   * @file XmlAttribute.h
   *
-  *   This class manages an xml attribute which is generally attached 
+  *   This class manages an xml attribute which is generally attached
   * to a parent node.
-  *  
-  * Copyright(c) 2008, Timothy Charlton Arland
+  *
+  * Copyright(c) 2008-2018 Timothy Charlton Arland
   * @author tca@charltontechnology.net
   *
   * @section LICENSE
@@ -12,8 +12,8 @@
   * This file is part of tcaxmlplus.
   *
   * tcaxmlplus is free software: you can redistribute it and/or modify
-  * it under the terms of the GNU Lesser General Public License as 
-  * published by the Free Software Foundation, either version 3 of 
+  * it under the terms of the GNU Lesser General Public License as
+  * published by the Free Software Foundation, either version 3 of
   * the License, or (at your option) any later version.
   *
   * tcaxmlplus is distributed in the hope that it will be useful,
@@ -21,8 +21,8 @@
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   * GNU Lesser General Public License for more details.
   *
-  * You should have received a copy of the GNU Lesser General Public 
-  * License along with tcaxmlplus.  
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with tcaxmlplus.
   * If not, see <http://www.gnu.org/licenses/>.
  **/
 #ifndef _TCAXMLPLUS_XMLATTRIBUTE_H_
@@ -33,14 +33,13 @@
 
 namespace tcaxmlpp {
 
-
 class XmlNode;
 
 
 /**    An XmlAttribute object instance represents a single key/value
-  * attribute pair. 
-  *    This class provides an interface to XmlNode for performing 
-  * 'live' xml attribute node updates if applicable. 
+  * attribute pair.
+  *    This class provides an interface to XmlNode for performing
+  * 'live' xml attribute node updates if applicable.
   * XmlAttribute objects are both created and destroyed
   * by XmlNode which should be where most interaction occurs.
  **/
@@ -50,8 +49,8 @@ class XmlAttribute {
 
     XmlAttribute ( XmlNode * parent, xmlAttrPtr node );
 
-    XmlAttribute ( XmlNode * parent, 
-                   const std::string & key, 
+    XmlAttribute ( XmlNode * parent,
+                   const std::string & key,
                    const std::string & val );
 
     virtual ~XmlAttribute();
@@ -69,12 +68,8 @@ class XmlAttribute {
     xmlAttrPtr          _node;
     std::string         _key;
     std::string         _val;
-
 };
-
 
 }  // namespace
 
-
-#endif  // _TCAXMLPLUS_XMLATTRIBUTE_H_ 
-
+#endif  // _TCAXMLPLUS_XMLATTRIBUTE_H_

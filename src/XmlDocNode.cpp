@@ -1,5 +1,28 @@
+/**
+  * @file XmlDockNode.cpp
+  *
+  * Copyright(c) 2008-2018 Timothy Charlton Arland
+  * @author tca@charltontechnology.net
+  *
+  * @section LICENSE
+  *
+  * This file is part of tcaxmlplus.
+  *
+  * tcaxmlplus is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU Lesser General Public License as
+  * published by the Free Software Foundation, either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * tcaxmlplus is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Lesser General Public License for more details.
+  *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with tcaxmlplus.
+  * If not, see <http://www.gnu.org/licenses/>.
+ **/
 #define _TCAXMLPP_XMLDOCNODE_CPP_
-
 
 #include "XmlDocNode.h"
 
@@ -13,7 +36,6 @@ XmlDocNodeFactory::operator() ( XmlNode * parent, xmlNodePtr node, bool r )
 }
 
 
-
 /**  XmlDocNode
  *    The XmlDocNode class provides a convenient XmlNode heirarchy
  *  that keeps a pointer to the parent XmlDocument container object
@@ -24,14 +46,13 @@ XmlDocNodeFactory::operator() ( XmlNode * parent, xmlNodePtr node, bool r )
  *  customizing the root level node. Further node customization is
  *  accomplished by overriding XmlNode::recursiveWalk().
  */
-XmlDocNode::XmlDocNode ( XmlDocument * doc, 
+XmlDocNode::XmlDocNode ( XmlDocument * doc,
                          XmlNode     * parent,
-                         xmlNodePtr    node, 
+                         xmlNodePtr    node,
                          bool          recurse )
     : XmlNode(parent, node, recurse),
       _doc(doc)
 {}
-
 
 XmlDocument*
 XmlDocNode::getDocument()
@@ -47,9 +68,6 @@ XmlDocNode::getDocument()
     return p->getDocument();
 }
 
-
-}  // namespace 
-
+}  // namespace
 
 //  _TCAXMLPP_XMLDOCNODE_CPP_
-

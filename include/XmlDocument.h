@@ -1,19 +1,19 @@
 /**
   * @file XmlDocument.h
-  *  
-  *    This class provides an interface for parsing and 
-  *  holding a XML document structure using libxml2's DOM api. 
   *
-  * Copyright(c) 2008, Timothy Charlton Arland
-  * @author tca@charltontechnology.net
+  *  XmlDocument provides an object-oriented interface for parsing and
+  *  holding a XML document structure using libxml2's DOM API.
+  *
+  * Copyright(c) 2008-2018 Timothy Charlton Arland
+  * @author tca@charltontechnology.net tcarland@gmail.com
   *
   * @section LICENSE
   *
   * This file is part of tcaxmlplus.
   *
   * tcaxmlplus is free software: you can redistribute it and/or modify
-  * it under the terms of the GNU Lesser General Public License as 
-  * published by the Free Software Foundation, either version 3 of 
+  * it under the terms of the GNU Lesser General Public License as
+  * published by the Free Software Foundation, either version 3 of
   * the License, or (at your option) any later version.
   *
   * tcaxmlplus is distributed in the hope that it will be useful,
@@ -21,13 +21,12 @@
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   * GNU Lesser General Public License for more details.
   *
-  * You should have received a copy of the GNU Lesser General Public 
-  * License along with tcaxmlplus.  
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with tcaxmlplus.
   * If not, see <http://www.gnu.org/licenses/>.
  **/
 #ifndef XmlDocument_h
 #define XmlDocument_h
-
 
 #ifdef WIN32
 typedef unsigned u_int;
@@ -41,14 +40,11 @@ typedef unsigned u_int;
 
 #include <libxml/tree.h>
 
-
 #include "XmlNode.h"
 #include "XmlAttribute.h"
 
 
-
 namespace tcaxmlpp {
-
 
 class XmlNode;
 class XmlAttribute;
@@ -75,9 +71,8 @@ class XmlNodeFactory {
 
 
 /**  XmlDocument provides an object-oriented interface to a xml
-  *  document via libxml2. The XmlDocument interface primarily 
-  *  handles the input/output of well-formed xml fragments or documents. 
-  *  Most XML manipulation occurs using the XmlNode class.
+  *  document via libxml2. The XmlDocument interface primarily
+  *  handles the input/output of well-formed xml fragments or documents.
  **/
 class XmlDocument {
 
@@ -98,9 +93,9 @@ class XmlDocument {
     virtual  ~XmlDocument();
 
 
-    bool                 initDocument   ( const std::string & filename, 
+    bool                 initDocument   ( const std::string & filename,
                                           bool create = false );
-    bool                 docIsValid() const;
+    bool                 documentIsValid() const;
 
     virtual bool         saveDocument();
     virtual void         clearDocument();
@@ -121,7 +116,7 @@ class XmlDocument {
 
     void                 setDebug       ( bool d );
     const std::string&   getErrorStr()    const;
-    
+
     std::string          NodeToString   ( XmlNode * node );
 
 
@@ -154,12 +149,8 @@ class XmlDocument {
 
     static bool         _Libinit;
     static const char*  _Version;
-
 };
-
 
 }  // namespace
 
-
-#endif  /*  XmlDocument_h  */
-
+#endif  //  XmlDocument_h

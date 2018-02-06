@@ -1,7 +1,7 @@
 /**
   * @file XmlNode.cpp
-  *  
-  * Copyright(c) 2008, Timothy Charlton Arland
+  *
+  * Copyright(c) 2008-2018 Timothy Charlton Arland
   * @author tca@charltontechnology.net
   *
   * @section LICENSE
@@ -9,8 +9,8 @@
   * This file is part of tcaxmlplus.
   *
   * tcaxmlplus is free software: you can redistribute it and/or modify
-  * it under the terms of the GNU Lesser General Public License as 
-  * published by the Free Software Foundation, either version 3 of 
+  * it under the terms of the GNU Lesser General Public License as
+  * published by the Free Software Foundation, either version 3 of
   * the License, or (at your option) any later version.
   *
   * tcaxmlplus is distributed in the hope that it will be useful,
@@ -18,8 +18,8 @@
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   * GNU Lesser General Public License for more details.
   *
-  * You should have received a copy of the GNU Lesser General Public 
-  * License along with tcaxmlplus.  
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with tcaxmlplus.
   * If not, see <http://www.gnu.org/licenses/>.
  **/
 #define _TCAXMLPLUS_XMLNODE_CPP_
@@ -43,7 +43,7 @@ XmlNode::XmlNode()
 
 
 XmlNode::XmlNode ( XmlNode     * parent,
-                   xmlNodePtr    node, 
+                   xmlNodePtr    node,
                    bool          recursive_walk )
     : _parent(parent),
       _node(node),
@@ -67,8 +67,8 @@ XmlNode::XmlNode ( XmlNode     * parent,
 
 
 /**  Creates a new, unattached node. */
-XmlNode::XmlNode ( XmlNode           * parent, 
-                   const std::string & name, 
+XmlNode::XmlNode ( XmlNode           * parent,
+                   const std::string & name,
                    int                 type )
     : _parent(parent),
       _name(name),
@@ -83,20 +83,20 @@ XmlNode::XmlNode ( XmlNode           * parent,
     }
 }
 
-
+/** XmlNode destructor */
 XmlNode::~XmlNode()
 {
     XmlNodeIter  nIter;
     XmlAttrIter  aIter;
 
-    for ( nIter = _kids.begin(); nIter != _kids.end(); nIter++ ) 
+    for ( nIter = _kids.begin(); nIter != _kids.end(); nIter++ )
     {
         if ( (*nIter) )
             delete *nIter;
     }
     _kids.clear();
 
-    for ( aIter = _attrs.begin(); aIter != _attrs.end(); aIter++ ) 
+    for ( aIter = _attrs.begin(); aIter != _attrs.end(); aIter++ )
     {
         if ( aIter->second )
             delete aIter->second;
@@ -107,6 +107,7 @@ XmlNode::~XmlNode()
         ::xmlFreeNode(_node);
 }
 
+/** Internal initialization routine for creating XmlNodes */
 void
 XmlNode::recursiveWalk()
 {
@@ -118,12 +119,13 @@ XmlNode::recursiveWalk()
     return;
 }
 
+/** Internal initialization routine for reading node attributes. */
 void
 XmlNode::readNodeAttributes()
 {
     xmlAttrPtr  attr;
 
-    for ( attr = _node->properties; attr; attr = attr->next ) 
+    for ( attr = _node->properties; attr; attr = attr->next )
     {
         XmlAttribute* xa = new XmlAttribute(this, attr);
         _attrs[xa->getKey()] = xa;
@@ -132,18 +134,21 @@ XmlNode::readNodeAttributes()
     return;
 }
 
+/** Return the name of the XmlNode */
 std::string
 XmlNode::getNodeName() const
 {
     return _name;
 }
 
+/** Returns the underlying libxml2 xmlNodePtr */
 xmlNodePtr
 XmlNode::getNode()
 {
     return _node;
 }
 
+/** Returns the XML node type value */
 int
 XmlNode::getNodeType() const
 {
@@ -163,6 +168,9 @@ XmlNode::setNodeContent ( const std::string & txt )
         ::xmlNodeSetContent(_node, (const xmlChar*) txt.c_str());
 }
 
+/** Returns the parent XmlNode or NULL if this node is the root
+  * of the document.
+ **/
 XmlNode*
 XmlNode::getParent()
 {
@@ -181,6 +189,7 @@ XmlNode::hasChildren() const
     return(_kids.size() > 0);
 }
 
+/** Returns a boolean indicating whether this node has any attributes */
 bool
 XmlNode::hasAttributes() const
 {
@@ -209,7 +218,7 @@ XmlNode::findNode ( const std::string & nodename,
     XmlNode     * node = NULL;
     XmlNodeIter   nIter;
 
-    nIter = std::find_if(_kids.begin(), _kids.end(), 
+    nIter = std::find_if(_kids.begin(), _kids.end(),
                  FindXmlNodeName(nodename, attrkey, attrval));
 
     if ( nIter == _kids.end() )
@@ -247,7 +256,7 @@ XmlNode::findNodes ( const std::string & nodename, const std::string & attrkey )
 }
 
 
-/**  This will add the provided node as a child of the 
+/**  This will add the provided node as a child of the
  *   current object. It does not attach or set heirarchy and
  *   will fail if the node has not already been attached.
  **/
@@ -258,13 +267,13 @@ XmlNode::addNode ( XmlNode * node )
         return false;
 
     if ( _debug ) {
-        printf("XmlNode::addNode(): node: %s\n", 
+        printf("XmlNode::addNode(): node: %s\n",
         node->getNodeName().c_str());
         node->setDebug(_debug);
     }
-    
+
     XmlNodeIter nIter = std::find(_kids.begin(), _kids.end(), node);
-	
+
     if ( nIter != _kids.end() ) {
         _errStr = "Node already exists";
         return false;
@@ -300,17 +309,18 @@ XmlNode::removeNode ( XmlNode * node )
 
     if ( nIter == _kids.end() )
         return false;
-    
+
     n = node->getNode();
 
     if ( n != NULL )
         ::xmlUnlinkNode(n);
-    
+
     _kids.erase(nIter);
 
     return true;
 }
 
+/** Finds the attribute associated with provided key. */
 XmlAttribute*
 XmlNode::findAttr ( const std::string & key )
 {
@@ -355,7 +365,7 @@ XmlNode::removeAttr ( const std::string & key )
     attr = (XmlAttribute*) aIter->second;
 
     ::xmlRemoveProp(attr->getNode());
-	
+
     _attrs.erase(aIter);
     delete attr;
 
@@ -420,27 +430,23 @@ XmlNode::printNode ( bool recursive )
 
     std::cout << "Node: <" << _name << ">" << std::endl;
 
-    for ( aIter = _attrs.begin(); aIter != _attrs.end(); aIter++ ) 
+    for ( aIter = _attrs.begin(); aIter != _attrs.end(); aIter++ )
     {
         attr = (XmlAttribute*) aIter->second;
-
         if ( attr == NULL )
             continue;
-
-        std::cout << "      " << attr->getKey() << "  =  " << attr->getValue() 
+        std::cout << "      " << attr->getKey() << "  =  " << attr->getValue()
                   << std::endl;
     }
     std::cout << " Node has " << _kids.size() << " children\n\n";
 
     if ( recursive )
     {
-        for ( nIter = _kids.begin(); nIter != _kids.end(); nIter++ ) 
+        for ( nIter = _kids.begin(); nIter != _kids.end(); nIter++ )
         {
             node = (XmlNode*) *nIter;
-                    
             if ( node == NULL )
                 continue;
-
             node->printNode(true);
         }
     }
@@ -450,12 +456,12 @@ XmlNode::printNode ( bool recursive )
 
 
 XmlNode*
-XmlNode::RecursiveFindNode ( XmlNode * root, 
+XmlNode::RecursiveFindNode ( XmlNode * root,
                              const std::string & name,
-                             const std::string & key, 
+                             const std::string & key,
                              const std::string & val )
 {
-    if ( root->getNodeName().compare(name) == 0 
+    if ( root->getNodeName().compare(name) == 0
         && root->getAttr(key).compare(val) == 0 )
     {
         return root;
@@ -465,7 +471,7 @@ XmlNode::RecursiveFindNode ( XmlNode * root,
     XmlNodeList  & kids  = root->getNodeList();
     XmlNode      * node  = NULL;
 
-    for ( nIter = kids.begin(); nIter != kids.end(); ++nIter ) 
+    for ( nIter = kids.begin(); nIter != kids.end(); ++nIter )
     {
         node = (*nIter)->findNode(name, key, val);
 
@@ -503,9 +509,6 @@ XmlNode::FindXmlNodesByName::operator() ( XmlNode * node )
     return true;
 }
 
-
 }  // namespace
 
-
 //  _TCAXMLPLUS_XMLNODE_CPP_
-
