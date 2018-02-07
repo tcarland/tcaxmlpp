@@ -1,9 +1,9 @@
 /**
   * @file XmlNode.h
-  *    Class for manipulating a node, its children, and 
+  *    Class for manipulating a node, its children, and
   * its attributes.
   *
-  * Copyright(c) 2008, Timothy Charlton Arland
+  * Copyright(c) 2008-2018 Timothy Charlton Arland
   * @author tca@charltontechnology.net
   *
   * @section LICENSE
@@ -11,8 +11,8 @@
   * This file is part of tcaxmlplus.
   *
   * tcaxmlplus is free software: you can redistribute it and/or modify
-  * it under the terms of the GNU Lesser General Public License as 
-  * published by the Free Software Foundation, either version 3 of 
+  * it under the terms of the GNU Lesser General Public License as
+  * published by the Free Software Foundation, either version 3 of
   * the License, or (at your option) any later version.
   *
   * tcaxmlplus is distributed in the hope that it will be useful,
@@ -20,8 +20,8 @@
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   * GNU Lesser General Public License for more details.
   *
-  * You should have received a copy of the GNU Lesser General Public 
-  * License along with tcaxmlplus.  
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with tcaxmlplus.
   * If not, see <http://www.gnu.org/licenses/>.
  **/
 #ifndef _TCAXMLPLUS_XMLNODE_H_
@@ -51,11 +51,11 @@ typedef XmlAttrMap::iterator                    XmlAttrIter;
 
 //-----------------------------------------------------------//
 
-/**  The XmlNode object acts as a container for all sub-nodes or 
-  *  children. The class ignores xsd type information and handles 
-  *  all attributes and node tags as strings. The root level XmlNode
-  *  object would provide the primary interface into manipulating 
-  *  the xml content.
+/**  The XmlNode object acts as a container for all sub-nodes or
+  *  children. For simplicity, the class ignores xsd type information
+  *  and handles all attributes and node tags as strings. The root
+  *  level XmlNode object would provide the primary interface into
+  *  manipulating the xml content.
  **/
 class XmlNode {
     friend class XmlDocument;
@@ -64,16 +64,16 @@ class XmlNode {
 
     typedef XmlNodeList::iterator        iterator;
     typedef XmlNodeList::const_iterator  const_iterator;
-    
+
   public:
 
     XmlNode();
-    XmlNode   ( XmlNode           * parent, 
-                xmlNodePtr          node, 
+    XmlNode   ( XmlNode           * parent,
+                xmlNodePtr          node,
                 bool                recursive_walk = true );
 
-    XmlNode   ( XmlNode           * parent, 
-                const std::string & name, 
+    XmlNode   ( XmlNode           * parent,
+                const std::string & name,
                 int                 type = XML_ELEMENT_NODE );
 
     virtual ~XmlNode();
@@ -96,12 +96,12 @@ class XmlNode {
     inline size_t  children()  const { return _kids.size(); }
     inline size_t  nodeCount() const { return this->children(); }
     bool           hasChildren() const;
-    
+
     bool           addNode           ( XmlNode * node );
     bool           removeNode        ( XmlNode * node );
 
     XmlNode*       findNode          ( const std::string & nodename,
-                                       const std::string & attrkey = "", 
+                                       const std::string & attrkey = "",
                                        const std::string & attrval = "" );
     XmlNodeList    findNodes         ( const std::string & nodename,
                                        const std::string & attrkey = "" );
@@ -136,36 +136,36 @@ class XmlNode {
     std::string    getAttr          ( const std::string & name ) const;
 
     bool           removeAttr       ( const std::string & name );
-    bool           addAttr          ( const std::string & key, 
+    bool           addAttr          ( const std::string & key,
                                       const std::string & val );
-    void           setAttr          ( const std::string & name, 
+    void           setAttr          ( const std::string & name,
                                       const std::string & val );
 
     // long-name attribute methods
-    inline 
+    inline
     XmlAttribute*  findAttribute    ( const std::string & key )
                                     { return this->findAttr(key); }
-    inline 
+    inline
     bool           hasAttribute     ( const std::string & key ) const
                                     { return this->hasAttr(key); }
-    inline 
+    inline
     bool           haveAttribute    ( const std::string & key ) const
                                     { return this->hasAttr(key); }
-    inline 
+    inline
     bool           haveAttr         ( const std::string & key ) const
                                     { return this->hasAttr(key); }
-    inline 
+    inline
     bool           addAttribute     ( const std::string & key,
                                       const std::string & val )
                                     { return this->addAttr(key, val); }
-    inline 
+    inline
     bool           removeAttribute  ( const std::string & key )
                                     { return this->removeAttr(key); }
-    inline 
+    inline
     std::string    getAttribute     ( const std::string & key ) const
                                     { return this->getAttr(key); }
-    inline 
-    void           setAttribute     ( const std::string & key, 
+    inline
+    void           setAttribute     ( const std::string & key,
                                       const std::string & val )
                                     { return this->setAttr(key, val); }
 
@@ -181,14 +181,12 @@ class XmlNode {
     class FindXmlNode {
       public:
         XmlNode * node;
-
         explicit FindXmlNode ( XmlNode * n ) : node(n) {}
-
         bool operator() ( const XmlNode * n );
     };
 
-    /**  Predicate for locating a specific XmlNode 
-      *  based on a given node name and attribute. 
+    /**  Predicate for locating a specific XmlNode
+      *  based on a given node name and attribute.
      **/
     class FindXmlNodeName {
       public:
@@ -196,10 +194,10 @@ class XmlNode {
         std::string  key;
         std::string  val;
 
-        explicit FindXmlNodeName ( const std::string & name_, 
-                                   const std::string & key_, 
+        explicit FindXmlNodeName ( const std::string & name_,
+                                   const std::string & key_,
                                    const std::string & val_ )
-           : name(name_), key(key_), val(val_) 
+           : name(name_), key(key_), val(val_)
         {}
 
         bool operator() ( const XmlNode * node );
@@ -217,6 +215,7 @@ class XmlNode {
         bool operator() ( XmlNode * node );
     };
 
+    /**  Attempts to convert a string to the provided type. */
     template<typename T>
     static inline  T    FromString  ( const std::string & str )
     {
@@ -238,23 +237,20 @@ class XmlNode {
   protected:
 
     XmlNode*            _parent;
-    
+
     xmlNodePtr          _node;
     xmlElementType      _type;
 
     std::string         _name;
     std::string         _text;
     std::string         _errStr;
-    
+
     XmlNodeList         _kids;
     XmlAttrMap          _attrs;
 
     bool                _debug;
-
 };
-
 
 }  // namespace
 
 #endif  // _TCAXMLPLUS_XMLNODE_H_
-

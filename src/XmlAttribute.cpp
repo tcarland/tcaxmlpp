@@ -1,7 +1,7 @@
 /**
   * @file XmlAttribute.cpp
   *
-  * Copyright(c) 2008, Timothy Charlton Arland
+  * Copyright(c) 2008-2018 Timothy Charlton Arland
   * @author tca@charltontechnology.net
   *
   * @section LICENSE
@@ -9,8 +9,8 @@
   * This file is part of tcaxmlplus.
   *
   * tcaxmlplus is free software: you can redistribute it and/or modify
-  * it under the terms of the GNU Lesser General Public License as 
-  * published by the Free Software Foundation, either version 3 of 
+  * it under the terms of the GNU Lesser General Public License as
+  * published by the Free Software Foundation, either version 3 of
   * the License, or (at your option) any later version.
   *
   * tcaxmlplus is distributed in the hope that it will be useful,
@@ -18,8 +18,8 @@
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   * GNU Lesser General Public License for more details.
   *
-  * You should have received a copy of the GNU Lesser General Public 
-  * License along with tcaxmlplus.  
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with tcaxmlplus.
   * If not, see <http://www.gnu.org/licenses/>.
  **/
 #define _TCAXMLPLUS_XMLATTRIBUTE_CPP_
@@ -28,7 +28,6 @@
 
 
 namespace tcaxmlpp {
-
 
 
 XmlAttribute::XmlAttribute ( XmlNode * parent, xmlAttrPtr node )
@@ -45,9 +44,8 @@ XmlAttribute::XmlAttribute ( XmlNode * parent, xmlAttrPtr node )
     }
 }
 
-
-XmlAttribute::XmlAttribute ( XmlNode * parent, 
-                             const std::string & key, 
+XmlAttribute::XmlAttribute ( XmlNode * parent,
+                             const std::string & key,
                              const std::string & val )
    : _parent(parent),
      _node(NULL),
@@ -58,7 +56,6 @@ XmlAttribute::XmlAttribute ( XmlNode * parent,
 
 
 XmlAttribute::~XmlAttribute() {}
-
 
 
 void
@@ -77,9 +74,6 @@ XmlAttribute::setValue ( const std::string & val )
     return;
 }
 
-
 }  // namespace
 
-
-//  _TCAXMLPLUS_XMLATTRIBUTE_CPP_ 
-
+//  _TCAXMLPLUS_XMLATTRIBUTE_CPP_
