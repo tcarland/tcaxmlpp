@@ -1,8 +1,7 @@
 /**
   * @file XmlNode.cpp
   *
-  * Copyright(c) 2008-2018 Timothy Charlton Arland
-  * @author tca@charltontechnology.net
+  * Copyright(c) 2008-2020 Timothy Charlton Arland <tcarland@gmail.com>
   *
   * @section LICENSE
   *
@@ -51,7 +50,8 @@ XmlNode::XmlNode ( XmlNode     * parent,
       _name(),
       _debug(false)
 {
-    if ( _node ) {
+    if ( _node ) 
+    {
         _type = _node->type;
         if ( _node->name )
             _name = (char*) _node->name;

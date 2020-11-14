@@ -1,8 +1,7 @@
 /**
   * @file XmlDocument.cpp
   *
-  * Copyright(c) 2008-2018 Timothy Charlton Arland
-  * @author tca@charltontechnology.net, tcarland@gmail.com
+  * Copyright(c) 2008-2020 Timothy Charlton Arland <tcarland@gmail.com>
   *
   * @section LICENSE
   *
@@ -38,7 +37,7 @@ bool
 XmlDocument::_Libinit = false;
 
 const char*
-XmlDocument::_Version = "1.0.5";
+XmlDocument::_Version = "1.0.6";
 
 
 //-------------------------------------------------------------//

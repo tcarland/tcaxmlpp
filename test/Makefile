@@ -17,9 +17,10 @@ ALL_OBJS =	$(OBJS) xmldump.o nodefactorytest.o
 ALL_BINS = 	$(BIN)
 
 
-all: XmlTest nodeftest xmldump
+include $(TOPDIR)/tcamake/tcamake_include
 
-include $(TOPDIR)/tcamake/project_defs
+
+all: XmlTest nodeftest xmldump
 
 
 XmlTest: $(OBJS)
