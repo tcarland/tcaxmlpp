@@ -2,7 +2,7 @@
 The tcaxmlplus Library
 ======================
 
-  Copyright (c) 2008-2020 Timothy Charlton Arland
+  Copyright (c) 2008-2022 Timothy Charlton Arland
   Author tcarland@gmail.com
 
 ### LICENSE

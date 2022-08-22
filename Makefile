@@ -32,7 +32,7 @@ all: lib
 
 lib: arlib solib
 arlib: lib/libtcaxmlpp.a
-solib: libtcaxmlpp.so.1.0.6
+solib: libtcaxmlpp.so.1.1.0
 
 lib/libtcaxmlpp.a: $(OBJS)
 	@echo $(OBJS)

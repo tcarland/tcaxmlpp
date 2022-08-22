@@ -1,8 +1,7 @@
-
+// xmltest.cpp
+//
 #include <cstdio>
 #include <string>
-
-
 
 #include "XmlDocument.h"
 using namespace tcaxmlpp;

@@ -1,7 +1,7 @@
 /**
   * @file XmlDockNode.h
   *
-  * Copyright(c) 2008-2018 Timothy Charlton Arland <tcarland@gmail.com>
+  * Copyright(c) 2008-2022 Timothy Charlton Arland <tcarland@gmail.com>
   *
   * @section LICENSE
   *

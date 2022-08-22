@@ -3,7 +3,7 @@
   *    Class for manipulating a node, its children, and
   * its attributes.
   *
-  * Copyright(c) 2008-2020 Timothy Charlton Arland <tcarland@gmail.com>
+  * Copyright(c) 2008-2022 Timothy Charlton Arland <tcarland@gmail.com>
   *
   * @section LICENSE
   *

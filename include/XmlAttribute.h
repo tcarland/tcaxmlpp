@@ -4,7 +4,7 @@
   *   This class manages an xml attribute which is generally attached
   * to a parent node.
   *
-  * Copyright(c) 2008-2020 Timothy Charlton Arland <tcarland@gmail.com>
+  * Copyright(c) 2008-2022 Timothy Charlton Arland <tcarland@gmail.com>
   *
   * @section LICENSE
   *
