@@ -1,33 +1,32 @@
 /**
   * @file XmlDocument.cpp
   *
-  * Copyright(c) 2008-2022 Timothy Charlton Arland <tcarland@gmail.com>
+  * Copyright(c) 2008-2023 Timothy Charlton Arland <tcarland@gmail.com>
   *
   * @section LICENSE
   *
-  * This file is part of tcaxmlplus.
+  * This file is part of tcaxmlpp.
   *
-  * tcaxmlplus is free software: you can redistribute it and/or modify
+  * tcaxmlpp is free software: you can redistribute it and/or modify
   * it under the terms of the GNU Lesser General Public License as
   * published by the Free Software Foundation, either version 3 of
   * the License, or (at your option) any later version.
   *
-  * tcaxmlplus is distributed in the hope that it will be useful,
+  * tcaxmlpp is distributed in the hope that it will be useful,
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   * GNU Lesser General Public License for more details.
   *
   * You should have received a copy of the GNU Lesser General Public
-  * License along with tcaxmlplus.
+  * License along with tcaxmlpp.
   * If not, see <http://www.gnu.org/licenses/>.
  **/
-#define _TCAXMLPLUS_XMLDOCUMENT_CPP_
+#define _TCAXMLPP_XMLDOCUMENT_CPP_
 
 #include <fstream>
 #include "XmlDocument.h"
 
 #include <libxml/parser.h>
-
 
 
 namespace tcaxmlpp {
@@ -37,15 +36,15 @@ bool
 XmlDocument::_Libinit = false;
 
 const char*
-XmlDocument::_Version = "1.1.0";
+XmlDocument::_Version = "1.1.1";
 
 
 //-------------------------------------------------------------//
 
 XmlNode*
-XmlDocument::DefNodeFactory::operator() ( XmlNode     * parent,
-                                          xmlNodePtr    node,
-                                          bool          recursive_walk )
+XmlDocument::DefaultNodeFactory::operator() ( XmlNode   * parent,
+                                              xmlNodePtr  node,
+                                              bool        recursive_walk )
 {
      return ( new XmlNode(parent, node, recursive_walk) );
 }
@@ -56,7 +55,7 @@ XmlDocument::XmlDocument()
     : _roottag(DEFAULT_ROOT_TAGNAME),
       _doc(NULL),
       _root(NULL),
-      _nodeFactory(new DefNodeFactory()),
+      _nodeFactory(new DefaultNodeFactory()),
       _debug(false)
 {
     if ( ! XmlDocument::_Libinit )
@@ -67,7 +66,7 @@ XmlDocument::XmlDocument()
 XmlDocument::XmlDocument ( const char * xmlfrag, size_t len )
     : _doc(NULL),
       _root(NULL),
-      _nodeFactory(new DefNodeFactory()),
+      _nodeFactory(new DefaultNodeFactory()),
       _debug(false)
 {
     if ( ! XmlDocument::_Libinit )
@@ -81,7 +80,7 @@ XmlDocument::XmlDocument ( const std::string & filename, bool create )
     : _roottag(DEFAULT_ROOT_TAGNAME),
       _doc(NULL),
       _root(NULL),
-      _nodeFactory(new DefNodeFactory()),
+      _nodeFactory(new DefaultNodeFactory()),
       _debug(false)
 {
     if ( ! XmlDocument::_Libinit )
@@ -100,8 +99,8 @@ XmlDocument::~XmlDocument()
 
 //-------------------------------------------------------------//
 
-/**  Initializes this XmlDocument object with the provided XML file.
-  *  The existing doc structure is cleared if any exists.
+/** Initializes this XmlDocument object with the provided XML file.
+  * The existing doc structure is cleared if any exists.
  **/
 bool
 XmlDocument::initDocument ( const std::string & filename, bool create )
@@ -112,7 +111,7 @@ XmlDocument::initDocument ( const std::string & filename, bool create )
     if ( XmlDocument::IsReadable(filename) )
     {
         if ( create ) {
-            _errStr = "File already exists, remove first to create";
+            _errStr = "XmlDocument Error, File already exists.";
             result  = false;
         } else {
             result = this->readFile(filename);
@@ -125,7 +124,6 @@ XmlDocument::initDocument ( const std::string & filename, bool create )
         if ( _doc != NULL )
             this->clearDocument();
 
-        // create new xml document
         _doc = ::xmlNewDoc((const xmlChar*) "1.0");
         node = ::xmlNewNode(NULL, (const xmlChar*) _roottag.c_str());
         ::xmlDocSetRootElement(_doc, node);
@@ -379,15 +377,15 @@ XmlDocument::initParser ( const std::string & filename )
         _doc = ::xmlParseFile(filename.c_str());
 
     if ( _doc == NULL ) {
-        _errStr = "Error: parse error in XML document: ";
+        _errStr = "XmlDocument Error: parse error in XML document: ";
         _errStr.append(filename);
         return false;
     }
 
     if ( ! this->validate() ) {
-        _errStr = "Error: XML failed DTD validation";
+        _errStr = "XmlDocument Error: XML failed DTD validation";
         this->clearDocument();
-        return false;  // hello _doc??
+        return false;
     }
 
     if ( _doc->encoding )
@@ -406,12 +404,12 @@ XmlDocument::initParser ( const char * xmlblob, size_t len )
     _doc = ::xmlParseMemory(xmlblob, len);
 
     if ( _doc == NULL ) {
-        _errStr = "Error in parse: xml malformed";
+        _errStr = "XmlDocument Error in parse: xml malformed";
         return false;
     }
 
     if ( ! this->validate() ) {
-        _errStr = "Error: xml failed DTD validation";
+        _errStr = "XmlDocument Error: xml failed DTD validation";
         return false;
     }
 
@@ -554,4 +552,4 @@ XmlDocument::NodeToString ( XmlNode * node )
 
 }  // namespace
 
-/*  _TCAXMLPLUS_XMLDOCUMENT_CPP_  */
+/*  _TCAXMLPP_XMLDOCUMENT_CPP_  */

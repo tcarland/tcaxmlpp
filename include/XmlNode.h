@@ -1,30 +1,29 @@
 /**
   * @file XmlNode.h
-  *    Class for manipulating a node, its children, and
-  * its attributes.
+  * Class for manipulating a node, its children, and their attributes.
   *
-  * Copyright(c) 2008-2022 Timothy Charlton Arland <tcarland@gmail.com>
+  * Copyright(c) 2008-2023 Timothy Charlton Arland <tcarland@gmail.com>
   *
   * @section LICENSE
   *
-  * This file is part of tcaxmlplus.
+  * This file is part of tcaxmlpp.
   *
-  * tcaxmlplus is free software: you can redistribute it and/or modify
+  * tcaxmlpp is free software: you can redistribute it and/or modify
   * it under the terms of the GNU Lesser General Public License as
   * published by the Free Software Foundation, either version 3 of
   * the License, or (at your option) any later version.
   *
-  * tcaxmlplus is distributed in the hope that it will be useful,
+  * tcaxmlpp is distributed in the hope that it will be useful,
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   * GNU Lesser General Public License for more details.
   *
   * You should have received a copy of the GNU Lesser General Public
-  * License along with tcaxmlplus.
+  * License along with tcaxmlpp.
   * If not, see <http://www.gnu.org/licenses/>.
  **/
-#ifndef _TCAXMLPLUS_XMLNODE_H_
-#define _TCAXMLPLUS_XMLNODE_H_
+#ifndef _TCAXMLPP_XMLNODE_H_
+#define _TCAXMLPP_XMLNODE_H_
 
 #include <list>
 #include <map>
@@ -41,7 +40,7 @@ class XmlNode;
 class XmlAttribute;
 
 //-----------------------------------------------------------//
-//
+
 typedef std::list<XmlNode*>                     XmlNodeList;
 typedef XmlNodeList::iterator                   XmlNodeIter;
 
@@ -49,6 +48,7 @@ typedef std::map<std::string, XmlAttribute*>    XmlAttrMap;
 typedef XmlAttrMap::iterator                    XmlAttrIter;
 
 //-----------------------------------------------------------//
+
 
 /**  The XmlNode object acts as a container for all sub-nodes or
   *  children. For simplicity, the class ignores xsd type information
@@ -184,7 +184,7 @@ class XmlNode {
         bool operator() ( const XmlNode * n );
     };
 
-    /**  Predicate for locating a specific XmlNode
+    /**  Predicate for locating a specific XmlNode 
       *  based on a given node name and attribute.
      **/
     class FindXmlNodeName {
@@ -252,4 +252,4 @@ class XmlNode {
 
 }  // namespace
 
-#endif  // _TCAXMLPLUS_XMLNODE_H_
+#endif  // _TCAXMLPP_XMLNODE_H_
