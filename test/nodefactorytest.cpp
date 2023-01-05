@@ -1,4 +1,4 @@
-
+/* nodefactorytest */
 #include <cstdio>
 #include <string>
 
