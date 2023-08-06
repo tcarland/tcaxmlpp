@@ -1,5 +1,3 @@
-TOPDIR = ../..
-
 NEED_TCAXMLPP = 1
 NEED_LIBXML2 = 1
 
@@ -17,7 +15,7 @@ ALL_OBJS =	$(OBJS) xmldump.o nodefactorytest.o
 ALL_BINS = 	$(BIN)
 
 
-include $(TOPDIR)/tcamake/tcamake_include
+include $(TCAMAKE_HOME)/tcamake_include
 
 
 all: XmlTest nodeftest xmldump
