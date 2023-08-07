@@ -31,3 +31,6 @@
 *.swp
 .settings
 lib
+test/nodeftest
+test/xmldump
+test/xmltest

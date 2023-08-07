@@ -14,7 +14,8 @@ int main ( int argc, char ** argv )
     if ( argc > 1 )
         infile = argv[1];
     else
-        exit(0);
+        exit(1);
+
     printf("infile: %s\n", infile.c_str());
 
     XmlDocument    doc;

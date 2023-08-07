@@ -17,6 +17,11 @@ int main ( int argc, char **argv )
     XmlDocument doc(file);
 
     XmlNode * root = doc.getRootNode();
+
+    if ( root == NULL ) {
+        printf("Failed to get root node\n");
+        return -1;
+    }
     root->printNode(true);
 
     std::string xml = doc.NodeToString(root);
