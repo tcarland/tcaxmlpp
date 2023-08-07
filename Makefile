@@ -1,30 +1,28 @@
 # Makefile for tcaxmlpp
 #
 # note: osx linker 'ld' doesn't support soname
-TOPDIR = ..
-
 NEED_LIBXML2_INCLUDE = 1
 
 ifdef TCAMAKE_DEBUG
-OPT_FLAGS =     -g
+OPT_FLAGS =  -g
 endif
 
 
-OPT_FLAGS +=    -fPIC -O2
-CCSHARED +=     -Wl,-soname,$@
+OPT_FLAGS += -fPIC -O2
+CCSHARED  += -Wl,-soname,$@
 
-INCLUDES =	-Iinclude
+INCLUDES   = -Iinclude
 LIBS =
 
 BIN =
-OBJS = 		src/XmlDocument.o src/XmlNode.o src/XmlAttribute.o \
+OBJS =	src/XmlDocument.o src/XmlNode.o src/XmlAttribute.o \
 		src/XmlDocNode.o
 
 ALL_OBJS =	$(OBJS)
 ALL_BINS = 	$(BIN)
 
 
-include $(TOPDIR)/tcamake/tcamake_include
+include $(TCAMAKE_HOME)/tcamake_include
 
 
 all: lib
@@ -32,7 +30,7 @@ all: lib
 
 lib: arlib solib
 arlib: lib/libtcaxmlpp.a
-solib: libtcaxmlpp.so.1.1.1
+solib: libtcaxmlpp.so.1.2.0
 
 lib/libtcaxmlpp.a: $(OBJS)
 	@echo $(OBJS)
@@ -40,7 +38,7 @@ lib/libtcaxmlpp.a: $(OBJS)
 	$(make-lib-rule)
 	@echo
 
-libtcaxmlpp.so.1.1.1: $(OBJS)
+libtcaxmlpp.so.1.2.0: $(OBJS)
 	( $(MKDIR) lib )
 	( $(RM) lib/$@ lib/libtcaxmlpp.so )
 	$(make-so-rule)
