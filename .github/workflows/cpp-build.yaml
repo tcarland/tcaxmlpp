@@ -25,4 +25,4 @@ jobs:
       run: docker build -t ${{ env.IMAGE_NAME }} -f Containerfile .
 
     - name: Run Docker Build
-      run: docker run --rm ${{ env.IMAGE_NAME }} /bin/bash -c "cd /opt/tcaxmlpp && make test && ./test/xmltest ./test/text.xml"
+      run: docker run --rm ${{ env.IMAGE_NAME }} /bin/bash -c "cd /opt/tcaxmlpp && make test && ./test/xmltest ./test/test.xml"
