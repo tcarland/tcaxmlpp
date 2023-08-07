@@ -33,4 +33,4 @@
 lib
 test/nodeftest
 test/xmldump
-test/XmlTest
+test/xmltest
