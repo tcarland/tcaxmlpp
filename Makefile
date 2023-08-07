@@ -7,6 +7,12 @@ ifdef TCAMAKE_DEBUG
 OPT_FLAGS =  -g
 endif
 
+ifeq ($(TCAMAKE_HOME),)
+	export TCAMAKE_HOME := $(shell realpath ../tcamake)
+endif
+ifeq ($(TCAMAKE_PROJECT),)
+	export TCAMAKE_PROJECT := $(shell realpath ..)
+endif
 
 OPT_FLAGS += -fPIC -O2
 CCSHARED  += -Wl,-soname,$@

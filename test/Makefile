@@ -1,12 +1,17 @@
-NEED_TCAXMLPP = 1
+#NEED_TCAXMLPP = 1
 NEED_LIBXML2 = 1
 
 ifdef TCAMAKE_DEBUG
 OPT_FLAGS =     -g
 endif
 
-INCLUDES =	
-LIBS = 
+ifeq ($(TCAMAKE_HOME),)
+	export TCAMAKE_HOME := $(shell realpath ../../tcamake)
+endif
+
+
+INCLUDES =	-I../include
+LIBS =  -L../lib -ltcaxmlpp 
 
 BIN =		XmlTest xmldump nodeftest
 OBJS = 		xmltest.o 

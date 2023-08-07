@@ -36,7 +36,7 @@ bool
 XmlDocument::_Libinit = false;
 
 const char*
-XmlDocument::_Version = "1.2.0";
+XmlDocument::_Version = "1.2.1";
 
 
 //-------------------------------------------------------------//
@@ -131,6 +131,9 @@ XmlDocument::initDocument ( const std::string & filename, bool create )
         _root = new XmlNode(NULL, node); // pass false too??
         _root->setAttr("Version", std::string(DEFAULT_ROOT_VERSION));
         result = true;
+    } else {
+        _errStr = "XmlDocument Error, File not found.";
+        result  = false;
     }
 
     return result;
