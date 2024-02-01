@@ -36,7 +36,7 @@ all: lib
 
 lib: arlib solib
 arlib: lib/libtcaxmlpp.a
-solib: libtcaxmlpp.so.1.2.0
+solib: libtcaxmlpp.so.1.2.2
 
 lib/libtcaxmlpp.a: $(OBJS)
 	@echo $(OBJS)
@@ -44,7 +44,7 @@ lib/libtcaxmlpp.a: $(OBJS)
 	$(make-lib-rule)
 	@echo
 
-libtcaxmlpp.so.1.2.0: $(OBJS)
+libtcaxmlpp.so.1.2.2: $(OBJS)
 	( $(MKDIR) lib )
 	( $(RM) lib/$@ lib/libtcaxmlpp.so )
 	$(make-so-rule)
