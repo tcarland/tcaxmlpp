@@ -1,7 +1,7 @@
 The tcaxmlpp Library
 ======================
 
-Copyright (c) 2008-2023 Timothy Charlton Arland
+Copyright (c) 2008-2024 Timothy Charlton Arland
 Author tcarland@gmail.com
 
 ### LICENSE
