@@ -13,3 +13,5 @@ RUN mkdir -p /opt/tcaxmlpp
 COPY . /opt/tcaxmlpp
 
 RUN cd tcaxmlpp && make arlib && make install
+
+USER tdh

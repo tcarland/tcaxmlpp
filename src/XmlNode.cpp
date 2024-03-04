@@ -27,6 +27,7 @@
 #include <algorithm>
 
 #include "XmlNode.h"
+#include "XmlAttribute.h"
 
 
 namespace tcaxmlpp {

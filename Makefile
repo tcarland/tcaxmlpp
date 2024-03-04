@@ -7,12 +7,6 @@ ifdef TCAMAKE_DEBUG
 OPT_FLAGS =  -g
 endif
 
-ifeq ($(TCAMAKE_HOME),)
-	export TCAMAKE_HOME := $(shell realpath ../tcamake)
-endif
-ifeq ($(TCAMAKE_PROJECT),)
-	export TCAMAKE_PROJECT := $(shell realpath ..)
-endif
 
 OPT_FLAGS += -fPIC -O2
 CCSHARED  += -Wl,-soname,$@
@@ -28,6 +22,10 @@ ALL_OBJS =	$(OBJS)
 ALL_BINS = 	$(BIN)
 
 
+ifeq ($(TCAMAKE_HOME),)
+	export TCAMAKE_HOME := $(shell realpath ../tcamake)
+endif
+
 include $(TCAMAKE_HOME)/tcamake_include
 
 
@@ -36,7 +34,7 @@ all: lib
 
 lib: arlib solib
 arlib: lib/libtcaxmlpp.a
-solib: libtcaxmlpp.so.1.2.2
+solib: libtcaxmlpp.so.1.2.3
 
 lib/libtcaxmlpp.a: $(OBJS)
 	@echo $(OBJS)
@@ -44,7 +42,7 @@ lib/libtcaxmlpp.a: $(OBJS)
 	$(make-lib-rule)
 	@echo
 
-libtcaxmlpp.so.1.2.2: $(OBJS)
+libtcaxmlpp.so.1.2.3: $(OBJS)
 	( $(MKDIR) lib )
 	( $(RM) lib/$@ lib/libtcaxmlpp.so )
 	$(make-so-rule)

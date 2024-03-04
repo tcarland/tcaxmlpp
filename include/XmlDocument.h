@@ -37,10 +37,7 @@ typedef unsigned u_int;
 #include <list>
 #include <map>
 
-#include <libxml/tree.h>
-
-#include "XmlNode.h"
-#include "XmlAttribute.h"
+#include "XmlNodeFactory.hpp"
 
 
 namespace tcaxmlpp {
@@ -52,20 +49,6 @@ class XmlAttribute;
 #define DEFAULT_ROOT_TAGNAME "tcaxmlpp"
 #define DEFAULT_ROOT_VERSION "1.1"
 #define MAX_ERR_LINE 256
-
-
-/**  The XmlNodeFactory interface is used to initialize the root node
- *   as the intended derived type. This allows for XmlNode inheritance
- *   and control of the subsequent node parsing/creation.
- **/
-class XmlNodeFactory {
-  public:
-    virtual ~XmlNodeFactory() {}
-
-    virtual XmlNode*  operator() ( XmlNode    * parent,
-                                   xmlNodePtr   node,
-                                   bool         recursive_walk = true ) = 0;
-};
 
 
 

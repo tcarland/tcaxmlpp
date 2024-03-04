@@ -1,5 +1,6 @@
 /**
   * @file XmlNode.h
+  *
   * Class for manipulating a node, its children, and their attributes.
   *
   * Copyright(c) 2008-2024 Timothy Charlton Arland <tcarland@gmail.com>
