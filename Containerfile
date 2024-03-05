@@ -7,6 +7,7 @@ ENV TCAMAKE_PREFIX=/usr
 RUN apt-get -y --no-install-recommends install \
     libxml2-dev
 
+USER root
 WORKDIR /opt
 
 RUN mkdir -p /opt/tcaxmlpp
