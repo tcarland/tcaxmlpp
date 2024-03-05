@@ -10,7 +10,10 @@ RUN apt-get -y --no-install-recommends install \
     libxml2-dev
 
 WORKDIR /opt
-RUN mkdir -p /opt/tcaxmlpp
+
+RUN mkdir -p /opt/tcaxmlpp && \
+    chown -R tdh:tdh /opt/tcaxmlpp
+
 COPY . /opt/tcaxmlpp
 RUN cd tcaxmlpp && make arlib && make install
 
