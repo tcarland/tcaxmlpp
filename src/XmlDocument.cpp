@@ -24,7 +24,10 @@
 #define _TCAXMLPP_XMLDOCUMENT_CPP_
 
 #include <fstream>
+
 #include "XmlDocument.h"
+#include "XmlNode.h"
+#include "XmlAttribute.h"
 
 #include <libxml/parser.h>
 
@@ -36,7 +39,7 @@ bool
 XmlDocument::_Libinit = false;
 
 const char*
-XmlDocument::_Version = "1.2.2";
+XmlDocument::_Version = "1.2.3";
 
 
 //-------------------------------------------------------------//
