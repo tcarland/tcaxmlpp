@@ -1,4 +1,4 @@
-name: Docker Build CI
+name: Container Build CI
 
 on:
   push:
@@ -24,5 +24,5 @@ jobs:
     - name: Build Container
       run: docker build -t ${{ env.IMAGE_NAME }} -f Containerfile .
 
-    - name: Run Docker Build
+    - name: Run Build Process
       run: docker run --rm ${{ env.IMAGE_NAME }} /bin/bash -c "cd /opt/tcaxmlpp && make test && ./test/xmltest ./test/test.xml"
