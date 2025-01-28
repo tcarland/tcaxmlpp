@@ -1,5 +1,8 @@
 FROM ghcr.io/tcarland/tcanetpp:v1.6.0
 
+LABEL description="tcaxmlpp build container"
+LABEL author="Timothy C. Arland <tcarland at gmail dot com>"
+
 ENV TCAMAKE_PROJECT=/opt
 ENV TCAMAKE_HOME=/opt/tcamake
 ENV TCAMAKE_PREFIX=/usr
@@ -14,6 +17,6 @@ RUN apt-get -y --no-install-recommends install \
 WORKDIR /opt
 
 COPY . /opt/tcaxmlpp
-RUN cd tcaxmlpp && make arlib && make install
+RUN cd tcaxmlpp && make arlib && make install && make distclean
 
 USER tdh
