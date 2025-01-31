@@ -1,8 +1,7 @@
 The tcaxmlpp Library
 ======================
 
-Copyright (c) 2008-2024 Timothy Charlton Arland
-Author tcarland@gmail.com
+Copyright (c) 2008-2025 Timothy Charlton Arland <tcarland@gmail.com>
 
 # LICENSE
 
@@ -32,14 +31,17 @@ node attributes and any of its children.
 
 ## Requirements
 
-- libxml2 : just about any version will work.  
+- libxml2-dev : just about any version will work. Note the -dev package 
+  to include the library headers needed to build.  
 - tcamake : build system definition in *./tcamake*  
 
 
 ## Building
 
-To build the library, tcamake is needed for the Makefile bindings. This can
-be obtained by cloning the git repo in the parent directory.
+To build the library, tcamake is needed for the Makefile bindings. 
+This can be obtained by cloning the git repo in the parent directory. 
+The project has been testing with c++11, 17, and 23 using 
+Gnu g++ 11.4.0.
 ```
 cd ..
 git clone https://github.com/tcarland/tcamake.git
@@ -50,7 +52,7 @@ Then simply run 'make' to build the library.
 
 ## Contact
 
-Send comments to: tcarland@gmail.com or tca@charltontechnology.net   
+Use the issues board for this project as linked above.
 
 ---
 

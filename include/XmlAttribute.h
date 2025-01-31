@@ -3,7 +3,7 @@
   *
   * This class manages an xml attribute attached to a parent node.
   *
-  * Copyright(c) 2008-2024 Timothy Charlton Arland <tcarland@gmail.com>
+  * Copyright(c) 2008-2025 Timothy Charlton Arland <tcarland@gmail.com>
   *
   * @section LICENSE
   *
