@@ -1,8 +1,7 @@
 The tcaxmlpp Library
 ======================
 
-Copyright (c) 2008-2025 Timothy Charlton Arland
-Author tcarland@gmail.com
+Copyright (c) 2008-2025 Timothy Charlton Arland <tcarland@gmail.com>
 
 # LICENSE
 
@@ -41,7 +40,7 @@ node attributes and any of its children.
 
 To build the library, tcamake is needed for the Makefile bindings. 
 This can be obtained by cloning the git repo in the parent directory. 
-The project has been testing with c++11, c++17, and c++23 using 
+The project has been testing with c++11, 17, and 23 using 
 Gnu g++ 11.4.0.
 ```
 cd ..
