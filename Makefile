@@ -35,7 +35,7 @@ all: lib
 
 lib: arlib solib
 arlib: lib/libtcaxmlpp.a
-solib: libtcaxmlpp.so.1.3.0
+solib: libtcaxmlpp.so.1.3.1
 
 lib/libtcaxmlpp.a: $(OBJS)
 	@echo $(OBJS)
@@ -43,7 +43,7 @@ lib/libtcaxmlpp.a: $(OBJS)
 	$(make-lib-rule)
 	@echo
 
-libtcaxmlpp.so.1.3.0: $(OBJS)
+libtcaxmlpp.so.1.3.1: $(OBJS)
 	( $(MKDIR) lib )
 	( $(RM) lib/$@ lib/libtcaxmlpp.so )
 	$(make-so-rule)
@@ -88,7 +88,7 @@ install:
 ifdef TCAMAKE_PREFIX
 	$(MKDIR) $(TCAMAKE_PREFIX)/include/tcaxmlpp
 	$(MKDIR) $(TCAMAKE_PREFIX)/lib
-	$(RSYNC) --delete include/ $(TCAMAKE_PREFIX)/include/tcaxmlpp/
-	$(RSYNC) lib/ $(TCAMAKE_PREFIX)/lib/
+	$(CP) -r include/* $(TCAMAKE_PREFIX)/include/tcaxmlpp/
+	$(CP) -r lib/* $(TCAMAKE_PREFIX)/lib/
 	@echo
 endif
