@@ -88,5 +88,4 @@ ifdef TCAMAKE_PREFIX
 	$(MKDIR) $(TCAMAKE_PREFIX)/lib
 	$(RSYNC) --delete include/ $(TCAMAKE_PREFIX)/include/tcaxmlpp/
 	$(RSYNC) --delete lib/ $(TCAMAKE_PREFIX)/lib/
-	@echo
 endif
