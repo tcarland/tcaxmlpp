@@ -1,12 +1,11 @@
 # Makefile for tcaxmlpp
 #
-# note: osx linker 'ld' doesn't support soname
+# note: osx linker 'ld' doesn't support '-soname'
 NEED_LIBXML2_INCLUDE = 1
 
 ifdef TCAMAKE_DEBUG
-OPT_FLAGS =  -g
+OPT_FLAGS  = -g
 endif
-
 
 OPT_FLAGS += -fPIC -O2
 CCSHARED  += -Wl,-soname,$@
@@ -14,7 +13,6 @@ CXXFLAGS   = -std=c++23
 
 INCLUDES   = -Iinclude
 LIBS =
-
 BIN =
 OBJS =	src/XmlDocument.o src/XmlNode.o src/XmlAttribute.o \
 		src/XmlDocNode.o
@@ -35,7 +33,7 @@ all: lib
 
 lib: arlib solib
 arlib: lib/libtcaxmlpp.a
-solib: libtcaxmlpp.so.1.3.0
+solib: libtcaxmlpp.so.1.3.1
 
 lib/libtcaxmlpp.a: $(OBJS)
 	@echo $(OBJS)
@@ -43,7 +41,7 @@ lib/libtcaxmlpp.a: $(OBJS)
 	$(make-lib-rule)
 	@echo
 
-libtcaxmlpp.so.1.3.0: $(OBJS)
+libtcaxmlpp.so.1.3.1: $(OBJS)
 	( $(MKDIR) lib )
 	( $(RM) lib/$@ lib/libtcaxmlpp.so )
 	$(make-so-rule)
@@ -90,5 +88,4 @@ ifdef TCAMAKE_PREFIX
 	$(MKDIR) $(TCAMAKE_PREFIX)/lib
 	$(RSYNC) --delete include/ $(TCAMAKE_PREFIX)/include/tcaxmlpp/
 	$(RSYNC) lib/ $(TCAMAKE_PREFIX)/lib/
-	@echo
 endif
