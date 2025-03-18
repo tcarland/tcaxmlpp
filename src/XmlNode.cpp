@@ -26,8 +26,8 @@
 #include <iostream>
 #include <algorithm>
 
-#include "XmlNode.h"
 #include "XmlAttribute.h"
+#include "XmlNode.h"
 
 
 namespace tcaxmlpp {
@@ -51,7 +51,7 @@ XmlNode::XmlNode ( XmlNode     * parent,
       _name(),
       _debug(false)
 {
-    if ( _node ) 
+    if ( _node )
     {
         _type = _node->type;
         if ( _node->name )

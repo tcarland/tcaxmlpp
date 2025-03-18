@@ -24,6 +24,7 @@
 #define _TCAXMLPP_XMLATTRIBUTE_CPP_
 
 #include "XmlAttribute.h"
+#include "XmlNode.h"
 
 
 namespace tcaxmlpp {
