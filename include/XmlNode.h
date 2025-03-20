@@ -31,12 +31,12 @@
 #include <string>
 #include <sstream>
 
-#include "XmlDocument.h"
+#include "XmlNodeFactory.hpp"
 
 
 namespace tcaxmlpp {
 
-
+class XmlDocument;
 class XmlNode;
 class XmlAttribute;
 

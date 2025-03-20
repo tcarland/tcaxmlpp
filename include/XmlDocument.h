@@ -37,12 +37,12 @@ typedef unsigned u_int;
 #include <list>
 #include <map>
 
-#include "XmlNodeFactory.hpp"
+#include "XmlNode.h"
+#include "XmlAttribute.h"
 
 
 namespace tcaxmlpp {
 
-class XmlNode;
 class XmlAttribute;
 
 

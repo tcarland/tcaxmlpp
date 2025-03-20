@@ -28,6 +28,7 @@
 
 #include "XmlAttribute.h"
 #include "XmlNode.h"
+#include "XmlDocument.h"
 
 
 namespace tcaxmlpp {
