@@ -17,6 +17,6 @@ RUN apt-get -y --no-install-recommends install \
 
 WORKDIR /opt
 
-RUN cd tcaxmlpp && make arlib && make distclean
+RUN cd tcaxmlpp && make arlib && make install && make distclean
 
 USER tdh
