@@ -1,0 +1,7 @@
+CompileFlags:
+  Add:
+    - "--include-directory=./include"
+    - "--include-directory=/usr/include/libxml2"
+    - "-xc++"
+Diagnostics:
+  UnusedIncludes: None

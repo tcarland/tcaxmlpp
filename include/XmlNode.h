@@ -31,12 +31,12 @@
 #include <string>
 #include <sstream>
 
-#include "XmlDocument.h"
+#include "XmlNodeFactory.hpp"
 
 
 namespace tcaxmlpp {
 
-
+class XmlDocument;
 class XmlNode;
 class XmlAttribute;
 
@@ -185,7 +185,7 @@ class XmlNode {
         bool operator() ( const XmlNode * n );
     };
 
-    /**  Predicate for locating a specific XmlNode 
+    /**  Predicate for locating a specific XmlNode
       *  based on a given node name and attribute.
      **/
     class FindXmlNodeName {

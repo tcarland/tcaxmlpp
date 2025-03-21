@@ -28,7 +28,6 @@
 
 #include <libxml/tree.h>
 
-#include "XmlNode.h"
 
 namespace tcaxmlpp {
 

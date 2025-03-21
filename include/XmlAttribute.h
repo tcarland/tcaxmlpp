@@ -26,12 +26,10 @@
 #ifndef _TCAXMLPP_XMLATTRIBUTE_H_
 #define _TCAXMLPP_XMLATTRIBUTE_H_
 
-#include "XmlDocument.h"
+#include "XmlNode.h"
 
 
 namespace tcaxmlpp {
-
-class XmlNode;
 
 
 /** An XmlAttribute object instance represents a single key/value
