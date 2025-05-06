@@ -24,8 +24,9 @@
 *.out
 *.app
 
-*.swp
+*.sw*
 .settings
+.project
 compile_flags.txt
 lib
 test/nodeftest
