@@ -1,6 +1,5 @@
 # Makefile for tcaxmlpp
 #
-# note: osx linker 'ld' doesn't support '-soname'
 NEED_LIBXML2_INCLUDE = 1
 
 ifdef TCAMAKE_DEBUG
@@ -8,7 +7,7 @@ OPT_FLAGS  = -g
 endif
 
 OPT_FLAGS += -fPIC -O2
-CCSHARED  += -Wl,-soname,$@
+CCSHARED  += -Wl,-soname,$@    # note: osx linker 'ld' doesn't support '-soname'
 CXXFLAGS   = -std=c++23
 
 INCLUDES   = -Iinclude
