@@ -4,7 +4,7 @@
   * XmlDocument provides an object-oriented interface for parsing and
   * holding a XML document structure using libxml2's DOM API.
   *
-  * Copyright(c) 2008-2025 Timothy Charlton Arland <tcarland@gmail.com>
+  * Copyright(c) 2008-2026 Timothy Charlton Arland <tcarland@gmail.com>
   *
   * @section LICENSE
   *
