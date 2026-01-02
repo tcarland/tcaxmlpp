@@ -31,9 +31,9 @@ node attributes and any of its children.
 
 ## Requirements
 
-- libxml2-dev : just about any version will work. Note the -dev package
+- libxml2-dev : Any version will work. Note the `-dev` extension
   to include the library headers needed to build.
-- tcamake : build system definition in *./tcamake*
+- tcamake : build system definition in *../tcamake*
 
 
 ## Building
@@ -47,7 +47,7 @@ cd ..
 git clone https://github.com/tcarland/tcamake.git
 ```
 
-Then simply run 'make' to build the library.
+Then run 'make' to build the library.
 
 
 ## Contact
