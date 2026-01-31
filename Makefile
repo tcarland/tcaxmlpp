@@ -19,20 +19,25 @@ OBJS =	src/XmlDocument.o src/XmlNode.o src/XmlAttribute.o \
 ALL_OBJS =	$(OBJS)
 ALL_BINS = 	$(BIN)
 
+# ---------------------------------------------
 
 ifeq ($(TCAMAKE_HOME),)
 	export TCAMAKE_HOME := $(shell realpath ../tcamake)
 endif
+ifeq ($(TCAMAKE_PROJECT),)
+	export TCAMAKE_PROJECT := $(shell realpath ..)
+endif
 
 include $(TCAMAKE_HOME)/tcamake_include
 
+# ---------------------------------------------
 
 all: lib
 
 
 lib: arlib solib
 arlib: lib/libtcaxmlpp.a
-solib: libtcaxmlpp.so.1.3.7
+solib: libtcaxmlpp.so.1.3.8
 
 lib/libtcaxmlpp.a: $(OBJS)
 	@echo $(OBJS)
@@ -40,7 +45,7 @@ lib/libtcaxmlpp.a: $(OBJS)
 	$(make-lib-rule)
 	@echo
 
-libtcaxmlpp.so.1.3.7: $(OBJS)
+libtcaxmlpp.so.1.3.8: $(OBJS)
 	( $(MKDIR) lib )
 	( $(RM) lib/$@ lib/libtcaxmlpp.so )
 	$(make-so-rule)

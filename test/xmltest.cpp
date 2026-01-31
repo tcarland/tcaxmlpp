@@ -65,7 +65,7 @@ int main ( int argc, char ** argv )
     XmlDocument newdoc;
     newdoc.setDebug(true);
 
-    XmlNode * newnode = new XmlNode(NULL, "NewNode");
+    XmlNode * newnode = new XmlNode(nullptr, "NewNode");
     newnode->setAttribute("name", "Testing New Node");
     newnode->setAttribute("key", "value");
     

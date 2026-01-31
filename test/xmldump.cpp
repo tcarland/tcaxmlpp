@@ -18,7 +18,7 @@ int main ( int argc, char **argv )
 
     XmlNode * root = doc.getRootNode();
 
-    if ( root == NULL ) {
+    if ( root == nullptr ) {
         printf("Failed to get root node\n");
         return -1;
     }

@@ -39,7 +39,7 @@ bool
 XmlDocument::_Libinit = false;
 
 const char*
-XmlDocument::_Version = "1.3.7";
+XmlDocument::_Version = "1.3.8";
 
 
 //-------------------------------------------------------------//
@@ -56,8 +56,8 @@ XmlDocument::DefaultNodeFactory::operator() ( XmlNode   * parent,
 
 XmlDocument::XmlDocument()
     : _roottag(DEFAULT_ROOT_TAGNAME),
-      _doc(NULL),
-      _root(NULL),
+      _doc(nullptr),
+      _root(nullptr),
       _nodeFactory(new DefaultNodeFactory()),
       _debug(false)
 {
@@ -67,8 +67,8 @@ XmlDocument::XmlDocument()
 
 
 XmlDocument::XmlDocument ( const char * xmlfrag, size_t len )
-    : _doc(NULL),
-      _root(NULL),
+    : _doc(nullptr),
+      _root(nullptr),
       _nodeFactory(new DefaultNodeFactory()),
       _debug(false)
 {
@@ -81,8 +81,8 @@ XmlDocument::XmlDocument ( const char * xmlfrag, size_t len )
 
 XmlDocument::XmlDocument ( const std::string & filename, bool create )
     : _roottag(DEFAULT_ROOT_TAGNAME),
-      _doc(NULL),
-      _root(NULL),
+      _doc(nullptr),
+      _root(nullptr),
       _nodeFactory(new DefaultNodeFactory()),
       _debug(false)
 {
@@ -124,14 +124,14 @@ XmlDocument::initDocument ( const std::string & filename, bool create )
     {
         _xmlfile = filename;
 
-        if ( _doc != NULL )
+        if ( _doc != nullptr )
             this->clearDocument();
 
         _doc = ::xmlNewDoc((const xmlChar*) "1.0");
         node = ::xmlNewNode(NULL, (const xmlChar*) _roottag.c_str());
         ::xmlDocSetRootElement(_doc, node);
 
-        _root = new XmlNode(NULL, node); // pass false too??
+        _root = new XmlNode(nullptr, node); // pass false too??
         _root->setAttr("Version", std::string(DEFAULT_ROOT_VERSION));
         result = true;
     } else {
@@ -151,7 +151,7 @@ XmlDocument::initDocument ( const std::string & filename, bool create )
 bool
 XmlDocument::documentIsValid() const
 {
-    if ( NULL == _doc )
+    if ( nullptr == _doc )
         return false;
     return true;
 }
@@ -172,7 +172,7 @@ XmlDocument::readMemory ( const char * xmlblob, size_t len )
     result = this->initParser(xmlblob, len);
 
     if ( result && _doc ) {
-        _root = (*this->_nodeFactory)(NULL, xmlDocGetRootElement(_doc));
+        _root = (*this->_nodeFactory)(nullptr, xmlDocGetRootElement(_doc));
         _root->setDebug(this->_debug);
     } else {
         this->clearDocument();
@@ -200,7 +200,7 @@ XmlDocument::readFile ( const std::string & filename )
     }
 
     if ( result && _doc ) {
-        _root = (*this->_nodeFactory)(NULL, xmlDocGetRootElement(_doc));
+        _root = (*this->_nodeFactory)(nullptr, xmlDocGetRootElement(_doc));
         _root->setDebug(this->_debug);
     } else {
         this->clearDocument();
@@ -264,11 +264,11 @@ XmlDocument::clearDocument()
 {
     if ( _root ) {
         delete _root;
-        _root = NULL;
+        _root = nullptr;
     }
     if ( _doc ) {
         xmlFreeDoc(_doc);
-        _doc = NULL;
+        _doc = nullptr;
     }
 
     xmlCleanupParser();
@@ -291,7 +291,7 @@ XmlDocument::setNodeFactory ( XmlNodeFactory * nodeFactory )
 //-------------------------------------------------------------//
 
 /**  Returns a pointer to the document's root XmlNode
-  *  object or NULL if none exists.
+  *  object or nullptr if none exists.
  **/
 XmlNode*
 XmlDocument::getRootNode()
@@ -301,9 +301,9 @@ XmlDocument::getRootNode()
 
 
 /**  Sets a new document root node and returns the old detached
-  *  root node or NULL if none exists.  The erase boolean allows
+  *  root node or nullptr if none exists.  The erase boolean allows
   *  the setting of a new root node and forcing the immediate
-  *  delete of the old root node also returning NULL.
+  *  delete of the old root node also returning nullptr.
   *  This is the default behavior unless erase is false, in
   *  which case the detached node is returned, and it is the
   *  callers responsibility to free the object.
@@ -311,11 +311,11 @@ XmlDocument::getRootNode()
 XmlNode*
 XmlDocument::setRootNode ( XmlNode * node, bool erase )
 {
-    XmlNode*    tmp = NULL;
+    XmlNode*    tmp = nullptr;
     xmlNodePtr  n;
 
-    if ( node == NULL || node->getNode() == NULL )
-        return NULL;
+    if ( node == nullptr || node->getNode() == nullptr )
+        return nullptr;
 
     if ( _root )
     {
@@ -330,7 +330,7 @@ XmlDocument::setRootNode ( XmlNode * node, bool erase )
     if ( node->getParent() )
     {
         node->getParent()->removeNode(node);
-        node->setParent(NULL);
+        node->setParent(nullptr);
 
         if ( n->parent )
             ::xmlUnlinkNode(n);
@@ -340,9 +340,9 @@ XmlDocument::setRootNode ( XmlNode * node, bool erase )
     ::xmlSetTreeDoc(n, _doc);
     _root = node;
 
-    if ( erase && tmp != NULL ) {
+    if ( erase && tmp != nullptr ) {
         delete tmp;
-        tmp = NULL;
+        tmp = nullptr;
     }
 
     return tmp;
@@ -358,7 +358,7 @@ XmlDocument::setRootTagName ( const std::string & tagname )
 
     _roottag = tagname;
 
-    if ( _root == NULL )
+    if ( _root == nullptr )
         return;
 
     n = _root->getNode();
@@ -382,7 +382,7 @@ XmlDocument::initParser ( const std::string & filename )
     if ( filename.length() > 0 )
         _doc = ::xmlParseFile(filename.c_str());
 
-    if ( _doc == NULL ) {
+    if ( _doc == nullptr ) {
         _errStr = "XmlDocument Error: parse error in XML document: ";
         _errStr.append(filename);
         return false;
@@ -409,7 +409,7 @@ XmlDocument::initParser ( const char * xmlblob, size_t len )
 {
     _doc = ::xmlParseMemory(xmlblob, len);
 
-    if ( _doc == NULL ) {
+    if ( _doc == nullptr ) {
         _errStr = "XmlDocument Error in parse: xml malformed";
         return false;
     }
@@ -434,7 +434,7 @@ XmlDocument::initParser ( const char * xmlblob, size_t len )
 bool
 XmlDocument::validate()
 {
-    if ( _doc == NULL )
+    if ( _doc == nullptr )
         return false;
 
     if ( _dtdfile.length() > 0 )
@@ -466,13 +466,13 @@ XmlDocument::attachNode ( XmlNode * parent, XmlNode * node )
 {
     xmlNodePtr  p, n;
 
-    if ( parent == NULL || node == NULL )
+    if ( parent == nullptr || node == nullptr )
         return false;
 
     p = parent->getNode();
     n = node->getNode();
 
-    if ( p == NULL || n == NULL )
+    if ( p == nullptr || n == nullptr )
         return false;
 
     ::xmlUnlinkNode(n);
@@ -540,10 +540,10 @@ XmlDocument::NodeToString ( XmlNode * node )
     xmlBufferPtr  xmlbuf;
     std::string   nodestr = "";
 
-    if ( node == NULL )
+    if ( node == nullptr )
         return nodestr;
 
-    if ( (xmlbuf = ::xmlBufferCreate()) == NULL )
+    if ( (xmlbuf = ::xmlBufferCreate()) == nullptr )
         return nodestr;
 
 

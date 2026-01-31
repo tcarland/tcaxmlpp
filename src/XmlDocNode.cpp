@@ -58,12 +58,12 @@ XmlDocNode::XmlDocNode ( XmlDocument * doc,
 XmlDocument*
 XmlDocNode::getDocument()
 {
-    if ( this->_parent == NULL )
+    if ( this->_parent == nullptr )
         return this->_doc;
 
     XmlDocNode * p = this;
 
-    while ( p->getParent() != NULL )
+    while ( p->getParent() != nullptr )
         p = (XmlDocNode*) p->getParent();
 
     return p->getDocument();
