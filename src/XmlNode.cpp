@@ -239,7 +239,7 @@ XmlNode::findNodes ( const std::string & nodename, const std::string & attrkey )
 {
     XmlNodeList nodes;
     XmlNodeIter nIter;
-    XmlNode   * node = NULL;
+    XmlNode   * node = nullptr;
 
     for ( nIter = _kids.begin(); nIter != _kids.end(); ++nIter )
     {

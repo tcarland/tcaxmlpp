@@ -19,13 +19,18 @@ OBJS =	src/XmlDocument.o src/XmlNode.o src/XmlAttribute.o \
 ALL_OBJS =	$(OBJS)
 ALL_BINS = 	$(BIN)
 
+# ---------------------------------------------
 
 ifeq ($(TCAMAKE_HOME),)
 	export TCAMAKE_HOME := $(shell realpath ../tcamake)
 endif
+ifeq ($(TCAMAKE_PROJECT),)
+	export TCAMAKE_PROJECT := $(shell realpath ..)
+endif
 
 include $(TCAMAKE_HOME)/tcamake_include
 
+# ---------------------------------------------
 
 all: lib
 

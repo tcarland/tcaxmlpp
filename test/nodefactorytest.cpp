@@ -4,7 +4,6 @@
 
 #include <iostream>
 
-
 #include "XmlDocument.h"
 #include "XmlDocNode.h"
 using namespace tcaxmlpp;
@@ -36,13 +35,12 @@ int main ( int argc, char ** argv )
 
     XmlNode::iterator  nIter;
     for ( nIter = root->begin(); nIter != root->end(); ++nIter )
-    {
         std::cout << "Node name: " << (*nIter)->getNodeName() << std::endl;
-    }
 
     XmlDocNode * node = (XmlDocNode*) root->findNode("tnmsd");
     if ( node == nullptr )
         return -1;
+    
     node = (XmlDocNode*) node->findNode("server");
     if ( node == nullptr )
         return -1;

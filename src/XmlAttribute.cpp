@@ -48,7 +48,7 @@ XmlAttribute::XmlAttribute ( XmlNode * parent,
                              const std::string & key,
                              const std::string & val )
    : _parent(parent),
-     _node(NULL),
+     _node(nullptr),
      _key(key)
 {
     this->setValue(val);
@@ -65,7 +65,7 @@ XmlAttribute::setValue ( const std::string & val )
 
     this->_val = val;
 
-    if ( node == NULL )
+    if ( node == nullptr )
         return;
 
     this->_node = xmlSetProp(node, (const xmlChar*) _key.c_str(),

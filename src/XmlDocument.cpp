@@ -131,7 +131,7 @@ XmlDocument::initDocument ( const std::string & filename, bool create )
         node = ::xmlNewNode(NULL, (const xmlChar*) _roottag.c_str());
         ::xmlDocSetRootElement(_doc, node);
 
-        _root = new XmlNode(NULL, node); // pass false too??
+        _root = new XmlNode(nullptr, node); // pass false too??
         _root->setAttr("Version", std::string(DEFAULT_ROOT_VERSION));
         result = true;
     } else {
@@ -172,7 +172,7 @@ XmlDocument::readMemory ( const char * xmlblob, size_t len )
     result = this->initParser(xmlblob, len);
 
     if ( result && _doc ) {
-        _root = (*this->_nodeFactory)(NULL, xmlDocGetRootElement(_doc));
+        _root = (*this->_nodeFactory)(nullptr, xmlDocGetRootElement(_doc));
         _root->setDebug(this->_debug);
     } else {
         this->clearDocument();
@@ -200,7 +200,7 @@ XmlDocument::readFile ( const std::string & filename )
     }
 
     if ( result && _doc ) {
-        _root = (*this->_nodeFactory)(NULL, xmlDocGetRootElement(_doc));
+        _root = (*this->_nodeFactory)(nullptr, xmlDocGetRootElement(_doc));
         _root->setDebug(this->_debug);
     } else {
         this->clearDocument();
@@ -472,7 +472,7 @@ XmlDocument::attachNode ( XmlNode * parent, XmlNode * node )
     p = parent->getNode();
     n = node->getNode();
 
-    if ( p == NULL || n == NULL )
+    if ( p == nullptr || n == nullptr )
         return false;
 
     ::xmlUnlinkNode(n);
@@ -543,7 +543,7 @@ XmlDocument::NodeToString ( XmlNode * node )
     if ( node == nullptr )
         return nodestr;
 
-    if ( (xmlbuf = ::xmlBufferCreate()) == NULL )
+    if ( (xmlbuf = ::xmlBufferCreate()) == nullptr )
         return nodestr;
 
 
