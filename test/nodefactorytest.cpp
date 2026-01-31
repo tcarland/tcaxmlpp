@@ -41,10 +41,10 @@ int main ( int argc, char ** argv )
     }
 
     XmlDocNode * node = (XmlDocNode*) root->findNode("tnmsd");
-    if ( node == NULL )
+    if ( node == nullptr )
         return -1;
     node = (XmlDocNode*) node->findNode("server");
-    if ( node == NULL )
+    if ( node == nullptr )
         return -1;
 
     XmlDocument * docptr = node->getDocument();
