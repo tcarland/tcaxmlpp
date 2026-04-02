@@ -21,13 +21,13 @@ If not, see <http://www.gnu.org/licenses/>.
 
 # Overview
 
-This library provides a (C++) object-oriented interface to libxml2's
+This library provides an object-oriented interface to libxml2's
 'Tree API' (DOM) for XML document manipulation.
 
-The *XmlDocument* class provides an interface to parsing any well-formed
-XML fragment and acts as a container to the tree and the root XmlNode
-object. The *XmlNode* class provides an interface for interacting with
-node attributes and any of its children.
+The *XmlDocument* class provides an interface to parsing any well-
+formed XML fragment and acts as a container to the tree and the root 
+*XmlNode* object. The *XmlNode* class provides an interface for 
+interacting with node attributes and any of its children.
 
 ## Requirements
 
@@ -58,21 +58,22 @@ Use the issues board for this project as linked above.
 
 ## Example 1:
 
-It is worth noting that the default *XmlNode* object does not hold a pointer
-to its parent *XmlDocument* container. This can complicate node handling
-in certain cases, but is done intentionally to simplify general usage.
+It is worth noting that the default *XmlNode* object does not hold a 
+pointer to its parent *XmlDocument* container. This can complicate 
+node handling in certain cases, but is done intentionally to simplify 
+general usage.
 
-Since the library 'wraps' libxml2, the user must be wary of the underlying
-document to which a node belongs. In most situations, the *XmlDocument* and
-*XmlNode* classes are used as is, however, it is possible to inherit and
-customize *XmlNode* objects using the *XmlNodeFactory*.
+Since the library 'wraps' libxml2, the user must be wary of the under-
+lying document to which a node belongs. In most situations, the *XmlDocument* 
+and *XmlNode* classes are used as is, however, it is possible to inherit 
+and customize *XmlNode* objects using the *XmlNodeFactory*.
 
-As an example, the provided XmlDocNode class demonstrates a derived *XmlNode*
-object holding a pointer to its parent *XmlDocument* container.
+As an example, the provided XmlDocNode class demonstrates a derived 
+*XmlNode* object holding a pointer to its parent *XmlDocument* container.
 
 Note that this example does not handle validating that the underlying
-document ptr is the same when moving/attaching nodes between documents. This
-would require deriving the parent document class and overriding
+document ptr is the same when moving/attaching nodes between documents. 
+This would require deriving the parent document class and overriding
 *XmlDocument::attachNode()*.
 
 ## Example 2:
