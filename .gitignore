@@ -25,6 +25,7 @@
 *.app
 
 *.sw*
+.cache
 .settings
 .project
 compile_flags.txt
