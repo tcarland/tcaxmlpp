@@ -39,7 +39,7 @@ bool
 XmlDocument::_Libinit = false;
 
 const char*
-XmlDocument::_Version = "1.3.12";
+XmlDocument::_Version = "1.4.0";
 
 
 //-------------------------------------------------------------//
