@@ -1,4 +1,4 @@
-FROM ghcr.io/tcarland/tcanetpp:v1.7.0
+FROM ghcr.io/tcarland/tcanetpp:v1.7.1
 
 LABEL description="tcaxmlpp build container"
 LABEL author="Timothy C. Arland <tcarland at gmail dot com>"
